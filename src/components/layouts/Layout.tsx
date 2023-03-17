@@ -22,7 +22,7 @@ export default function Layout() {
             </Sider>
             <AntdLayout>
                 <Header collapsed={collapsed} setCollapsed={setCollapsed} />
-                <Content style={{ background: '#fff' }}>
+                <Content className='light'>
                     <Outlet />
                 </Content>
             </AntdLayout>
@@ -35,7 +35,7 @@ const Content = styled(AntDContent)`
     padding: 48px;
     border-radius: 8px;
     border: 1px solid #DFE0EB;
-`
+`;
 
 type Logo = {
     collapsed: boolean

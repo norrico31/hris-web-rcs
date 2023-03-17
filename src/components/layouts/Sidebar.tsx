@@ -13,16 +13,16 @@ export default function Sidebar() {
     const [locationKey, setLocationKey] = useState<any>(null);
 
     useEffect(() => {
-        if (location?.pathname.includes('/admin/systemsettings')) {
-            setLocationKey('/admin/systemsettings/addressmapping')
-        } else if (location?.pathname.includes('/admin/adminsettings')) {
-            setLocationKey('/admin/adminsettings/usermanagement')
-        } else if (location?.pathname.includes('/admin/systemlogs')) {
-            setLocationKey('/admin/systemlogs/auditlogs')
-        } else if (location?.pathname.includes('/admin/reportanalytics')) {
-            setLocationKey('/admin/reportanalytics/applicantmetrics')
-        } else if (location?.pathname.includes('/admin/applicantmanagement')) {
-            setLocationKey('/admin/applicantmanagement/adminapplicant')
+        if (location?.pathname.includes('/systemsettings')) {
+            setLocationKey('/systemsettings/addressmapping')
+        } else if (location?.pathname.includes('/adminsettings')) {
+            setLocationKey('/adminsettings/usermanagement')
+        } else if (location?.pathname.includes('/systemlogs')) {
+            setLocationKey('/systemlogs/auditlogs')
+        } else if (location?.pathname.includes('/reportanalytics')) {
+            setLocationKey('/reportanalytics/applicantmetrics')
+        } else if (location?.pathname.includes('/applicantmanagement')) {
+            setLocationKey('/applicantmanagement/applicant')
         } else {
             setLocationKey(location?.pathname)
         }
@@ -37,38 +37,38 @@ export default function Sidebar() {
             defaultSelectedKeys={[location.pathname]}
             items={[
                 getItemLinks(
-                    <Link to='/admin/dashboard' id="dashboard">Dashboard</Link>,
-                    '/admin/dashboard',
+                    <Link to='/dashboard' id="dashboard">Dashboard</Link>,
+                    '/dashboard',
                     <AiFillAppstore />
                 ),
                 getItemLinks(
-                    <Link to='/admin/systemsettings/addressmapping'>System Settings</Link>,
-                    '/admin/systemsettings/addressmapping',
+                    <Link to='/systemsettings/addressmapping'>System Settings</Link>,
+                    '/systemsettings/addressmapping',
                     <AiOutlineSetting />,
                 ),
                 getItemLinks(
-                    <Link to='/admin/adminsettings/usermanagement'>Admin Settings</Link>,
-                    '/admin/adminsettings/usermanagement',
+                    <Link to='/adminsettings/usermanagement'>Admin Settings</Link>,
+                    '/adminsettings/usermanagement',
                     <RiUserSettingsFill />,
                 ),
                 getItemLinks(
-                    <Link to='/admin/systemlogs/auditlogs'>System Logs</Link>,
-                    '/admin/systemlogs/auditlogs',
+                    <Link to='/systemlogs/auditlogs'>Time Keeping</Link>,
+                    '/systemlogs/auditlogs',
                     <AiOutlineSetting />
                 ),
                 getItemLinks(
-                    <Link to='/admin/profile'>User Profile</Link>,
-                    '/admin/profile',
+                    <Link to='/profile'>User Profile</Link>,
+                    '/profile',
                     <FaUser />
                 ),
                 getItemLinks(
-                    <Link to='/admin/reportanalytics/applicantmetrics'>Report Analytics</Link>,
-                    '/admin/reportanalytics/applicantmetrics',
+                    <Link to='/reportanalytics/applicantmetrics'>Report Analytics</Link>,
+                    '/reportanalytics/applicantmetrics',
                     <GoGraph />
                 ),
                 getItemLinks(
-                    <Link to='/admin/applicantmanagement/adminapplicant'>Applicant Management</Link>,
-                    '/admin/applicantmanagement/adminapplicant',
+                    <Link to='/applicantmanagementapplicant'>Applicant Management</Link>,
+                    '/applicantmanagement/adminapplicant',
                     <MdManageAccounts />,
                 ),
             ]}
@@ -77,8 +77,8 @@ export default function Sidebar() {
 }
 
 const MenuContainer = styled(AntdMenu)`
-    /* background-color: #003765; */
-    /* color: #fff; */
+    background-color: #9B3423;
+    color: #fff;
     height: 100%;
 
     .ant-menu-item-selected {
@@ -98,8 +98,6 @@ const MenuContainer = styled(AntdMenu)`
         color: #fff;
     }
 `
-
-
 
 type MenuItem = Required<MenuProps>['items'][number]
 

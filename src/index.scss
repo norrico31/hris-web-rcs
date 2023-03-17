@@ -14,17 +14,11 @@
     transition: color 0.3s;
 }
   
-#components-layout-demo-custom-trigger .trigger:hover {
-    color: #1890ff;
-}
-  
 #components-layout-demo-custom-trigger .logo {
     height: 32px;
     margin: 16px;
     background: rgba(255, 255, 255, 0.3);
 }
-
-
 
 .login-container {
     width: 100%;
@@ -36,4 +30,8 @@
     max-width: 630px;
     max-height: 630px;
     outline: 1px solid lime;
+}
+
+.light {
+    background: #fff;
 }

@@ -36,14 +36,14 @@ export default function Header({ collapsed, setCollapsed }: Props) {
             <div>
                 {burgerMenu}
                 <AppTitleContainer>
-                    <Text style={{ fontWeight: 'bold', color: '#003765' }}>RedCore</Text>
+                    <Text style={{ fontWeight: 'bold', color: '#003765' }}>REDCORE SOLUTIONS INC.</Text>
                 </AppTitleContainer>
             </div>
             <div>
                 <Dropdown menu={{ items }}>
                     <a onClick={e => e.preventDefault()}>
                         <Space>
-                            <UserName>{'Unknown User'}</UserName>
+                            <UserName>{'TULALANG USER'}</UserName>
                             <DownOutlined className='dropdown-icon' />
                         </Space>
                     </a>
@@ -62,6 +62,8 @@ const UserName = styled.span`
 const HeaderComponent = styled(AntDHeader)`
     background: #fff !important;
     padding: 0;
+    display: flex;
+    justify-content: space-between;
         
     .trigger {
         font-size: 1.35rem;
@@ -71,10 +73,6 @@ const HeaderComponent = styled(AntDHeader)`
         transition: color 0.3s;
         color: #2e3192;
     }
-
-    display: flex;
-    justify-content: space-between;
-
     div {
         height: 100%;
         display: flex;
@@ -85,6 +83,7 @@ const HeaderComponent = styled(AntDHeader)`
     div * {
         margin: 0;
         white-space: nowrap;
+        color: #9B3423 !important;
     }
     .dropdown-icon {
         color: gray;
