@@ -12,7 +12,7 @@ export default function TabsContainer(props: TabsProps) {
     const navigate = useNavigate()
     let { pathname } = useLocation()
     return (
-        <Card title={props.title}>
+        <Card title={props.title} level={4}>
             <Tabs
                 activeKey={pathname.slice(15, pathname.length)}
                 tabPosition='left'

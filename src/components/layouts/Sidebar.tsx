@@ -57,6 +57,86 @@ export default function Sidebar() {
                             '/systemsettings/taskmanagement/activities',
                             <FaTasks />,
                         ),
+                        getItemLinks(
+                            <Link to='/systemsettings/bankingdetails'>Banking Details</Link>,
+                            '/systemsettings/bankingdetails',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/client'>Client</Link>,
+                            '/systemsettings/client',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/clientbranch'>Client Branch</Link>,
+                            '/systemsettings/clientbranch',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/clientbranchholiday'>Client Branch Holiday</Link>,
+                            '/systemsettings/clientbranchholiday',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/dailyrate'>Daily Rate</Link>,
+                            '/systemsettings/dailyrate',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/expense'>Expense</Link>,
+                            '/systemsettings/expense',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/expensetype'>Expense Type</Link>,
+                            '/systemsettings/expensetype',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/holiday'>Holiday</Link>,
+                            '/systemsettings/holiday',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/holidaytype'>Holiday Type</Link>,
+                            '/systemsettings/holidaytype',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/leave'>Leave</Link>,
+                            '/systemsettings/leave',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/leaveduration'>Leave Duration</Link>,
+                            '/systemsettings/leaveduration',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/leavetype'>Leave Type</Link>,
+                            '/systemsettings/leavetype',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/position'>Position</Link>,
+                            '/systemsettings/position',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/role'>Role</Link>,
+                            '/systemsettings/role',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/salaryrate'>Salary Rate</Link>,
+                            '/systemsettings/salaryrate',
+                            <FaTasks />,
+                        ),
+                        getItemLinks(
+                            <Link to='/systemsettings/schedule'>Schedule</Link>,
+                            '/systemsettings/schedule',
+                            <FaTasks />,
+                        ),
                     ]
                 ),
                 // getItemLinks(
