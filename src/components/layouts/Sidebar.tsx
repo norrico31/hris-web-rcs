@@ -5,8 +5,9 @@ import styled from 'styled-components'
 import { AiFillAppstore, AiOutlineSetting } from 'react-icons/ai'
 import { RiUserSettingsFill } from 'react-icons/ri'
 import { MdManageAccounts } from 'react-icons/md'
-import { FaUser } from 'react-icons/fa'
+import { FaUser, FaTasks } from 'react-icons/fa'
 import { GoGraph } from 'react-icons/go'
+import { BiTimeFive } from 'react-icons/bi'
 
 export default function Sidebar() {
     let location = useLocation()
@@ -42,35 +43,42 @@ export default function Sidebar() {
                     <AiFillAppstore />
                 ),
                 getItemLinks(
-                    <Link to='/systemsettings/addressmapping'>System Settings</Link>,
-                    '/systemsettings/addressmapping',
+                    <Link to='/timekeeping'>Time Keeping</Link>,
+                    '/timekeeping',
+                    <BiTimeFive />
+                ),
+                getItemLinks(
+                    'System Settings',
+                    '/systemsettings',
                     <AiOutlineSetting />,
+                    [
+                        getItemLinks(
+                            <Link to='/systemsettings/taskmanagement/activities'>Task Management</Link>,
+                            '/systemsettings/taskmanagement/activities',
+                            <FaTasks />,
+                        ),
+                    ]
                 ),
-                getItemLinks(
-                    <Link to='/adminsettings/usermanagement'>Admin Settings</Link>,
-                    '/adminsettings/usermanagement',
-                    <RiUserSettingsFill />,
-                ),
-                getItemLinks(
-                    <Link to='/systemlogs/auditlogs'>Time Keeping</Link>,
-                    '/systemlogs/auditlogs',
-                    <AiOutlineSetting />
-                ),
-                getItemLinks(
-                    <Link to='/profile'>User Profile</Link>,
-                    '/profile',
-                    <FaUser />
-                ),
-                getItemLinks(
-                    <Link to='/reportanalytics/applicantmetrics'>Report Analytics</Link>,
-                    '/reportanalytics/applicantmetrics',
-                    <GoGraph />
-                ),
-                getItemLinks(
-                    <Link to='/applicantmanagementapplicant'>Applicant Management</Link>,
-                    '/applicantmanagement/adminapplicant',
-                    <MdManageAccounts />,
-                ),
+                // getItemLinks(
+                //     <Link to='/adminsettings/usermanagement'>Admin Settings</Link>,
+                //     '/adminsettings/usermanagement',
+                //     <RiUserSettingsFill />,
+                // ),
+                // getItemLinks(
+                //     <Link to='/profile'>User Profile</Link>,
+                //     '/profile',
+                //     <FaUser />
+                // ),
+                // getItemLinks(
+                //     <Link to='/reportanalytics/applicantmetrics'>Report Analytics</Link>,
+                //     '/reportanalytics/applicantmetrics',
+                //     <GoGraph />
+                // ),
+                // getItemLinks(
+                //     <Link to='/applicantmanagementapplicant'>Applicant Management</Link>,
+                //     '/applicantmanagement/adminapplicant',
+                //     <MdManageAccounts />,
+                // ),
             ]}
         />
     )

@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "./components/layouts/Layout";
-import { Login, Dashboard } from './pages'
+import { Login, Dashboard, TaskManagement, TaskActivities, TaskTypes, TaskSprint } from './pages'
 // import { GuestLayout, DefaultLayout } from "./components";
 
 export const routes = createBrowserRouter([
@@ -9,8 +9,26 @@ export const routes = createBrowserRouter([
         element: <Layout />,
         children: [
             {
-                path: '/dashboard',
+                path: 'dashboard',
                 element: <Dashboard />
+            },
+            {
+                path: 'systemsettings',
+                element: <TaskManagement />,
+                children: [
+                    {
+                        path: 'taskmanagement/activities',
+                        element: <TaskActivities />
+                    },
+                    {
+                        path: 'taskmanagement/types',
+                        element: <TaskTypes />
+                    },
+                    {
+                        path: 'taskmanagement/sprint',
+                        element: <TaskSprint />
+                    },
+                ]
             }
         ]
     },
@@ -18,8 +36,5 @@ export const routes = createBrowserRouter([
         path: '/login',
         element: <Login />
     },
-    {
-        path: '/',
-        // element: <Dashboard />
-    }
+
 ])

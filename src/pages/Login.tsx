@@ -1,56 +1,63 @@
 import { useState } from 'react'
-import { Form, Input, Checkbox, Button, Row } from 'antd'
+import { Form, Input, Checkbox, Button, Row, Col } from 'antd'
 
 export default function Login() {
+    const onFinish = (values: string[]) => {
+        console.log("Success:", values);
+    }
+
+    const onFinishFailed = (errorInfo: any) => {
+        console.log("Failed:", errorInfo);
+    }
+
     return (
-        <div className="login-container">
-            <div className="login-form-container">
+        <Row justify='center' style={{ minHeight: '100vh', width: '100%', }} align='middle'>
+            <Col xs={18} sm={18} md={18} lg={18} xl={11} style={{ outline: '1px solid lime', height: 630 }} >
                 <Form
+                    autoComplete='off'
                     name="basic"
-                    labelCol={{ span: 8 }}
-                    wrapperCol={{ span: 16 }}
-                    style={{ maxWidth: 600 }}
-                    initialValues={{ remember: true }}
+                    initialValues={{
+                        remember: true,
+                    }}
+                    layout='vertical'
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
-                    autoComplete="off"
                 >
                     <Form.Item
-                        label="Username"
-                        name="username"
-                        rules={[{ required: true, message: 'Please input your username!' }]}
+                        label="Email"
+                        name="email"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input your email!",
+                            },
+                        ]}
                     >
-                        <Input />
+                        <Input type='email' placeholder='Enter email' />
                     </Form.Item>
                     <Form.Item
                         label="Password"
                         name="password"
-                        rules={[{ required: true, message: 'Please input your password!' }]}
-                    >
-                        <Input.Password />
-                    </Form.Item>
 
-                    <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please input your password!",
+                            },
+                        ]}
+                    >
+                        <Input.Password type='password' placeholder='Enter password' />
+                    </Form.Item>
+                    <Form.Item name="remember" valuePropName="checked">
                         <Checkbox>Remember me</Checkbox>
                     </Form.Item>
-
-                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                        {/* <Row justify='end'> */}
+                    <Form.Item style={{ textAlign: 'center' }}>
                         <Button type="primary" htmlType="submit">
                             Login
                         </Button>
-                        {/* </Row> */}
                     </Form.Item>
                 </Form>
-            </div>
-        </div>
-    )
+            </Col>
+        </Row>
+    );
 }
-
-const onFinish = (values: any) => {
-    console.log('Success:', values);
-};
-
-const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-};

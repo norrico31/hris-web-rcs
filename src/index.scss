@@ -4,22 +4,40 @@
     box-sizing: border-box;
 }
 
-
-// Header 
-#components-layout-demo-custom-trigger .trigger {
-    padding: 0 24px;
-    font-size: 18px;
+// Header Layout
+.trigger {
+    font-size: 1.35rem;
+    margin-left: 1rem;
     line-height: 64px;
     cursor: pointer;
     transition: color 0.3s;
+    color: #2e3192;
 }
-  
 #components-layout-demo-custom-trigger .logo {
     height: 32px;
     margin: 16px;
     background: rgba(255, 255, 255, 0.3);
 }
+.header-wrapper {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-left: 1rem;
+}
+.header-wrapper * {
+    margin: 0;
+    white-space: nowrap;
+    color: #9B3423 !important;
+}
+.dropdown-icon {
+    color: gray;
+    margin-right: 1.5rem;
+}
 
+
+// Login Page
 .login-container {
     width: 100%;
     min-height: 100vh;
