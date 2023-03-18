@@ -1,12 +1,18 @@
 import { createContext, ReactNode, useContext, useState } from 'react'
 
 export interface IUser {
-    name: string;
-    email: string;
-    imageUrl: string
+    account_status: string
     created_at: string
+    deleted_at?: string
+    email: string
     email_verified_at?: string
-    id: number
+    firstname: string
+    fullname: string
+    id: string
+    lastname: string
+    middlename?: string
+    mobile_number?: string
+    telephone_number?: string
     updated_at: string
 }
 

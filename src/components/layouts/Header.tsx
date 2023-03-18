@@ -2,6 +2,8 @@ import { createElement } from 'react'
 import { Layout, Dropdown, Typography, Space, MenuProps } from 'antd'
 import { MenuUnfoldOutlined, MenuFoldOutlined, DownOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
+import axiosClient from '../../shared/utils/axios'
+import { useAuthContext } from '../../shared/contexts/Auth'
 
 const { Header: AntDHeader } = Layout
 const { Text: AntText } = Typography
@@ -12,7 +14,12 @@ type Props = {
 }
 
 export default function Header({ collapsed, setCollapsed }: Props) {
-    const toggle = () => setCollapsed(!collapsed)
+    const { user, setUser, setToken } = useAuthContext()
+    const toggle = () => {
+        collapsed = !collapsed
+        setCollapsed(collapsed)
+        localStorage.setItem('collapsed', JSON.stringify(collapsed))
+    }
     const burgerMenu = createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
         className: 'trigger',
         onClick: toggle,
@@ -23,12 +30,24 @@ export default function Header({ collapsed, setCollapsed }: Props) {
             key: '1',
             danger: true,
             label: (
-                <div>
+                <div onClick={logout}>
                     Logout
                 </div>
             ),
         },
     ]
+
+    function logout(evt: React.MouseEvent) {
+        evt.stopPropagation()
+        evt.preventDefault()
+        axiosClient.post('/logout')
+            .then(() => {
+                localStorage.clear()
+                setUser(undefined)
+                setToken(undefined)
+                // window.location.reload()
+            })
+    }
 
     return (
         <Container style={{ paddingInline: 0 }}>
@@ -40,7 +59,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
                 <Dropdown menu={{ items }}>
                     <a onClick={e => e.preventDefault()}>
                         <Space>
-                            <UserName>{'TULALANG USER'}</UserName>
+                            <UserName>{user?.fullname ?? 'Unknown'}</UserName>
                             <DownOutlined className='dropdown-icon' />
                         </Space>
                     </a>

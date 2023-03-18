@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, ReactNode } from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
 import { Layout as AntdLayout } from 'antd'
 import styled from 'styled-components'
+import axiosClient from '../../shared/utils/axios'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import RcsLogo from '../../shared/assets/logo.png'
 import LogoSmall from '../../shared/assets/logo-small.png'
@@ -11,12 +12,27 @@ import Header from './Header'
 const { Sider, Content: AntDContent } = AntdLayout
 
 export default function Layout() {
-    const { token } = useAuthContext()
-    const [collapsed, setCollapsed] = useState(false)
-
+    const { token, setUser } = useAuthContext()
     if (token == undefined) return <Navigate to='/login' />
 
-    // fetch user data here
+    const [collapsed, setCollapsed] = useState(() => {
+        let isCollapsed = localStorage.getItem('collapsed')
+        if (isCollapsed != null) {
+            return JSON.parse(isCollapsed)
+        } return false
+    })
+
+    useEffect(() => {
+        let cleanUp = false;
+        axiosClient.get('/user')
+            .then(({ data }) => {
+                if (!cleanUp) setUser(data)
+            })
+        return function () {
+            cleanUp = true
+        }
+    }, [])
+
     return (
         <AntdLayout style={{ minHeight: '95vh' }}>
             <Sider trigger={null} collapsible collapsed={collapsed} width={250}>
