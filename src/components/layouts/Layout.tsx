@@ -10,7 +10,7 @@ import Header from './Header'
 const { Sider, Content: AntDContent } = AntdLayout
 
 export default function Layout() {
-    const [collapsed, setCollapsed] = useState(true)
+    const [collapsed, setCollapsed] = useState(false)
     // fetch user data here
     return (
         <AntdLayout style={{ minHeight: '95vh' }}>

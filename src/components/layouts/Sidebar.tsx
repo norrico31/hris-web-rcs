@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react'
 import { MenuProps, Menu as AntdMenu } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import { AiFillAppstore, AiOutlineSetting } from 'react-icons/ai'
-import { RiUserSettingsFill } from 'react-icons/ri'
-import { MdManageAccounts } from 'react-icons/md'
-import { FaUser, FaTasks } from 'react-icons/fa'
-import { GoGraph } from 'react-icons/go'
+import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineSchedule, AiOutlineCalendar } from 'react-icons/ai'
+import { RiBankLine } from 'react-icons/ri'
+import { MdOutlinePersonalInjury, MdOutlineHolidayVillage } from 'react-icons/md'
+import { FaTasks, FaCriticalRole } from 'react-icons/fa'
+import { GiPositionMarker, GiExpense } from 'react-icons/gi'
 import { BiTimeFive } from 'react-icons/bi'
+import { IoIosPeople } from 'react-icons/io'
+import { TbCalendarStats } from 'react-icons/tb'
+import { VscTypeHierarchy } from 'react-icons/vsc'
+import { SiExpensify } from 'react-icons/si'
 
 export default function Sidebar() {
     let location = useLocation()
@@ -60,82 +64,82 @@ export default function Sidebar() {
                         getItemLinks(
                             <Link to='/systemsettings/bankingdetails'>Banking Details</Link>,
                             '/systemsettings/bankingdetails',
-                            <FaTasks />,
+                            <RiBankLine />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/client'>Client</Link>,
                             '/systemsettings/client',
-                            <FaTasks />,
+                            <IoIosPeople />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/clientbranch'>Client Branch</Link>,
                             '/systemsettings/clientbranch',
-                            <FaTasks />,
+                            <MdOutlinePersonalInjury />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/clientbranchholiday'>Client Branch Holiday</Link>,
                             '/systemsettings/clientbranchholiday',
-                            <FaTasks />,
+                            <MdOutlineHolidayVillage />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/dailyrate'>Daily Rate</Link>,
                             '/systemsettings/dailyrate',
-                            <FaTasks />,
+                            <AiOutlineDollarCircle />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/expense'>Expense</Link>,
                             '/systemsettings/expense',
-                            <FaTasks />,
+                            <GiExpense />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/expensetype'>Expense Type</Link>,
                             '/systemsettings/expensetype',
-                            <FaTasks />,
+                            <SiExpensify />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/holiday'>Holiday</Link>,
                             '/systemsettings/holiday',
-                            <FaTasks />,
+                            <MdOutlineHolidayVillage />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/holidaytype'>Holiday Type</Link>,
                             '/systemsettings/holidaytype',
-                            <FaTasks />,
+                            <MdOutlineHolidayVillage />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/leave'>Leave</Link>,
                             '/systemsettings/leave',
-                            <FaTasks />,
+                            <AiOutlineCalendar />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/leaveduration'>Leave Duration</Link>,
                             '/systemsettings/leaveduration',
-                            <FaTasks />,
+                            <TbCalendarStats />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/leavetype'>Leave Type</Link>,
                             '/systemsettings/leavetype',
-                            <FaTasks />,
+                            <VscTypeHierarchy />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/position'>Position</Link>,
                             '/systemsettings/position',
-                            <FaTasks />,
+                            <GiPositionMarker />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/role'>Role</Link>,
                             '/systemsettings/role',
-                            <FaTasks />,
+                            <FaCriticalRole />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/salaryrate'>Salary Rate</Link>,
                             '/systemsettings/salaryrate',
-                            <FaTasks />,
+                            <AiOutlineDollarCircle />,
                         ),
                         getItemLinks(
                             <Link to='/systemsettings/schedule'>Schedule</Link>,
                             '/systemsettings/schedule',
-                            <FaTasks />,
+                            <AiOutlineSchedule />,
                         ),
                     ]
                 ),
