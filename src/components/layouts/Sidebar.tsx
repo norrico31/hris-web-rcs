@@ -169,21 +169,17 @@ const MenuContainer = styled(AntdMenu)`
     color: #fff;
     height: 100%;
 
-    .ant-menu-item-selected {
-        background-color: #CCCC4A !important;
-        color: #fff;
+    .ant-menu-item:hover,
+    .ant-menu-item-selected,
+    .ant-menu-item.ant-menu-item-active {
+        background-color: #fff;
+        color: #9B3423;
     }
-
     .menu-item-icon {
         color: #00AEEF;
     }
-
-    .ant-menu-sub {
-        background-color: #003765 !important;
-    }
-    .ant-tabs-tab-active {
-        background: #003765;
-        color: #fff;
+    .ant-menu.ant-menu-sub.ant-menu-inline {
+        background: #9B3423;
     }
 `
 
