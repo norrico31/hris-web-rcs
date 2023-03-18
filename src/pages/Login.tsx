@@ -1,27 +1,37 @@
 import { useState } from 'react'
 import { Form, Input, Checkbox, Button, Row, Col } from 'antd'
+import { Navigate } from 'react-router-dom'
+import axios from 'axios'
+import { useAuthContext } from '../shared/contexts/Auth'
 
 export default function Login() {
-    const onFinish = (values: string[]) => {
-        console.log("Success:", values);
-    }
+    const { token, setToken } = useAuthContext()
+    const [error, setError] = useState<string | undefined>(undefined)
 
-    const onFinishFailed = (errorInfo: any) => {
-        console.log("Failed:", errorInfo);
+    if (token != undefined) return <Navigate to='/' />
+
+    const onFinish = async (values: any) => {
+        setError(undefined)
+        try {
+            const res = await axios.post('http://127.0.0.1:8000/api/login', values)
+            localStorage.setItem('t', JSON.stringify(res.data.token))
+            setToken(res.data.token)
+        } catch (error: any) {
+            setError(error.response.data.message ?? error.response.data.error)
+            return error
+        } finally {
+            setTimeout(() => setError(undefined), 5000)
+        }
     }
 
     return (
         <Row justify='center' style={{ minHeight: '100vh', width: '100%', }} align='middle'>
             <Col xs={18} sm={18} md={18} lg={18} xl={11} style={{ outline: '1px solid lime', height: 630 }} >
+                {error}
                 <Form
                     autoComplete='off'
-                    name="basic"
-                    initialValues={{
-                        remember: true,
-                    }}
                     layout='vertical'
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                 >
                     <Form.Item
                         label="Email"
@@ -47,9 +57,6 @@ export default function Login() {
                         ]}
                     >
                         <Input.Password type='password' placeholder='Enter password' />
-                    </Form.Item>
-                    <Form.Item name="remember" valuePropName="checked">
-                        <Checkbox>Remember me</Checkbox>
                     </Form.Item>
                     <Form.Item style={{ textAlign: 'center' }}>
                         <Button type="primary" htmlType="submit">

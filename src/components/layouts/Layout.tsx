@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, ReactNode } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, Navigate } from 'react-router-dom'
 import { Layout as AntdLayout } from 'antd'
 import styled from 'styled-components'
+import { useAuthContext } from '../../shared/contexts/Auth'
 import RcsLogo from '../../shared/assets/logo.png'
 import LogoSmall from '../../shared/assets/logo-small.png'
 import Sidebar from './Sidebar'
@@ -10,7 +11,11 @@ import Header from './Header'
 const { Sider, Content: AntDContent } = AntdLayout
 
 export default function Layout() {
+    const { token } = useAuthContext()
     const [collapsed, setCollapsed] = useState(false)
+
+    if (token == undefined) return <Navigate to='/login' />
+
     // fetch user data here
     return (
         <AntdLayout style={{ minHeight: '95vh' }}>
