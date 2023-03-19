@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Form, Input, Checkbox, Button, Row, Col, Typography } from 'antd'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
+import styled from 'styled-components'
 import { useAuthContext } from '../shared/contexts/Auth'
 import axiosClient from '../shared/utils/axios'
 import ImgBG from '../shared/assets/bg-login.png'
@@ -30,8 +31,9 @@ export default function Login() {
 
     return (
         <div>
+            <img src={ImgBG} className='login-bg' />
             <Row justify='center' style={{ minHeight: '100vh', width: '100%', }} align='middle'>
-                <Col xs={18} sm={18} md={18} lg={18} xl={11} style={{ outline: '1px solid lime', height: 630 }} >
+                <ColContainer xs={18} sm={18} md={18} lg={18} xl={11}>
                     {error}
                     <Form
                         autoComplete='off'
@@ -42,7 +44,7 @@ export default function Login() {
                             <Col>
                                 <div className='center' style={style}>
                                     <img src={RcsLogo} alt='logo' />
-                                    <Typography.Title level={2} color='#E49944'>Login</Typography.Title>
+                                    <h1 className='color-primary'>Login</h1>
                                 </div>
                             </Col>
                         </Row>
@@ -71,13 +73,16 @@ export default function Login() {
                         >
                             <Input.Password type='password' placeholder='Enter password' />
                         </Form.Item>
+                        <Form.Item style={{ textAlign: 'right' }}>
+                            <Link to='#' className='link-forgotpassword'>Forgot Password</Link>
+                        </Form.Item>
                         <Form.Item style={{ textAlign: 'center' }}>
-                            <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit" className='btn-primary'>
                                 Login
                             </Button>
                         </Form.Item>
                     </Form>
-                </Col>
+                </ColContainer>
             </Row>
         </div>
     );
@@ -86,3 +91,20 @@ export default function Login() {
 const style: Record<string, string> = {
     '--gap': '1rem'
 }
+
+const ColContainer = styled(Col)`
+    height: 630px;
+    display: grid;
+    place-items: center;
+    grid-template-columns: auto;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        opacity: .3;
+        z-index: 0;
+    }
+`;

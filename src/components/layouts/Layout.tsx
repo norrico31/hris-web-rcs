@@ -19,7 +19,8 @@ export default function Layout() {
         let isCollapsed = localStorage.getItem('collapsed')
         if (isCollapsed != null) {
             return JSON.parse(isCollapsed)
-        } return false
+        }
+        return false
     })
 
     useEffect(() => {
