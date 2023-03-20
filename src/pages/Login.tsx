@@ -3,9 +3,11 @@ import { Form, Input, Checkbox, Button, Row, Col, Typography } from 'antd'
 import { Navigate, Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useAuthContext } from '../shared/contexts/Auth'
-import axiosClient from '../shared/utils/axios'
+import { useAxios } from '../shared/utils/axios'
 import ImgBG from '../shared/assets/bg-login.png'
 import RcsLogo from '../shared/assets/logo.png'
+
+const { POST } = useAxios()
 
 export default function Login() {
     const { token, setToken } = useAuthContext()
@@ -18,7 +20,7 @@ export default function Login() {
         //! DISPLAY ERRORS IN FORMS NOT IN NOTIFICATION
         setError(undefined)
         try {
-            const res = await axiosClient.post('/login', values)
+            const res = await POST('/login', values)
             localStorage.setItem('t', JSON.stringify(res.data.token))
             setToken(res.data.token)
         } catch (error: any) {
@@ -34,7 +36,6 @@ export default function Login() {
             <img src={ImgBG} className='login-bg' />
             <Row justify='center' style={{ minHeight: '100vh', width: '100%', }} align='middle'>
                 <ColContainer xs={18} sm={18} md={18} lg={18} xl={11}>
-                    {error}
                     <Form
                         autoComplete='off'
                         layout='vertical'
@@ -48,6 +49,7 @@ export default function Login() {
                                 </div>
                             </Col>
                         </Row>
+                        <h2 style={{ color: 'red', textAlign: 'center' }}>{error}</h2>
                         <Form.Item
                             label="Email"
                             name="email"

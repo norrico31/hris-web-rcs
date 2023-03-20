@@ -13,18 +13,20 @@ axiosClient.interceptors.request.use((req) => {
 
 axiosClient.interceptors.response.use((res) => res, err => Promise.reject(err))
 
-const axiosSanctum = (reqFunc?: Promise<void>) => axiosClient.get('/sanctum/csrf-cookie')
-    .then(res => {
-        // TODO: handle res
-        return Promise.resolve(reqFunc)
-    })
-    .catch(err => Promise.reject(err));
-axiosSanctum()
+// const axiosSanctum = (reqFunc?: any) => axiosClient.get('/sanctum/csrf-cookie')
+//     .then(res => Promise.resolve(reqFunc))
+//     .catch(err => Promise.reject(err));
+// axiosSanctum()
 
 export const useAxios = () => {
-    const GET = async (url: string) => axiosSanctum(axiosClient.get('/api' + url)) as Promise<any>
+    // const GET = (url: string) => axiosSanctum(axiosClient.get('/api' + url)) as Promise<any>
+    // const POST = <T>(url: string, data: T) => axiosSanctum(axiosClient.post('/api' + url, data))
+    const GET = (url: string) => axiosClient.get('/api' + url) as Promise<any>
+    const POST = <T>(url: string, data: T) => axiosClient.post('/api' + url, data)
+
     return {
-        GET
+        GET,
+        POST
     }
 }
 

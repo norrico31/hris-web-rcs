@@ -18,19 +18,22 @@ export default function Sidebar() {
     const [locationKey, setLocationKey] = useState('')
 
     useEffect(() => {
-        if (location?.pathname.includes('/systemsettings')) {
-            setLocationKey('/systemsettings/addressmapping')
-        } else if (location?.pathname.includes('/adminsettings')) {
-            setLocationKey('/adminsettings/usermanagement')
-        } else if (location?.pathname.includes('/systemlogs')) {
-            setLocationKey('/systemlogs/auditlogs')
-        } else if (location?.pathname.includes('/reportanalytics')) {
-            setLocationKey('/reportanalytics/applicantmetrics')
-        } else if (location?.pathname.includes('/applicantmanagement')) {
-            setLocationKey('/applicantmanagement/applicant')
-        } else {
-            setLocationKey(location?.pathname)
+        if (location?.pathname.includes('/timekeeping')) {
+            setLocationKey('/timekeeping')
+        } else if (location?.pathname.includes('/systemsettings')) {
+            setLocationKey('/systemsettings/taskmanagement/activities')
         }
+        // else if (location?.pathname.includes('/adminsettings')) {
+        //     setLocationKey('/adminsettings/usermanagement')
+        // } else if (location?.pathname.includes('/systemlogs')) {
+        //     setLocationKey('/systemlogs/auditlogs')
+        // } else if (location?.pathname.includes('/reportanalytics')) {
+        //     setLocationKey('/reportanalytics/applicantmetrics')
+        // } else if (location?.pathname.includes('/applicantmanagement')) {
+        //     setLocationKey('/applicantmanagement/applicant')
+        // } else {
+        //     setLocationKey(location?.pathname)
+        // }
     }, [location.pathname])
 
     return (
@@ -83,7 +86,7 @@ const menus = [
         <AiOutlineSetting />,
         [
             getItemLinks(
-                <Link to='/systemsettings/taskmanagement/activities'>Task Management</Link>,
+                <Link to='/systemsettings/taskmanagement/activities'>Tasks</Link>,
                 '/systemsettings/taskmanagement/activities',
                 <FaTasks />,
             ),

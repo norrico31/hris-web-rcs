@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { Layout, Dropdown, Typography, Space, MenuProps } from 'antd'
 import { MenuUnfoldOutlined, MenuFoldOutlined, DownOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
-import axiosClient from '../../shared/utils/axios'
+import { useAxios } from '../../shared/utils/axios'
 import { useAuthContext } from '../../shared/contexts/Auth'
 
 const { Header: AntDHeader } = Layout
@@ -12,6 +12,8 @@ type Props = {
     collapsed: boolean;
     setCollapsed: React.Dispatch<React.SetStateAction<boolean>>
 }
+
+const { POST } = useAxios()
 
 export default function Header({ collapsed, setCollapsed }: Props) {
     const { user, setUser, setToken } = useAuthContext()
@@ -40,7 +42,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
     function logout(evt: React.MouseEvent) {
         evt.stopPropagation()
         evt.preventDefault()
-        axiosClient.post('/logout')
+        POST('/logout', {})
             .then(() => {
                 localStorage.clear()
                 setUser(undefined)

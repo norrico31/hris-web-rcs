@@ -1,9 +1,10 @@
 export { default as Login } from './Login'
 export { default as Dashboard } from './Dashboard'
+export { default as TimeKeeping } from './TimeKeeping'
 
 //* System Settings
 // Task Management
-export { default as TaskManagement } from './system-settings/task-management/TaskManagement'
+export { default as Tasks } from './system-settings/task-management/Tasks'
 export { default as TaskActivities } from './system-settings/task-management/TaskActivities'
 export { default as TaskTypes } from './system-settings/task-management/TaskTypes'
 export { default as TaskSprint } from './system-settings/task-management/TaskSprint'

@@ -15,6 +15,6 @@ const els = [
     },
 ]
 
-export default function TaskManagement() {
+export default function Tasks() {
     return <Tabs els={els} title='Task Management' />
 }
