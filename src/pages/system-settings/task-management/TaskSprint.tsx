@@ -84,9 +84,10 @@ export default function TaskSprint() {
         },
     ]
 
-    function fetchData() {
+    function fetchData(search: string) {
 
     }
+
 
     function handleDelete(id: string) {
         console.log(id)
@@ -110,6 +111,7 @@ export default function TaskSprint() {
         <Card title='Task Sprint'>
             <TabHeader
                 name='task sprint'
+                handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />

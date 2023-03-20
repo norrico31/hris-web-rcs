@@ -62,7 +62,7 @@ export default function TaskTypes() {
         },
     ]
 
-    function fetchData() {
+    function fetchData(search: string) {
 
     }
 
@@ -88,6 +88,7 @@ export default function TaskTypes() {
         <Card title='Task Types'>
             <TabHeader
                 name='task types'
+                handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />

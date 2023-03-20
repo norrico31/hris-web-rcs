@@ -62,7 +62,7 @@ export default function TaskActivities() {
         },
     ]
 
-    function fetchData() {
+    function fetchData(search: string) {
 
     }
 
@@ -88,6 +88,7 @@ export default function TaskActivities() {
         <Card title='Task Activities'>
             <TabHeader
                 name='task activities'
+                handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />
