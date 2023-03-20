@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Form, Input, Checkbox, Button, Row, Col, Typography } from 'antd'
+import { Form, Input, Button, Row, Col } from 'antd'
 import { Navigate, Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useAuthContext } from '../shared/contexts/Auth'

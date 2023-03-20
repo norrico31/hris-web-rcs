@@ -16,5 +16,5 @@ const els = [
 ]
 
 export default function Tasks() {
-    return <Tabs els={els} title='Task Management' />
+    return <Tabs els={els} title='Tasks' />
 }
