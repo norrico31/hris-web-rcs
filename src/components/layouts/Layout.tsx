@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, ReactNode } from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
 import { Layout as AntdLayout } from 'antd'
 import styled from 'styled-components'
-import axiosClient from '../../shared/utils/axios'
+import { useAxios } from '../../shared/utils/axios'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import RcsLogo from '../../shared/assets/logo.png'
 import LogoSmall from '../../shared/assets/logo-small.png'
@@ -10,9 +10,10 @@ import Sidebar from './Sidebar'
 import Header from './Header'
 
 const { Sider, Content: AntDContent } = AntdLayout
+const { GET } = useAxios()
 
 export default function Layout() {
-    const { token, setUser } = useAuthContext()
+    const { token, setToken, setUser } = useAuthContext()
     if (token == undefined) return <Navigate to='/login' />
 
     const [collapsed, setCollapsed] = useState(() => {
@@ -25,9 +26,14 @@ export default function Layout() {
 
     useEffect(() => {
         let cleanUp = false;
-        axiosClient.get('/user')
-            .then(({ data }) => {
-                if (!cleanUp) setUser(data)
+        GET('/user')
+            .then(({ data }) => !cleanUp && setUser(data))
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    setToken(undefined)
+                    setUser(undefined)
+                    return <Navigate to='/login' />
+                }
             })
         return function () {
             cleanUp = true

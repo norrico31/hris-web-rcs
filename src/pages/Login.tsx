@@ -11,11 +11,11 @@ export default function Login() {
     const { token, setToken } = useAuthContext()
     const [error, setError] = useState<string | undefined>(undefined)
 
-    if (token != undefined) {
-        return <Navigate to='/' />
-    }
+    if (token != undefined) return <Navigate to='/' />
 
     const onFinish = async (values: any) => {
+        //! GUARD CLAUSE (onSubmit || onFinish)
+        //! DISPLAY ERRORS IN FORMS NOT IN NOTIFICATION
         setError(undefined)
         try {
             const res = await axiosClient.post('/login', values)
