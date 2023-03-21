@@ -18,22 +18,15 @@ export default function Sidebar() {
     const [locationKey, setLocationKey] = useState('')
 
     useEffect(() => {
-        if (location?.pathname.includes('/timekeeping')) {
+        if (location?.pathname.includes('/dashboard')) {
+            setLocationKey('/dashboard')
+        } else if (location?.pathname.includes('/timekeeping')) {
             setLocationKey('/timekeeping')
         } else if (location?.pathname.includes('/systemsettings')) {
             setLocationKey('/systemsettings/taskmanagement/activities')
+        } else {
+            setLocationKey(location?.pathname)
         }
-        // else if (location?.pathname.includes('/adminsettings')) {
-        //     setLocationKey('/adminsettings/usermanagement')
-        // } else if (location?.pathname.includes('/systemlogs')) {
-        //     setLocationKey('/systemlogs/auditlogs')
-        // } else if (location?.pathname.includes('/reportanalytics')) {
-        //     setLocationKey('/reportanalytics/applicantmetrics')
-        // } else if (location?.pathname.includes('/applicantmanagement')) {
-        //     setLocationKey('/applicantmanagement/applicant')
-        // } else {
-        //     setLocationKey(location?.pathname)
-        // }
     }, [location.pathname])
 
     return (
@@ -86,7 +79,7 @@ const menus = [
         <AiOutlineSetting />,
         [
             getItemLinks(
-                <Link to='/systemsettings/taskmanagement/activities'>Tasks</Link>,
+                <Link to='/systemsettings/taskmanagement/activities'>Tasks Settings</Link>,
                 '/systemsettings/taskmanagement/activities',
                 <FaTasks />,
             ),
@@ -172,26 +165,11 @@ const menus = [
             ),
         ]
     ),
-    // getItemLinks(
-    //     <Link to='/adminsettings/usermanagement'>Admin Settings</Link>,
-    //     '/adminsettings/usermanagement',
-    //     <RiUserSettingsFill />,
-    // ),
-    // getItemLinks(
-    //     <Link to='/profile'>User Profile</Link>,
-    //     '/profile',
-    //     <FaUser />
-    // ),
-    // getItemLinks(
-    //     <Link to='/reportanalytics/applicantmetrics'>Report Analytics</Link>,
-    //     '/reportanalytics/applicantmetrics',
-    //     <GoGraph />
-    // ),
-    // getItemLinks(
-    //     <Link to='/applicantmanagementapplicant'>Applicant Management</Link>,
-    //     '/applicantmanagement/adminapplicant',
-    //     <MdManageAccounts />,
-    // ),
+    getItemLinks(
+        <Link to='/tasks'>Tasks</Link>,
+        '/tasks',
+        <FaTasks />
+    ),
 ]
 
 function getItemLinks(

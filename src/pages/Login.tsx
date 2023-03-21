@@ -3,7 +3,7 @@ import { Form, Input, Button, Row, Col } from 'antd'
 import { Navigate, Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useAuthContext } from '../shared/contexts/Auth'
-import { useAxios } from '../shared/utils/axios'
+import { useAxios } from '../shared/lib/axios'
 import ImgBG from '../shared/assets/bg-login.png'
 import RcsLogo from '../shared/assets/logo.png'
 

@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { Layout, Dropdown, Typography, Space, MenuProps } from 'antd'
 import { MenuUnfoldOutlined, MenuFoldOutlined, DownOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
-import { useAxios } from '../../shared/utils/axios'
+import { useAxios } from '../../shared/lib/axios'
 import { useAuthContext } from '../../shared/contexts/Auth'
 
 const { Header: AntDHeader } = Layout

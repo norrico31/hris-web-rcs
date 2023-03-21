@@ -17,10 +17,9 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
         handleSearchData(searchTerm)
     }, 500), [])
 
-    const onChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-        const search = evt.target.value
-        setSearchTerm(search)
-        debouncedSearch(searchTerm)
+    const onChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(value)
+        debouncedSearch(value)
     }
 
     return (
@@ -29,10 +28,10 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
                 <Col>
                     <Space align='end'>
                         <Input.Search placeholder='Search...' value={searchTerm} onChange={onChange} />
-                        <Button onClick={handleCreate}>Create</Button>
+                        <Button type='default' onClick={handleCreate}>Create</Button>
                     </Space>
                 </Col>
-                <Col>
+                {/* <Col>
                     <Popconfirm
                         title={`Download`}
                         description={`Are you sure you want to download ${name} template?`}
@@ -42,7 +41,7 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
                     >
                         <Button>Download template</Button>
                     </Popconfirm>
-                </Col>
+                </Col> */}
             </Row>
             <Divider dashed={false} />
         </>
@@ -54,7 +53,7 @@ const Divider = styled(AntDDivider)`
     margin: 1rem;
 `
 
-const debounce = (cb: (...search: string[]) => void, delay: any) => {
+function debounce(cb: (...search: string[]) => void, delay: any) {
     let timerId: any
     return (...args: string[]) => {
         if (timerId) {

@@ -1,16 +1,8 @@
-import { Table as AntDTable } from 'antd';
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { FilterValue, TableCurrentDataSource } from 'antd/es/table/interface';
-import { ReactNode } from 'react';
-
-interface TableParams {
-    pagination?: TablePaginationConfig
-    filters?: Record<string, FilterValue | null>
-    sortField?: string
-    sortOrder?: string
-    order?: string
-    field?: string
-}
+import { ReactNode } from 'react'
+import { Table as AntDTable } from 'antd'
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
+import { FilterValue, TableCurrentDataSource } from 'antd/es/table/interface'
+import { TableParams } from '../shared/interfaces'
 
 type TableListProps<T> = {
     loading: boolean
@@ -26,12 +18,6 @@ export default function Table({ loading, columns, dataList, tableParams, onChang
             <AntDTable
                 loading={loading}
                 dataSource={dataList}
-                // rowSelection={{
-                //     type: 'checkbox',
-                //     onChange: (selectedRowKeys: React.Key[], selectedRows: string[]) => {
-                //         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-                //     },
-                // }}
                 pagination={{
                     ...tableParams?.pagination,
                     showSizeChanger: true,
@@ -40,7 +26,7 @@ export default function Table({ loading, columns, dataList, tableParams, onChang
                     itemRender: ItemRender,
                 }}
                 columns={columns}
-                scroll={{ y: 600, x: 500 }}
+                scroll={scroll}
                 rowKey={(data: any) => data?.id}
                 onChange={onChange}
             />
@@ -53,3 +39,5 @@ function ItemRender(_: number, type: string, originalElement: ReactNode) {
     if (type === 'next') return <a id='#pagination'>Next</a>
     return originalElement
 }
+
+const scroll = { y: 600, x: 500 }

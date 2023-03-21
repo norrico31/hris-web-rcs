@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react'
-import { Row, Col, Space, Button, Input, Divider as AntDDivider, Form } from 'antd'
+import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, TabHeader } from "../../../components"
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
 interface ITaskActivities {
     id: string;
     name: string;
     description: string;
 }
+
+type ModalProps = {
+    title: string
+    isModalOpen: boolean
+    selectedData?: ITaskActivities
+    handleCancel: () => void
+}
+
+const { Item, useForm } = AntDForm
 
 export default function TaskActivities() {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -60,10 +69,50 @@ export default function TaskActivities() {
             name: 'Disabled User',
             description: 'Sydney No. 1 Lake Park',
         },
+        {
+            id: '5',
+            name: 'John Brown',
+            description: 'New York No. 1 Lake Park',
+        },
+        {
+            id: '6',
+            name: 'Jim Green',
+            description: 'London No. 1 Lake Park',
+        },
+        {
+            id: '7',
+            name: 'Joe Black',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '8',
+            name: 'Disabled User',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '9',
+            name: 'John Brown',
+            description: 'New York No. 1 Lake Park',
+        },
+        {
+            id: '10',
+            name: 'Jim Green',
+            description: 'London No. 1 Lake Park',
+        },
+        {
+            id: '11',
+            name: 'Joe Black',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '12',
+            name: 'Disabled User',
+            description: 'Sydney No. 1 Lake Park',
+        },
     ]
 
     function fetchData(search: string) {
-
+        console.log(search)
     }
 
     function handleDelete(id: string) {
@@ -92,22 +141,29 @@ export default function TaskActivities() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />
-            <Table loading={false} columns={columns} dataList={data} />
-            <ActivityModal title={`${selectedData != undefined ? 'Edit' : 'Create'}`} selectedData={selectedData} isModalOpen={isModalOpen} handleCancel={handleCloseModal} />
+            <Table
+                loading={false}
+                columns={columns}
+                dataList={data}
+                onChange={(evt) => console.log(evt)}
+            />
+            <ActivityModal
+                title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
+                selectedData={selectedData}
+                isModalOpen={isModalOpen}
+                handleCancel={handleCloseModal}
+            />
         </Card>
     )
 }
 
-
-type ModalProps = {
-    title: string
-    isModalOpen: boolean
-    selectedData?: ITaskActivities
-    handleCancel: () => void
+type TOnFinish = {
+    name: string
+    description: string | null
 }
 
 function ActivityModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = Form.useForm<ITaskActivities>()
+    const [form] = useForm<TOnFinish>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -117,9 +173,16 @@ function ActivityModal({ title, selectedData, isModalOpen, handleCancel }: Modal
         }
     }, [selectedData])
 
-    function onFinish(values: ITaskActivities) {
-        console.log(values)
+    function onFinish(values: TOnFinish) {
+        let data = {} as Record<string, string>
 
+        for (const val in values as { [k: string]: string }) {
+            if (values[val] !== undefined) {
+                data = { [val]: values[val] }
+            }
+        }
+
+        console.log(data)
         // if success
         form.resetFields()
         handleCancel()
@@ -128,30 +191,25 @@ function ActivityModal({ title, selectedData, isModalOpen, handleCancel }: Modal
     return <Modal title={`${title} - Activity`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form
             form={form}
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 24 }}
             onFinish={onFinish}
-            autoComplete="off"
-            requiredMark='optional'
-            layout='vertical'
         >
-            <Form.Item
+            <Item
                 label="Activity Name"
                 name="name"
                 required
                 rules={[{ required: true, message: 'Please enter activity name!' }]}
             >
                 <Input placeholder='Enter activity name...' />
-            </Form.Item>
+            </Item>
 
-            <Form.Item
+            <Item
                 name="description"
                 label="Description"
             >
                 <Input placeholder='Enter Description...' />
-            </Form.Item>
+            </Item>
 
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }} style={{ textAlign: 'right' }}>
+            <Item wrapperCol={{ offset: 8, span: 16 }} style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
@@ -160,7 +218,7 @@ function ActivityModal({ title, selectedData, isModalOpen, handleCancel }: Modal
                         Cancel
                     </Button>
                 </Space>
-            </Form.Item>
+            </Item>
         </Form>
     </Modal>
 }
