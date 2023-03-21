@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form } from 'antd'
+import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, HeaderContent } from "../../../components"
+import { Action, Table, Card, HeaderContent, Form } from "../../../components"
 interface ITaskTypes {
     id: string;
     name: string;
@@ -63,7 +63,7 @@ export default function TaskTypes() {
     ]
 
     function fetchData(search: string) {
-
+        console.log(search)
     }
 
     function handleDelete(id: string) {
@@ -106,8 +106,10 @@ type ModalProps = {
     handleCancel: () => void
 }
 
+const { Item: FormItem, useForm } = AntDForm
+
 function TypesModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = Form.useForm<ITaskTypes>()
+    const [form] = useForm<ITaskTypes>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -119,39 +121,31 @@ function TypesModal({ title, selectedData, isModalOpen, handleCancel }: ModalPro
 
     function onFinish(values: ITaskTypes) {
         console.log(values)
-
+        let { description, ...restValues } = values
+        restValues = { ...restValues, ...(description != undefined && { description }) }
+        console.log(restValues)
         // if success
         form.resetFields()
         handleCancel()
     }
 
     return <Modal title={`${title} - Types`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form
-            form={form}
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 24 }}
-            onFinish={onFinish}
-            autoComplete="off"
-            requiredMark='optional'
-            layout='vertical'
-        >
-            <Form.Item
+        <Form form={form} onFinish={onFinish}>
+            <FormItem
                 label="Type Name"
                 name="name"
                 required
                 rules={[{ required: true, message: 'Please enter types name!' }]}
             >
                 <Input placeholder='Enter type name...' />
-            </Form.Item>
-
-            <Form.Item
+            </FormItem>
+            <FormItem
                 name="description"
                 label="Description"
             >
-                <Input placeholder='Enter description...' />
-            </Form.Item>
-
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }} style={{ textAlign: 'right' }}>
+                <Input.TextArea placeholder='Enter description...' />
+            </FormItem>
+            <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
@@ -160,7 +154,7 @@ function TypesModal({ title, selectedData, isModalOpen, handleCancel }: ModalPro
                         Cancel
                     </Button>
                 </Space>
-            </Form.Item>
+            </FormItem>
         </Form>
     </Modal>
 }

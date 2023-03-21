@@ -15,7 +15,7 @@ export default function Login() {
 
     if (token != undefined) return <Navigate to='/' />
 
-    const onFinish = async (values: any) => {
+    const onFinish = async (values: Record<string, string>) => {
         //! GUARD CLAUSE (onSubmit || onFinish)
         //! DISPLAY ERRORS IN FORMS NOT IN NOTIFICATION
         setError(undefined)

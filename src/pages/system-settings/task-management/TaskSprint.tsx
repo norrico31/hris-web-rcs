@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form, DatePicker } from 'antd'
+import { Space, Button, Input, Form as AntDForm, DatePicker } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import dayjs from 'dayjs'
-import { Action, Table, Card, HeaderContent } from "../../../components"
+import { Action, Table, Card, HeaderContent, Form } from "../../../components"
 
 interface ITaskSprint {
     id: string;
@@ -121,7 +121,6 @@ export default function TaskSprint() {
     )
 }
 
-
 type ModalProps = {
     title: string
     isModalOpen: boolean
@@ -129,8 +128,10 @@ type ModalProps = {
     handleCancel: () => void
 }
 
+const { Item: FormItem, useForm } = AntDForm
+
 function SprintModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = Form.useForm()
+    const [form] = useForm<Record<string, any>>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -138,45 +139,37 @@ function SprintModal({ title, selectedData, isModalOpen, handleCancel }: ModalPr
 
             form.setFieldsValue({
                 ...selectedData,
-                date
+                date: date
             })
         } else {
             form.resetFields(undefined)
         }
     }, [selectedData])
 
-    function onFinish(values: any) {
-        let { date, ...restProps } = values
+    function onFinish(values: Record<string, string>) {
+        let { date, description, ...restProps } = values
         let [start_date, end_date] = date
         start_date = dayjs(start_date).format('YYYY/MM/DD')
         end_date = dayjs(end_date).format('YYYY/MM/DD')
-        restProps = { ...restProps, start_date, end_date, description: restProps.description == undefined ? null : restProps.description }
+        restProps = { ...restProps, start_date, end_date, ...(description != undefined && { description }) }
         console.log(restProps)
+
         // if success
         form.resetFields()
         handleCancel()
     }
 
     return <Modal title={`${title} - Sprint`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form
-            form={form}
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 24 }}
-            onFinish={onFinish}
-            autoComplete="off"
-            requiredMark='optional'
-            layout='vertical'
-        >
-            <Form.Item
+        <Form form={form} onFinish={onFinish} >
+            <FormItem
                 label="Sprint Name"
                 name="name"
                 required
                 rules={[{ required: true, message: 'Please enter types name!' }]}
             >
                 <Input placeholder='Enter type name...' />
-            </Form.Item>
-
-            <Form.Item
+            </FormItem>
+            <FormItem
                 label="Start and End Date"
                 name="date"
                 required
@@ -185,17 +178,14 @@ function SprintModal({ title, selectedData, isModalOpen, handleCancel }: ModalPr
                 <DatePicker.RangePicker
                     format='YYYY/MM/DD'
                 />
-            </Form.Item>
-
-
-            <Form.Item
+            </FormItem>
+            <FormItem
                 name="description"
                 label="Description"
             >
                 <Input placeholder='Enter description...' />
-            </Form.Item>
-
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }} style={{ textAlign: 'right' }}>
+            </FormItem>
+            <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
@@ -204,7 +194,7 @@ function SprintModal({ title, selectedData, isModalOpen, handleCancel }: ModalPr
                         Cancel
                     </Button>
                 </Space>
-            </Form.Item>
+            </FormItem>
         </Form>
     </Modal>
 }

@@ -9,15 +9,6 @@ interface ITaskActivities {
     description: string;
 }
 
-type ModalProps = {
-    title: string
-    isModalOpen: boolean
-    selectedData?: ITaskActivities
-    handleCancel: () => void
-}
-
-const { Item, useForm } = AntDForm
-
 export default function TaskActivities() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<ITaskActivities | undefined>(undefined)
@@ -157,13 +148,18 @@ export default function TaskActivities() {
     )
 }
 
-type TOnFinish = {
-    name: string
-    description: string | null
+
+interface ModalProps {
+    title: string
+    isModalOpen: boolean
+    selectedData?: ITaskActivities
+    handleCancel: () => void
 }
 
+const { Item: FormItem, useForm } = AntDForm
+
 function ActivityModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<TOnFinish>()
+    const [form] = useForm<ITaskActivities>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -173,43 +169,34 @@ function ActivityModal({ title, selectedData, isModalOpen, handleCancel }: Modal
         }
     }, [selectedData])
 
-    function onFinish(values: Record<string, string>) {
-        let data = {}
-
-        for (const val in values) {
-            if (values[val] !== undefined) {
-                data = { [val]: values[val] }
-            }
-        }
-
-        console.log(data)
+    function onFinish(values: ITaskActivities) {
+        let { description, ...restValues } = values
+        restValues = { ...restValues, ...(description != undefined && { description }) }
+        console.log(restValues)
         // if success
         form.resetFields()
         handleCancel()
     }
 
     return <Modal title={`${title} - Activity`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form
-            form={form as any}
-            onFinish={onFinish}
-        >
-            <Item
+        <Form form={form} onFinish={onFinish}>
+            <FormItem
                 label="Activity Name"
                 name="name"
                 required
                 rules={[{ required: true, message: 'Please enter activity name!' }]}
             >
                 <Input placeholder='Enter activity name...' />
-            </Item>
+            </FormItem>
 
-            <Item
+            <FormItem
                 name="description"
                 label="Description"
             >
                 <Input placeholder='Enter Description...' />
-            </Item>
+            </FormItem>
 
-            <Item wrapperCol={{ offset: 8, span: 16 }} style={{ textAlign: 'right' }}>
+            <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
@@ -218,7 +205,7 @@ function ActivityModal({ title, selectedData, isModalOpen, handleCancel }: Modal
                         Cancel
                     </Button>
                 </Space>
-            </Item>
+            </FormItem>
         </Form>
     </Modal>
 }

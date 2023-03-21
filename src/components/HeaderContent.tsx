@@ -55,8 +55,8 @@ const Divider = styled(AntDDivider)`
     margin: 1rem;
 `
 
-function debounce(cb: (...search: string[]) => void, delay: any) {
-    let timerId: any
+function debounce(cb: (...search: string[]) => void, delay: number) {
+    let timerId: number
     return (...args: string[]) => {
         if (timerId) {
             clearTimeout(timerId)
