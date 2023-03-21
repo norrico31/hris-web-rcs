@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react'
-import { Row, Col, Space, Button, Input, Divider as AntDDivider } from 'antd'
+import { Row, Col, Space, Button, Input, Divider as AntDDivider, Popconfirm } from 'antd'
+import { DownloadOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 
 type Props = {
     name: string
     handleSearchData: (term: string) => void
     handleCreate: () => void
-    handleDownload: () => void
+    handleDownload?: () => void
 }
 
 export default function TabHeader({ name, handleSearchData, handleCreate, handleDownload }: Props) {
@@ -30,6 +31,19 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
                         <Button type='default' onClick={handleCreate}>Create</Button>
                     </Space>
                 </Col>
+                {handleDownload != undefined && (
+                    <Col>
+                        <Popconfirm
+                            title={`Download`}
+                            description={`Are you sure you want to download ${name} template?`}
+                            icon={<DownloadOutlined />}
+                            onConfirm={handleDownload}
+                            okText='Download'
+                        >
+                            <Button>Download template</Button>
+                        </Popconfirm>
+                    </Col>
+                )}
             </Row>
             <Divider dashed={false} />
         </>

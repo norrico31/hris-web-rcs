@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import {  Space, Button, Input, Form, DatePicker } from 'antd'
+import { Space, Button, Input, Form, DatePicker } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import dayjs from 'dayjs'
-import { Action, Table, Card, TabHeader } from "../../../components"
+import { Action, Table, Card, HeaderContent } from "../../../components"
 
 interface ITaskSprint {
     id: string;
@@ -109,7 +109,7 @@ export default function TaskSprint() {
 
     return (
         <Card title='Task Sprint'>
-            <TabHeader
+            <HeaderContent
                 name='task sprint'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}

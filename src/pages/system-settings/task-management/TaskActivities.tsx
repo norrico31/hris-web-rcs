@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import { Action, Table, Card, HeaderContent, Form } from "../../../components"
 interface ITaskActivities {
     id: string;
     name: string;
@@ -135,7 +135,7 @@ export default function TaskActivities() {
 
     return (
         <Card title='Task Activities'>
-            <TabHeader
+            <HeaderContent
                 name='task activities'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
@@ -173,10 +173,10 @@ function ActivityModal({ title, selectedData, isModalOpen, handleCancel }: Modal
         }
     }, [selectedData])
 
-    function onFinish(values: TOnFinish) {
-        let data = {} as Record<string, string>
+    function onFinish(values: Record<string, string>) {
+        let data = {}
 
-        for (const val in values as { [k: string]: string }) {
+        for (const val in values) {
             if (values[val] !== undefined) {
                 data = { [val]: values[val] }
             }
@@ -190,7 +190,7 @@ function ActivityModal({ title, selectedData, isModalOpen, handleCancel }: Modal
 
     return <Modal title={`${title} - Activity`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form
-            form={form}
+            form={form as any}
             onFinish={onFinish}
         >
             <Item
