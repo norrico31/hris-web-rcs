@@ -12,9 +12,8 @@ type ActionProps = {
 export default function Action({ title, name, onConfirm, onClick }: ActionProps) {
     return (
         <Space>
-            <Button id='edit' type="default" size='middle' onClick={onClick}>
-                {/* <AiOutlineEdit /> */}
-                Edit
+            <Button id='edit' type='default' size='middle' onClick={onClick} className='btn-edit'>
+                <AiOutlineEdit color='white' />
             </Button>
             <Popconfirm
                 title={`Delete the ${title}`}

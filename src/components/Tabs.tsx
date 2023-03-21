@@ -32,9 +32,10 @@ const Tabs = styled(AntDTabs)`
         
     .ant-tabs-tab-active {
         background: #F99D21;
-        color: #fff !important;
     }
-    :where(.css-dev-only-do-not-override-1wj873a).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    :where(.css-dev-only-do-not-override-uj3ut5).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
         color: #fff;
     }
+    /* :where(.css-dev-only-do-not-override-1wj873a).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    } */
 `

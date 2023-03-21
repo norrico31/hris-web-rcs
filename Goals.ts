@@ -1,6 +1,7 @@
 //* Frontend 
 //! UI
 // TODO: TASKS FORM
+// PENDING: TimeKeeping (geolocation, navigator media devices)
 // ==================================
 // ==================================
 

@@ -24,6 +24,15 @@ body * {
     color: #E49944;
 }
 
+.btn-edit {
+    background: #00A3E0;
+    &:hover {
+        opacity: .7;
+        outline: none;
+        border: none;
+    }
+}
+
 .login-bg {
     position: absolute;
     width: 100%;
@@ -67,10 +76,6 @@ body * {
 
 .ant-menu.ant-menu-sub.ant-menu-vertical {
     background-color: #9B3423;
-}
-.ant-tabs-tab-active {
-    background-color: #fff;
-    color: #9B3423;
 }
 
 // Login Page
