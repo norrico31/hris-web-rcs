@@ -3,7 +3,7 @@ import { Form as AntDForm, Input, DatePicker, Space, Button, Select } from 'antd
 import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
-import { Card, Action, HeaderContent, Table, Form } from '../components'
+import { Card, Action, TabHeader, Table, Form } from '../components'
 
 interface ITasks extends Partial<{ id: string }> {
     task_activity: string[]
@@ -139,7 +139,7 @@ export default function Tasks() {
     }
     return (
         <Card title='Tasks' level={2}>
-            <HeaderContent
+            <TabHeader
                 name='Tasks'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}

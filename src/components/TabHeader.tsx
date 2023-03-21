@@ -50,7 +50,7 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
     )
 }
 
-const Divider = styled(AntDDivider)`
+export const Divider = styled(AntDDivider)`
     border-block-start: none;
     margin: 1rem;
 `

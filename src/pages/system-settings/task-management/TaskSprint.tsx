@@ -3,7 +3,7 @@ import { Space, Button, Input, Form as AntDForm, DatePicker } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import dayjs from 'dayjs'
-import { Action, Table, Card, HeaderContent, Form } from "../../../components"
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
 
 interface ITaskSprint {
     id: string;
@@ -109,7 +109,7 @@ export default function TaskSprint() {
 
     return (
         <Card title='Task Sprint'>
-            <HeaderContent
+            <TabHeader
                 name='task sprint'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}

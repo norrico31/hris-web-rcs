@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, HeaderContent, Form } from "../../../components"
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
 interface ITaskTypes {
     id: string;
     name: string;
@@ -86,7 +86,7 @@ export default function TaskTypes() {
 
     return (
         <Card title='Task Types'>
-            <HeaderContent
+            <TabHeader
                 name='task types'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
