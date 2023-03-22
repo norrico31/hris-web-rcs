@@ -3,7 +3,7 @@ import { Button, Calendar, Card, Col, Row, Divider as AntDDivider, Modal, Space,
 import styled from "styled-components";
 import dayjs, { Dayjs } from "dayjs";
 import { RxEnter, RxExit } from 'react-icons/rx'
-import { MainHeader, Divider } from "../components";
+import { MainHeader, Divider, Box } from "../components";
 import AvatarPng from '../shared/assets/default_avatar.png'
 
 export default function TimeKeeping() {
@@ -32,21 +32,21 @@ export default function TimeKeeping() {
                 </Col>
             </MainHeader>
             <Row justify='space-around' wrap>
-                <Col xs={24} sm={24} md={14} lg={14} xl={14} style={{ border: '1px solid #E5E5E5', borderRadius: '8px' }}>
+                <Col1 xs={24} sm={24} md={14} lg={14} xl={14}>
                     <Calendar onPanelChange={onPanelChange} />
-                </Col>
+                </Col1>
                 <Col2 xs={24} sm={24} md={9} lg={9} xl={8} height={500}>
                     <h2 style={{ color: '#ABABAB' }}>Time In/Out</h2>
                     <AntDDivider />
-                    <Card title="Time in" bordered={false} style={{ width: '100%' }}>
+                    <Box title="Time in">
                         <b>06:44 AM</b>
                         <p>March 22</p>
-                    </Card>
-                    <AntDDivider />
-                    <Card title="Time out" bordered={false} style={{ width: '100%' }}>
+                    </Box>
+                    {/* <AntDDivider />
+                    <Box title="Time out">
                         <b>06:44 PM</b>
                         <p>March 22</p>
-                    </Card>
+                    </Box> */}
                 </Col2>
             </Row>
             <TimeKeepingModal
@@ -231,9 +231,16 @@ interface ICol {
     height: number
 }
 
+export const Col1 = styled(Col)`
+    border: 1px solid #E5E5E5;
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 6px 6px rgba(0,0,0,0.15);
+`
+
 export const Col2 = styled(Col) <ICol>`
     border: 1px solid #E5E5E5;
     padding: 1.5rem !important;
     max-height: ${(props) => props.height + 'px'};
     border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 6px 6px rgba(0,0,0,0.15);
 `

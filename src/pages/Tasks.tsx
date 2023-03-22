@@ -140,7 +140,7 @@ export default function Tasks() {
     return (
         <>
             <MainHeader>
-                <h1 style={{ color: '#fff' }}>Tasks</h1>
+                <h1 className='color-white'>Tasks</h1>
             </MainHeader>
             <TabHeader
                 name='Tasks'

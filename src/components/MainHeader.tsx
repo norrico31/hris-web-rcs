@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
-import { Row } from 'antd'
+import { Row, Divider } from 'antd'
 import styled from 'styled-components'
-import { Divider } from './TabHeader'
 
 type Props = {
     children: ReactNode
@@ -21,7 +20,7 @@ export default function MainHeader({ children }: Props) {
 
 const Main = styled(Row)`
     width: 100%;
-    background: #9E2813;
+    background: rgb(155, 52, 35);
     height: 135px;
     padding: 0 3rem;
     border-radius: 8px;

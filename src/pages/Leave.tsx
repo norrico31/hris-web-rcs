@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Button, Col, Row, Form as AntDForm, Divider, Card, Calendar, Modal, Space, Input, DatePicker, Select } from 'antd'
-import { MainHeader, Form } from '../components'
+import { MainHeader, Form, Box } from '../components'
 import { AiOutlineCalendar } from 'react-icons/ai'
 import { Col2 } from './TimeKeeping'
 import dayjs from 'dayjs';
+import styled from 'styled-components';
 
 interface ILeave extends Partial<{ id: string }> {
     task_activity: string[]
@@ -33,24 +34,24 @@ export default function Leave() {
                 </Col>
             </MainHeader>
             <Row justify='space-around' wrap>
-                <Col xs={24} sm={24} md={14} lg={14} xl={15} style={{ border: '1px solid #E5E5E5', borderRadius: '8px', padding: '2rem', maxHeight: 700, overflowX: 'auto' }}>
+                <Col1 xs={24} sm={24} md={14} lg={14} xl={15}>
                     <h2 style={{ color: '#ABABAB' }}>Leave Requests</h2>
                     <Divider />
-                    <Card title="Vacation Leave" bordered={false} style={{ width: '100%' }}>
+                    <Box title="Vacation Leave">
                         <p><b>Date</b>: March 22</p>
                         <p>Start time: 06:44 AM</p>
                         <p>End time: 05:44 PM</p>
                         <p><b>Reason</b>: Lorem shit dolor</p>
-                    </Card>
+                    </Box>
                     <Divider />
-                    <Card title="Sick Leave" bordered={false} style={{ width: '100%' }}>
+                    <Box title="Sick Leave">
                         <p><b>Date</b>: March 22</p>
                         <p>Start time: 06:44 AM</p>
                         <p>End time: 05:44 PM</p>
                         <p><b>Reason</b>: Lorem shit dolor</p>
-                    </Card>
+                    </Box>
 
-                </Col>
+                </Col1>
                 <Col2 xs={24} sm={24} md={9} lg={9} xl={8} height={350}>
                     <Calendar fullscreen={false} />
                 </Col2>
@@ -138,3 +139,11 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
         </Form>
     </Modal>
 }
+
+const Col1 = styled(Col)`
+    border: '1px solid #E5E5E5';
+    border-radius: '8px';
+    padding: '2rem';
+    max-height: 700; 
+    overflow-x: 'auto';
+`

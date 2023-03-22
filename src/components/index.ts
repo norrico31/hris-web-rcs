@@ -1,6 +1,7 @@
 export { default as Layout } from './layouts/Layout'
 
 
+export { default as Box } from './Box'
 export { default as Card } from './Card'
 export { default as Form } from './Form'
 export { default as TabHeader } from './TabHeader'
