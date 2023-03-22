@@ -2,6 +2,7 @@ export { default as Login } from './Login'
 export { default as Dashboard } from './Dashboard'
 export { default as TimeKeeping } from './TimeKeeping'
 export { default as Tasks } from './Tasks'
+export { default as Leave } from './Leave'
 
 //* System Settings
 // Task Management

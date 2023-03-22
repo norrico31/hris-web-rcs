@@ -12,7 +12,8 @@
 // tasks activities
 // tasks types
 // tasks types sprint
-// leave typep
+// leave status
+// leave type
 // position
 // department
 

@@ -146,7 +146,12 @@ export default function Tasks() {
                 handleDownload={() => handleDownload()}
             />
             <Table loading={false} columns={columns} dataList={data} />
-            <TasksModal title={`${selectedData != undefined ? 'Edit' : 'Create'}`} selectedData={selectedData} isModalOpen={isModalOpen} handleCancel={handleCloseModal} />
+            <TasksModal
+                title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
+                selectedData={selectedData}
+                isModalOpen={isModalOpen}
+                handleCancel={handleCloseModal}
+            />
 
         </Card>
     )
@@ -183,7 +188,9 @@ function TasksModal({ title, selectedData, isModalOpen, handleCancel }: ModalPro
         form.resetFields()
         handleCancel()
     }
+
     const defaultVal = ['Tulala', 'Tulala ulet', 'Tulala mag damag']
+
     return <Modal title={`${title} - Tasks`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem

@@ -3,7 +3,7 @@ import { Button, Calendar, Card, Col, Row, Divider as AntDDivider, Modal, Space,
 import styled from "styled-components";
 import dayjs, { Dayjs } from "dayjs";
 import { RxEnter, RxExit } from 'react-icons/rx'
-import { Divider } from "../components/TabHeader"
+import { MainHeader, Divider } from "../components";
 import AvatarPng from '../shared/assets/default_avatar.png'
 
 export default function TimeKeeping() {
@@ -18,7 +18,7 @@ export default function TimeKeeping() {
 
     return (
         <>
-            <MainHeader align='middle' justify='space-between'>
+            <MainHeader>
                 <Col>
                     <h1 className='color-secondary'>Time Keeping</h1>
                     <h3>{currentDay}</h3>
@@ -31,12 +31,11 @@ export default function TimeKeeping() {
                     </Button>
                 </Col>
             </MainHeader>
-            <Divider />
             <Row justify='space-around' wrap>
                 <Col xs={24} sm={24} md={14} lg={14} xl={14} style={{ border: '1px solid #E5E5E5', borderRadius: '8px' }}>
                     <Calendar onPanelChange={onPanelChange} />
                 </Col>
-                <Col2 xs={24} sm={24} md={9} lg={9} xl={8}>
+                <Col2 xs={24} sm={24} md={9} lg={9} xl={8} height={500}>
                     <h2 style={{ color: '#ABABAB' }}>Time In/Out</h2>
                     <AntDDivider />
                     <Card title="Time in" bordered={false} style={{ width: '100%' }}>
@@ -67,7 +66,6 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
     const [isModalVideoOpen, setIsModalVideoOpen] = useState(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
     const [mediaError, setMediaError] = useState('')
-
     const [coordinates, setCoordinates] = useState<{ lat: number; long: number; } | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -229,36 +227,13 @@ function CapturePhotoModal({ isModalVideoOpen, setImageSrc, handleCloseCaptureMo
     </Modal>
 }
 
-const MainHeader = styled(Row)`
-    width: 100%;
-    background: #9E2813;
-    height: 135px;
-    padding: 0 3rem;
-    border-radius: 8px;
+interface ICol {
+    height: number
+}
 
-    h2, h3, h4 {
-        color: #fff;
-    }
-    h3 {
-        margin-top: 2px;
-    }
-    .btn-timeinout {
-        background: #F9C921;
-        border: none;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-
-        svg {
-            font-size: 1.5rem !important;
-        }
-    }
-`
-
-const Col2 = styled(Col)`
+export const Col2 = styled(Col) <ICol>`
     border: 1px solid #E5E5E5;
     padding: 1.5rem !important;
-    max-height: 500px;
+    max-height: ${(props) => props.height + 'px'};
     border-radius: 8px;
 `

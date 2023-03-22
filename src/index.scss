@@ -100,3 +100,8 @@ h1 {
 .light {
     background: #fff;
 }
+
+:where(.css-dev-only-do-not-override-1kba0ko).ant-table-wrapper .ant-table-pagination {
+    // justify-content: space-between;
+    gap: 10px;
+}

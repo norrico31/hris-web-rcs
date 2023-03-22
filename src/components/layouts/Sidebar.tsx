@@ -174,6 +174,11 @@ const menus = [
         '/tasks',
         <FaTasks />
     ),
+    getItemLinks(
+        <Link to='/leave'>Leave</Link>,
+        '/leave',
+        <AiOutlineCalendar />
+    ),
 ]
 
 function getItemLinks(

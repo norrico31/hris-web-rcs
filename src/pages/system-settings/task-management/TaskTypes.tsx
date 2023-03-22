@@ -75,10 +75,6 @@ export default function TaskTypes() {
         setSelectedData(data)
     }
 
-    function handleDownload() {
-        console.log('dowwnload')
-    }
-
     function handleCloseModal() {
         setSelectedData(undefined)
         setIsModalOpen(false)
@@ -90,7 +86,6 @@ export default function TaskTypes() {
                 name='task types'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={() => handleDownload()}
             />
             <Table loading={false} columns={columns} dataList={data} />
             <TypesModal title={`${selectedData != undefined ? 'Edit' : 'Create'}`} selectedData={selectedData} isModalOpen={isModalOpen} handleCancel={handleCloseModal} />

@@ -115,10 +115,6 @@ export default function TaskActivities() {
         setSelectedData(data)
     }
 
-    function handleDownload() {
-        console.log('dowwnload')
-    }
-
     function handleCloseModal() {
         setSelectedData(undefined)
         setIsModalOpen(false)
@@ -130,7 +126,6 @@ export default function TaskActivities() {
                 name='task activities'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={() => handleDownload()}
             />
             <Table
                 loading={false}

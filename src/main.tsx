@@ -13,6 +13,8 @@ createRoot(document.getElementById('root') as HTMLElement).render(
         colorPrimaryTextActive: '#fff',
         colorPrimary: '#9B3423',
         controlOutline: '#9B3423',
+        colorLink: '#9B3423',
+        colorLinkHover: '#e2998e'
       },
     }}>
       <RouterProvider router={routes} />
