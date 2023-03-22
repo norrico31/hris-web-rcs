@@ -30,3 +30,8 @@ export { default as Position } from './system-settings/Position'
 export { default as Role } from './system-settings/Role'
 export { default as SalaryRate } from './system-settings/SalaryRate'
 export { default as Schedule } from './system-settings/Schedule'
+
+
+export function renderTitle(title: string) {
+    window.document.title = `Redcore - ${title}`
+}

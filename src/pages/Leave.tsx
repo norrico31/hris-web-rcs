@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Button, Col, Row, Form as AntDForm, Divider, Card, Calendar, Modal, Space, Input, DatePicker, Select } from 'antd'
+import { Button, Col, Row, Form as AntDForm, Divider, Calendar, Modal, Space, Input, DatePicker } from 'antd'
 import { MainHeader, Form, Box } from '../components'
 import { AiOutlineCalendar } from 'react-icons/ai'
 import { Col2 } from './TimeKeeping'
-import dayjs from 'dayjs';
-import styled from 'styled-components';
+import dayjs from 'dayjs'
+import styled from 'styled-components'
+import { renderTitle } from '.'
 
 interface ILeave extends Partial<{ id: string }> {
     task_activity: string[]
@@ -16,6 +17,7 @@ interface ILeave extends Partial<{ id: string }> {
 }
 
 export default function Leave() {
+    renderTitle('Leave')
     const [isModalOpen, setIsModalOpen] = useState(false)
     return (
         <>

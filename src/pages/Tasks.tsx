@@ -3,7 +3,8 @@ import { Form as AntDForm, Input, DatePicker, Space, Button, Select } from 'antd
 import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
-import { Card, Action, TabHeader, Table, Form, MainHeader } from '../components'
+import { Action, TabHeader, Table, Form, MainHeader } from '../components'
+import { renderTitle } from '.'
 
 interface ITasks extends Partial<{ id: string }> {
     task_activity: string[]
@@ -15,6 +16,7 @@ interface ITasks extends Partial<{ id: string }> {
 }
 
 export default function Tasks() {
+    renderTitle('Tasks')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<ITasks | undefined>(undefined)
 

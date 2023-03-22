@@ -1,10 +1,11 @@
 import { useState, useEffect, ReactNode } from 'react'
 import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Steps, Row, Col, Divider } from 'antd'
-import { LoadingOutlined, SmileOutlined, SolutionOutlined, UserOutlined, BankOutlined, CreditCardOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { LoadingOutlined, SmileOutlined, SolutionOutlined, UserOutlined, BankOutlined, CreditCardOutlined, UsergroupAddOutlined } from '@ant-design/icons'
 import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
 import { Card, Action, TabHeader, Table, Form, MainHeader } from '../components'
+import { renderTitle } from '.'
 
 interface IEmployee extends Partial<{ id: string }> {
     employee_no: string
@@ -16,6 +17,8 @@ interface IEmployee extends Partial<{ id: string }> {
 }
 
 export default function Employee() {
+    renderTitle('Employee')
+
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployee | undefined>(undefined)
 

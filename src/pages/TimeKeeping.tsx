@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Button, Calendar, Card, Col, Row, Divider as AntDDivider, Modal, Space, Popconfirm } from "antd";
-import styled from "styled-components";
-import dayjs, { Dayjs } from "dayjs";
+import { Button, Calendar, Col, Row, Divider as AntDDivider, Modal, Space, Popconfirm } from "antd"
+import styled from "styled-components"
+import dayjs, { Dayjs } from "dayjs"
 import { RxEnter, RxExit } from 'react-icons/rx'
-import { MainHeader, Divider, Box } from "../components";
+import { MainHeader, Divider, Box } from "../components"
 import AvatarPng from '../shared/assets/default_avatar.png'
+import { renderTitle } from "."
 
 export default function TimeKeeping() {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -63,6 +64,7 @@ type ModalProps = {
 }
 
 function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
+    renderTitle('Timekeeping')
     const [isModalVideoOpen, setIsModalVideoOpen] = useState(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
     const [mediaError, setMediaError] = useState('')
