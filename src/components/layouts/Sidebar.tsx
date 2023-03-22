@@ -87,8 +87,8 @@ const menus = [
                 <FaTasks />,
             ),
             getItemLinks(
-                <Link to='/systemsettings/bankingdetails'>Banking Details</Link>,
-                '/systemsettings/bankingdetails',
+                <Link to='/systemsettings/bankdetails'>Banking Details</Link>,
+                '/systemsettings/bankdetails',
                 <RiBankLine />,
             ),
             getItemLinks(

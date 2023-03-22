@@ -13,7 +13,7 @@ export { default as TaskActivities } from './system-settings/task-management/Tas
 export { default as TaskTypes } from './system-settings/task-management/TaskTypes'
 export { default as TaskSprint } from './system-settings/task-management/TaskSprint'
 
-export { default as BankingDetails } from './system-settings/BankingDetails'
+export { default as BankDetails } from './system-settings/BankDetails'
 export { default as Client } from './system-settings/Client'
 export { default as ClientBranch } from './system-settings/ClientBranch'
 export { default as ClientBranchHoliday } from './system-settings/ClientBranchHoliday'

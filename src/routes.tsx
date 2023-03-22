@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import { Layout } from "./components";
-import { Login, Dashboard, TimeKeeping, Tasks, TasksManagement, Leave, Employee, TaskActivities, TaskTypes, TaskSprint, BankingDetails, Client, ClientBranch, ClientBranchHoliday, DailyRate, Department, Expense, ExpenseType, Holiday, HolidayType, LeaveStatus, LeaveDuration, LeaveType, Position, Role, SalaryRate, Schedule, EmployeeStatus } from './pages'
+import { Login, Dashboard, TimeKeeping, Tasks, TasksManagement, Leave, Employee, TaskActivities, TaskTypes, TaskSprint, BankDetails, Client, ClientBranch, ClientBranchHoliday, DailyRate, Department, Expense, ExpenseType, Holiday, HolidayType, LeaveStatus, LeaveDuration, LeaveType, Position, Role, SalaryRate, Schedule, EmployeeStatus } from './pages'
 
 export const routes = createBrowserRouter([
     {
@@ -46,8 +46,8 @@ export const routes = createBrowserRouter([
                         element: <TaskSprint />
                     },
                     {
-                        path: 'bankingdetails',
-                        element: <BankingDetails />
+                        path: 'bankdetails',
+                        element: <BankDetails />
                     },
                     {
                         path: 'client',
