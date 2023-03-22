@@ -326,6 +326,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem name='gender' label="Gender" required rules={[{ required: true, message: 'Please select gender!' }]}>
                     <Select
                         placeholder='Select gender...'
+                        allowClear
+                        showSearch
                     >
                         <Select.Option value="male">Male</Select.Option>
                         <Select.Option value="female">Female</Select.Option>

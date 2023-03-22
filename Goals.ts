@@ -17,6 +17,8 @@
 // position
 // department
 // employee
+// employee status
+// client
 
 // ==================================
 // ==================================
