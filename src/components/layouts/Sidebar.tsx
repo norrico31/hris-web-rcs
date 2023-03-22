@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineSchedule, AiOutlineCalendar } from 'react-icons/ai'
 import { RiBankLine } from 'react-icons/ri'
 import { MdOutlinePersonalInjury, MdOutlineHolidayVillage } from 'react-icons/md'
-import { FaTasks, FaCriticalRole, FaUsersCog } from 'react-icons/fa'
+import { FaTasks, FaCriticalRole, FaUsersCog, FaUserClock } from 'react-icons/fa'
 import { GiPositionMarker, GiExpense } from 'react-icons/gi'
 import { BiTimeFive } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
@@ -115,6 +115,11 @@ const menus = [
                 <Link to='/systemsettings/department'>Department</Link>,
                 '/systemsettings/department',
                 <AiOutlineDollarCircle />,
+            ),
+            getItemLinks(
+                <Link to='/systemsettings/employeestatus'>Employee Status</Link>,
+                '/systemsettings/employeestatus',
+                <FaUserClock />,
             ),
             getItemLinks(
                 <Link to='/systemsettings/expense'>Expense</Link>,

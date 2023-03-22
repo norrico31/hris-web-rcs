@@ -22,5 +22,4 @@ const CardBox = styled(Card)`
     .ant-card-head-title {
         font-size: 1.3rem;
     }
-
 `

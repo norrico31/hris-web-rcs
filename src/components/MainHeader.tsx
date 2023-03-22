@@ -17,7 +17,6 @@ export default function MainHeader({ children }: Props) {
     )
 }
 
-
 const Main = styled(Row)`
     width: 100%;
     background: rgb(155, 52, 35);
@@ -41,7 +40,7 @@ const Main = styled(Row)`
 
         svg {
             font-size: 1.5rem !important;
-        }import { Row } from 'antd';
+        }
 
     }
 `
