@@ -17,7 +17,7 @@ export default function Action({ title, name, onConfirm, onClick }: ActionProps)
             </Button>
             <Popconfirm
                 title={`Delete the ${title}`}
-                description={`Are you sure to delete ${name}?`}
+                description={`Are you sure want to delete ${name}?`}
                 onConfirm={onConfirm}
                 okText="Delete"
                 cancelText="Cancel"

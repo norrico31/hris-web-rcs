@@ -3,19 +3,19 @@ import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../components"
-interface ILeaveType {
+interface ILeaveStatus {
     id: string;
     name: string;
     description: string;
 }
 
-export default function LeaveType() {
+export default function LeaveStatus() {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<ILeaveType | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<ILeaveStatus | undefined>(undefined)
 
-    const columns: ColumnsType<ILeaveType> = [
+    const columns: ColumnsType<ILeaveStatus> = [
         {
-            title: 'Leave Type Name',
+            title: 'Leave Status Name',
             key: 'name',
             dataIndex: 'name',
         },
@@ -29,8 +29,8 @@ export default function LeaveType() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: ILeaveType) => <Action
-                title='Leave Type'
+            render: (_: any, record: ILeaveStatus) => <Action
+                title='Leave Status'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
@@ -39,7 +39,7 @@ export default function LeaveType() {
 
     ];
 
-    const data: ILeaveType[] = [
+    const data: ILeaveStatus[] = [
         {
             id: '1',
             name: 'John Brown',
@@ -110,7 +110,7 @@ export default function LeaveType() {
         console.log(id)
     }
 
-    function handleEdit(data: ILeaveType) {
+    function handleEdit(data: ILeaveStatus) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -121,9 +121,9 @@ export default function LeaveType() {
     }
 
     return (
-        <Card title='Leave Types'>
+        <Card title='Leave Status'>
             <TabHeader
-                name='leave types'
+                name='leave status'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
             />
@@ -133,7 +133,7 @@ export default function LeaveType() {
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <LeaveTypeModal
+            <LeaveStatusModal
                 title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -147,14 +147,14 @@ export default function LeaveType() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: ILeaveType
+    selectedData?: ILeaveStatus
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<ILeaveType>()
+function LeaveStatusModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+    const [form] = useForm<ILeaveStatus>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -164,7 +164,7 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel }: Moda
         }
     }, [selectedData])
 
-    function onFinish(values: ILeaveType) {
+    function onFinish(values: ILeaveStatus) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         console.log(restValues)
@@ -173,15 +173,15 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel }: Moda
         handleCancel()
     }
 
-    return <Modal title={`${title} - Leave Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Leave Status`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Leave Type Name"
+                label="Leave Status Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter leave type name!' }]}
+                rules={[{ required: true, message: 'Please enter leave status name!' }]}
             >
-                <Input placeholder='Enter leave type name...' />
+                <Input placeholder='Enter leave status name...' />
             </FormItem>
 
             <FormItem

@@ -46,7 +46,6 @@ const MenuContainer = styled(AntdMenu)`
     color: #fff;
     height: 100%;
 
-    .ant-menu-item:hover,
     .ant-menu-item-selected,
     .ant-menu-item.ant-menu-item-active {
         background-color: #fff;
@@ -109,6 +108,11 @@ const menus = [
                 <AiOutlineDollarCircle />,
             ),
             getItemLinks(
+                <Link to='/systemsettings/department'>Department</Link>,
+                '/systemsettings/department',
+                <AiOutlineDollarCircle />,
+            ),
+            getItemLinks(
                 <Link to='/systemsettings/expense'>Expense</Link>,
                 '/systemsettings/expense',
                 <GiExpense />,
@@ -129,7 +133,7 @@ const menus = [
                 <MdOutlineHolidayVillage />,
             ),
             getItemLinks(
-                <Link to='/systemsettings/leave'>Leave</Link>,
+                <Link to='/systemsettings/leave'>Leave Status</Link>,
                 '/systemsettings/leave',
                 <AiOutlineCalendar />,
             ),

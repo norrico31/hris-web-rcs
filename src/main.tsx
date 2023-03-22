@@ -12,9 +12,6 @@ createRoot(document.getElementById('root') as HTMLElement).render(
         colorText: '#9B3423',
         colorPrimaryTextActive: '#fff',
         colorPrimary: '#9B3423',
-        // colorBgContainer: '#9B3423',
-        // colorBgBase: '#fff',
-        // colorBorder: '#fff',
         controlOutline: '#9B3423',
       },
     }}>

@@ -1,15 +1,25 @@
-//* Frontend 
-//! UI
-// TODO: TASKS FORM
-// PENDING: TimeKeeping (geolocation, navigator media devices)
-// ==================================
-// ==================================
-
-//* Backend 
-//! Module fields
-
-
-
 // Accounts
 // tulalang.user@redcoresolutions.com
 // secret
+
+
+// ==================================
+// ==================================
+//* DONE
+// tasks
+// time keeping
+// tasks form
+// tasks activities
+// tasks types
+// tasks types sprint
+// leave typep
+// position
+// department
+
+// ==================================
+// ==================================
+
+
+//! QUESTIONS
+// System settings
+// leave status == leave

@@ -15,6 +15,7 @@ export default function TimeKeeping() {
 
     const currentDay = dayjs().format('dddd')
     const currentDate = dayjs().format('MMMM DD')
+
     return (
         <>
             <MainHeader align='middle' justify='space-between'>
@@ -32,7 +33,7 @@ export default function TimeKeeping() {
             </MainHeader>
             <Divider />
             <Row justify='space-around' wrap>
-                <Col xs={24} sm={24} md={14} lg={14} xl={14} style={{ border: '1px solid #E5E5E5' }}>
+                <Col xs={24} sm={24} md={14} lg={14} xl={14} style={{ border: '1px solid #E5E5E5', borderRadius: '8px' }}>
                     <Calendar onPanelChange={onPanelChange} />
                 </Col>
                 <Col2 xs={24} sm={24} md={9} lg={9} xl={8}>
@@ -51,7 +52,7 @@ export default function TimeKeeping() {
             </Row>
             <TimeKeepingModal
                 isModalOpen={isModalOpen}
-                handleCancel={() => setIsModalOpen(false)}
+                handleClose={() => setIsModalOpen(false)}
             />
         </>
     )
@@ -59,14 +60,52 @@ export default function TimeKeeping() {
 
 type ModalProps = {
     isModalOpen: boolean
-    handleCancel: () => void
+    handleClose: () => void
 }
 
-function TimeKeepingModal({ isModalOpen, handleCancel }: ModalProps) {
+function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
     const [isModalVideoOpen, setIsModalVideoOpen] = useState(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
     const [mediaError, setMediaError] = useState('')
-    return <Modal title='Time In/Out' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+
+    const [coordinates, setCoordinates] = useState<{ lat: number; long: number; } | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const handleSuccess = (position: GeolocationPosition) => {
+            setError(null)
+            const { latitude: lat, longitude: long } = position.coords;
+            setCoordinates({ lat, long });
+        };
+
+        const handleError = (error: GeolocationPositionError) => {
+            setError(error.message + '. Please reload the page and allow geolocation');
+        };
+
+        if (!navigator.geolocation) {
+            setError("Geolocation is not supported");
+        } else {
+            navigator.geolocation.getCurrentPosition(handleSuccess, handleError);
+        }
+    }, [])
+
+    function postTimeInOut(method: string) {
+        const payload = {
+            name: 'gerald tulala',
+            image: imageSrc,
+            location: coordinates
+        }
+        console.log(payload, method)
+        setImageSrc(null)
+        handleClose()
+        // if (method == 'timein') {
+
+        // } else {
+
+        // }
+    }
+
+    return <Modal title='Time In/Out' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
         <Divider />
         <Row justify='center'>
             <Space direction="vertical" align="center">
@@ -78,7 +117,8 @@ function TimeKeepingModal({ isModalOpen, handleCancel }: ModalProps) {
                     handleCloseCaptureModal={() => setIsModalVideoOpen(false)}
                 />
                 {mediaError}
-                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={!!mediaError}>TAKE A SELFIE</Button>
+                {error}
+                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={!!mediaError || !!error}>TAKE A SELFIE</Button>
             </Space>
         </Row>
         <Divider style={{ margin: 10 }} />
@@ -87,19 +127,29 @@ function TimeKeepingModal({ isModalOpen, handleCancel }: ModalProps) {
                 title={`Time In`}
                 description='Are you sure you want to time in?'
                 icon={<RxEnter />}
-                onConfirm={() => alert('time in')}
+                onConfirm={() => postTimeInOut('timein')}
                 okText='Time In'
             >
-                <Button type='primary' disabled={!!mediaError}>Time In</Button>
+                <Button
+                    type='primary'
+                    disabled={!!mediaError || !!error}
+                >
+                    Time In
+                </Button>
             </Popconfirm>
             <Popconfirm
                 title={`Time Out`}
                 description='Are you sure you want to time out?'
                 icon={<RxExit />}
-                onConfirm={() => alert('time out')}
+                onConfirm={() => postTimeInOut('timeout')}
                 okText='Time Out'
             >
-                <Button type='primary' disabled={!!mediaError}>Time Out</Button>
+                <Button
+                    type='primary'
+                    disabled={!!mediaError || !!error}
+                >
+                    Time Out
+                </Button>
             </Popconfirm>
         </Row>
         <Divider />
@@ -170,6 +220,7 @@ function CapturePhotoModal({ isModalVideoOpen, setImageSrc, handleCloseCaptureMo
             console.error("Error capturing image:", err)
         }
     }
+
     return <Modal open={isModalVideoOpen} onCancel={handleCloseCaptureModal} footer={null} forceRender>
         <video ref={videoRef} style={{ width: 470, height: 350, marginTop: 25 }} />
         <Row justify='center'>
@@ -209,4 +260,5 @@ const Col2 = styled(Col)`
     border: 1px solid #E5E5E5;
     padding: 1.5rem !important;
     max-height: 500px;
+    border-radius: 8px;
 `
