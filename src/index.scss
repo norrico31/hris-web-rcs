@@ -48,6 +48,14 @@ h1 {
     background-color: #fff !important;
     color: #9B3423 !important;
 }
+.ant-menu .ant-menu-item .ant-menu-item-icon,
+:where(.css-dev-only-do-not-override-1u5jhrq).ant-menu-inline.ant-menu-root .ant-menu-submenu-title >* {
+    font-size: 1.150rem;
+}
+.ant-menu .ant-menu-item a,
+.ant-menu-title-content {
+    font-size: 1.05rem;
+}
 
 // Header Layout
 .trigger {

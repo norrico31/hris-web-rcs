@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineSchedule, AiOutlineCalendar } from 'react-icons/ai'
 import { RiBankLine } from 'react-icons/ri'
 import { MdOutlinePersonalInjury, MdOutlineHolidayVillage } from 'react-icons/md'
-import { FaTasks, FaCriticalRole } from 'react-icons/fa'
+import { FaTasks, FaCriticalRole, FaUsersCog } from 'react-icons/fa'
 import { GiPositionMarker, GiExpense } from 'react-icons/gi'
 import { BiTimeFive } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
@@ -45,7 +45,11 @@ const MenuContainer = styled(AntdMenu)`
     background-color: #9B3423;
     color: #fff;
     height: 100%;
+    
 
+    .ant-menu-title-content a {
+        display: block;
+    }
     .ant-menu-item-selected,
     .ant-menu-item.ant-menu-item-active {
         background-color: #fff;
@@ -178,6 +182,11 @@ const menus = [
         <Link to='/leave'>Leave</Link>,
         '/leave',
         <AiOutlineCalendar />
+    ),
+    getItemLinks(
+        <Link to='/employee'>Employee</Link>,
+        '/employee',
+        <FaUsersCog />
     ),
 ]
 
