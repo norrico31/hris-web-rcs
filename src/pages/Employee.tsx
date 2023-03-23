@@ -68,7 +68,7 @@ export default function Employee() {
                 title='Employee'
                 name={record.employee_name}
                 onConfirm={() => handleDelete(record?.id!)}
-                onClick={() => navigate('/employee/' + record.id)}
+                onClick={() => navigate('/employee/edit/' + record.id)}
             />
         },
 

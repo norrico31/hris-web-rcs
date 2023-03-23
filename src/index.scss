@@ -117,6 +117,6 @@ h1 {
     gap: 10px;
 }
 
-// :where(.css-dev-only-do-not-override-1u5jhrq).ant-picker-calendar .ant-picker-calendar-header {
-//     padding: 25px 10px;
-// }
+.ant-tabs-nav-list {
+    flex-wrap: wrap;
+}

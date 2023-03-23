@@ -1,23 +1,26 @@
 import { Tabs as AntDTabs } from 'antd'
+import { TabsPosition } from 'antd/es/tabs'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import Card from './Card'
 
 type TabsProps = {
     els: { label: string; key: string }[]
-    title: string
+    title: string;
+    tabPosition?: TabsPosition
 }
 
-export default function TabsContainer(props: TabsProps) {
+export default function TabsContainer({ title, els, tabPosition = 'left' }: TabsProps) {
     const navigate = useNavigate()
     let { pathname } = useLocation()
     return (
-        <Card title={props.title} level={4}>
+        <Card title={title} level={4}>
             <Tabs
+
                 activeKey={pathname.slice(15, pathname.length)}
-                tabPosition='left'
+                tabPosition={tabPosition}
                 onChange={(key) => navigate('/systemsettings' + key)}
-                items={props.els.map(({ label, key }) => ({
+                items={els.map(({ label, key }) => ({
                     label,
                     key,
                     children: <Outlet />
