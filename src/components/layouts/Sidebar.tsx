@@ -171,11 +171,6 @@ const menus = [
                 '/systemsettings/salaryrate',
                 <AiOutlineDollarCircle />,
             ),
-            getItemLinks(
-                <Link to='/systemsettings/schedule'>Schedule</Link>,
-                '/systemsettings/schedule',
-                <AiOutlineSchedule />,
-            ),
         ]
     ),
     getItemLinks(
@@ -189,9 +184,14 @@ const menus = [
         <AiOutlineCalendar />
     ),
     getItemLinks(
-        <Link to='/employee'>Employee</Link>,
+        <Link to='/employee'>Employee 201</Link>,
         '/employee',
         <FaUsersCog />
+    ),
+    getItemLinks(
+        <Link to='/schedule'>Schedule</Link>,
+        '/schedule',
+        <AiOutlineSchedule />,
     ),
 ]
 

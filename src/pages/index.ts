@@ -4,6 +4,7 @@ export { default as Dashboard } from './Dashboard'
 export { default as Employee } from './Employee'
 export { default as TimeKeeping } from './TimeKeeping'
 export { default as Leave } from './Leave'
+export { default as Schedule } from './Schedule'
 export { default as Tasks } from './Tasks'
 
 //* System Settings
@@ -30,7 +31,6 @@ export { default as LeaveType } from './system-settings/LeaveType'
 export { default as Position } from './system-settings/Position'
 export { default as Role } from './system-settings/Role'
 export { default as SalaryRate } from './system-settings/SalaryRate'
-export { default as Schedule } from './system-settings/Schedule'
 
 export function renderTitle(title: string) {
     window.document.title = `Redcore - ${title}`

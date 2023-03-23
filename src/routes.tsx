@@ -113,10 +113,6 @@ export const routes = createBrowserRouter([
                         path: 'salaryrate',
                         element: <SalaryRate />
                     },
-                    {
-                        path: 'schedule',
-                        element: <Schedule />
-                    },
                 ],
             },
             {
@@ -129,7 +125,17 @@ export const routes = createBrowserRouter([
             },
             {
                 path: 'employee',
-                element: <Employee />
+                element: <Employee />,
+                children: [
+                    {
+                        path: ':employeeId',
+                        element: <Employee />,
+                    },
+                ]
+            },
+            {
+                path: 'schedule',
+                element: <Schedule />
             },
         ]
     },
@@ -137,5 +143,4 @@ export const routes = createBrowserRouter([
         path: '/login',
         element: <Login />
     },
-
 ])

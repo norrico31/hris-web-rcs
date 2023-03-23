@@ -1,6 +1,7 @@
 import { useState, useEffect, ReactNode } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Steps, Row, Col, Divider } from 'antd'
-import { LoadingOutlined, SmileOutlined, SolutionOutlined, UserOutlined, BankOutlined, CreditCardOutlined, UsergroupAddOutlined } from '@ant-design/icons'
+import { LoadingOutlined, UserOutlined, CreditCardOutlined, UsergroupAddOutlined } from '@ant-design/icons'
 import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
@@ -18,6 +19,8 @@ interface IEmployee extends Partial<{ id: string }> {
 
 export default function Employee() {
     renderTitle('Employee')
+    const { employeeId } = useParams()
+    const navigate = useNavigate()
 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployee | undefined>(undefined)
@@ -65,7 +68,7 @@ export default function Employee() {
                 title='Employee'
                 name={record.employee_name}
                 onConfirm={() => handleDelete(record?.id!)}
-                onClick={() => handleEdit(record)}
+                onClick={() => navigate('/employee/' + record.id)}
             />
         },
 
@@ -169,6 +172,8 @@ function EmployeeModal({ title, selectedData, isModalOpen, handleCancel }: Modal
     const [stepThreeInputs, setStepThreeInputs] = useState<IStepThree | undefined>(undefined)
     const [stepFourInputs, setStepFourInputs] = useState<IStepFour | undefined>(undefined)
 
+    // useEffect when selected data
+
     const payload = {
         ...stepOneInputs,
         ...stepTwoInputs,
@@ -230,22 +235,22 @@ function EmployeeModal({ title, selectedData, isModalOpen, handleCancel }: Modal
                 {
                     title: 'Step 1',
                     description: 'Employee Info',
-                    icon: <UserOutlined />,
-                    status: 'finish'
-                    // icon: <LoadingOutlined />,
+                    icon: current == 0 ? <LoadingOutlined /> : <UserOutlined />,
                 },
                 {
                     title: 'Step 2',
                     description: 'Client',
-                    icon: <UsergroupAddOutlined />,
+                    icon: current == 1 ? <LoadingOutlined /> : <UsergroupAddOutlined />,
                 },
                 {
                     title: 'Step 3',
                     description: 'Salary',
+                    icon: current == 2 ? <LoadingOutlined /> : <CreditCardOutlined />,
                 },
                 {
                     title: 'Step 4',
                     description: 'Pay Scheme',
+                    icon: current == 3 ? <LoadingOutlined /> : <CreditCardOutlined />,
                 },
             ]}
         />
@@ -310,8 +315,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Middle Name"
                     name="middle_name"
-                // required
-                // rules={[{ required: true, message: 'Please enter middle name!' }]}
                 >
                     <Input placeholder='Enter middle name...' />
                 </FormItem>
@@ -362,14 +365,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         style={{ width: '100%' }}
                     />
                 </FormItem>
-                <FormItem
-                    label="Address"
-                    name="address"
-                    required
-                    rules={[{ required: true, message: 'Please enter address!' }]}
-                >
-                    <Input.TextArea placeholder='Enter middle name...' />
-                </FormItem>
+
                 <FormItem
                     label="Contact Number"
                     name="mobile_number1"
@@ -381,8 +377,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem name='email' label="Email Address" required rules={[{ required: true, message: 'Please enter email address!' }]}>
                     <Input type='email' placeholder='Enter email address...' />
                 </FormItem>
-            </Col>
-            <Col span={8}>
                 <FormItem
                     label="Employee Status"
                     name="employee_status"
@@ -391,6 +385,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 >
                     <Input placeholder='Enter employee status..' />
                 </FormItem>
+            </Col>
+            <Col span={8}>
                 {/* <FormItem
                     label="Department"
                     name="department"
@@ -429,6 +425,14 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         <Select.Option value="active">Active</Select.Option>
                         <Select.Option value="inactive">Inactive</Select.Option>
                     </Select>
+                </FormItem>
+                <FormItem
+                    label="Current Address"
+                    name="address"
+                    required
+                    rules={[{ required: true, message: 'Please enter address!' }]}
+                >
+                    <Input.TextArea placeholder='Enter middle name...' style={{ minHeight: 190 }} />
                 </FormItem>
             </Col>
         </Row>

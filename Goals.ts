@@ -2,7 +2,6 @@
 // tulalang.user@redcoresolutions.com
 // secret
 
-
 // ==================================
 // ==================================
 //* DONE
@@ -19,10 +18,11 @@
 // employee
 // employee status
 // client
+// client branch
+// bank details
+// schedule
 
 // ==================================
 // ==================================
-
-
 //! QUESTIONS
-// Employee Form
+// Employee201
