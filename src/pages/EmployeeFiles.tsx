@@ -6,7 +6,7 @@ import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
 import { Card, Action, TabHeader, Table, Form, MainHeader } from '../components'
-import { renderTitle } from '.'
+import { renderTitle } from '../shared/utils/utilities'
 
 interface IEmployee extends Partial<{ id: string }> {
     employee_no: string
@@ -17,7 +17,7 @@ interface IEmployee extends Partial<{ id: string }> {
     status: string
 }
 
-export default function Employee() {
+export default function EmployeeFiles() {
     renderTitle('Employee')
     const { employeeId } = useParams()
     const navigate = useNavigate()
@@ -68,11 +68,11 @@ export default function Employee() {
                 title='Employee'
                 name={record.employee_name}
                 onConfirm={() => handleDelete(record?.id!)}
-                onClick={() => navigate('/employee/edit/' + record.id)}
+                onClick={() => navigate('/employee/edit/' + record.id + '/userprofile')}
             />
         },
 
-    ];
+    ]
 
     const data: IEmployee[] = [
         {

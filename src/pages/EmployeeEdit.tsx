@@ -1,51 +1,41 @@
-import { useParams, Navigate } from "react-router-dom"
+import { useParams, Navigate, Outlet, useNavigate, useLocation, useOutletContext } from "react-router-dom"
 import { Tabs as AntDTabs } from 'antd'
-import { renderTitle } from "."
 import styled from "styled-components"
 import { MainHeader } from './../components'
-
-const els = [
-    {
-        label: 'Task Activities',
-        key: '/taskmanagement/activities',
-    },
-    {
-        label: 'Task Types',
-        key: '/taskmanagement/types',
-    },
-    {
-        label: 'Sprint',
-        key: '/taskmanagement/sprint',
-    },
-]
+import { employeeEditEls } from "../shared/constants"
+import { renderTitle } from "../shared/utils/utilities"
 
 export default function EmployeeEdit() {
     renderTitle('Employee Edit')
     const { employeeId } = useParams()
-    // if (employeeId == undefined) return <Navigate to='/employee' />
-    console.log(employeeId)
+    let { pathname } = useLocation()
+    const navigate = useNavigate()
+    if (employeeId == undefined) return <Navigate to='/employee' />
     return <>
         <MainHeader>
             <h1 className='color-white'>Employee Edit - Gerald / Full Name</h1>
         </MainHeader>
         <Tabs
-            defaultActiveKey="1"
+            activeKey={pathname.slice(16, pathname.length)}
             type="card"
             tabPosition="top"
             size='small'
+            onChange={(key) => navigate(`/employee/edit/${employeeId}` + key)}
             renderTabBar={(props, TabNavList) => (
                 <TabNavList {...props} mobile={false} />
             )}
-            items={new Array(15).fill(null).map((_, i) => {
-                const id = String(i + 1);
-                return {
-                    label: `Card Tab ${id}`,
-                    key: id,
-                    children: `Content of card tab ${id}`,
-                };
-            })}
+            items={employeeEditEls.map((el) => ({
+                label: el.label,
+                key: el.key,
+                chilemployeeEditElsren: <Outlet context={{ employeeId }} />,
+            }))}
         />
     </>
+}
+
+export function useEmployeeId(): string {
+    const { employeeId }: { employeeId: string } = useOutletContext()
+    return employeeId
 }
 
 const Tabs = styled(AntDTabs)`

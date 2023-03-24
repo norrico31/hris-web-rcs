@@ -6,10 +6,12 @@ import { useAuthContext } from '../shared/contexts/Auth'
 import { useAxios } from '../shared/lib/axios'
 import ImgBG from '../shared/assets/bg-login.png'
 import RcsLogo from '../shared/assets/logo.png'
+import { renderTitle } from '../shared/utils/utilities'
 
 const { POST } = useAxios()
 
 export default function Login() {
+    renderTitle('Login')
     const { token, setToken } = useAuthContext()
     const [error, setError] = useState<string | undefined>(undefined)
 

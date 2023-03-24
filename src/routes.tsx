@@ -1,6 +1,42 @@
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import { Layout } from "./components";
-import { Login, Dashboard, TimeKeeping, Tasks, TasksManagement, Leave, Employee, EmployeeEdit, TaskActivities, TaskTypes, TaskSprint, BankDetails, Client, ClientBranch, ClientBranchHoliday, DailyRate, Department, Expense, ExpenseType, Holiday, HolidayType, LeaveStatus, LeaveDuration, LeaveType, Position, Role, SalaryRate, Schedule, EmployeeStatus } from './pages'
+import {
+    // Root
+    Login,
+    Dashboard,
+    TimeKeeping,
+    Leave,
+    Tasks,
+    Schedule,
+    EmployeeFiles,
+
+
+    // System Settings
+    TasksManagement,
+    TaskTypes,
+    TaskSprint,
+    TaskActivities,
+
+    //Employee 201 - Edit
+    EmployeeEdit,
+    EmployeeBenefits,
+    EmployeeClientHistory,
+    EmployeeClientSchedule,
+    EmployeeContracts,
+    EmployeeDocuments,
+    EmployeeEvaluations,
+    EmployeeGovernmentDocuments,
+    EmployeeLeaveCredits,
+    EmployeeMemorandums,
+    EmployeePayScheme,
+    EmployeeSalary,
+    EmployeeSalaryAdjustments,
+    EmployeeSalaryHistory,
+    EmployeeUserProfile,
+
+
+    BankDetails, Client, ClientBranch, ClientBranchHoliday, DailyRate, Department, Expense, ExpenseType, Holiday, HolidayType, LeaveStatus, LeaveDuration, LeaveType, Position, Role, SalaryRate, EmployeeStatus
+} from './pages'
 
 export const routes = createBrowserRouter([
     {
@@ -125,17 +161,69 @@ export const routes = createBrowserRouter([
             },
             {
                 path: 'employee',
-                element: <Employee />,
-                children: [
-                    {
-                        path: ':employeeId',
-                        element: <EmployeeEdit />,
-                    },
-                ]
+                element: <EmployeeFiles />,
             },
             {
                 path: 'employee/edit/:employeeId',
                 element: <EmployeeEdit />,
+                children: [
+                    {
+                        path: 'benefits',
+                        element: <EmployeeBenefits />
+                    },
+                    {
+                        path: 'clienthistory',
+                        element: <EmployeeClientHistory />
+                    },
+                    {
+                        path: 'clientschedule',
+                        element: <EmployeeClientSchedule />
+                    },
+                    {
+                        path: 'contracts',
+                        element: <EmployeeContracts />
+                    },
+                    {
+                        path: 'employeedocuments',
+                        element: <EmployeeDocuments />
+                    },
+                    {
+                        path: 'evaluations',
+                        element: <EmployeeEvaluations />
+                    },
+                    {
+                        path: 'governmentdocuments',
+                        element: <EmployeeGovernmentDocuments />
+                    },
+                    {
+                        path: 'leavecredits',
+                        element: <EmployeeLeaveCredits />
+                    },
+                    {
+                        path: 'memorandums',
+                        element: <EmployeeMemorandums />
+                    },
+                    {
+                        path: 'payscheme',
+                        element: <EmployeePayScheme />
+                    },
+                    {
+                        path: 'salary',
+                        element: <EmployeeSalary />
+                    },
+                    {
+                        path: 'salaryadjustments',
+                        element: <EmployeeSalaryAdjustments />
+                    },
+                    {
+                        path: 'salaryhistory',
+                        element: <EmployeeSalaryHistory />
+                    },
+                    {
+                        path: 'userprofile',
+                        element: <EmployeeUserProfile />
+                    },
+                ]
             },
             {
                 path: 'schedule',

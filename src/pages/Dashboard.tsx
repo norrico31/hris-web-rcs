@@ -1,4 +1,4 @@
-import { renderTitle } from "."
+import { renderTitle } from "../shared/utils/utilities"
 
 export default function Dashboard() {
     renderTitle('Dashboard')

@@ -4,7 +4,7 @@ import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
 import { Action, TabHeader, Table, Form, MainHeader } from '../components'
-import { renderTitle } from '.'
+import { renderTitle } from '../shared/utils/utilities'
 
 interface ISchedule extends Partial<{ id: string }> {
     name: string

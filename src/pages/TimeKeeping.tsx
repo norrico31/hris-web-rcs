@@ -5,9 +5,10 @@ import dayjs, { Dayjs } from "dayjs"
 import { RxEnter, RxExit } from 'react-icons/rx'
 import { MainHeader, Divider, Box } from "../components"
 import AvatarPng from '../shared/assets/default_avatar.png'
-import { renderTitle } from "."
+import { renderTitle } from "../shared/utils/utilities"
 
 export default function TimeKeeping() {
+    renderTitle('Timekeeping')
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     const onPanelChange = (value: Dayjs) => {
@@ -64,7 +65,6 @@ type ModalProps = {
 }
 
 function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
-    renderTitle('Timekeeping')
     const [isModalVideoOpen, setIsModalVideoOpen] = useState(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
     const [mediaError, setMediaError] = useState('')

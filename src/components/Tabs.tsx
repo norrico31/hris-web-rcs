@@ -16,7 +16,6 @@ export default function TabsContainer({ title, els, tabPosition = 'left' }: Tabs
     return (
         <Card title={title} level={4}>
             <Tabs
-
                 activeKey={pathname.slice(15, pathname.length)}
                 tabPosition={tabPosition}
                 onChange={(key) => navigate('/systemsettings' + key)}

@@ -1,7 +1,7 @@
 //* Root
 export { default as Login } from './Login'
 export { default as Dashboard } from './Dashboard'
-export { default as Employee } from './Employee'
+export { default as EmployeeFiles } from './EmployeeFiles'
 export { default as EmployeeEdit } from './EmployeeEdit'
 export { default as TimeKeeping } from './TimeKeeping'
 export { default as Leave } from './Leave'
@@ -33,6 +33,19 @@ export { default as Position } from './system-settings/Position'
 export { default as Role } from './system-settings/Role'
 export { default as SalaryRate } from './system-settings/SalaryRate'
 
-export function renderTitle(title: string) {
-    window.document.title = `Redcore - ${title}`
-}
+
+// Employee 201 Edit
+export { default as EmployeeBenefits } from './employee-201/Benefits'
+export { default as EmployeeClientHistory } from './employee-201/ClientHistory'
+export { default as EmployeeClientSchedule } from './employee-201/ClientSchedule'
+export { default as EmployeeContracts } from './employee-201/Contracts'
+export { default as EmployeeDocuments } from './employee-201/EmployeeDocuments'
+export { default as EmployeeEvaluations } from './employee-201/Evaluations'
+export { default as EmployeeGovernmentDocuments } from './employee-201/GovernmentDocuments'
+export { default as EmployeeLeaveCredits } from './employee-201/LeaveCredits'
+export { default as EmployeeMemorandums } from './employee-201/Memorandums'
+export { default as EmployeePayScheme } from './employee-201/PayScheme'
+export { default as EmployeeSalary } from './employee-201/Salary'
+export { default as EmployeeSalaryAdjustments } from './employee-201/SalaryAdjustments'
+export { default as EmployeeSalaryHistory } from './employee-201/SalaryHistory'
+export { default as EmployeeUserProfile } from './employee-201/UserProfile'
