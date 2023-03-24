@@ -26,7 +26,7 @@ export default function EmployeeEdit() {
     console.log(employeeId)
     return <>
         <MainHeader>
-            <h1 className='color-white'>Employee Edit - Gerald</h1>
+            <h1 className='color-white'>Employee Edit - Gerald / Full Name</h1>
         </MainHeader>
         <Tabs
             defaultActiveKey="1"

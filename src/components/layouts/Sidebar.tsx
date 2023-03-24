@@ -13,6 +13,8 @@ import { TbCalendarStats } from 'react-icons/tb'
 import { VscTypeHierarchy } from 'react-icons/vsc'
 import { SiExpensify } from 'react-icons/si'
 
+//! Employee 201 Page (Edit) for HR
+
 export default function Sidebar() {
     let location = useLocation()
     const [locationKey, setLocationKey] = useState('')
@@ -184,7 +186,7 @@ const menus = [
         <AiOutlineCalendar />
     ),
     getItemLinks(
-        <Link to='/employee'>Employee 201</Link>,
+        <Link to='/employee'>Employee Files</Link>,
         '/employee',
         <FaUsersCog />
     ),

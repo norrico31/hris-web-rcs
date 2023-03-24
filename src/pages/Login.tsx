@@ -13,7 +13,7 @@ export default function Login() {
     const { token, setToken } = useAuthContext()
     const [error, setError] = useState<string | undefined>(undefined)
 
-    if (token != undefined) return <Navigate to='/' />
+    // if (token != undefined) return <Navigate to='/' />
 
     const onFinish = async (values: Record<string, string>) => {
         //! GUARD CLAUSE (onSubmit || onFinish)
@@ -76,7 +76,7 @@ export default function Login() {
                             <Input.Password type='password' placeholder='Enter password' />
                         </Form.Item>
                         <Form.Item style={{ textAlign: 'right' }}>
-                            <Link to='#' className='link-forgotpassword'>Forgot Password</Link>
+                            <Link to='#' className='link-forgotpassword color-white'>Forgot Password</Link>
                         </Form.Item>
                         <Form.Item style={{ textAlign: 'center' }}>
                             <Button type="primary" htmlType="submit" className='btn-primary'>
