@@ -9,13 +9,29 @@ import {
     Tasks,
     Schedule,
     EmployeeFiles,
-
+    Client,
 
     // System Settings
-    TasksManagement,
+    TaskActivities,
+    TasksSettings,
     TaskTypes,
     TaskSprint,
-    TaskActivities,
+    BankDetails,
+    ClientBranch,
+    ClientBranchHoliday,
+    DailyRate,
+    Department,
+    EmployeeStatus,
+    Expense,
+    ExpenseType,
+    Holiday,
+    HolidayType,
+    LeaveDuration,
+    LeaveStatus,
+    LeaveType,
+    Position,
+    Role,
+    SalaryRate,
 
     //Employee 201 - Edit
     EmployeeEdit,
@@ -33,9 +49,6 @@ import {
     EmployeeSalaryAdjustments,
     EmployeeSalaryHistory,
     EmployeeUserProfile,
-
-
-    BankDetails, Client, ClientBranch, ClientBranchHoliday, DailyRate, Department, Expense, ExpenseType, Holiday, HolidayType, LeaveStatus, LeaveDuration, LeaveType, Position, Role, SalaryRate, EmployeeStatus
 } from './pages'
 
 export const routes = createBrowserRouter([
@@ -57,7 +70,7 @@ export const routes = createBrowserRouter([
                 children: [
                     {
                         path: 'taskmanagement',
-                        element: <TasksManagement />,
+                        element: <TasksSettings />,
                         children: [
                             {
                                 path: 'activities',
