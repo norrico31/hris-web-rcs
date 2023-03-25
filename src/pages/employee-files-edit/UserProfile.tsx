@@ -1,10 +1,9 @@
-import { useState } from 'react'
+import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
 
 export default function UserProfileEmployee() {
     const employeeId = useEmployeeId()
-    console.log(employeeId)
     return (
-        <div>UserProfileEmployee</div>
+        <Card title='Personal Information'>UserProfileEmployee</Card>
     )
 }

@@ -1,8 +1,7 @@
-import { Tabs as AntDTabs } from 'antd'
+import { Tabs as AntDTabs, Typography } from 'antd'
 import { TabsPosition } from 'antd/es/tabs'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import Card from './Card'
 
 type TabsProps = {
     els: { label: string; key: string }[]
@@ -10,11 +9,14 @@ type TabsProps = {
     tabPosition?: TabsPosition
 }
 
+const { Title: AntDTitle } = Typography
+
 export default function TabsContainer({ title, els, tabPosition = 'left' }: TabsProps) {
     const navigate = useNavigate()
     let { pathname } = useLocation()
     return (
-        <Card title={title} level={4}>
+        <>
+            <Title level={3}>Tasks Settings</Title>
             <Tabs
                 activeKey={pathname.slice(15, pathname.length)}
                 tabPosition={tabPosition}
@@ -25,9 +27,13 @@ export default function TabsContainer({ title, els, tabPosition = 'left' }: Tabs
                     children: <Outlet />
                 }))}
             />
-        </Card>
+        </>
     )
 }
+
+const Title = styled(AntDTitle)`
+    margin: 0 0 2rem 0 !important;
+`
 
 const Tabs = styled(AntDTabs)`
     height: 220px;

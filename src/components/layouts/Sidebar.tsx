@@ -20,11 +20,9 @@ export default function Sidebar() {
     const [locationKey, setLocationKey] = useState('')
 
     useEffect(() => {
-        if (location?.pathname.includes('/dashboard')) {
-            setLocationKey('/dashboard')
-        } else if (location?.pathname.includes('/timekeeping')) {
-            setLocationKey('/timekeeping')
-        } else if (location?.pathname.includes('/systemsettings')) {
+        if (location?.pathname.includes('/employee/edit')) {
+            setLocationKey('/employee')
+        } else if (location?.pathname.includes('/systemsettings/taskmanagement')) {
             setLocationKey('/systemsettings/taskmanagement/activities')
         } else {
             setLocationKey(location?.pathname)
@@ -47,7 +45,6 @@ const MenuContainer = styled(AntdMenu)`
     background-color: #9B3423;
     color: #fff;
     height: 100%;
-    
 
     .ant-menu-title-content a {
         display: block;

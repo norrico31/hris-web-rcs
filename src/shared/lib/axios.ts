@@ -5,7 +5,7 @@ const axiosClient = axios.create({
 })
 
 axiosClient.interceptors.request.use((req) => {
-    let token = localStorage.getItem('t') as any satisfies string
+    let token = localStorage.getItem('t')
     token &&= JSON.parse(token)
     req.headers.Authorization = 'Bearer ' + token
     return req
@@ -19,14 +19,32 @@ axiosClient.interceptors.response.use((res) => res, err => Promise.reject(err))
 // axiosSanctum()
 
 export const useAxios = () => {
-    // const GET = (url: string) => axiosSanctum(axiosClient.get('/api' + url)) as Promise<any>
     // const POST = <T>(url: string, data: T) => axiosSanctum(axiosClient.post('/api' + url, data))
-    const GET = (url: string) => axiosClient.get('/api' + url) as Promise<any>
-    const POST = <T>(url: string, data: T) => axiosClient.post('/api' + url, data)
+    const GET = (url: string) => axiosClient.get('/api' + url)
+    const POST = async <T>(url: string, data: T) => {
+        try {
+            const res = await axiosClient.post('/api' + url, data)
+            // handle modal success
+            return Promise.resolve(res)
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    }
+
+    const PUT = async <T extends Partial<{ id: string }>>(url: string, data: T) => {
+        try {
+            const res = await axiosClient.post('/api' + url + '/' + data.id, data)
+            // handle modal success
+            return Promise.resolve(res)
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    }
 
     return {
         GET,
-        POST
+        POST,
+        PUT
     }
 }
 

@@ -175,9 +175,9 @@ function EmployeeModal({ title, selectedData, isModalOpen, handleCancel }: Modal
     // useEffect when selected data
 
     const payload = {
-        ...stepOneInputs,
-        ...stepTwoInputs,
-        ...stepThreeInputs,
+        ...stepOneInputs!,
+        ...stepTwoInputs!,
+        ...stepThreeInputs!,
     }
 
     function handleResetSteps() {
@@ -599,12 +599,14 @@ interface IStepFour {
     bank_account_number: number
 }
 
+type Payload = IStepOne & IStepTwo & IStepThree
+
 interface IStepFourProps {
     setStepFourInputs: React.Dispatch<React.SetStateAction<IStepFour | undefined>>
     stepFourInputs: IStepFour | undefined
     previousStep: (val: IStepFour) => void
     handleResetSteps(): void
-    payload: any
+    payload: Payload
 }
 
 function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, handleResetSteps }: IStepFourProps) {
@@ -663,7 +665,7 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, ha
     </Form>
 }
 
-function formValues(values: Record<string, any>) {
+function formValues(values: Record<string, unknown>) {
     let newValues = {}
     for (const val in values) {
         newValues = { ...newValues, ...(values[val] == undefined ? { [val]: null } : { [val]: values[val] }) }

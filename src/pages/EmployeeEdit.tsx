@@ -27,7 +27,7 @@ export default function EmployeeEdit() {
             items={employeeEditEls.map((el) => ({
                 label: el.label,
                 key: el.key,
-                chilemployeeEditElsren: <Outlet context={{ employeeId }} />,
+                children: <Outlet context={{ employeeId }} />,
             }))}
         />
     </>
