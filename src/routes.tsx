@@ -131,7 +131,7 @@ export const routes = createBrowserRouter([
                         element: <ExpenseType />
                     },
                     {
-                        path: 'holiday',
+                        path: 'holidaytype',
                         element: <Holiday />
                     },
                     {
