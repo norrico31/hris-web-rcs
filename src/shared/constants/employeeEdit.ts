@@ -20,8 +20,12 @@ export const employeeEditEls = [
         key: '/clienthistory',
     },
     {
-        label: 'Employee Documents',
+        label: 'Documents',
         key: '/employeedocuments',
+    },
+    {
+        label: 'Schedule',
+        key: '/employeeschedule',
     },
     {
         label: 'Memorandums',

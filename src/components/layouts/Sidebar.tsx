@@ -187,11 +187,11 @@ const menus = [
         '/employee',
         <FaUsersCog />
     ),
-    getItemLinks(
-        <Link to='/schedule'>Schedule</Link>,
-        '/schedule',
-        <AiOutlineSchedule />,
-    ),
+    // getItemLinks(
+    //     <Link to='/schedule'>Schedule</Link>,
+    //     '/schedule',
+    //     <AiOutlineSchedule />,
+    // ),
 ]
 
 function getItemLinks(

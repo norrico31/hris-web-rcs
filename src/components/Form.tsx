@@ -1,13 +1,15 @@
 import { ReactNode } from 'react'
 import { Form as AntDForm, FormInstance } from 'antd'
+import { Store } from 'antd/es/form/interface'
 
 type Props<T> = {
     form: FormInstance<T>;
     children: ReactNode
     onFinish: (val: T) => void
+    initialValues?: Store
 }
 
-export default function Form<V>({ form, onFinish, children }: Props<V>) {
+export default function Form<V>({ form, onFinish, initialValues, children }: Props<V>) {
     return (
         <AntDForm
             form={form as any}
@@ -15,6 +17,7 @@ export default function Form<V>({ form, onFinish, children }: Props<V>) {
             autoComplete="off"
             requiredMark='optional'
             layout='vertical'
+            initialValues={initialValues}
         >
             {children}
         </AntDForm>

@@ -7,7 +7,6 @@ import {
     TimeKeeping,
     Leave,
     Tasks,
-    Schedule,
     EmployeeFiles,
     Client,
 
@@ -38,6 +37,7 @@ import {
     EmployeeBenefits,
     EmployeeClientHistory,
     EmployeeClientSchedule,
+    EmployeeSchedule,
     EmployeeContracts,
     EmployeeDocuments,
     EmployeeEvaluations,
@@ -233,14 +233,14 @@ export const routes = createBrowserRouter([
                         element: <EmployeeSalaryHistory />
                     },
                     {
+                        path: 'employeeschedule',
+                        element: <EmployeeSchedule />
+                    },
+                    {
                         path: 'userprofile',
                         element: <EmployeeUserProfile />
                     },
                 ]
-            },
-            {
-                path: 'schedule',
-                element: <Schedule />
             },
         ]
     },

@@ -25,5 +25,6 @@
 // ==================================
 // ==================================
 //! QUESTIONS
-// get all employee by 10 data
-// get all employee by all for employee (edit page) and use new Map(arr.map(emp => [emp.id, emp])) and save to state
+// document types (type = select || input)
+// evaluation types (copy = select || input)
+// memorandum (type = select || input)

@@ -123,7 +123,7 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel }: Modal
         handleCancel()
     }
 
-    return <Modal title={`${title} - Employee Benefit`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Benefit`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} >
             <Item
                 label="Benefit"

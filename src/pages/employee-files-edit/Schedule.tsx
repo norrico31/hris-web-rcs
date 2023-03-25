@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Form as AntDForm, Input, DatePicker, Space, Button, Select } from 'antd'
+import { Form as AntDForm, Input, Space, Button, TimePicker, Row, Col } from 'antd'
 import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
-import { Action, TabHeader, Table, Form, MainHeader } from '../components'
-import { renderTitle } from '../shared/utils/utilities'
+import { Action, TabHeader, Table, Form, Card } from '../../components'
+import { useEmployeeId } from '../EmployeeEdit'
+import { renderTitle } from '../../shared/utils/utilities'
 
 interface ISchedule extends Partial<{ id: string }> {
     name: string
@@ -16,6 +17,7 @@ interface ISchedule extends Partial<{ id: string }> {
 
 export default function Schedule() {
     renderTitle('Schedule')
+    const employeeId = useEmployeeId()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<ISchedule | undefined>(undefined)
 
@@ -119,10 +121,7 @@ export default function Schedule() {
         setIsModalOpen(false)
     }
     return (
-        <>
-            <MainHeader>
-                <h1 className='color-white'>Schedules</h1>
-            </MainHeader>
+        <Card title='Schedule'>
             <TabHeader
                 name='Schedule'
                 handleSearchData={fetchData}
@@ -136,7 +135,7 @@ export default function Schedule() {
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
             />
-        </>
+        </Card>
     )
 }
 
@@ -173,7 +172,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, handleCancel }: Modal
     }
 
     return <Modal title={`${title} - Schedule`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} initialValues={{ time_in: dayjs('08:00:00', 'HH:mm:ss'), time_out: dayjs('05:00:00', 'HH:mm:ss') }}>
             <FormItem
                 label="Schedule Name"
                 name="name"
@@ -182,17 +181,28 @@ function ScheduleModal({ title, selectedData, isModalOpen, handleCancel }: Modal
             >
                 <Input placeholder='Enter schedule name...' />
             </FormItem>
-            {/* <FormItem
-                label="Start and End Date"
-                name="date"
-                required
-                rules={[{ required: true, message: 'Please select date!' }]}
-            >
-                <DatePicker
-                    format='YYYY/MM/DD'
-                    style={{ width: '100%' }}
-                />
-            </FormItem> */}
+            <Row justify='space-between'>
+                <Col span={11}>
+                    <FormItem
+                        label="Time In"
+                        name="time_in"
+                        required
+                        rules={[{ required: true, message: 'Please select time in!' }]}
+                    >
+                        <TimePicker style={{ width: '100%' }} />
+                    </FormItem>
+                </Col>
+                <Col span={11}>
+                    <FormItem
+                        label="Time Out"
+                        name="time_out"
+                        required
+                        rules={[{ required: true, message: 'Please select time out!' }]}
+                    >
+                        <TimePicker style={{ width: '100%' }} />
+                    </FormItem>
+                </Col>
+            </Row>
             <FormItem
                 label="Status"
                 name="status"

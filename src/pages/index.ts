@@ -5,7 +5,6 @@ export { default as EmployeeFiles } from './EmployeeFiles'
 export { default as EmployeeEdit } from './EmployeeEdit'
 export { default as TimeKeeping } from './TimeKeeping'
 export { default as Leave } from './Leave'
-export { default as Schedule } from './Schedule'
 export { default as Tasks } from './Tasks'
 
 //* System Settings
@@ -48,4 +47,5 @@ export { default as EmployeePayScheme } from './employee-files-edit/PayScheme'
 export { default as EmployeeSalary } from './employee-files-edit/Salary'
 export { default as EmployeeSalaryAdjustments } from './employee-files-edit/SalaryAdjustments'
 export { default as EmployeeSalaryHistory } from './employee-files-edit/SalaryHistory'
+export { default as EmployeeSchedule } from './employee-files-edit/Schedule'
 export { default as EmployeeUserProfile } from './employee-files-edit/UserProfile'

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Modal, Form as AntDForm, Input, Select, Space, Button, Upload } from 'antd'
-import { InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import { InboxOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import { Card } from '../../components'
@@ -80,7 +80,6 @@ export default function ContractsEmployee() {
     )
 }
 
-
 type ModalProps = {
     title: string
     isModalOpen: boolean
@@ -134,7 +133,7 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
         handleCancel()
     }
 
-    return <Modal title={`${title} - Employee Contract`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Contract`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} >
             <Item
                 label="Type"
