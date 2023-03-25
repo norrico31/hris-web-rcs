@@ -1,5 +1,67 @@
+import { Form as AntDForm } from 'antd'
+import { ColumnsType } from 'antd/es/table';
+import { Card } from '../../components'
+import { useEmployeeId } from '../EmployeeEdit'
+import { TabHeader, Table } from './../../components';
+
+interface IContractsEmployee {
+    id: string;
+    name: string;
+    description: string;
+}
+const { useForm, Item } = AntDForm
+
 export default function ContractsEmployee() {
+    const employeeId = useEmployeeId()
+    const [form] = useForm()
+
+    const columns: ColumnsType<IContractsEmployee> = [
+        {
+            title: 'Type',
+            key: 'type',
+            dataIndex: 'type',
+        },
+        {
+            title: 'Attachments',
+            key: 'attachments',
+            dataIndex: 'attachments',
+        },
+        {
+            title: 'Status',
+            key: 'status',
+            dataIndex: 'status',
+        },
+        {
+            title: 'Description',
+            key: 'description',
+            dataIndex: 'description',
+        },
+
+    ];
+
+    const data: IContractsEmployee[] = []
+
+    function fetchData(search: string) {
+        console.log(search)
+    }
+
+    function handleDownload() {
+        alert('download')
+    }
+
     return (
-        <div>ContractsEmployee</div>
+        <Card title='Contracts'>
+            <TabHeader
+                name='contracts'
+                handleSearchData={fetchData}
+                handleDownload={handleDownload}
+            />
+            <Table
+                loading={false}
+                columns={columns}
+                dataList={data}
+                onChange={(evt) => console.log(evt)}
+            />
+        </Card>
     )
 }

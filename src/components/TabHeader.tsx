@@ -6,7 +6,7 @@ import styled from 'styled-components'
 type Props = {
     name: string
     handleSearchData: (term: string) => void
-    handleCreate: () => void
+    handleCreate?: () => void
     handleDownload?: () => void
 }
 
@@ -38,7 +38,7 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
                         </Popconfirm>
                     )}
                     <Input.Search placeholder='Search...' value={searchTerm} onChange={onChange} />
-                    <Button type='default' onClick={handleCreate}>Create</Button>
+                    {handleCreate && (<Button type='default' onClick={handleCreate}>Create</Button>)}
                 </Space>
             </Row>
             <Divider dashed={false} />
