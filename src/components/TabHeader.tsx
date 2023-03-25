@@ -24,15 +24,9 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
 
     return (
         <>
-            <Row justify='space-between' align='middle'>
-                <Col>
-                    <Space align='end'>
-                        <Input.Search placeholder='Search...' value={searchTerm} onChange={onChange} />
-                        <Button type='default' onClick={handleCreate}>Create</Button>
-                    </Space>
-                </Col>
-                {handleDownload != undefined && (
-                    <Col>
+            <Row justify='end' align='middle'>
+                <Space>
+                    {handleDownload != undefined && (
                         <Popconfirm
                             title={`Download`}
                             description={`Are you sure you want to download ${name} template?`}
@@ -42,8 +36,10 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
                         >
                             <Button>Download template</Button>
                         </Popconfirm>
-                    </Col>
-                )}
+                    )}
+                    <Input.Search placeholder='Search...' value={searchTerm} onChange={onChange} />
+                    <Button type='default' onClick={handleCreate}>Create</Button>
+                </Space>
             </Row>
             <Divider dashed={false} />
         </>
@@ -52,7 +48,7 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
 
 export const Divider = styled(AntDDivider)`
     border-block-start: none;
-    margin: 1rem;
+    margin: .5rem;
 `
 
 function debounce(cb: (...search: string[]) => void, delay: number) {

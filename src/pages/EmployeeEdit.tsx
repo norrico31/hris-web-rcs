@@ -39,6 +39,9 @@ export function useEmployeeId(): string {
 }
 
 const Tabs = styled(AntDTabs)`
+    .ant-tabs-nav-list {
+        gap: 10px;
+    }
     .ant-tabs-tab.ant-tabs-tab-active {
         background: #9B3423;
         color: #fff;
