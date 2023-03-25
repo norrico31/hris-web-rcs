@@ -107,11 +107,17 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
     // }, [selectedData])
 
     const normFile = (e: any) => {
-        console.log('Upload event:', e)
         if (Array.isArray(e)) {
             return e
         }
-        return e?.fileList
+        const len = e?.fileList?.length
+        let newFiles: Record<string, any> = {}
+        for (let i = 0; i < len; i++) {
+            const file = e?.fileList[i]
+            newFiles[file.name] = file
+        }
+        newFiles = Object.values(newFiles)
+        return newFiles
     }
 
     function onFinish(values: Record<string, string>) {
