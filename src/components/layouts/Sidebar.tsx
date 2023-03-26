@@ -187,6 +187,11 @@ const menus = [
         '/employee',
         <FaUsersCog />
     ),
+    getItemLinks(
+        <Link to='/holidays'>Holidays</Link>,
+        '/holidays',
+        <MdOutlineHolidayVillage />
+    ),
     // getItemLinks(
     //     <Link to='/schedule'>Schedule</Link>,
     //     '/schedule',

@@ -56,7 +56,7 @@ export default function EmployeeDocuments() {
     }
 
     return (
-        <Card title='Employee Documents'>
+        <Card title='Documents'>
             <TabHeader
                 name='employee documents'
                 handleSearchData={fetchData}
@@ -70,7 +70,7 @@ export default function EmployeeDocuments() {
                 onChange={(evt) => console.log(evt)}
             />
             <DocumentsModal
-                title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
+                title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}

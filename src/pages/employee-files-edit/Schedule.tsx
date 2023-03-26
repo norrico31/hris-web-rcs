@@ -130,7 +130,7 @@ export default function Schedule() {
             />
             <Table loading={false} columns={columns} dataList={data} />
             <ScheduleModal
-                title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
+                title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}

@@ -9,6 +9,7 @@ import {
     Tasks,
     EmployeeFiles,
     Client,
+    Holidays,
 
     // System Settings
     TaskActivities,
@@ -175,6 +176,10 @@ export const routes = createBrowserRouter([
             {
                 path: 'employee',
                 element: <EmployeeFiles />,
+            },
+            {
+                path: 'holidays',
+                element: <Holidays />,
             },
             {
                 path: 'employee/edit/:employeeId',

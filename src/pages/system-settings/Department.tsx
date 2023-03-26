@@ -135,7 +135,7 @@ export default function Department() {
                 onChange={(evt) => console.log(evt)}
             />
             <DepartmentModal
-                title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
+                title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}

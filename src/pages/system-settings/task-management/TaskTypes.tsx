@@ -88,7 +88,7 @@ export default function TaskTypes() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table loading={false} columns={columns} dataList={data} />
-            <TypesModal title={`${selectedData != undefined ? 'Edit' : 'Create'}`} selectedData={selectedData} isModalOpen={isModalOpen} handleCancel={handleCloseModal} />
+            <TypesModal title={selectedData != undefined ? 'Edit' : 'Create'} selectedData={selectedData} isModalOpen={isModalOpen} handleCancel={handleCloseModal} />
         </Card>
     )
 }

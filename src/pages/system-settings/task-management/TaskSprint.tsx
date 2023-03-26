@@ -111,7 +111,7 @@ export default function TaskSprint() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table loading={false} columns={columns} dataList={data} />
-            <SprintModal title={`${selectedData != undefined ? 'Edit' : 'Create'}`} selectedData={selectedData} isModalOpen={isModalOpen} handleCancel={handleCloseModal} />
+            <SprintModal title={selectedData != undefined ? 'Edit' : 'Create'} selectedData={selectedData} isModalOpen={isModalOpen} handleCancel={handleCloseModal} />
         </Card>
     )
 }

@@ -94,7 +94,7 @@ export default function ClientBranch() {
                 onChange={(evt) => console.log(evt)}
             />
             <ClientBranchModal
-                title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
+                title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}

@@ -6,6 +6,7 @@ export { default as EmployeeEdit } from './EmployeeEdit'
 export { default as TimeKeeping } from './TimeKeeping'
 export { default as Leave } from './Leave'
 export { default as Tasks } from './Tasks'
+export { default as Holidays } from './Holidays'
 
 //* System Settings
 // Task Management

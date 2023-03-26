@@ -87,7 +87,7 @@ export default function EmployeeStatus() {
                 onChange={(evt) => console.log(evt)}
             />
             <EmployeeStatusModal
-                title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
+                title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
