@@ -2,21 +2,19 @@ import { useState, useEffect } from 'react'
 import { Button, Form as AntDForm, Input, Modal, Space } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { Card } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table, Form } from './../../components'
+import { TabHeader, Table, Form } from '../../components'
 
-interface ISalaryAdjustments {
+interface ISalaryAdjustmentType {
     id: string;
     name: string;
     description: string;
 }
 
-export default function SalaryAdjustments() {
-    const employeeId = useEmployeeId()
+export default function SalaryAdjustmentType() {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<ISalaryAdjustments | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<ISalaryAdjustmentType | undefined>(undefined)
 
-    const columns: ColumnsType<ISalaryAdjustments> = [
+    const columns: ColumnsType<ISalaryAdjustmentType> = [
         {
             title: 'Salary Adjustment Type',
             key: 'salary_name',
@@ -40,7 +38,7 @@ export default function SalaryAdjustments() {
 
     ];
 
-    const data: ISalaryAdjustments[] = []
+    const data: ISalaryAdjustmentType[] = []
 
     function fetchData(search: string) {
         console.log(search)
@@ -56,7 +54,7 @@ export default function SalaryAdjustments() {
     }
 
     return (
-        <Card title='Salary Adjustments'>
+        <Card title='Salary Adjustment Type'>
             <TabHeader
                 name='salary adjustments'
                 handleSearchData={fetchData}
@@ -82,7 +80,7 @@ export default function SalaryAdjustments() {
 type ModalProps = {
     title: string
     isModalOpen: boolean
-    selectedData?: ISalaryAdjustments
+    selectedData?: ISalaryAdjustmentType
     handleCancel: () => void
 }
 
@@ -117,7 +115,7 @@ function SalaryAdjustmentModal({ title, selectedData, isModalOpen, handleCancel 
         handleCancel()
     }
 
-    return <Modal title={`${title} - Salary Adjustment`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Salary Adjustment Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} >
             <Item
                 label="Salary Adjustment Type Name"

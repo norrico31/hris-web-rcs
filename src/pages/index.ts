@@ -7,6 +7,7 @@ export { default as TimeKeeping } from './TimeKeeping'
 export { default as Leave } from './Leave'
 export { default as Tasks } from './Tasks'
 export { default as Holidays } from './Holidays'
+export { default as SalaryAdjustment } from './SalaryAdjustment'
 
 //* System Settings
 // Task Management
@@ -24,13 +25,13 @@ export { default as Department } from './system-settings/Department'
 export { default as EmployeeStatus } from './system-settings/EmployeeStatus'
 export { default as Expense } from './system-settings/Expense'
 export { default as ExpenseType } from './system-settings/ExpenseType'
-export { default as Holiday } from './system-settings/Holiday'
 export { default as HolidayType } from './system-settings/HolidayType'
 export { default as LeaveStatus } from './system-settings/LeaveStatus'
 export { default as LeaveDuration } from './system-settings/LeaveDuration'
 export { default as LeaveType } from './system-settings/LeaveType'
 export { default as Position } from './system-settings/Position'
 export { default as Role } from './system-settings/Role'
+export { default as SalaryAdjustmentType } from './system-settings/SalaryAdjustmentType'
 export { default as SalaryRate } from './system-settings/SalaryRate'
 
 
@@ -46,7 +47,6 @@ export { default as EmployeeLeaveCredits } from './employee-files-edit/LeaveCred
 export { default as EmployeeMemorandums } from './employee-files-edit/Memorandums'
 export { default as EmployeePayScheme } from './employee-files-edit/PayScheme'
 export { default as EmployeeSalary } from './employee-files-edit/Salary'
-export { default as EmployeeSalaryAdjustments } from './employee-files-edit/SalaryAdjustments'
 export { default as EmployeeSalaryHistory } from './employee-files-edit/SalaryHistory'
 export { default as EmployeeSchedule } from './employee-files-edit/Schedule'
 export { default as EmployeeUserProfile } from './employee-files-edit/UserProfile'

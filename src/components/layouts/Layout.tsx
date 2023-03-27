@@ -42,7 +42,7 @@ export default function Layout() {
 
     return (
         <AntdLayout style={{ minHeight: '95vh' }}>
-            <Sider trigger={null} collapsible collapsed={collapsed} width={270}>
+            <Sider trigger={null} collapsible collapsed={collapsed} width={280}>
                 <div style={{ height: 64, padding: '.3rem', background: '#fff', display: 'grid' }}>
                     <Logo collapsed={collapsed} />
                 </div>

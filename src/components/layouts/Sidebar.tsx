@@ -100,11 +100,11 @@ const menus = [
                 '/systemsettings/clientbranch',
                 <MdOutlinePersonalInjury />,
             ),
-            getItemLinks(
-                <Link to='/systemsettings/clientbranchholiday'>Client Branch Holiday</Link>,
-                '/systemsettings/clientbranchholiday',
-                <MdOutlineHolidayVillage />,
-            ),
+            // getItemLinks(
+            //     <Link to='/systemsettings/clientbranchholiday'>Client Branch Holiday</Link>,
+            //     '/systemsettings/clientbranchholiday',
+            //     <MdOutlineHolidayVillage />,
+            // ),
             getItemLinks(
                 <Link to='/systemsettings/dailyrate'>Daily Rate</Link>,
                 '/systemsettings/dailyrate',
@@ -129,11 +129,6 @@ const menus = [
                 <Link to='/systemsettings/expensetype'>Expense Type</Link>,
                 '/systemsettings/expensetype',
                 <SiExpensify />,
-            ),
-            getItemLinks(
-                <Link to='/systemsettings/holiday'>Holiday</Link>,
-                '/systemsettings/holiday',
-                <MdOutlineHolidayVillage />,
             ),
             getItemLinks(
                 <Link to='/systemsettings/holidaytype'>Holiday Type</Link>,
@@ -165,9 +160,14 @@ const menus = [
                 '/systemsettings/role',
                 <FaCriticalRole />,
             ),
+            // getItemLinks(
+            //     <Link to='/systemsettings/salaryrate'>Salary Rate</Link>,
+            //     '/systemsettings/salaryrate',
+            //     <AiOutlineDollarCircle />,
+            // ),
             getItemLinks(
-                <Link to='/systemsettings/salaryrate'>Salary Rate</Link>,
-                '/systemsettings/salaryrate',
+                <Link to='/systemsettings/salaryadjustmenttype'>Salary Adjustment Type</Link>,
+                '/systemsettings/salaryadjustmenttype',
                 <AiOutlineDollarCircle />,
             ),
         ]
@@ -191,6 +191,11 @@ const menus = [
         <Link to='/holidays'>Holidays</Link>,
         '/holidays',
         <MdOutlineHolidayVillage />
+    ),
+    getItemLinks(
+        <Link to='/salaryadjustments'>Salary Adjustments</Link>,
+        '/salaryadjustments',
+        <AiOutlineDollarCircle />
     ),
     // getItemLinks(
     //     <Link to='/schedule'>Schedule</Link>,

@@ -44,10 +44,6 @@ export const employeeEditEls = [
         key: '/salaryhistory',
     },
     {
-        label: 'Salary Adjustments',
-        key: '/salaryadjustments',
-    },
-    {
         label: 'Benefits',
         key: '/benefits',
     },

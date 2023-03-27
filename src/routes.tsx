@@ -10,6 +10,7 @@ import {
     EmployeeFiles,
     Client,
     Holidays,
+    SalaryAdjustment,
 
     // System Settings
     TaskActivities,
@@ -24,13 +25,13 @@ import {
     EmployeeStatus,
     Expense,
     ExpenseType,
-    Holiday,
     HolidayType,
     LeaveDuration,
     LeaveStatus,
     LeaveType,
     Position,
     Role,
+    SalaryAdjustmentType,
     SalaryRate,
 
     //Employee 201 - Edit
@@ -47,7 +48,6 @@ import {
     EmployeeMemorandums,
     EmployeePayScheme,
     EmployeeSalary,
-    EmployeeSalaryAdjustments,
     EmployeeSalaryHistory,
     EmployeeUserProfile,
 } from './pages'
@@ -133,10 +133,6 @@ export const routes = createBrowserRouter([
                     },
                     {
                         path: 'holidaytype',
-                        element: <Holiday />
-                    },
-                    {
-                        path: 'holidaytype',
                         element: <HolidayType />
                     },
                     {
@@ -163,6 +159,10 @@ export const routes = createBrowserRouter([
                         path: 'salaryrate',
                         element: <SalaryRate />
                     },
+                    {
+                        path: 'salaryadjustmenttype',
+                        element: <SalaryAdjustmentType />
+                    },
                 ],
             },
             {
@@ -180,6 +180,10 @@ export const routes = createBrowserRouter([
             {
                 path: 'holidays',
                 element: <Holidays />,
+            },
+            {
+                path: 'salaryadjustments',
+                element: <SalaryAdjustment />,
             },
             {
                 path: 'employee/edit/:employeeId',
@@ -214,10 +218,6 @@ export const routes = createBrowserRouter([
                         element: <EmployeeGovernmentDocuments />
                     },
                     {
-                        path: 'leavecredits',
-                        element: <EmployeeLeaveCredits />
-                    },
-                    {
                         path: 'memorandums',
                         element: <EmployeeMemorandums />
                     },
@@ -231,7 +231,6 @@ export const routes = createBrowserRouter([
                     },
                     {
                         path: 'salaryadjustments',
-                        element: <EmployeeSalaryAdjustments />
                     },
                     {
                         path: 'salaryhistory',
