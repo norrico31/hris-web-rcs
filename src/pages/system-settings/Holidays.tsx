@@ -3,39 +3,47 @@ import { Button, Calendar, Col, Form as AntDForm, Row, Divider as AntDDivider, M
 import { MdOutlineHolidayVillage } from 'react-icons/md'
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
-import { MainHeader, Form, Box, Action } from "../components"
-import { renderTitle } from "../shared/utils/utilities"
+import { MainHeader, Form, Box, Action, TabHeader, Card } from "../../components"
+import { renderTitle } from "../../shared/utils/utilities"
 
 export default function Holidays() {
     renderTitle('Holidays')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [selectedData, setSelectedData] = useState<IHolidayType | undefined>(undefined)
 
     const onPanelChange = (value: Dayjs) => {
         console.log(value.format('YYYY-MM-DD'));
     }
 
+    function fetchData(search: string) {
+        console.log(search)
+    }
+
+    function handleDelete(id: string) {
+        console.log(id)
+    }
+
+    function handleEdit(data: Partial<any>) {
+        setIsModalOpen(true)
+        setSelectedData(data)
+    }
+
     function handleCloseModal() {
+        setSelectedData(undefined)
         setIsModalOpen(false)
     }
+
 
     const currentDay = dayjs().format('dddd')
     const currentDate = dayjs().format('MMMM DD')
 
     return (
-        <>
-            <MainHeader>
-                <Col>
-                    <h1 className='color-secondary'>Holidays</h1>
-                    <h3>{currentDay}</h3>
-                    <h2>{currentDate}</h2>
-                </Col>
-                <Col>
-                    <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>
-                        <MdOutlineHolidayVillage />
-                        Create Holiday
-                    </Button>
-                </Col>
-            </MainHeader>
+        <Card title='Holidays'>
+            <TabHeader
+                name='holiday type'
+                handleSearchData={fetchData}
+                handleCreate={() => setIsModalOpen(true)}
+            />
             <Row justify='space-around' wrap>
                 <Col1 xs={24} sm={24} md={14} lg={14} xl={14}>
                     <Calendar onPanelChange={onPanelChange} />
@@ -93,7 +101,7 @@ export default function Holidays() {
                 isModalOpen={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
             />
-        </>
+        </Card>
     )
 }
 
