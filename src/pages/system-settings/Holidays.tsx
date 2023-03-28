@@ -5,25 +5,62 @@ import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
 import { MainHeader, Form, Box, Action, TabHeader, Card } from "../../components"
 import { renderTitle } from "../../shared/utils/utilities"
+import { useAxios } from "../../shared/lib/axios";
+import { useEndpoints } from "../../shared/constants";
+import { IArguments, TableParams } from "../../shared/interfaces";
+interface IHolidayType {
+    created_at: string
+    deleted_at: string | null
+    id: string
+    name: string
+    updated_at: string
+}
+
+const { GET, POST, PUT, DELETE } = useAxios()
+const [{ SYSTEMSETTINGS }] = useEndpoints()
 
 export default function Holidays() {
     renderTitle('Holidays')
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IHolidayType[]>([])
     const [selectedData, setSelectedData] = useState<IHolidayType | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function fetch() {
+        let unmount = false;
+        !unmount && fetchData()
+        return () => {
+            unmount = true
+        }
+    }, [])
+
+    function fetchData(args?: IArguments) {
+        setLoading(true)
+        GET(SYSTEMSETTINGS.HOLIDAYS.GET, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res.data.data.data)
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res.data.data.total,
+                        current: res.data.data.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
+    }
 
     const onPanelChange = (value: Dayjs) => {
         console.log(value.format('YYYY-MM-DD'));
-    }
-
-    function fetchData(search: string) {
-        console.log(search)
     }
 
     function handleDelete(id: string) {
         console.log(id)
     }
 
-    function handleEdit(data: Partial<any>) {
+    function handleEdit(data: IHolidayType) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -33,7 +70,6 @@ export default function Holidays() {
         setIsModalOpen(false)
     }
 
-
     const currentDay = dayjs().format('dddd')
     const currentDate = dayjs().format('MMMM DD')
 
@@ -41,7 +77,7 @@ export default function Holidays() {
         <Card title='Holidays'>
             <TabHeader
                 name='holiday type'
-                handleSearchData={fetchData}
+                // handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Row justify='space-around' wrap>

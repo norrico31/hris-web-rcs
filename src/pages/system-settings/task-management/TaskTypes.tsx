@@ -56,9 +56,7 @@ export default function TaskTypes() {
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
+    ]
 
     function fetchData(args?: IArguments) {
         setLoading(true)
@@ -120,7 +118,6 @@ export default function TaskTypes() {
     )
 }
 
-
 type ModalProps = {
     title: string
     isModalOpen: boolean
@@ -143,7 +140,6 @@ function TypesModal({ title, selectedData, isModalOpen, fetchData, handleCancel 
     }, [selectedData])
 
     function onFinish(values: ITaskTypes) {
-        console.log(values)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(TASKS.TYPES.PUT, { ...restValues, id: selectedData.id }) : POST(TASKS.TYPES.POST, restValues)

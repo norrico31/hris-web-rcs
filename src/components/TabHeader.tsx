@@ -5,7 +5,7 @@ import styled from 'styled-components'
 
 type Props = {
     name: string
-    handleSearchData: (term: string) => void
+    handleSearchData?: (term: string) => void
     handleCreate?: () => void
     handleDownload?: () => void
 }
@@ -14,7 +14,7 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
     const [searchTerm, setSearchTerm] = useState('')
 
     const debouncedSearch = useCallback(debounce((searchTerm: string) => {
-        handleSearchData(searchTerm)
+        handleSearchData?.(searchTerm)
     }, 500), [])
 
     const onChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {

@@ -34,6 +34,19 @@ export const useEndpoints = () => {
                 POST: 'bank_details/',
                 PUT: 'bank_details/',
                 DELETE: 'bank_details/',
+            },
+
+            HOLIDAYS: {
+                GET: 'holidays',
+                POST: 'holidays/',
+                PUT: 'holidays/',
+                DELETE: 'holidays/'
+            },
+            HOLIDAYTYPES: {
+                GET: 'holiday_types',
+                POST: 'holiday_types/',
+                PUT: 'holiday_types/',
+                DELETE: 'holiday_types/'
             }
         },
         TASKS: {

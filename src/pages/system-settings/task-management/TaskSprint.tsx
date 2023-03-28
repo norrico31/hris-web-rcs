@@ -146,7 +146,6 @@ function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel
     useEffect(() => {
         if (selectedData != undefined) {
             let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
-
             form.setFieldsValue({
                 ...selectedData,
                 date: date

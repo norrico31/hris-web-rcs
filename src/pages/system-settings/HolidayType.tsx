@@ -1,18 +1,38 @@
 import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
-import { ColumnsType } from "antd/es/table"
+import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../components"
+import { useAxios } from '../../shared/lib/axios'
+import { useEndpoints } from '../../shared/constants'
+import { IArguments, TableParams } from '../../shared/interfaces'
 
 interface IHolidayType {
-    id: string;
-    type: string;
-    description?: string;
+    created_at: string
+    deleted_at: string | null
+    id: string
+    name: string
+    updated_at: string
 }
 
+const { GET, POST, PUT, DELETE } = useAxios()
+const [{ SYSTEMSETTINGS }] = useEndpoints()
+
 export default function HolidayType() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IHolidayType[]>([])
     const [selectedData, setSelectedData] = useState<IHolidayType | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function fetch() {
+        let unmount = false;
+        !unmount && fetchData()
+        return () => {
+            unmount = true
+        }
+    }, [])
 
     const columns: ColumnsType<IHolidayType> = [
         {
@@ -32,31 +52,32 @@ export default function HolidayType() {
             align: 'center',
             render: (_: any, record: IHolidayType) => <Action
                 title='Employee Status'
-                name={record.type}
+                name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
-    const data: IHolidayType[] = [
-        {
-            id: '2',
-            type: 'Regular',
-        },
-        {
-            id: '3',
-            type: 'Special',
-        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    function fetchData(args?: IArguments) {
+        setLoading(true)
+        GET(SYSTEMSETTINGS.HOLIDAYTYPES.GET, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res.data.data.data)
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res.data.data.total,
+                        current: res.data.data.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(SYSTEMSETTINGS.HOLIDAYTYPES.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IHolidayType) {
@@ -73,19 +94,25 @@ export default function HolidayType() {
         <Card title='Holiday Type'>
             <TabHeader
                 name='holiday type'
-                handleSearchData={fetchData}
+                handleSearchData={(str: string) => {
+                    setSearch(str)
+                    fetchData({ search: str, page: 1 })
+                }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={false}
+                loading={loading}
                 columns={columns}
                 dataList={data}
-                onChange={(evt) => console.log(evt)}
+                onChange={(pagination: TablePaginationConfig) => {
+                    fetchData({ page: pagination?.current, search })
+                }}
             />
             <HolidayTypeModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
+                fetchData={fetchData}
                 handleCancel={handleCloseModal}
             />
         </Card>
@@ -96,13 +123,14 @@ export default function HolidayType() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
+    fetchData(args?: IArguments): void
     selectedData?: IHolidayType
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function HolidayTypeModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<IHolidayType>()
 
     useEffect(() => {
@@ -116,10 +144,11 @@ function HolidayTypeModal({ title, selectedData, isModalOpen, handleCancel }: Mo
     function onFinish(values: IHolidayType) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(SYSTEMSETTINGS.HOLIDAYTYPES.PUT, { ...restValues, id: selectedData.id }) : POST(SYSTEMSETTINGS.HOLIDAYTYPES.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Holiday Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
