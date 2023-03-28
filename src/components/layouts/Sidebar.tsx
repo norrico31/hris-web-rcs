@@ -131,6 +131,11 @@ const menus = [
                 <SiExpensify />,
             ),
             getItemLinks(
+                <Link to='/systemsettings/holidays'>Holidays</Link>,
+                '/systemsettings/holidays',
+                <MdOutlineHolidayVillage />
+            ),
+            getItemLinks(
                 <Link to='/systemsettings/holidaytype'>Holiday Type</Link>,
                 '/systemsettings/holidaytype',
                 <MdOutlineHolidayVillage />,
@@ -187,11 +192,7 @@ const menus = [
         '/employee',
         <FaUsersCog />
     ),
-    getItemLinks(
-        <Link to='/holidays'>Holidays</Link>,
-        '/holidays',
-        <MdOutlineHolidayVillage />
-    ),
+
     getItemLinks(
         <Link to='/salaryadjustments'>Salary Adjustments</Link>,
         '/salaryadjustments',

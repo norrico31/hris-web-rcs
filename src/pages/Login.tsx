@@ -7,24 +7,26 @@ import { useAxios } from '../shared/lib/axios'
 import ImgBG from '../shared/assets/bg-login.png'
 import RcsLogo from '../shared/assets/logo.png'
 import { renderTitle } from '../shared/utils/utilities'
+import { useEndpoints } from '../shared/constants'
 
 const { POST } = useAxios()
+const [{ AUTH: { LOGIN } }] = useEndpoints()
 
 export default function Login() {
     renderTitle('Login')
     const { token, setToken } = useAuthContext()
     const [error, setError] = useState<string | undefined>(undefined)
 
-    // if (token != undefined) return <Navigate to='/' />
+    if (token != undefined) return <Navigate to='/' />
 
     const onFinish = async (values: Record<string, string>) => {
         //! GUARD CLAUSE (onSubmit || onFinish)
         //! DISPLAY ERRORS IN FORMS NOT IN NOTIFICATION
         setError(undefined)
         try {
-            const res = await POST('/login', values)
-            localStorage.setItem('t', JSON.stringify(res.data.token))
-            setToken(res.data.token)
+            const res = await POST(LOGIN, values)
+            localStorage.setItem('t', JSON.stringify(res?.data?.data?.token))
+            setToken(res?.data?.data?.token)
         } catch (error: any) {
             setError(error.response.data.message ?? error.response.data.error)
             return error

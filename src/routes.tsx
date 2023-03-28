@@ -132,6 +132,10 @@ export const routes = createBrowserRouter([
                         element: <ExpenseType />
                     },
                     {
+                        path: 'holidays',
+                        element: <Holidays />,
+                    },
+                    {
                         path: 'holidaytype',
                         element: <HolidayType />
                     },
@@ -176,10 +180,6 @@ export const routes = createBrowserRouter([
             {
                 path: 'employee',
                 element: <EmployeeFiles />,
-            },
-            {
-                path: 'holidays',
-                element: <Holidays />,
             },
             {
                 path: 'salaryadjustments',
