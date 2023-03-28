@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
@@ -19,8 +19,9 @@ export default function TaskActivities() {
     const [data, setData] = useState<ITaskActivities[]>([])
     const [selectedData, setSelectedData] = useState<ITaskActivities | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
         let unmount = false;
@@ -55,11 +56,10 @@ export default function TaskActivities() {
         },
     ]
 
-    function fetchData(args?: Record<string, string | number | undefined>) {
+    function fetchData(args?: IArguments) {
         setLoading(true)
         // TODO: TO FIX
-        let url = args?.page ? `?page=${args?.page}` : args?.search ? `?search=${args?.search}` : ''
-        GET(TASKS.ACTIVITIES.GET + url)
+        GET(TASKS.ACTIVITIES.GET, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res.data.data.data)
                 setTableParams({
@@ -67,8 +67,8 @@ export default function TaskActivities() {
                     pagination: {
                         ...tableParams?.pagination,
                         total: res.data.data.total,
-                        current: res.data.data.current_page
-                    }
+                        current: res.data.data.current_page,
+                    },
                 })
             }).finally(() => setLoading(false))
     }
@@ -92,7 +92,10 @@ export default function TaskActivities() {
         <Card title='Task Activities'>
             <TabHeader
                 name='task activities'
-                handleSearchData={(str) => fetchData({ search: str })}
+                handleSearchData={(str: string) => {
+                    setSearch(str)
+                    fetchData({ search: str, page: 1 })
+                }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -100,7 +103,7 @@ export default function TaskActivities() {
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
-                onChange={(pagination: TablePaginationConfig) => fetchData({ page: pagination?.current })}
+                onChange={(pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search })}
             />
             <ActivityModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
@@ -144,7 +147,6 @@ function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCanc
             handleCancel()
         }).finally(fetchData)
     }
-
     return <Modal title={`${title} - Activity`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem

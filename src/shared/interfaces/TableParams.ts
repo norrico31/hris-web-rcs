@@ -9,4 +9,5 @@ export interface TableParams {
     sortOrder?: string
     order?: string
     field?: string
+    search?: string
 }

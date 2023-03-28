@@ -19,7 +19,11 @@ axiosClient.interceptors.response.use((res) => res, err => Promise.reject(err))
 
 export const useAxios = () => {
     // const POST = <T>(url: string, data: T) => axiosSanctum(axiosClient.post('/api' + url, data))
-    const GET = (url: string) => axiosClient.get(url)
+    const GET = (url: string, tableParams?: { page: number; search: string }) => {
+        let query = tableParams?.page && "?page=" + tableParams?.page
+        query = (tableParams?.search ? (query + '&search=' + tableParams?.search) : query) ?? ''
+        return axiosClient.get(url + query)
+    }
 
     const POST = async <T>(url: string, data: T) => {
         try {
