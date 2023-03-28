@@ -1,17 +1,37 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
-import { ColumnsType } from "antd/es/table"
+import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { IArguments, TableParams } from '../../../shared/interfaces'
 interface ITaskTypes {
-    id: string;
-    name: string;
-    description: string;
+    created_at: string
+    deleted_at: string | null
+    id: string
+    name: string
+    updated_at: string
 }
 
+const { GET, POST, PUT, DELETE } = useAxios()
+const [{ SYSTEMSETTINGS: { TASKS } }] = useEndpoints()
+
 export default function TaskTypes() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<ITaskTypes[]>([])
     const [selectedData, setSelectedData] = useState<ITaskTypes | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function fetch() {
+        let unmount = false;
+        !unmount && fetchData()
+        return () => {
+            unmount = true
+        }
+    }, [])
 
     const columns: ColumnsType<ITaskTypes> = [
         {
@@ -39,35 +59,26 @@ export default function TaskTypes() {
 
     ];
 
-    const data: ITaskTypes[] = [
-        {
-            id: '1',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '2',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '3',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '4',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-    ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    function fetchData(args?: IArguments) {
+        setLoading(true)
+        GET(TASKS.TYPES.GET, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res.data.data.data)
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res.data.data.total,
+                        current: res.data.data.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(TASKS.TYPES.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: ITaskTypes) {
@@ -84,11 +95,27 @@ export default function TaskTypes() {
         <Card title='Task Types'>
             <TabHeader
                 name='task types'
-                handleSearchData={fetchData}
+                handleSearchData={(str: string) => {
+                    setSearch(str)
+                    fetchData({ search: str, page: 1 })
+                }}
                 handleCreate={() => setIsModalOpen(true)}
             />
-            <Table loading={false} columns={columns} dataList={data} />
-            <TypesModal title={selectedData != undefined ? 'Edit' : 'Create'} selectedData={selectedData} isModalOpen={isModalOpen} handleCancel={handleCloseModal} />
+            <Table
+                loading={loading}
+                columns={columns}
+                dataList={data}
+                onChange={(pagination: TablePaginationConfig) => {
+                    fetchData({ page: pagination?.current, search })
+                }}
+            />
+            <TypesModal
+                title={selectedData != undefined ? 'Edit' : 'Create'}
+                selectedData={selectedData}
+                isModalOpen={isModalOpen}
+                fetchData={fetchData}
+                handleCancel={handleCloseModal}
+            />
         </Card>
     )
 }
@@ -98,12 +125,13 @@ type ModalProps = {
     title: string
     isModalOpen: boolean
     selectedData?: ITaskTypes
+    fetchData(args?: IArguments): void
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function TypesModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function TypesModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITaskTypes>()
 
     useEffect(() => {
@@ -118,10 +146,11 @@ function TypesModal({ title, selectedData, isModalOpen, handleCancel }: ModalPro
         console.log(values)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(TASKS.TYPES.PUT, { ...restValues, id: selectedData.id }) : POST(TASKS.TYPES.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Types`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>

@@ -7,9 +7,11 @@ import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
 import { IArguments, TableParams } from '../../../shared/interfaces'
 interface ITaskActivities {
-    id: string;
-    name: string;
-    description: string;
+    created_at: string
+    deleted_at: string | null
+    id: string
+    name: string
+    updated_at: string
 }
 
 const { GET, POST, PUT, DELETE } = useAxios()
@@ -56,9 +58,8 @@ export default function TaskActivities() {
         },
     ]
 
-    function fetchData(args?: IArguments) {
+    const fetchData = useCallback((args?: IArguments) => {
         setLoading(true)
-        // TODO: TO FIX
         GET(TASKS.ACTIVITIES.GET, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res.data.data.data)
@@ -70,8 +71,14 @@ export default function TaskActivities() {
                         current: res.data.data.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
-    }
+                setLoading(false)
+            })
+    }, [data, tableParams])
+
+    const handleSearch = useCallback((str: string) => {
+        setSearch(str)
+        fetchData({ search: str, page: 1 })
+    }, [search])
 
     function handleDelete(id: string) {
         DELETE(TASKS.ACTIVITIES.DELETE, id)
@@ -92,10 +99,7 @@ export default function TaskActivities() {
         <Card title='Task Activities'>
             <TabHeader
                 name='task activities'
-                handleSearchData={(str: string) => {
-                    setSearch(str)
-                    fetchData({ search: str, page: 1 })
-                }}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -103,7 +107,9 @@ export default function TaskActivities() {
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
-                onChange={(pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search })}
+                onChange={(pagination: TablePaginationConfig) => {
+                    fetchData({ page: pagination?.current, search })
+                }}
             />
             <ActivityModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
