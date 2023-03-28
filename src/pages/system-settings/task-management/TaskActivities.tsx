@@ -71,8 +71,7 @@ export default function TaskActivities() {
                         current: res.data.data.current_page,
                     },
                 })
-                setLoading(false)
-            })
+            }).finally(() => setLoading(false))
     }, [data, tableParams])
 
     const handleSearch = useCallback((str: string) => {
