@@ -8,13 +8,15 @@ import RcsLogo from '../../shared/assets/logo.png'
 import LogoSmall from '../../shared/assets/logo-small.png'
 import Sidebar from './Sidebar'
 import Header from './Header'
+import { useEndpoints } from '../../shared/constants'
 
 const { Sider, Content: AntDContent } = AntdLayout
 const { GET } = useAxios()
+const [{ AUTH: { USER, LOGIN } }] = useEndpoints()
 
 export default function Layout() {
-    // const { token, setToken, setUser } = useAuthContext()
-    // if (token == undefined) return <Navigate to='/login' />
+    const { token, setToken, setUser } = useAuthContext()
+    if (token == undefined) return <Navigate to={LOGIN} />
 
     const [collapsed, setCollapsed] = useState(() => {
         let isCollapsed = localStorage.getItem('collapsed')
@@ -26,15 +28,15 @@ export default function Layout() {
 
     useEffect(() => {
         let cleanUp = false;
-        // GET('/user')
-        //     .then(({ data }) => !cleanUp && setUser(data))
-        //     .catch((err) => {
-        //         if (err.response && err.response.status === 401) {
-        //             setToken(undefined)
-        //             setUser(undefined)
-        //             return <Navigate to='/login' />
-        //         }
-        //     })
+        GET(USER)
+            .then(({ data }) => !cleanUp && setUser(data.data))
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    setToken(undefined)
+                    setUser(undefined)
+                    return <Navigate to={LOGIN} />
+                }
+            })
         return function () {
             cleanUp = true
         }

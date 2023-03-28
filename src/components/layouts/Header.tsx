@@ -4,6 +4,7 @@ import { MenuUnfoldOutlined, MenuFoldOutlined, DownOutlined } from '@ant-design/
 import styled from 'styled-components'
 import { useAxios } from '../../shared/lib/axios'
 import { useAuthContext } from '../../shared/contexts/Auth'
+import { useEndpoints } from '../../shared/constants'
 
 const { Header: AntDHeader } = Layout
 const { Text: AntText } = Typography
@@ -14,9 +15,11 @@ type Props = {
 }
 
 const { POST } = useAxios()
+const [{ AUTH: { LOGOUT, LOGIN } }] = useEndpoints()
 
 export default function Header({ collapsed, setCollapsed }: Props) {
     const { user, setUser, setToken } = useAuthContext()
+
     const toggle = () => {
         collapsed = !collapsed
         setCollapsed(collapsed)
@@ -42,7 +45,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
     function logout(evt: React.MouseEvent) {
         evt.stopPropagation()
         evt.preventDefault()
-        POST('/logout', {})
+        POST(LOGOUT, {})
             .then(() => {
                 localStorage.clear()
                 setUser(undefined)
@@ -61,7 +64,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
                 <Dropdown menu={{ items }}>
                     <a onClick={e => e.preventDefault()}>
                         <Space>
-                            <UserName>{user?.fullname ?? 'Unknown'}</UserName>
+                            <UserName>{user?.full_name ?? 'Unknown'}</UserName>
                             <DownOutlined className='dropdown-icon' />
                         </Space>
                     </a>
