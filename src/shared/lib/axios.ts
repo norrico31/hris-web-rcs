@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Alert } from './alert'
 
 const axiosClient = axios.create({ baseURL: import.meta.env.VITE_BASE_URL })
 
@@ -19,10 +20,11 @@ axiosClient.interceptors.response.use((res) => res, err => Promise.reject(err))
 export const useAxios = () => {
     // const POST = <T>(url: string, data: T) => axiosSanctum(axiosClient.post('/api' + url, data))
     const GET = (url: string) => axiosClient.get(url)
+
     const POST = async <T>(url: string, data: T) => {
         try {
             const res = await axiosClient.post(url, data)
-            // handle modal success
+            Alert.success('Create Success', res.data.message)
             return Promise.resolve(res)
         } catch (error) {
             return Promise.reject(error)
@@ -31,8 +33,18 @@ export const useAxios = () => {
 
     const PUT = async <T extends Partial<{ id: string }>>(url: string, data: T) => {
         try {
-            const res = await axiosClient.post(url + '/' + data.id, data)
-            // handle modal success
+            const res = await axiosClient.put(url + data.id, data)
+            Alert.information('Update Success', res.data.message)
+            return Promise.resolve(res)
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    }
+
+    const DELETE = async (url: string, id: string) => {
+        try {
+            const res = await axiosClient.delete(url + id)
+            Alert.warning('Delete Success', res.data.message)
             return Promise.resolve(res)
         } catch (error) {
             return Promise.reject(error)
@@ -42,7 +54,8 @@ export const useAxios = () => {
     return {
         GET,
         POST,
-        PUT
+        PUT,
+        DELETE
     }
 }
 

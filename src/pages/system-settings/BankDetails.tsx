@@ -3,6 +3,8 @@ import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../components"
+import { useAxios } from '../../shared/lib/axios'
+import { useEndpoints } from '../../shared/constants'
 
 interface IBankDetails {
     id: string;
@@ -11,9 +13,23 @@ interface IBankDetails {
     description?: string;
 }
 
+const { GET } = useAxios()
+const [{ SYSTEMSETTINGS: { BANKDETAILS } }] = useEndpoints()
+
 export default function BankDetails() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IBankDetails | undefined>(undefined)
+
+    useEffect(function fetchData() {
+        let unmount = false
+        GET(BANKDETAILS.GET)
+            .then((res) => {
+                console.log(res.data)
+            })
+        return () => {
+            unmount = true
+        }
+    }, [])
 
     const columns: ColumnsType<IBankDetails> = [
         {

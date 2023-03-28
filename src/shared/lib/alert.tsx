@@ -48,6 +48,7 @@ const useAlert = () => {
         const notifColor = NOTIFICATION_COLORS[status]
         const NotificationIcon = NOTIFICATION_ICONS[status]
         notification.open({
+            placement: 'top',
             message: header,
             description: message,
             style: {
