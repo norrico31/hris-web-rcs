@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Tabs } from '../../../components'
 import { hrSettingsPaths } from '../../../shared/constants'
 
-export default function HRSettings() {
+export default function ClientSettings() {
     const navigate = useNavigate()
     let { pathname } = useLocation()
 
@@ -14,10 +14,11 @@ export default function HRSettings() {
     })), [])
 
     const activeKey = pathname.slice(15, pathname.length)
+    console.log(activeKey)
     const onChange = (key: string) => navigate('/systemsettings' + key)
 
     return <Tabs
-        title='HR Settings'
+        title='Client Settings'
         activeKey={activeKey}
         onChange={onChange}
         items={items}

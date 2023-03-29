@@ -31,14 +31,23 @@ export { default as Position } from './system-settings/hr-settings/Position'
 export { default as SalaryAdjustmentType } from './system-settings/hr-settings/SalaryAdjustmentType'
 export { default as Team } from './system-settings/hr-settings/Team'
 
+// Client Settings
+export { default as ClientSettings } from './system-settings/client-settings/ClientSettings'
+export { default as Client } from './system-settings/client-settings/Client'
+export { default as ClientBranch } from './system-settings/client-settings/ClientBranch'
+export { default as ClientBranchAdjustment } from './system-settings/client-settings/ClientBranchAdjustment'
 
-export { default as Client } from './system-settings/Client'
-export { default as ClientBranch } from './system-settings/ClientBranch'
-export { default as ClientBranchHoliday } from './system-settings/ClientBranchHoliday'
+// Expense Settings
 export { default as Expense } from './system-settings/Expense'
 export { default as ExpenseType } from './system-settings/ExpenseType'
-export { default as Role } from './system-settings/Role'
+
+
 export { default as SalaryRate } from './system-settings/SalaryRate'
+
+// Admin Settings
+export { default as Roles } from './admin-settings/Roles'
+export { default as Users } from './admin-settings/Users'
+export { default as AuditLogs } from './admin-settings/AuditLogs'
 
 
 // Employee 201 Edit

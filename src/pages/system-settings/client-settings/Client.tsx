@@ -1,31 +1,24 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
+import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../components"
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
 
-interface IClientBranch {
+interface IClient {
     id: string;
     name: string;
-    client?: any
     description?: string;
 }
 
-export default function ClientBranch() {
+export default function Client() {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IClientBranch | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<IClient | undefined>(undefined)
 
-    const columns: ColumnsType<IClientBranch> = [
-        {
-            title: 'Client Branch',
-            key: 'name',
-            dataIndex: 'name',
-        },
+    const columns: ColumnsType<IClient> = [
         {
             title: 'Client',
-            key: 'client_name',
-            dataIndex: 'client_name',
-            render: (_, record) => record.client?.name
+            key: 'name',
+            dataIndex: 'name',
         },
         {
             title: 'Description',
@@ -37,7 +30,7 @@ export default function ClientBranch() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IClientBranch) => <Action
+            render: (_: any, record: IClient) => <Action
                 title='Employee Status'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
@@ -47,7 +40,7 @@ export default function ClientBranch() {
 
     ];
 
-    const data: IClientBranch[] = [
+    const data: IClient[] = [
         {
             id: '1',
             name: 'BDO',
@@ -70,7 +63,7 @@ export default function ClientBranch() {
         console.log(id)
     }
 
-    function handleEdit(data: IClientBranch) {
+    function handleEdit(data: IClient) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -81,9 +74,9 @@ export default function ClientBranch() {
     }
 
     return (
-        <Card title='Client Branches'>
+        <Card title='Clients'>
             <TabHeader
-                name='client branch'
+                name='client'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
             />
@@ -93,7 +86,7 @@ export default function ClientBranch() {
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <ClientBranchModal
+            <ClientModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -107,14 +100,14 @@ export default function ClientBranch() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: IClientBranch
+    selectedData?: IClient
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<IClientBranch>()
+function ClientModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+    const [form] = useForm<IClient>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -124,7 +117,7 @@ function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel }: M
         }
     }, [selectedData])
 
-    function onFinish(values: IClientBranch) {
+    function onFinish(values: IClient) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         console.log(restValues)
@@ -133,26 +126,15 @@ function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel }: M
         handleCancel()
     }
 
-    return <Modal title={`${title} - Client Branch`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Client`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Client Branch"
+                label="Client Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter client branch!' }]}
+                rules={[{ required: true, message: 'Please enter client!' }]}
             >
-                <Input placeholder='Enter client branch...' />
-            </FormItem>
-
-            <FormItem name='client_id' label="Client" required rules={[{ required: true, message: 'Please select client!' }]}>
-                <Select
-                    placeholder='Select client...'
-                    allowClear
-                    showSearch
-                >
-                    <Select.Option value="male">Male</Select.Option>
-                    <Select.Option value="female">Female</Select.Option>
-                </Select>
+                <Input placeholder='Enter client...' />
             </FormItem>
 
             <FormItem

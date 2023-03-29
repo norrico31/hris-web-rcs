@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react'
 import { MenuProps, Menu as AntdMenu } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineSchedule, AiOutlineCalendar } from 'react-icons/ai'
+import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineSchedule, AiOutlineCalendar, AiOutlineAudit } from 'react-icons/ai'
 import { RiBankLine } from 'react-icons/ri'
-import { MdOutlinePersonalInjury, MdOutlineHolidayVillage } from 'react-icons/md'
-import { FaTasks, FaCriticalRole, FaUsersCog, FaUserClock } from 'react-icons/fa'
+import { MdOutlinePersonalInjury, MdOutlineHolidayVillage, MdAdminPanelSettings } from 'react-icons/md'
+import { FaTasks, FaCriticalRole, FaUsersCog, FaUserClock, FaUsers } from 'react-icons/fa'
 import { GiPositionMarker, GiExpense, GiHumanPyramid } from 'react-icons/gi'
 import { BiTimeFive } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
@@ -90,6 +90,11 @@ const menus = [
                 '/systemsettings/hrsettings/bankdetails',
                 <GiHumanPyramid />,
             ),
+            getItemLinks(
+                <Link to='/systemsettings/clientsettings/client'>Client Settings</Link>,
+                '/systemsettings/clientsettings/client',
+                <IoIosPeople />,
+            ),
             // getItemLinks(
             //     <Link to='/systemsettings/client'>Client</Link>,
             //     '/systemsettings/client',
@@ -117,13 +122,29 @@ const menus = [
             //     '/systemsettings/expensetype',
             //     <SiExpensify />,
             // ),
+        ]
 
-
-            // getItemLinks(
-            //     <Link to='/systemsettings/role'>Role</Link>,
-            //     '/systemsettings/role',
-            //     <FaCriticalRole />,
-            // ),
+    ),
+    getItemLinks(
+        'Admin Settings',
+        '/adminsettings',
+        <MdAdminPanelSettings />,
+        [
+            getItemLinks(
+                <Link to='/adminsettings/users'>Users</Link>,
+                '/adminsettings/users',
+                <FaUsers />,
+            ),
+            getItemLinks(
+                <Link to='/adminsettings/role'>Role</Link>,
+                '/adminsettings/role',
+                <FaCriticalRole />,
+            ),
+            getItemLinks(
+                <Link to='/adminsettings/auditlogs'>Audit Logs</Link>,
+                '/adminsettings/auditlogs',
+                <AiOutlineAudit />,
+            ),
         ]
     ),
     getItemLinks(

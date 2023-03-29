@@ -8,7 +8,6 @@ import {
     Leave,
     Tasks,
     EmployeeFiles,
-    Client,
     SalaryAdjustment,
 
     //* System Settings
@@ -39,10 +38,15 @@ import {
     ExpenseType,
 
     // Client Settings
+    ClientSettings,
+    Client,
     ClientBranch,
-    ClientBranchHoliday,
+    ClientBranchAdjustment,
 
-    Role,
+    // Admin Settings
+    Roles,
+    Users,
+    AuditLogs,
 
     //Employee 201 - Edit
     EmployeeEdit,
@@ -153,6 +157,24 @@ export const routes = createBrowserRouter([
                                 path: 'salaryadjustmenttype',
                                 element: <SalaryAdjustmentType />
                             },
+                        ],
+                    },
+                    {
+                        path: 'clientsettings',
+                        element: <ClientSettings />,
+                        children: [
+                            {
+                                path: 'client',
+                                element: <Client />,
+                            },
+                            {
+                                path: 'clientbranch',
+                                element: <ClientBranch />
+                            },
+                            {
+                                path: 'clientbranchadjustment',
+                                element: <ClientBranchAdjustment />
+                            },
                         ]
                     },
                     {
@@ -164,18 +186,6 @@ export const routes = createBrowserRouter([
                         element: <TaskSprint />
                     },
                     {
-                        path: 'client',
-                        element: <Client />
-                    },
-                    {
-                        path: 'clientbranch',
-                        element: <ClientBranch />
-                    },
-                    {
-                        path: 'clientbranchholiday',
-                        element: <ClientBranchHoliday />
-                    },
-                    {
                         path: 'expense',
                         element: <Expense />
                     },
@@ -185,7 +195,7 @@ export const routes = createBrowserRouter([
                     },
                     {
                         path: 'role',
-                        element: <Role />
+                        element: <Roles />
                     },
                     {
                         path: 'salaryrate',
