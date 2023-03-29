@@ -38,8 +38,9 @@ export { default as ClientBranch } from './system-settings/client-settings/Clien
 export { default as ClientBranchAdjustment } from './system-settings/client-settings/ClientBranchAdjustment'
 
 // Expense Settings
-export { default as Expense } from './system-settings/Expense'
-export { default as ExpenseType } from './system-settings/ExpenseType'
+export { default as ExpenseSettings } from './system-settings/expense-settings/ExpenseSettings'
+export { default as Expense } from './system-settings/expense-settings/Expense'
+export { default as ExpenseType } from './system-settings/expense-settings/ExpenseType'
 
 
 export { default as SalaryRate } from './system-settings/SalaryRate'

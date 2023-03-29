@@ -2,18 +2,13 @@ import { useState, useEffect } from 'react'
 import { MenuProps, Menu as AntdMenu } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineSchedule, AiOutlineCalendar, AiOutlineAudit } from 'react-icons/ai'
-import { RiBankLine } from 'react-icons/ri'
-import { MdOutlinePersonalInjury, MdOutlineHolidayVillage, MdAdminPanelSettings } from 'react-icons/md'
-import { FaTasks, FaCriticalRole, FaUsersCog, FaUserClock, FaUsers } from 'react-icons/fa'
-import { GiPositionMarker, GiExpense, GiHumanPyramid } from 'react-icons/gi'
+import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit } from 'react-icons/ai'
+import { MdAdminPanelSettings } from 'react-icons/md'
+import { FaTasks, FaCriticalRole, FaUsersCog, FaUsers } from 'react-icons/fa'
+import { GiHumanPyramid } from 'react-icons/gi'
 import { BiTimeFive } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
-import { TbCalendarStats } from 'react-icons/tb'
-import { VscTypeHierarchy } from 'react-icons/vsc'
 import { SiExpensify } from 'react-icons/si'
-
-//! Employee 201 Page (Edit) for HR
 
 export default function Sidebar() {
     let location = useLocation()
@@ -22,11 +17,15 @@ export default function Sidebar() {
     useEffect(() => {
         if (location?.pathname.includes('/employee/edit')) {
             setLocationKey('/employee')
-        } else if (location?.pathname.includes('/systemsettings/taskmanagement')) {
-            setLocationKey('/systemsettings/taskmanagement/activities')
-        } else {
-            setLocationKey(location?.pathname)
-        }
+        } else if (location?.pathname.includes('/systemsettings/tasksettings')) {
+            setLocationKey('/systemsettings/tasksettings/activities')
+        } else if (location?.pathname.includes('/systemsettings/hrsettings')) {
+            setLocationKey('/systemsettings/hrsettings/bankdetails')
+        } else if (location?.pathname.includes('/systemsettings/clientsettings')) {
+            setLocationKey('/systemsettings/clientsettings/client')
+        } else if (location?.pathname.includes('/systemsettings/expensesettings')) {
+            setLocationKey('/systemsettings/expensesettings/expense')
+        } else setLocationKey(location?.pathname)
     }, [location.pathname])
 
     return (
@@ -81,47 +80,25 @@ const menus = [
         <AiOutlineSetting />,
         [
             getItemLinks(
-                <Link to='/systemsettings/taskmanagement/activities'>Tasks Settings</Link>,
-                '/systemsettings/taskmanagement/activities',
+                <Link to='/systemsettings/tasksettings/activities'>Tasks</Link>,
+                '/systemsettings/tasksettings/activities',
                 <FaTasks />,
             ),
             getItemLinks(
-                <Link to='/systemsettings/hrsettings/bankdetails'>HR Settings</Link>,
+                <Link to='/systemsettings/hrsettings/bankdetails'>Human Resources</Link>,
                 '/systemsettings/hrsettings/bankdetails',
                 <GiHumanPyramid />,
             ),
             getItemLinks(
-                <Link to='/systemsettings/clientsettings/client'>Client Settings</Link>,
+                <Link to='/systemsettings/clientsettings/client'>Client</Link>,
                 '/systemsettings/clientsettings/client',
                 <IoIosPeople />,
             ),
-            // getItemLinks(
-            //     <Link to='/systemsettings/client'>Client</Link>,
-            //     '/systemsettings/client',
-            //     <IoIosPeople />,
-            // ),
-            // getItemLinks(
-            //     <Link to='/systemsettings/clientbranch'>Client Branch</Link>,
-            //     '/systemsettings/clientbranch',
-            //     <MdOutlinePersonalInjury />,
-            // ),
-            // getItemLinks(
-            //     <Link to='/systemsettings/clientbranchholiday'>Client Branch Holiday</Link>,
-            //     '/systemsettings/clientbranchholiday',
-            //     <MdOutlineHolidayVillage />,
-            // ),
-
-
-            // getItemLinks(
-            //     <Link to='/systemsettings/expense'>Expense</Link>,
-            //     '/systemsettings/expense',
-            //     <GiExpense />,
-            // ),
-            // getItemLinks(
-            //     <Link to='/systemsettings/expensetype'>Expense Type</Link>,
-            //     '/systemsettings/expensetype',
-            //     <SiExpensify />,
-            // ),
+            getItemLinks(
+                <Link to='/systemsettings/expensesettings/expense'>Expense</Link>,
+                '/systemsettings/expensesettings/expense',
+                <SiExpensify />,
+            ),
         ]
 
     ),
@@ -162,17 +139,11 @@ const menus = [
         '/employee',
         <FaUsersCog />
     ),
-
     getItemLinks(
         <Link to='/salaryadjustments'>Salary Adjustments</Link>,
         '/salaryadjustments',
         <AiOutlineDollarCircle />
     ),
-    // getItemLinks(
-    //     <Link to='/schedule'>Schedule</Link>,
-    //     '/schedule',
-    //     <AiOutlineSchedule />,
-    // ),
 ]
 
 function getItemLinks(

@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Tabs } from '../../../components'
-import { clientSettingsPaths } from '../../../shared/constants'
+import { expenseSettingsPaths } from '../../../shared/constants'
 
 export default function ClientSettings() {
     const navigate = useNavigate()
     let { pathname } = useLocation()
 
-    const items = useMemo(() => clientSettingsPaths.map(({ label, key }) => ({
+    const items = useMemo(() => expenseSettingsPaths.map(({ label, key }) => ({
         label,
         key,
         children: <Outlet />
@@ -18,7 +18,7 @@ export default function ClientSettings() {
     const onChange = (key: string) => navigate('/systemsettings' + key)
 
     return <Tabs
-        title='Client Settings'
+        title='Expense Settings'
         activeKey={activeKey}
         onChange={onChange}
         items={items}

@@ -1,14 +1,14 @@
 export const tasksPaths = [
     {
         label: 'Task Activities',
-        key: '/taskmanagement/activities',
+        key: '/tasksettings/activities',
     },
     {
         label: 'Task Types',
-        key: '/taskmanagement/types',
+        key: '/tasksettings/types',
     },
     {
         label: 'Sprint',
-        key: '/taskmanagement/sprint',
+        key: '/tasksettings/sprint',
     },
 ]

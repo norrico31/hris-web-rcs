@@ -34,6 +34,7 @@ import {
     SalaryAdjustmentType,
 
     // Expense Settings
+    ExpenseSettings,
     Expense,
     ExpenseType,
 
@@ -84,7 +85,7 @@ export const routes = createBrowserRouter([
                 element: <div><Outlet /></div>,
                 children: [
                     {
-                        path: 'taskmanagement',
+                        path: 'tasksettings',
                         element: <TasksSettings />,
                         children: [
                             {
@@ -178,29 +179,27 @@ export const routes = createBrowserRouter([
                         ]
                     },
                     {
-                        path: 'taskmanagement/types',
-                        element: <TaskTypes />
+                        path: 'expensesettings',
+                        element: <ExpenseSettings />,
+                        children: [
+                            {
+                                path: 'expense',
+                                element: <Expense />,
+                            },
+                            {
+                                path: 'expensetype',
+                                element: <ExpenseType />,
+                            },
+                        ]
                     },
-                    {
-                        path: 'taskmanagement/sprint',
-                        element: <TaskSprint />
-                    },
-                    {
-                        path: 'expense',
-                        element: <Expense />
-                    },
-                    {
-                        path: 'expensetype',
-                        element: <ExpenseType />
-                    },
-                    {
-                        path: 'role',
-                        element: <Roles />
-                    },
-                    {
-                        path: 'salaryrate',
-                        element: <SalaryRate />
-                    },
+                    // {
+                    //     path: 'role',
+                    //     element: <Roles />
+                    // },
+                    // {
+                    //     path: 'salaryrate',
+                    //     element: <SalaryRate />
+                    // },
                 ],
             },
             {
