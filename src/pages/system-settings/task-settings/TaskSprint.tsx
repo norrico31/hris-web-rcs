@@ -3,18 +3,10 @@ import { Space, Button, Input, Form as AntDForm, DatePicker } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import dayjs from 'dayjs'
-import { Action, Table, Card, TabHeader, Form } from "../../../components"
-import { IArguments, TableParams } from '../../../shared/interfaces'
 import { useAxios } from '../../../shared/lib/axios'
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import { IArguments, TableParams, TaskSprintRes, ITaskSprint } from '../../../shared/interfaces'
 import { useEndpoints } from '../../../shared/constants'
-
-interface ITaskSprint {
-    id: string;
-    name: string;
-    start_date: string
-    end_date: string
-    description: string;
-}
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { TASKS } }] = useEndpoints()
@@ -28,14 +20,19 @@ export default function TaskSprint() {
     const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
-        let unmount = false;
-        !unmount && fetchData()
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
         return () => {
-            unmount = true
+            controller.abort()
         }
     }, [])
 
     const columns: ColumnsType<ITaskSprint> = [
+        {
+            title: 'Team',
+            key: 'team_name',
+            dataIndex: 'team_name',
+        },
         {
             title: 'Task Sprint',
             key: 'name',
@@ -72,15 +69,15 @@ export default function TaskSprint() {
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET(TASKS.SPRINT.GET, { page: args?.page!, search: args?.search! })
+        GET<TaskSprintRes>(TASKS.SPRINT.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
-                setData(res.data.data.data)
+                setData(res?.data ?? [])
                 setTableParams({
                     ...tableParams,
                     pagination: {
                         ...tableParams?.pagination,
-                        total: res.data.data.total,
-                        current: res.data.data.current_page,
+                        total: res?.total,
+                        current: res?.current_page,
                     },
                 })
             }).finally(() => setLoading(false))
@@ -115,9 +112,7 @@ export default function TaskSprint() {
                 loading={loading}
                 columns={columns}
                 dataList={data}
-                onChange={(pagination: TablePaginationConfig) => {
-                    fetchData({ page: pagination?.current, search })
-                }}
+                onChange={(pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search })}
             />
             <SprintModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
@@ -189,10 +184,7 @@ function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel
                     format='YYYY/MM/DD'
                 />
             </FormItem>
-            <FormItem
-                name="description"
-                label="Description"
-            >
+            <FormItem name="description" label="Description">
                 <Input placeholder='Enter description...' />
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Form as AntDForm, Input, DatePicker, Space, Button, Select } from 'antd'
+import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col } from 'antd'
 import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
@@ -198,7 +198,7 @@ function TasksModal({ title, selectedData, isModalOpen, handleCancel }: ModalPro
     return <Modal title={`${title} - Tasks`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Sprint Name"
+                label="Task Name"
                 name="name"
                 required
                 rules={[{ required: true, message: 'Please enter types name!' }]}
@@ -206,7 +206,7 @@ function TasksModal({ title, selectedData, isModalOpen, handleCancel }: ModalPro
                 <Input placeholder='Enter type name...' />
             </FormItem>
             <FormItem
-                label="Start and End Date"
+                label="Date"
                 name="date"
                 required
                 rules={[{ required: true, message: 'Please select date!' }]}
@@ -216,15 +216,22 @@ function TasksModal({ title, selectedData, isModalOpen, handleCancel }: ModalPro
                     style={{ width: '100%' }}
                 />
             </FormItem>
-            <FormItem name='task_activity' label="Task Activity" required rules={[{ required: true, message: 'Please select task activity!' }]}>
-                <Select
-                    mode='multiple'
-                    // defaultValue={defaultVal}
-                    placeholder='Select task activity'
-                >
-                    <Select.Option value="demo">Demo</Select.Option>
-                </Select>
-            </FormItem>
+            <Row justify='space-between' align='middle'>
+                <Col span={18}>
+                    <FormItem name='task_activity' label="Task Activity" required rules={[{ required: true, message: 'Please select task activity!' }]}>
+                        <Select
+                            mode='multiple'
+                            // defaultValue={defaultVal}
+                            placeholder='Select task activity'
+                        >
+                            <Select.Option value="demo">Demo</Select.Option>
+                        </Select>
+                    </FormItem>
+                </Col>
+                <Col>
+                    <Button className='color-secondary'>Add Activity</Button>
+                </Col>
+            </Row>
             <FormItem name='task_type' label="Task Type" required rules={[{ required: true, message: 'Please select task type!' }]}>
                 <Select
                     mode='multiple'
@@ -234,7 +241,7 @@ function TasksModal({ title, selectedData, isModalOpen, handleCancel }: ModalPro
                     <Select.Option value="demo">Demo</Select.Option>
                 </Select>
             </FormItem>
-            <FormItem name='sprint_name' label="Sprint Name" required rules={[{ required: true, message: 'Please select task sprint!' }]}>
+            <FormItem name='sprint_name' label="Sprint" required rules={[{ required: true, message: 'Please select task sprint!' }]}>
                 <Select
                     mode='multiple'
                     // defaultValue={defaultVal}

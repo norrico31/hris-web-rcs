@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
 import { Layout as AntdLayout } from 'antd'
 import styled from 'styled-components'
-import { useAxios } from '../../shared/lib/axios'
+import axiosClient from '../../shared/lib/axios'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import RcsLogo from '../../shared/assets/logo.png'
 import LogoSmall from '../../shared/assets/logo-small.png'
 import Sidebar from './Sidebar'
 import Header from './Header'
 import { useEndpoints } from '../../shared/constants'
+import { AuthUserRes } from '../../shared/interfaces'
 
 const { Sider, Content: AntDContent } = AntdLayout
-const { GET } = useAxios()
 const [{ AUTH: { USER, LOGIN } }] = useEndpoints()
 
 export default function Layout() {
@@ -28,9 +28,9 @@ export default function Layout() {
 
     useEffect(() => {
         let cleanUp = false;
-        GET(USER)
-            .then(({ data }) => !cleanUp && setUser(data.data))
-            .catch((err) => {
+        axiosClient.get<AuthUserRes>(USER)
+            .then((res) => !cleanUp && setUser(res?.data?.data))
+            .catch((err: any) => {
                 if (err.response && err.response.status === 401) {
                     setToken(undefined)
                     setUser(undefined)

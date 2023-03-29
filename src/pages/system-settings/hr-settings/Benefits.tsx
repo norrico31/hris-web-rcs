@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react'
 import { Form as AntDForm, Modal, Input, DatePicker, Space, Button, Select } from 'antd'
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs'
-import { Card } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table, Form } from './../../components'
+import { Card } from '../../../components'
+import { TabHeader, Table, Form } from '../../../components'
 
 interface IBenefits {
     id: string;
@@ -13,7 +12,6 @@ interface IBenefits {
 }
 
 export default function Benefits() {
-    const employeeId = useEmployeeId()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IBenefits | undefined>(undefined)
 

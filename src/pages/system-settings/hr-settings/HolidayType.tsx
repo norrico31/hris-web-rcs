@@ -2,18 +2,10 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../components"
-import { useAxios } from '../../shared/lib/axios'
-import { useEndpoints } from '../../shared/constants'
-import { IArguments, TableParams } from '../../shared/interfaces'
-
-interface IHolidayType {
-    created_at: string
-    deleted_at: string | null
-    id: string
-    name: string
-    updated_at: string
-}
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { HolidayTypeRes, IArguments, TableParams, IHolidayType } from '../../../shared/interfaces'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS }] = useEndpoints()
@@ -27,10 +19,10 @@ export default function HolidayType() {
     const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
-        let unmount = false;
-        !unmount && fetchData()
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
         return () => {
-            unmount = true
+            controller.abort()
         }
     }, [])
 
@@ -61,15 +53,15 @@ export default function HolidayType() {
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET(SYSTEMSETTINGS.HOLIDAYTYPES.GET, { page: args?.page!, search: args?.search! })
+        GET<HolidayTypeRes>(SYSTEMSETTINGS.HOLIDAYTYPES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
-                setData(res.data.data.data)
+                setData(res?.data ?? [])
                 setTableParams({
                     ...tableParams,
                     pagination: {
                         ...tableParams?.pagination,
-                        total: res.data.data.total,
-                        current: res.data.data.current_page,
+                        total: res?.total,
+                        current: res?.current_page,
                     },
                 })
             }).finally(() => setLoading(false))

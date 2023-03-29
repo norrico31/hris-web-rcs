@@ -1,47 +1,49 @@
 import { Tabs as AntDTabs, Typography } from 'antd'
-import { TabsPosition } from 'antd/es/tabs'
-import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
-type TabsProps = {
-    els: { label: string; key: string }[]
-    title: string;
-    tabPosition?: TabsPosition
+interface Props {
+    title: string
+    activeKey: string
+    onChange(key: string): void
+    items: {
+        label: string;
+        key: string;
+        children: JSX.Element;
+    }[]
 }
 
-const { Title: AntDTitle } = Typography
-
-export default function TabsContainer({ title, els, tabPosition = 'left' }: TabsProps) {
-    const navigate = useNavigate()
-    let { pathname } = useLocation()
+export default function Tabs(props: Props) {
     return (
         <>
-            <Title level={3}>Tasks Settings</Title>
-            <Tabs
-                activeKey={pathname.slice(15, pathname.length)}
-                tabPosition={tabPosition}
-                onChange={(key) => navigate('/systemsettings' + key)}
-                items={els.map(({ label, key }) => ({
-                    label,
-                    key,
-                    children: <Outlet />
-                }))}
+            <Title level={3}>{props.title}</Title>
+            <TabContainer
+                destroyInactiveTabPane
+                type="card"
+                size='small'
+                activeKey={props.activeKey}
+                tabPosition='top'
+                onChange={props.onChange}
+                items={props.items}
             />
         </>
     )
 }
 
+const { Title: AntDTitle } = Typography
+
 const Title = styled(AntDTitle)`
     margin: 0 0 2rem 0 !important;
 `
 
-const Tabs = styled(AntDTabs)`
-    height: 220px;
-        
-    .ant-tabs-tab-active {
-        background: #F99D21;
+const TabContainer = styled(AntDTabs)`
+   .ant-tabs-nav-list {
+        gap: 10px;
     }
-    :where(.css-dev-only-do-not-override-uj3ut5).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    .ant-tabs-tab.ant-tabs-tab-active {
+        background: #9B3423;
+        color: #fff;
+    }
+    .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
         color: #fff;
     }
 `

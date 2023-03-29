@@ -2,23 +2,44 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../components"
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
 
-interface IDepartment {
+interface IDailyRate {
     id: string;
     name: string;
-    description: string;
+    bank_branch: string
+    description?: string;
 }
 
-export default function Department() {
+export default function DailyRate() {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IDepartment | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<IDailyRate | undefined>(undefined)
 
-    const columns: ColumnsType<IDepartment> = [
+    const columns: ColumnsType<IDailyRate> = [
         {
-            title: 'Department',
-            key: 'name',
-            dataIndex: 'name',
+            title: 'Daily Rate Code',
+            key: 'code',
+            dataIndex: 'code',
+        },
+        {
+            title: 'Daily Rate Name',
+            key: 'bank_branch',
+            dataIndex: 'bank_branch',
+        },
+        {
+            title: 'Daily rate per Hour',
+            key: 'rate_per_hour',
+            dataIndex: 'rate_per_hour',
+        },
+        {
+            title: 'Overtime Rate per Hour',
+            key: 'overtime_rate',
+            dataIndex: 'overtime_rate',
+        },
+        {
+            title: 'Night Differential Overtime Rate per Hour',
+            key: 'night_overtime_rate',
+            dataIndex: 'night_overtime_rate',
         },
         {
             title: 'Description',
@@ -30,8 +51,8 @@ export default function Department() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IDepartment) => <Action
-                title='Department'
+            render: (_: any, record: IDailyRate) => <Action
+                title='Bank Details'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
@@ -40,66 +61,21 @@ export default function Department() {
 
     ];
 
-    const data: IDepartment[] = [
+    const data: IDailyRate[] = [
         {
             id: '1',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
+            name: 'BDO',
+            bank_branch: 'Santa Rosa'
         },
         {
             id: '2',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
+            name: 'BPI',
+            bank_branch: 'Santa Rosa'
         },
         {
             id: '3',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '4',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '5',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '6',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '7',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '8',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '9',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '10',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '11',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '12',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
+            name: 'Metro Bank',
+            bank_branch: 'Santa Rosa'
         },
     ]
 
@@ -111,7 +87,7 @@ export default function Department() {
         console.log(id)
     }
 
-    function handleEdit(data: IDepartment) {
+    function handleEdit(data: IDailyRate) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -122,9 +98,9 @@ export default function Department() {
     }
 
     return (
-        <Card title='Departments'>
+        <Card title='Daily Rates'>
             <TabHeader
-                name='department'
+                name='daily rate'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
             />
@@ -134,7 +110,7 @@ export default function Department() {
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <DepartmentModal
+            <DailyRateModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -148,14 +124,14 @@ export default function Department() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: IDepartment
+    selectedData?: IDailyRate
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function DepartmentModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<IDepartment>()
+function DailyRateModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+    const [form] = useForm<IDailyRate>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -165,7 +141,7 @@ function DepartmentModal({ title, selectedData, isModalOpen, handleCancel }: Mod
         }
     }, [selectedData])
 
-    function onFinish(values: IDepartment) {
+    function onFinish(values: IDailyRate) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         console.log(restValues)
@@ -174,24 +150,49 @@ function DepartmentModal({ title, selectedData, isModalOpen, handleCancel }: Mod
         handleCancel()
     }
 
-    return <Modal title={`${title} - Department`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Daily Rate`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Department Name"
+                label="Daily Rate Code"
+                name="code"
+                required
+                rules={[{ required: true, message: 'Please enter code!' }]}
+            >
+                <Input placeholder='Enter code...' />
+            </FormItem>
+            <FormItem
+                label="Daily Rate Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter department name!' }]}
+                rules={[{ required: true, message: 'Please enter daily rate name!' }]}
             >
-                <Input placeholder='Enter department name...' />
+                <Input placeholder='Enter daily rate name...' />
             </FormItem>
 
+            <FormItem
+                name="Daily rate per Hour"
+                label="rate"
+            >
+                <Input type='number' placeholder='Enter rate...' />
+            </FormItem>
+            <FormItem
+                name="Overtime Rate per Hour"
+                label="overtime"
+            >
+                <Input type='number' placeholder='Enter overtime rate hour...' />
+            </FormItem>
+            <FormItem
+                name="Night Differential Overtime Rate per Hour"
+                label="overtime"
+            >
+                <Input type='number' placeholder='Enter overtime rate hour...' />
+            </FormItem>
             <FormItem
                 name="description"
                 label="Description"
             >
-                <Input placeholder='Enter Description...' />
+                <Input.TextArea placeholder='Enter Description...' />
             </FormItem>
-
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">

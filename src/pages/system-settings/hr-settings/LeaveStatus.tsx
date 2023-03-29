@@ -2,20 +2,20 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../components"
-interface IPosition {
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
+interface ILeaveStatus {
     id: string;
     name: string;
     description: string;
 }
 
-export default function Position() {
+export default function LeaveStatus() {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IPosition | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<ILeaveStatus | undefined>(undefined)
 
-    const columns: ColumnsType<IPosition> = [
+    const columns: ColumnsType<ILeaveStatus> = [
         {
-            title: 'Position',
+            title: 'Leave Status Name',
             key: 'name',
             dataIndex: 'name',
         },
@@ -29,8 +29,8 @@ export default function Position() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IPosition) => <Action
-                title='Position'
+            render: (_: any, record: ILeaveStatus) => <Action
+                title='Leave Status'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
@@ -39,7 +39,7 @@ export default function Position() {
 
     ];
 
-    const data: IPosition[] = [
+    const data: ILeaveStatus[] = [
         {
             id: '1',
             name: 'John Brown',
@@ -110,7 +110,7 @@ export default function Position() {
         console.log(id)
     }
 
-    function handleEdit(data: IPosition) {
+    function handleEdit(data: ILeaveStatus) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -121,9 +121,9 @@ export default function Position() {
     }
 
     return (
-        <Card title='Positions'>
+        <Card title='Leave Status'>
             <TabHeader
-                name='position'
+                name='leave status'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
             />
@@ -133,7 +133,7 @@ export default function Position() {
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <PositionModal
+            <LeaveStatusModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -147,14 +147,14 @@ export default function Position() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: IPosition
+    selectedData?: ILeaveStatus
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function PositionModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<IPosition>()
+function LeaveStatusModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+    const [form] = useForm<ILeaveStatus>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -164,7 +164,7 @@ function PositionModal({ title, selectedData, isModalOpen, handleCancel }: Modal
         }
     }, [selectedData])
 
-    function onFinish(values: IPosition) {
+    function onFinish(values: ILeaveStatus) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         console.log(restValues)
@@ -173,15 +173,15 @@ function PositionModal({ title, selectedData, isModalOpen, handleCancel }: Modal
         handleCancel()
     }
 
-    return <Modal title={`${title} - Position`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Leave Status`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Position Name"
+                label="Leave Status Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter position name!' }]}
+                rules={[{ required: true, message: 'Please enter leave status name!' }]}
             >
-                <Input placeholder='Enter position name...' />
+                <Input placeholder='Enter leave status name...' />
             </FormItem>
 
             <FormItem

@@ -3,50 +3,43 @@ import { Button, Calendar, Col, Form as AntDForm, Row, Divider as AntDDivider, M
 import { MdOutlineHolidayVillage } from 'react-icons/md'
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
-import { MainHeader, Form, Box, Action, TabHeader, Card } from "../../components"
-import { renderTitle } from "../../shared/utils/utilities"
-import { useAxios } from "../../shared/lib/axios";
-import { useEndpoints } from "../../shared/constants";
-import { IArguments, TableParams } from "../../shared/interfaces";
-interface IHolidayType {
-    created_at: string
-    deleted_at: string | null
-    id: string
-    name: string
-    updated_at: string
-}
+import { MainHeader, Form, Box, Action, TabHeader, Card } from "../../../components"
+import { renderTitle } from "../../../shared/utils/utilities"
+import { useAxios } from "../../../shared/lib/axios"
+import { useEndpoints } from "../../../shared/constants"
+import { IArguments, TableParams, IHoliday, HolidayRes } from "../../../shared/interfaces"
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS }] = useEndpoints()
 
 export default function Holidays() {
     renderTitle('Holidays')
-    const [data, setData] = useState<IHolidayType[]>([])
-    const [selectedData, setSelectedData] = useState<IHolidayType | undefined>(undefined)
+    const [data, setData] = useState<IHoliday[]>([])
+    const [selectedData, setSelectedData] = useState<IHoliday | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
-        let unmount = false;
-        !unmount && fetchData()
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
         return () => {
-            unmount = true
+            controller.abort()
         }
     }, [])
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET(SYSTEMSETTINGS.HOLIDAYS.GET, { page: args?.page!, search: args?.search! })
+        GET<HolidayRes>(SYSTEMSETTINGS.HOLIDAYS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
-                setData(res.data.data.data)
+                setData(res?.data ?? [])
                 setTableParams({
                     ...tableParams,
                     pagination: {
                         ...tableParams?.pagination,
-                        total: res.data.data.total,
-                        current: res.data.data.current_page,
+                        total: res?.total,
+                        current: res?.current_page,
                     },
                 })
             }).finally(() => setLoading(false))
@@ -60,7 +53,7 @@ export default function Holidays() {
         console.log(id)
     }
 
-    function handleEdit(data: IHolidayType) {
+    function handleEdit(data: IHoliday) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -210,10 +203,7 @@ function HolidaysModal({ isModalOpen, handleClose }: ModalProps) {
                 <Select placeholder='Enter locally observed...'>
                 </Select>
             </FormItem>
-            <FormItem
-                name="description"
-                label="Description"
-            >
+            <FormItem name="description" label="Description">
                 <Input.TextArea placeholder='Enter description...' />
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>

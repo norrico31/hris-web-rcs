@@ -44,10 +44,6 @@ export const employeeEditEls = [
         key: '/salaryhistory',
     },
     {
-        label: 'Benefits',
-        key: '/benefits',
-    },
-    {
         label: 'Leave Credits',
         key: '/leavecredits',
     },

@@ -1,3 +1,4 @@
 export * from './employeeEdit'
-export * from './tasks'
 export * from './endpoints'
+export * from './tasksSettings'
+export * from './hrSettings'

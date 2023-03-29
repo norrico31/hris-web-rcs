@@ -2,45 +2,22 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../components"
-import { useAxios } from '../../shared/lib/axios'
-import { useEndpoints } from '../../shared/constants'
-
-interface IBankDetails {
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
+interface IPosition {
     id: string;
     name: string;
-    bank_branch: string
-    description?: string;
+    description: string;
 }
 
-const { GET } = useAxios()
-const [{ SYSTEMSETTINGS: { BANKDETAILS } }] = useEndpoints()
-
-export default function BankDetails() {
+export default function Position() {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IBankDetails | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<IPosition | undefined>(undefined)
 
-    useEffect(function fetchData() {
-        let unmount = false
-        GET(BANKDETAILS.GET)
-            .then((res) => {
-                console.log(res.data)
-            })
-        return () => {
-            unmount = true
-        }
-    }, [])
-
-    const columns: ColumnsType<IBankDetails> = [
+    const columns: ColumnsType<IPosition> = [
         {
-            title: 'Bank Name',
+            title: 'Position',
             key: 'name',
             dataIndex: 'name',
-        },
-        {
-            title: 'Bank Branch',
-            key: 'bank_branch',
-            dataIndex: 'bank_branch',
         },
         {
             title: 'Description',
@@ -52,8 +29,8 @@ export default function BankDetails() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IBankDetails) => <Action
-                title='Bank Details'
+            render: (_: any, record: IPosition) => <Action
+                title='Position'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
@@ -62,21 +39,66 @@ export default function BankDetails() {
 
     ];
 
-    const data: IBankDetails[] = [
+    const data: IPosition[] = [
         {
             id: '1',
-            name: 'BDO',
-            bank_branch: 'Santa Rosa'
+            name: 'John Brown',
+            description: 'New York No. 1 Lake Park',
         },
         {
             id: '2',
-            name: 'BPI',
-            bank_branch: 'Santa Rosa'
+            name: 'Jim Green',
+            description: 'London No. 1 Lake Park',
         },
         {
             id: '3',
-            name: 'Metro Bank',
-            bank_branch: 'Santa Rosa'
+            name: 'Joe Black',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '4',
+            name: 'Disabled User',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '5',
+            name: 'John Brown',
+            description: 'New York No. 1 Lake Park',
+        },
+        {
+            id: '6',
+            name: 'Jim Green',
+            description: 'London No. 1 Lake Park',
+        },
+        {
+            id: '7',
+            name: 'Joe Black',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '8',
+            name: 'Disabled User',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '9',
+            name: 'John Brown',
+            description: 'New York No. 1 Lake Park',
+        },
+        {
+            id: '10',
+            name: 'Jim Green',
+            description: 'London No. 1 Lake Park',
+        },
+        {
+            id: '11',
+            name: 'Joe Black',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '12',
+            name: 'Disabled User',
+            description: 'Sydney No. 1 Lake Park',
         },
     ]
 
@@ -88,7 +110,7 @@ export default function BankDetails() {
         console.log(id)
     }
 
-    function handleEdit(data: IBankDetails) {
+    function handleEdit(data: IPosition) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -99,9 +121,9 @@ export default function BankDetails() {
     }
 
     return (
-        <Card title='Bank Details'>
+        <Card title='Positions'>
             <TabHeader
-                name='bank details'
+                name='position'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
             />
@@ -111,7 +133,7 @@ export default function BankDetails() {
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <BankDetailsModal
+            <PositionModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -125,14 +147,14 @@ export default function BankDetails() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: IBankDetails
+    selectedData?: IPosition
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<IBankDetails>()
+function PositionModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+    const [form] = useForm<IPosition>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -142,7 +164,7 @@ function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
         }
     }, [selectedData])
 
-    function onFinish(values: IBankDetails) {
+    function onFinish(values: IPosition) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         console.log(restValues)
@@ -151,23 +173,15 @@ function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
         handleCancel()
     }
 
-    return <Modal title={`${title} - Bank Details`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Position`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Bank Name"
+                label="Position Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter bank name!' }]}
+                rules={[{ required: true, message: 'Please enter position name!' }]}
             >
-                <Input placeholder='Enter bank name...' />
-            </FormItem>
-            <FormItem
-                label="Bank Branch"
-                name="name"
-                required
-                rules={[{ required: true, message: 'Please enter bank branch!' }]}
-            >
-                <Input placeholder='Enter bank branch...' />
+                <Input placeholder='Enter position name...' />
             </FormItem>
 
             <FormItem

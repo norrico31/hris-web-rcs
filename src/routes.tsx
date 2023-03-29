@@ -9,34 +9,43 @@ import {
     Tasks,
     EmployeeFiles,
     Client,
-    Holidays,
     SalaryAdjustment,
 
-    // System Settings
+    //* System Settings
+    // Tasks Settings
     TaskActivities,
     TasksSettings,
     TaskTypes,
     TaskSprint,
+
+    // HR Settings
+    HRSettings,
     BankDetails,
-    ClientBranch,
-    ClientBranchHoliday,
+    Benefits,
+    Holidays,
+    HolidayType,
     DailyRate,
-    Department,
     EmployeeStatus,
+    Department,
+    Team,
+    Position,
+    LeaveStatus,
+    LeaveDuration,
+    LeaveType,
+    SalaryAdjustmentType,
+
+    // Expense Settings
     Expense,
     ExpenseType,
-    HolidayType,
-    LeaveDuration,
-    LeaveStatus,
-    LeaveType,
-    Position,
+
+    // Client Settings
+    ClientBranch,
+    ClientBranchHoliday,
+
     Role,
-    SalaryAdjustmentType,
-    SalaryRate,
 
     //Employee 201 - Edit
     EmployeeEdit,
-    EmployeeBenefits,
     EmployeeClientHistory,
     EmployeeClientSchedule,
     EmployeeSchedule,
@@ -50,6 +59,7 @@ import {
     EmployeeSalary,
     EmployeeSalaryHistory,
     EmployeeUserProfile,
+    SalaryRate,
 } from './pages'
 
 export const routes = createBrowserRouter([
@@ -88,16 +98,70 @@ export const routes = createBrowserRouter([
                         ]
                     },
                     {
+                        path: 'hrsettings',
+                        element: <HRSettings />,
+                        children: [
+                            {
+                                path: 'bankdetails',
+                                element: <BankDetails />,
+                            },
+                            {
+                                path: 'benefits',
+                                element: <Benefits />
+                            },
+                            {
+                                path: 'holidays',
+                                element: <Holidays />
+                            },
+                            {
+                                path: 'holidaystype',
+                                element: <HolidayType />
+                            },
+                            {
+                                path: 'dailyrate',
+                                element: <DailyRate />
+                            },
+                            {
+                                path: 'employeestatus',
+                                element: <EmployeeStatus />
+                            },
+                            {
+                                path: 'department',
+                                element: <Department />
+                            },
+                            {
+                                path: 'team',
+                                element: <Team />
+                            },
+                            {
+                                path: 'position',
+                                element: <Position />
+                            },
+                            {
+                                path: 'leavestatus',
+                                element: <LeaveStatus />
+                            },
+                            {
+                                path: 'leaveduration',
+                                element: <LeaveDuration />
+                            },
+                            {
+                                path: 'leavetype',
+                                element: <LeaveType />
+                            },
+                            {
+                                path: 'salaryadjustmenttype',
+                                element: <SalaryAdjustmentType />
+                            },
+                        ]
+                    },
+                    {
                         path: 'taskmanagement/types',
                         element: <TaskTypes />
                     },
                     {
                         path: 'taskmanagement/sprint',
                         element: <TaskSprint />
-                    },
-                    {
-                        path: 'bankdetails',
-                        element: <BankDetails />
                     },
                     {
                         path: 'client',
@@ -112,18 +176,6 @@ export const routes = createBrowserRouter([
                         element: <ClientBranchHoliday />
                     },
                     {
-                        path: 'dailyrate',
-                        element: <DailyRate />
-                    },
-                    {
-                        path: 'department',
-                        element: <Department />
-                    },
-                    {
-                        path: 'employeestatus',
-                        element: <EmployeeStatus />
-                    },
-                    {
                         path: 'expense',
                         element: <Expense />
                     },
@@ -132,40 +184,12 @@ export const routes = createBrowserRouter([
                         element: <ExpenseType />
                     },
                     {
-                        path: 'holidays',
-                        element: <Holidays />,
-                    },
-                    {
-                        path: 'holidaytype',
-                        element: <HolidayType />
-                    },
-                    {
-                        path: 'leave',
-                        element: <LeaveStatus />
-                    },
-                    {
-                        path: 'leaveduration',
-                        element: <LeaveDuration />
-                    },
-                    {
-                        path: 'leavetype',
-                        element: <LeaveType />
-                    },
-                    {
-                        path: 'position',
-                        element: <Position />
-                    },
-                    {
                         path: 'role',
                         element: <Role />
                     },
                     {
                         path: 'salaryrate',
                         element: <SalaryRate />
-                    },
-                    {
-                        path: 'salaryadjustmenttype',
-                        element: <SalaryAdjustmentType />
                     },
                 ],
             },
@@ -189,10 +213,6 @@ export const routes = createBrowserRouter([
                 path: 'employee/edit/:employeeId',
                 element: <EmployeeEdit />,
                 children: [
-                    {
-                        path: 'benefits',
-                        element: <EmployeeBenefits />
-                    },
                     {
                         path: 'clienthistory',
                         element: <EmployeeClientHistory />

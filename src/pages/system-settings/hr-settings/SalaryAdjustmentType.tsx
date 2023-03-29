@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Button, Form as AntDForm, Input, Modal, Space } from 'antd'
 import { ColumnsType } from 'antd/es/table'
-import { Card } from '../../components'
-import { TabHeader, Table, Form } from '../../components'
+import { Card } from '../../../components'
+import { TabHeader, Table, Form } from '../../../components'
 
 interface ISalaryAdjustmentType {
     id: string;

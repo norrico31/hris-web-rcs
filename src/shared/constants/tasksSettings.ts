@@ -1,4 +1,4 @@
-export const tasksEls = [
+export const tasksPaths = [
     {
         label: 'Task Activities',
         key: '/taskmanagement/activities',

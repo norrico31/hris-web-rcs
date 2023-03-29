@@ -1,44 +1,43 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useAxios } from '../../../shared/lib/axios'
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useEndpoints } from '../../../shared/constants'
-import { IArguments, TableParams } from '../../../shared/interfaces'
-interface ITaskActivities {
-    created_at: string
-    deleted_at: string | null
-    id: string
-    name: string
-    updated_at: string
-}
+import { IArguments, TableParams, ITaskTypes, TaskTypesRes } from '../../../shared/interfaces'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { TASKS } }] = useEndpoints()
 
-export default function TaskActivities() {
-    const [data, setData] = useState<ITaskActivities[]>([])
-    const [selectedData, setSelectedData] = useState<ITaskActivities | undefined>(undefined)
+export default function TaskTypes() {
+    const [data, setData] = useState<ITaskTypes[]>([])
+    const [selectedData, setSelectedData] = useState<ITaskTypes | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
-        let unmount = false;
-        !unmount && fetchData()
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
         return () => {
-            unmount = true
+            controller.abort()
         }
     }, [])
 
-    const columns: ColumnsType<ITaskActivities> = [
+    const columns: ColumnsType<ITaskTypes> = [
         {
-            title: 'Task Activity Name',
+            title: 'Team',
+            key: 'team_name',
+            dataIndex: 'team_name',
+        },
+        {
+            title: 'Task Type',
             key: 'name',
             dataIndex: 'name',
         },
+
         {
             title: 'Description',
             key: 'description',
@@ -49,8 +48,8 @@ export default function TaskActivities() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: ITaskActivities) => <Action
-                title='Activity'
+            render: (_: any, record: ITaskTypes) => <Action
+                title='Types'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
@@ -58,33 +57,28 @@ export default function TaskActivities() {
         },
     ]
 
-    const fetchData = useCallback((args?: IArguments) => {
+    function fetchData(args?: IArguments) {
         setLoading(true)
-        GET(TASKS.ACTIVITIES.GET, { page: args?.page!, search: args?.search! })
+        GET<TaskTypesRes>(TASKS.TYPES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
-                setData(res.data.data.data)
+                setData(res?.data ?? [])
                 setTableParams({
                     ...tableParams,
                     pagination: {
                         ...tableParams?.pagination,
-                        total: res.data.data.total,
-                        current: res.data.data.current_page,
+                        total: res?.total,
+                        current: res?.current_page,
                     },
                 })
             }).finally(() => setLoading(false))
-    }, [data, tableParams])
-
-    const handleSearch = useCallback((str: string) => {
-        setSearch(str)
-        fetchData({ search: str, page: 1 })
-    }, [search])
+    }
 
     function handleDelete(id: string) {
-        DELETE(TASKS.ACTIVITIES.DELETE, id)
+        DELETE(TASKS.TYPES.DELETE, id)
             .finally(fetchData)
     }
 
-    function handleEdit(data: ITaskActivities) {
+    function handleEdit(data: ITaskTypes) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -95,22 +89,24 @@ export default function TaskActivities() {
     }
 
     return (
-        <Card title='Task Activities'>
+        <Card title='Task Types'>
             <TabHeader
-                name='task activities'
-                handleSearchData={handleSearch}
+                name='task types'
+                handleSearchData={(str: string) => {
+                    setSearch(str)
+                    fetchData({ search: str, page: 1 })
+                }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 loading={loading}
                 columns={columns}
                 dataList={data}
-                tableParams={tableParams}
                 onChange={(pagination: TablePaginationConfig) => {
                     fetchData({ page: pagination?.current, search })
                 }}
             />
-            <ActivityModal
+            <TypesModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -121,19 +117,18 @@ export default function TaskActivities() {
     )
 }
 
-
-interface ModalProps {
+type ModalProps = {
     title: string
     isModalOpen: boolean
-    selectedData?: ITaskActivities
+    selectedData?: ITaskTypes
     fetchData(args?: IArguments): void
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
-    const [form] = useForm<ITaskActivities>()
+function TypesModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+    const [form] = useForm<ITaskTypes>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -143,33 +138,29 @@ function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCanc
         }
     }, [selectedData])
 
-    function onFinish(values: ITaskActivities) {
+    function onFinish(values: ITaskTypes) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(TASKS.ACTIVITIES.PUT, { ...restValues, id: selectedData.id }) : POST(TASKS.ACTIVITIES.POST, restValues)
+        let result = selectedData ? PUT(TASKS.TYPES.PUT, { ...restValues, id: selectedData.id }) : POST(TASKS.TYPES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
         }).finally(fetchData)
     }
-    return <Modal title={`${title} - Activity`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+
+    return <Modal title={`${title} - Types`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Activity Name"
+                label="Type Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter activity name!' }]}
+                rules={[{ required: true, message: 'Please enter types name!' }]}
             >
-                <Input placeholder='Enter activity name...' />
+                <Input placeholder='Enter type name...' />
             </FormItem>
-
-            <FormItem
-                name="description"
-                label="Description"
-            >
-                <Input placeholder='Enter Description...' />
+            <FormItem name="description" label="Description">
+                <Input.TextArea placeholder='Enter description...' />
             </FormItem>
-
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">

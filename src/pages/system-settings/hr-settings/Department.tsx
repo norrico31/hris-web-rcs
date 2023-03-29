@@ -2,20 +2,21 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../components"
-interface ILeaveStatus {
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
+
+interface IDepartment {
     id: string;
     name: string;
     description: string;
 }
 
-export default function LeaveStatus() {
+export default function Department() {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<ILeaveStatus | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<IDepartment | undefined>(undefined)
 
-    const columns: ColumnsType<ILeaveStatus> = [
+    const columns: ColumnsType<IDepartment> = [
         {
-            title: 'Leave Status Name',
+            title: 'Department',
             key: 'name',
             dataIndex: 'name',
         },
@@ -29,8 +30,8 @@ export default function LeaveStatus() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: ILeaveStatus) => <Action
-                title='Leave Status'
+            render: (_: any, record: IDepartment) => <Action
+                title='Department'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
@@ -39,7 +40,7 @@ export default function LeaveStatus() {
 
     ];
 
-    const data: ILeaveStatus[] = [
+    const data: IDepartment[] = [
         {
             id: '1',
             name: 'John Brown',
@@ -110,7 +111,7 @@ export default function LeaveStatus() {
         console.log(id)
     }
 
-    function handleEdit(data: ILeaveStatus) {
+    function handleEdit(data: IDepartment) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -121,9 +122,9 @@ export default function LeaveStatus() {
     }
 
     return (
-        <Card title='Leave Status'>
+        <Card title='Departments'>
             <TabHeader
-                name='leave status'
+                name='department'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
             />
@@ -133,7 +134,7 @@ export default function LeaveStatus() {
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <LeaveStatusModal
+            <DepartmentModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -147,14 +148,14 @@ export default function LeaveStatus() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: ILeaveStatus
+    selectedData?: IDepartment
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function LeaveStatusModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<ILeaveStatus>()
+function DepartmentModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+    const [form] = useForm<IDepartment>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -164,7 +165,7 @@ function LeaveStatusModal({ title, selectedData, isModalOpen, handleCancel }: Mo
         }
     }, [selectedData])
 
-    function onFinish(values: ILeaveStatus) {
+    function onFinish(values: IDepartment) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         console.log(restValues)
@@ -173,15 +174,15 @@ function LeaveStatusModal({ title, selectedData, isModalOpen, handleCancel }: Mo
         handleCancel()
     }
 
-    return <Modal title={`${title} - Leave Status`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Department`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Leave Status Name"
+                label="Department Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter leave status name!' }]}
+                rules={[{ required: true, message: 'Please enter department name!' }]}
             >
-                <Input placeholder='Enter leave status name...' />
+                <Input placeholder='Enter department name...' />
             </FormItem>
 
             <FormItem

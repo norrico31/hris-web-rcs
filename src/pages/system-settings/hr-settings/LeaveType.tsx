@@ -2,21 +2,20 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../components"
-
-interface IEmployeeStatus {
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
+interface ILeaveType {
     id: string;
     name: string;
-    description?: string;
+    description: string;
 }
 
-export default function EmployeeStatus() {
+export default function LeaveType() {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IEmployeeStatus | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<ILeaveType | undefined>(undefined)
 
-    const columns: ColumnsType<IEmployeeStatus> = [
+    const columns: ColumnsType<ILeaveType> = [
         {
-            title: 'Employment Status',
+            title: 'Leave Type Name',
             key: 'name',
             dataIndex: 'name',
         },
@@ -30,8 +29,8 @@ export default function EmployeeStatus() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IEmployeeStatus) => <Action
-                title='Employee Status'
+            render: (_: any, record: ILeaveType) => <Action
+                title='Leave Type'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
@@ -40,18 +39,66 @@ export default function EmployeeStatus() {
 
     ];
 
-    const data: IEmployeeStatus[] = [
+    const data: ILeaveType[] = [
         {
             id: '1',
-            name: 'Probitionary',
+            name: 'John Brown',
+            description: 'New York No. 1 Lake Park',
         },
         {
             id: '2',
-            name: 'Regular',
+            name: 'Jim Green',
+            description: 'London No. 1 Lake Park',
         },
         {
             id: '3',
-            name: 'Contractual',
+            name: 'Joe Black',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '4',
+            name: 'Disabled User',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '5',
+            name: 'John Brown',
+            description: 'New York No. 1 Lake Park',
+        },
+        {
+            id: '6',
+            name: 'Jim Green',
+            description: 'London No. 1 Lake Park',
+        },
+        {
+            id: '7',
+            name: 'Joe Black',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '8',
+            name: 'Disabled User',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '9',
+            name: 'John Brown',
+            description: 'New York No. 1 Lake Park',
+        },
+        {
+            id: '10',
+            name: 'Jim Green',
+            description: 'London No. 1 Lake Park',
+        },
+        {
+            id: '11',
+            name: 'Joe Black',
+            description: 'Sydney No. 1 Lake Park',
+        },
+        {
+            id: '12',
+            name: 'Disabled User',
+            description: 'Sydney No. 1 Lake Park',
         },
     ]
 
@@ -63,7 +110,7 @@ export default function EmployeeStatus() {
         console.log(id)
     }
 
-    function handleEdit(data: IEmployeeStatus) {
+    function handleEdit(data: ILeaveType) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -74,9 +121,9 @@ export default function EmployeeStatus() {
     }
 
     return (
-        <Card title='Employee Status'>
+        <Card title='Leave Types'>
             <TabHeader
-                name='employee status'
+                name='leave types'
                 handleSearchData={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
             />
@@ -86,7 +133,7 @@ export default function EmployeeStatus() {
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <EmployeeStatusModal
+            <LeaveTypeModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -100,14 +147,14 @@ export default function EmployeeStatus() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: IEmployeeStatus
+    selectedData?: ILeaveType
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function EmployeeStatusModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<IEmployeeStatus>()
+function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+    const [form] = useForm<ILeaveType>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -117,7 +164,7 @@ function EmployeeStatusModal({ title, selectedData, isModalOpen, handleCancel }:
         }
     }, [selectedData])
 
-    function onFinish(values: IEmployeeStatus) {
+    function onFinish(values: ILeaveType) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         console.log(restValues)
@@ -126,15 +173,15 @@ function EmployeeStatusModal({ title, selectedData, isModalOpen, handleCancel }:
         handleCancel()
     }
 
-    return <Modal title={`${title} - Employee Status`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Leave Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Employee Status Name"
+                label="Leave Type Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter employee status name!' }]}
+                rules={[{ required: true, message: 'Please enter leave type name!' }]}
             >
-                <Input placeholder='Enter employee status name...' />
+                <Input placeholder='Enter leave type name...' />
             </FormItem>
 
             <FormItem

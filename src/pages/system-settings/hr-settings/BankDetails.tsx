@@ -2,22 +2,47 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../components"
-interface ILeaveType {
+import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { IArguments, TableParams } from '../../../shared/interfaces'
+
+interface IBankDetails {
     id: string;
     name: string;
-    description: string;
+    bank_branch: string
+    description?: string;
 }
 
-export default function LeaveType() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<ILeaveType | undefined>(undefined)
+const { GET } = useAxios()
+const [{ SYSTEMSETTINGS: { BANKDETAILS } }] = useEndpoints()
 
-    const columns: ColumnsType<ILeaveType> = [
+export default function BankDetails() {
+    const [data, setData] = useState<IBankDetails[]>([])
+    const [selectedData, setSelectedData] = useState<IBankDetails | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    // useEffect(function fetchData() {
+    //     const controller = new AbortController();
+    //     fetchData({ signal: controller.signal })
+    //     return () => {
+    //         controller.abort()
+    //     }
+    // }, [])
+
+    const columns: ColumnsType<IBankDetails> = [
         {
-            title: 'Leave Type Name',
+            title: 'Bank Name',
             key: 'name',
             dataIndex: 'name',
+        },
+        {
+            title: 'Bank Branch',
+            key: 'bank_branch',
+            dataIndex: 'bank_branch',
         },
         {
             title: 'Description',
@@ -29,8 +54,8 @@ export default function LeaveType() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: ILeaveType) => <Action
-                title='Leave Type'
+            render: (_: any, record: IBankDetails) => <Action
+                title='Bank Details'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
@@ -39,78 +64,27 @@ export default function LeaveType() {
 
     ];
 
-    const data: ILeaveType[] = [
-        {
-            id: '1',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '2',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '3',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '4',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '5',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '6',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '7',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '8',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '9',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '10',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '11',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '12',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-    ]
-
-    function fetchData(search: string) {
-        console.log(search)
-    }
+    // const fetchData = (args?: IArguments) => {
+    //     setLoading(true)
+    //     GET<TasksActivitiesRes>(TASKS.ACTIVITIES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+    //         .then((res) => {
+    //             setData(res?.data ?? [])
+    //             setTableParams({
+    //                 ...tableParams,
+    //                 pagination: {
+    //                     ...tableParams?.pagination,
+    //                     total: res?.total,
+    //                     current: res?.current_page,
+    //                 },
+    //             })
+    //         }).finally(() => setLoading(false))
+    // }
 
     function handleDelete(id: string) {
         console.log(id)
     }
 
-    function handleEdit(data: ILeaveType) {
+    function handleEdit(data: IBankDetails) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -121,10 +95,10 @@ export default function LeaveType() {
     }
 
     return (
-        <Card title='Leave Types'>
+        <Card title='Bank Details'>
             <TabHeader
-                name='leave types'
-                handleSearchData={fetchData}
+                name='bank details'
+                handleSearchData={() => { }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -133,7 +107,7 @@ export default function LeaveType() {
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <LeaveTypeModal
+            <BankDetailsModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -147,14 +121,14 @@ export default function LeaveType() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: ILeaveType
+    selectedData?: IBankDetails
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<ILeaveType>()
+function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+    const [form] = useForm<IBankDetails>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -164,7 +138,7 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel }: Moda
         }
     }, [selectedData])
 
-    function onFinish(values: ILeaveType) {
+    function onFinish(values: IBankDetails) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         console.log(restValues)
@@ -173,15 +147,23 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel }: Moda
         handleCancel()
     }
 
-    return <Modal title={`${title} - Leave Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Bank Details`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Leave Type Name"
+                label="Bank Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter leave type name!' }]}
+                rules={[{ required: true, message: 'Please enter bank name!' }]}
             >
-                <Input placeholder='Enter leave type name...' />
+                <Input placeholder='Enter bank name...' />
+            </FormItem>
+            <FormItem
+                label="Bank Branch"
+                name="name"
+                required
+                rules={[{ required: true, message: 'Please enter bank branch!' }]}
+            >
+                <Input placeholder='Enter bank branch...' />
             </FormItem>
 
             <FormItem
