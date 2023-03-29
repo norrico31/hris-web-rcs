@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Switch } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
@@ -29,8 +29,14 @@ export default function HolidayType() {
     const columns: ColumnsType<IHolidayType> = [
         {
             title: 'Holiday Type',
-            key: 'type',
-            dataIndex: 'type',
+            key: 'name',
+            dataIndex: 'name',
+        },
+        {
+            title: 'Active',
+            key: 'is_active',
+            dataIndex: 'is_active',
+            render: (_, record) => record.is_active === '0' ? 'Inactive' : 'Active'
         },
         {
             title: 'Description',
@@ -127,7 +133,7 @@ function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleC
 
     useEffect(() => {
         if (selectedData != undefined) {
-            form.setFieldsValue({ ...selectedData })
+            form.setFieldsValue({ ...selectedData, is_active: Number(selectedData.is_active) })
         } else {
             form.resetFields(undefined)
         }
@@ -146,12 +152,20 @@ function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleC
     return <Modal title={`${title} - Holiday Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Holiday type"
-                name="type"
+                label="Holiday type name"
+                name="name"
                 required
-                rules={[{ required: true, message: 'Please enter holiday type!' }]}
+                rules={[{ required: true, message: 'Please enter holiday type name!' }]}
             >
-                <Input placeholder='Enter holiday type...' />
+                <Input placeholder='Enter holiday type name...' />
+            </FormItem>
+            <FormItem
+                label="Active"
+                name="is_active"
+                valuePropName="checked"
+                initialValue={true}
+            >
+                <Switch />
             </FormItem>
 
             <FormItem
