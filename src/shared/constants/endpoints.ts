@@ -66,10 +66,10 @@ export const useEndpoints = () => {
 
         },
         TASKS: {
-            GET: '',
-            POST: '',
-            PUT: '',
-            DELETE: '',
+            GET: '/tasks',
+            POST: '/tasks/',
+            PUT: '/tasks/',
+            DELETE: '/tasks/',
         },
         LEAVE: {
             GET: '',

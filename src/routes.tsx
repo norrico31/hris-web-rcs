@@ -119,7 +119,7 @@ export const routes = createBrowserRouter([
                                 element: <Holidays />
                             },
                             {
-                                path: 'holidaystype',
+                                path: 'holidaytype',
                                 element: <HolidayType />
                             },
                             {

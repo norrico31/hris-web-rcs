@@ -1,4 +1,4 @@
-import { AxiosGetData } from "../../Axios"
+import { AxiosGetData } from "../../utils/Axios"
 
 export interface IHoliday {
     created_at: string

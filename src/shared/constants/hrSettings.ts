@@ -13,7 +13,7 @@ export const hrSettingsPaths = [
     },
     {
         label: 'Holiday Type',
-        key: '/hrsettings/holidaystype',
+        key: '/hrsettings/holidaytype',
     },
     {
         label: 'Daily Rate',

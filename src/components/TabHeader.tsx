@@ -34,11 +34,11 @@ export default function TabHeader({ name, handleSearchData, handleCreate, handle
                             onConfirm={handleDownload}
                             okText='Download'
                         >
-                            <Button>Download template</Button>
+                            <Button type='primary'>Download template</Button>
                         </Popconfirm>
                     )}
                     <Input.Search placeholder='Search...' value={searchTerm} onChange={onChange} />
-                    {handleCreate && (<Button type='default' onClick={handleCreate}>Create</Button>)}
+                    {handleCreate && (<Button className='btn-secondary' onClick={handleCreate}>Create</Button>)}
                 </Space>
             </Row>
             <Divider dashed={false} />

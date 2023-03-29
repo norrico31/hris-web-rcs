@@ -1,4 +1,4 @@
-import { AxiosGetData } from "../../Axios"
+import { AxiosGetData } from "../../utils/Axios"
 import { ITeam } from "../hr-settings/Team"
 
 export interface ITaskActivities {

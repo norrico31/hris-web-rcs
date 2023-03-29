@@ -53,7 +53,7 @@ export default function HolidayType() {
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<HolidayTypeRes>(SYSTEMSETTINGS.HOLIDAYTYPES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<HolidayTypeRes>(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -68,7 +68,7 @@ export default function HolidayType() {
     }
 
     function handleDelete(id: string) {
-        DELETE(SYSTEMSETTINGS.HOLIDAYTYPES.DELETE, id)
+        DELETE(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.DELETE, id)
             .finally(fetchData)
     }
 
@@ -136,7 +136,7 @@ function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleC
     function onFinish(values: IHolidayType) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(SYSTEMSETTINGS.HOLIDAYTYPES.PUT, { ...restValues, id: selectedData.id }) : POST(SYSTEMSETTINGS.HOLIDAYTYPES.POST, restValues)
+        let result = selectedData ? PUT(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.PUT, { ...restValues, id: selectedData.id }) : POST(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
