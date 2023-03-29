@@ -31,7 +31,7 @@ export default function Holidays() {
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<HolidayRes>(SYSTEMSETTINGS.HOLIDAYS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<HolidayRes>(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({

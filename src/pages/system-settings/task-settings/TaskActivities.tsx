@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { useAxios } from '../../../shared/lib/axios'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useEndpoints } from '../../../shared/constants'
-import { IArguments, TableParams, TasksActivitiesRes, ITaskActivities } from '../../../shared/interfaces'
+import { IArguments, TableParams, TasksActivitiesRes, ITaskActivities, ITeam, TeamRes } from '../../../shared/interfaces'
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ SYSTEMSETTINGS: { TASKS } }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS } }] = useEndpoints()
 
 export default function TaskActivities() {
     const [data, setData] = useState<ITaskActivities[]>([])
@@ -31,6 +31,7 @@ export default function TaskActivities() {
             title: 'Team',
             key: 'team_name',
             dataIndex: 'team_name',
+            render: (_, record) => record.team?.name
         },
         {
             title: 'Task Activity Name',
@@ -58,7 +59,7 @@ export default function TaskActivities() {
 
     const fetchData = (args?: IArguments) => {
         setLoading(true)
-        GET<TasksActivitiesRes>(TASKS.ACTIVITIES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<TasksActivitiesRes>(TASKSSETTINGS.ACTIVITIES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -78,7 +79,7 @@ export default function TaskActivities() {
     }
 
     function handleDelete(id: string) {
-        DELETE(TASKS.ACTIVITIES.DELETE, id)
+        DELETE(TASKSSETTINGS.ACTIVITIES.DELETE, id)
             .finally(fetchData)
     }
 
@@ -131,19 +132,27 @@ const { Item: FormItem, useForm } = AntDForm
 
 function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITaskActivities>()
-    const [error, setError] = useState('')
+    const [teams, setTeams] = useState<ITeam[]>([])
+
     useEffect(() => {
         if (selectedData != undefined) {
             form.setFieldsValue({ ...selectedData })
         } else {
             form.resetFields(undefined)
         }
+
+        const controller = new AbortController();
+        GET<TeamRes>(HRSETTINGS.TEAMS.GET, controller.signal)
+            .then((res) => setTeams(res?.data ?? []));
+        return () => {
+            controller.abort()
+        }
     }, [selectedData])
 
     function onFinish(values: ITaskActivities) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(TASKS.ACTIVITIES.PUT, { ...restValues, id: selectedData.id }) : POST(TASKS.ACTIVITIES.POST, restValues)
+        let result = selectedData ? PUT(TASKSSETTINGS.ACTIVITIES.PUT, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.ACTIVITIES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -159,6 +168,18 @@ function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCanc
                 rules={[{ required: true, message: 'Please enter activity name!' }]}
             >
                 <Input placeholder='Enter activity name...' />
+            </FormItem>
+            <FormItem
+                label="Team"
+                name="team_id"
+                required
+                rules={[{ required: true, message: 'Please enter team!' }]}
+            >
+                <Select placeholder='Select team...' allowClear showSearch>
+                    {teams.map((team) => (
+                        <Select.Option value={team.id} key={team.id}>{team.name}</Select.Option>
+                    ))}
+                </Select>
             </FormItem>
             <FormItem name="description" label="Description">
                 <Input placeholder='Enter Description...' />

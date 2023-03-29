@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm, DatePicker } from 'antd'
+import { Space, Button, Input, Form as AntDForm, DatePicker, Select } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import dayjs from 'dayjs'
 import { useAxios } from '../../../shared/lib/axios'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
-import { IArguments, TableParams, TaskSprintRes, ITaskSprint } from '../../../shared/interfaces'
+import { IArguments, TableParams, TaskSprintRes, ITaskSprint, ITeam, TeamRes } from '../../../shared/interfaces'
 import { useEndpoints } from '../../../shared/constants'
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ SYSTEMSETTINGS: { TASKS } }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS } }] = useEndpoints()
 
 export default function TaskSprint() {
     const [data, setData] = useState<ITaskSprint[]>([])
@@ -32,6 +32,8 @@ export default function TaskSprint() {
             title: 'Team',
             key: 'team_name',
             dataIndex: 'team_name',
+            render: (_, record) => record.team?.name
+
         },
         {
             title: 'Task Sprint',
@@ -69,7 +71,7 @@ export default function TaskSprint() {
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<TaskSprintRes>(TASKS.SPRINT.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<TaskSprintRes>(TASKSSETTINGS.SPRINT.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -84,7 +86,7 @@ export default function TaskSprint() {
     }
 
     function handleDelete(id: string) {
-        DELETE(TASKS.SPRINT.DELETE, id)
+        DELETE(TASKSSETTINGS.SPRINT.DELETE, id)
             .finally(fetchData)
     }
 
@@ -137,6 +139,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
+    const [teams, setTeams] = useState<ITeam[]>([])
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -145,8 +148,13 @@ function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel
                 ...selectedData,
                 date: date
             })
-        } else {
-            form.resetFields(undefined)
+        } else form.resetFields(undefined)
+
+        const controller = new AbortController();
+        GET<TeamRes>(HRSETTINGS.TEAMS.GET, controller.signal)
+            .then((res) => setTeams(res?.data ?? []));
+        return () => {
+            controller.abort()
         }
     }, [selectedData])
 
@@ -157,7 +165,7 @@ function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel
         end_date = dayjs(end_date).format('YYYY/MM/DD')
         restValues = { ...restValues, start_date, end_date, ...(description != undefined && { description }) }
 
-        let result = selectedData ? PUT(TASKS.SPRINT.PUT, { ...restValues, id: selectedData.id }) : POST(TASKS.SPRINT.POST, restValues)
+        let result = selectedData ? PUT(TASKSSETTINGS.SPRINT.PUT, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.SPRINT.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -173,6 +181,18 @@ function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel
                 rules={[{ required: true, message: 'Please enter types name!' }]}
             >
                 <Input placeholder='Enter type name...' />
+            </FormItem>
+            <FormItem
+                label="Team"
+                name="team_id"
+                required
+                rules={[{ required: true, message: 'Please enter team!' }]}
+            >
+                <Select placeholder='Select team...' allowClear showSearch>
+                    {teams.map((team) => (
+                        <Select.Option value={team.id} key={team.id}>{team.name}</Select.Option>
+                    ))}
+                </Select>
             </FormItem>
             <FormItem
                 label="Start and End Date"

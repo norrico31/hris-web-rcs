@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-import { Space, Button, Input, Form as AntDForm } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { useAxios } from '../../../shared/lib/axios'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useEndpoints } from '../../../shared/constants'
-import { IArguments, TableParams, ITaskTypes, TaskTypesRes } from '../../../shared/interfaces'
+import { IArguments, TableParams, ITaskTypes, TaskTypesRes, ITeam, TeamRes } from '../../../shared/interfaces'
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ SYSTEMSETTINGS: { TASKS } }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS } }] = useEndpoints()
 
 export default function TaskTypes() {
     const [data, setData] = useState<ITaskTypes[]>([])
@@ -31,6 +31,7 @@ export default function TaskTypes() {
             title: 'Team',
             key: 'team_name',
             dataIndex: 'team_name',
+            render: (_, record) => record.team?.name
         },
         {
             title: 'Task Type',
@@ -59,7 +60,7 @@ export default function TaskTypes() {
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<TaskTypesRes>(TASKS.TYPES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<TaskTypesRes>(TASKSSETTINGS.TYPES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -74,7 +75,7 @@ export default function TaskTypes() {
     }
 
     function handleDelete(id: string) {
-        DELETE(TASKS.TYPES.DELETE, id)
+        DELETE(TASKSSETTINGS.TYPES.DELETE, id)
             .finally(fetchData)
     }
 
@@ -129,6 +130,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function TypesModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITaskTypes>()
+    const [teams, setTeams] = useState<ITeam[]>([])
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -136,12 +138,20 @@ function TypesModal({ title, selectedData, isModalOpen, fetchData, handleCancel 
         } else {
             form.resetFields(undefined)
         }
+
+        const controller = new AbortController();
+        GET<TeamRes>(HRSETTINGS.TEAMS.GET, controller.signal)
+            .then((res) => setTeams(res?.data ?? []));
+        return () => {
+            controller.abort()
+        }
     }, [selectedData])
+
 
     function onFinish(values: ITaskTypes) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(TASKS.TYPES.PUT, { ...restValues, id: selectedData.id }) : POST(TASKS.TYPES.POST, restValues)
+        let result = selectedData ? PUT(TASKSSETTINGS.TYPES.PUT, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.TYPES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -157,6 +167,18 @@ function TypesModal({ title, selectedData, isModalOpen, fetchData, handleCancel 
                 rules={[{ required: true, message: 'Please enter types name!' }]}
             >
                 <Input placeholder='Enter type name...' />
+            </FormItem>
+            <FormItem
+                label="Team"
+                name="team_id"
+                required
+                rules={[{ required: true, message: 'Please enter team!' }]}
+            >
+                <Select placeholder='Select team...' allowClear showSearch>
+                    {teams.map((team) => (
+                        <Select.Option value={team.id} key={team.id}>{team.name}</Select.Option>
+                    ))}
+                </Select>
             </FormItem>
             <FormItem name="description" label="Description">
                 <Input.TextArea placeholder='Enter description...' />
