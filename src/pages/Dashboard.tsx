@@ -48,7 +48,7 @@ export default function Dashboard() {
                     setName(evt.target.value)
                 }} />
             )}
-            {selectedUser[selectedId]?.name}
+            {/* {selectedUser[selectedId]?.name} */}
         </div>
     )
 }

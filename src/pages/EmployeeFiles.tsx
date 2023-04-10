@@ -1,5 +1,5 @@
 import { useState, useEffect, ReactNode } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Steps, Row, Col, Divider } from 'antd'
 import { LoadingOutlined, UserOutlined, CreditCardOutlined, UsergroupAddOutlined } from '@ant-design/icons'
 import { ColumnsType } from "antd/es/table"
@@ -7,23 +7,31 @@ import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
 import { Card, Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
+import { useEndpoints } from './../shared/constants/endpoints';
+import { useAxios } from './../shared/lib/axios';
+import { IArguments, TableParams, IEmployee, Employee201Res } from '../shared/interfaces'
 
-interface IEmployee extends Partial<{ id: string }> {
-    employee_no: string
-    employee_name: string
-    position: string
-    department: string
-    date_hired: string
-    status: string
-}
+const [{ EMPLOYEE201 }] = useEndpoints()
+const { GET } = useAxios()
 
 export default function EmployeeFiles() {
     renderTitle('Employee')
-    const { employeeId } = useParams()
     const navigate = useNavigate()
 
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IEmployee[]>([])
     const [selectedData, setSelectedData] = useState<IEmployee | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IEmployee> = [
         {
@@ -73,50 +81,25 @@ export default function EmployeeFiles() {
         },
 
     ]
-
-    const data: IEmployee[] = [
-        {
-            id: '1',
-            employee_no: '1',
-            employee_name: 'John Brown',
-            department: 'hr',
-            date_hired: '2023/03/20',
-            position: 'manager',
-            status: 'probi'
-        },
-        {
-            id: '2',
-            employee_no: '1',
-            employee_name: 'John Brown',
-            department: 'hr',
-            date_hired: '2023/03/22',
-            position: 'manager',
-            status: 'probi'
-        },
-        {
-            id: '3',
-            employee_no: '1',
-            employee_name: 'John Brown',
-            department: 'hr',
-            date_hired: '2023/03/28',
-            position: 'manager',
-            status: 'probi'
-        },
-        {
-            id: '4',
-            employee_no: '1',
-            employee_name: 'John Brown',
-            department: 'hr',
-            date_hired: '2023/04/09',
-            position: 'manager',
-            status: 'probi'
-        },
-    ]
-
-    function fetchData(search: string) {
-        console.log(search)
+    function fetchData(args?: IArguments) {
+        GET<Employee201Res>(EMPLOYEE201.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({ search: str, page: 1 })
+    }
 
     function handleDelete(id: string) {
         console.log(id)
@@ -138,11 +121,11 @@ export default function EmployeeFiles() {
     return (
         <>
             <MainHeader>
-                <h1 className='color-white'>Employee</h1>
+                <h1 className='color-white'>Employees</h1>
             </MainHeader>
             <TabHeader
                 name='Employee'
-                handleSearchData={fetchData}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />

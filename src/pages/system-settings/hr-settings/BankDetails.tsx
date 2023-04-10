@@ -15,7 +15,7 @@ interface IBankDetails {
 }
 
 const { GET } = useAxios()
-const [{ SYSTEMSETTINGS: { BANKDETAILS } }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 export default function BankDetails() {
     const [data, setData] = useState<IBankDetails[]>([])
@@ -66,7 +66,7 @@ export default function BankDetails() {
 
     // const fetchData = (args?: IArguments) => {
     //     setLoading(true)
-    //     GET<TasksActivitiesRes>(TASKS.ACTIVITIES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+    //     GET<TasksActivitiesRes>(HRSETTINGS.BANKDETAILS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
     //         .then((res) => {
     //             setData(res?.data ?? [])
     //             setTableParams({

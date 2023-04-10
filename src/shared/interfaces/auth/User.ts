@@ -1,7 +1,8 @@
+import { Dayjs } from "dayjs"
 
 export interface IUser {
     address: string | null
-    birthday: string | null
+    birthday: string | null | Dayjs
     client_branch_id: string | null
     client_id: string | null
     created_at: string

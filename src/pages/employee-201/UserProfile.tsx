@@ -1,22 +1,33 @@
+import { useState, useEffect } from 'react'
 import { Form as AntDForm, Input, Row, Col, Radio, DatePicker, Button } from 'antd'
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { Form } from './../../components';
+import { Form } from './../../components'
+import { useEndpoints } from '../../shared/constants'
+import { useAxios } from '../../shared/lib/axios'
+import { IArguments, IUser } from '../../shared/interfaces'
+import dayjs from 'dayjs'
 
 const { useForm, Item } = AntDForm
 
 export default function UserProfileEmployee() {
-    const employeeId = useEmployeeId()
-    const [form] = useForm()
-    function onFinish(val: Record<string, string>) {
+    const { employeeId, employeeInfo } = useEmployeeId()
+    const [form] = useForm<IUser>()
+    const [loading, setLoading] = useState(true)
 
+    useEffect(function fetchUserInfo() {
+        form.setFieldsValue({ ...employeeInfo, birthday: dayjs(employeeInfo?.birthday, 'YYYY/MM/DD') })
+    }, [employeeInfo])
+
+    function onFinish(val: IUser) {
+        setLoading(true)
+        console.log(val)
+        // do put route
+        setLoading(false)
     }
     return (
         <Card title='Personal Information'>
-            <Form
-                form={form}
-                onFinish={onFinish}
-            >
+            <Form form={form} onFinish={onFinish}>
                 <Row>
                     <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                         <Item

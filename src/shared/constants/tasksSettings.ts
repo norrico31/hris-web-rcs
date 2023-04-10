@@ -8,7 +8,7 @@ export const tasksPaths = [
         key: '/tasksettings/types',
     },
     {
-        label: 'Sprint',
-        key: '/tasksettings/sprint',
+        label: 'Sprints',
+        key: '/tasksettings/sprints',
     },
 ]

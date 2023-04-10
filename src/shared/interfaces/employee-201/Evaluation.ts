@@ -1,11 +1,11 @@
-import { IUser, AxiosGetData } from "."
+import { IUser, AxiosGetData } from ".."
 
 interface IRelations {
     id: string
     name: string
 }
 
-export interface ITasks extends IUser {
+export interface IEmployeeEvaluation extends IUser {
     created_at: string
     date: string
     deleted_at: string | null
@@ -22,4 +22,4 @@ export interface ITasks extends IUser {
     user_id: string
 }
 
-export type TasksRes = AxiosGetData<ITasks>
+export type EmployeeEvaluationRes = AxiosGetData<IEmployeeEvaluation>

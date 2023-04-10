@@ -13,7 +13,7 @@ interface IContractsEmployee {
     description: string;
 }
 export default function ContractsEmployee() {
-    const employeeId = useEmployeeId()
+    const { employeeId } = useEmployeeId()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IContractsEmployee | undefined>(undefined)
 
@@ -38,8 +38,7 @@ export default function ContractsEmployee() {
             key: 'description',
             dataIndex: 'description',
         },
-
-    ];
+    ]
 
     const data: IContractsEmployee[] = []
 

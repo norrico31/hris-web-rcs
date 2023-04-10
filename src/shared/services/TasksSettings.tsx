@@ -1,60 +1,58 @@
 import { useState, useEffect } from 'react'
-import { useEndpoints } from '../constants';
-import { ITaskActivities, ITaskSprint, ITaskTypes } from '../interfaces';
-import { useAxios } from './../lib/axios';
+import { useEndpoints } from '../constants'
+import { AxiosGetData, ITaskActivities, ITaskSprint, ITaskTypes } from '../interfaces'
+import axiosClient from './../lib/axios'
 
-const { GET } = useAxios()
 const [{ SYSTEMSETTINGS: { TASKSSETTINGS } }] = useEndpoints()
 
 interface ITasksServices {
-    loading: boolean
     activities: ITaskActivities[]
     types: ITaskTypes[]
     sprints: ITaskSprint[]
 }
 
 const initState: ITasksServices = {
-    loading: true,
     activities: [],
     types: [],
     sprints: []
 }
 
-const arrNames = ['activities', 'types', 'sprints']
+const propNames = ['activities', 'types', 'sprints']
 
 export const useTasksServices = () => {
     const [tasksSettings, setTasksSettings] = useState(initState)
-
     useEffect(function fetchData() {
         const controller = new AbortController();
-
         (async () => {
             try {
-                const activitiesRes = getActivities(controller.signal)
-                const typesRes = getTypes(controller.signal)
-                const sprintsRes = getSprints(controller.signal)
-                const results = await Promise.allSettled([activitiesRes, typesRes, sprintsRes]) as any
+                const results = await Promise.allSettled(promises(urls, controller.signal)) as any satisfies ITasksServices
                 const objectKeyed: any = {} as ITasksServices satisfies ITasksServices
                 for (let i = 0; i < results.length; i++) {
                     if (results[i].status == 'fulfilled') {
                         const arrays = results[i].value?.data;
-                        objectKeyed[arrNames[i]] = arrays
+                        objectKeyed[propNames[i]] = arrays;
                     }
                 }
-                setTasksSettings({ ...objectKeyed, loading: false, })
+                setTasksSettings({ ...objectKeyed })
             } catch (error) {
                 return error
             }
-        })()
-
+        })();
         return () => {
             controller.abort()
         }
     }, [])
-    console.log('aha: ', tasksSettings)
-    return tasksSettings
+    return [tasksSettings, setTasksSettings] as const
 }
 
-const getActivities = (signal: AbortSignal) => GET(TASKSSETTINGS.ACTIVITIES.GET, signal)
-const getTypes = (signal: AbortSignal) => GET(TASKSSETTINGS.TYPES.GET, signal)
-const getSprints = (signal: AbortSignal) => GET(TASKSSETTINGS.SPRINT.GET, signal)
+const urls = [
+    TASKSSETTINGS.ACTIVITIES.DROPDOWN,
+    TASKSSETTINGS.TYPES.DROPDOWN,
+    TASKSSETTINGS.SPRINT.DROPDOWN,
+]
+
+const promises = (urls: string[], signal: AbortSignal) => {
+    return urls.map(async (url) => {
+        return await axiosClient.get<AxiosGetData<ITaskActivities | ITaskTypes | ITaskSprint>>(url, { signal })
+    })
+}

@@ -45,7 +45,7 @@ export default function Layout() {
     return (
         <AntdLayout style={{ minHeight: '95vh' }}>
             <Sider trigger={null} collapsible collapsed={collapsed} width={280}>
-                <div style={{ height: 64, padding: '.3rem', background: '#fff', display: 'grid' }}>
+                <div style={{ height: 64, padding: '.3rem', background: '#fff', display: 'grid', placeItems: 'center' }}>
                     <Logo collapsed={collapsed} />
                 </div>
                 <Sidebar />
@@ -72,6 +72,8 @@ type Logo = {
 }
 
 const Logo = styled.div<Logo>`
+    width: ${props => !props.collapsed ? '230px' : '50px'};
+    height: ${props => !props.collapsed ? '50px' : '50px'};
     background-size: ${props => !props.collapsed ? 'cover' : '50px'};
     background-image: url(${props => !props.collapsed ? RcsLogo : LogoSmall});
     background-repeat: no-repeat;

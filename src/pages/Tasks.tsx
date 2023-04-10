@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react'
-import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col } from 'antd'
+import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
 import { useAuthContext } from '../shared/contexts/Auth'
 import { useTasksServices } from '../shared/services/TasksSettings'
 import { Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
-import { useAxios } from '../shared/lib/axios'
+import axiosClient, { useAxios } from '../shared/lib/axios'
 import { useEndpoints } from '../shared/constants'
-import { TableParams, ITasks, TasksRes, IArguments } from '../shared/interfaces'
+import { TableParams, ITasks, TasksRes, IArguments, TasksActivitiesRes } from '../shared/interfaces'
+import { ActivityModal } from './system-settings/task-settings/TaskActivities'
+import { SprintModal } from './system-settings/task-settings/TaskSprint'
+import { TypesModal } from './system-settings/task-settings/TaskTypes'
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ TASKS }] = useEndpoints()
+const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS }, }] = useEndpoints()
 
 export default function Tasks() {
     renderTitle('Tasks')
@@ -36,16 +38,19 @@ export default function Tasks() {
             title: 'Task Activity',
             key: 'task_activity',
             dataIndex: 'task_activity',
+            render: (_, record) => record.task_activity?.name
         },
         {
             title: 'Task Type',
             key: 'task_type',
             dataIndex: 'task_type',
+            render: (_, record) => record.task_type?.name
         },
         {
             title: 'Sprint',
             key: 'sprint_name',
             dataIndex: 'sprint_name',
+            render: (_, record) => record.sprint?.name
         },
         {
             title: 'Manhours',
@@ -71,7 +76,7 @@ export default function Tasks() {
             align: 'center',
             render: (_, record: ITasks) => <Action
                 title='Tasks'
-                name={record.name}
+                name={record.task_activity?.name + ' ' + record.sprint?.name}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => handleEdit(record)}
             />
@@ -118,7 +123,16 @@ export default function Tasks() {
         setIsModalOpen(false)
     }
 
-    return (
+    return (selectedData || isModalOpen) ? (
+        (
+            <TasksInputs
+                title={selectedData != undefined ? 'Edit' : 'Create'}
+                selectedData={selectedData}
+                fetchData={fetchData}
+                handleCancel={handleCloseModal}
+            />
+        )
+    ) : (
         <>
             <MainHeader>
                 <h1 className='color-white'>Tasks</h1>
@@ -137,30 +151,28 @@ export default function Tasks() {
                     fetchData({ page: pagination?.current, search })
                 }}
             />
-            <TasksModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
-                selectedData={selectedData}
-                fetchData={fetchData}
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-            />
         </>
     )
 }
 
-type ModalProps = {
+type Props = {
     title: string
-    isModalOpen: boolean
     selectedData?: ITasks
     fetchData: (args?: IArguments) => void
     handleCancel: () => void
 }
-const { Item: FormItem, useForm } = AntDForm
 
-function TasksModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+const { Item: FormItem, useForm } = AntDForm
+const { Title } = Typography
+
+function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     const [form] = useForm<ITasks>()
     const { user } = useAuthContext()
-    const tasks = useTasksServices()
+    const [isModalActivity, setIsModalActivity] = useState(false)
+    const [isModalTypes, setIsModalTypes] = useState(false)
+    const [isModalSprints, setIsModalSprints] = useState(false)
+    const [tasks, setTasks] = useTasksServices()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -173,6 +185,12 @@ function TasksModal({ title, selectedData, isModalOpen, fetchData, handleCancel 
         }
     }, [selectedData])
 
+    async function fetchList(url: string, key: string) {
+        setLoading(true)
+        const data = await getList(url).finally(() => setLoading(false))
+        setTasks((prevTasks) => ({ ...prevTasks, [key]: data }))
+    }
+
     function onFinish(values: ITasks) {
         let { date, description, ...restValues } = values
         date = dayjs(date).format('YYYY/MM/DD') as any
@@ -184,7 +202,8 @@ function TasksModal({ title, selectedData, isModalOpen, fetchData, handleCancel 
         }).finally(fetchData)
     }
 
-    return <Modal title={`${title} - Tasks`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <>
+        <Title level={2}>Tasks - {title}</Title>
         <Form form={form} onFinish={onFinish}>
             <FormItem
                 label="Task Name"
@@ -205,65 +224,65 @@ function TasksModal({ title, selectedData, isModalOpen, fetchData, handleCancel 
                     style={{ width: '100%' }}
                 />
             </FormItem>
-            <Row justify='space-between' align='middle'>
+            <Row gutter={[24, 24]} align='middle'>
                 <Col span={18}>
                     <FormItem name='task_activity_id' label="Task Activity" required rules={[{ required: true, message: 'Please select task activity!' }]}>
                         <Select
-                            // mode='multiple'
                             placeholder='Select task activity'
                             allowClear
                             showSearch
+                            loading={loading}
                         >
-                            {tasks.activities.map((act) => (
+                            {tasks.activities?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
                             ))}
                         </Select>
                     </FormItem>
                 </Col>
                 <Col>
-                    <Button className='btn-secondary'>
+                    <Button className='btn-secondary' onClick={() => setIsModalActivity(true)}>
                         Add Activity
                     </Button>
                 </Col>
             </Row>
-            <Row justify='space-between' align='middle'>
+            <Row gutter={[24, 24]} align='middle'>
                 <Col span={18}>
                     <FormItem name='task_type_id' label="Task Type" required rules={[{ required: true, message: 'Please select task type!' }]}>
                         <Select
-                            // mode='multiple'
                             placeholder='Select task type'
                             allowClear
                             showSearch
+                            loading={loading}
                         >
-                            {tasks.sprints.map((act) => (
+                            {tasks.types?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
                             ))}
                         </Select>
                     </FormItem>
                 </Col>
                 <Col>
-                    <Button className='btn-secondary'>
+                    <Button className='btn-secondary' onClick={() => setIsModalTypes(true)}>
                         Add Type
                     </Button>
                 </Col>
             </Row>
-            <Row justify='space-between' align='middle'>
+            <Row gutter={[24, 24]} align='middle'>
                 <Col span={18}>
                     <FormItem name='sprint_id' label="Sprint" required rules={[{ required: true, message: 'Please select task sprint!' }]}>
                         <Select
-                            // mode='multiple'
                             placeholder='Select sprint'
                             allowClear
                             showSearch
+                            loading={loading}
                         >
-                            {tasks.activities.map((act) => (
+                            {tasks.sprints?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
                             ))}
                         </Select>
                     </FormItem>
                 </Col>
                 <Col>
-                    <Button className='btn-secondary'>
+                    <Button className='btn-secondary' onClick={() => setIsModalSprints(true)}>
                         Add Sprint
                     </Button>
                 </Col>
@@ -285,5 +304,25 @@ function TasksModal({ title, selectedData, isModalOpen, fetchData, handleCancel 
                 </Space>
             </FormItem>
         </Form>
-    </Modal>
+        <ActivityModal
+            title='Create'
+            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.DROPDOWN, 'activities')}
+            isModalOpen={isModalActivity}
+            handleCancel={() => setIsModalActivity(false)}
+        />
+        <TypesModal
+            title='Create'
+            fetchData={() => fetchList(TASKSSETTINGS.TYPES.DROPDOWN, 'types')}
+            isModalOpen={isModalTypes}
+            handleCancel={() => setIsModalTypes(false)}
+        />
+        <SprintModal
+            title='Create'
+            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.DROPDOWN, 'sprints')}
+            isModalOpen={isModalSprints}
+            handleCancel={() => setIsModalSprints(false)}
+        />
+    </>
 }
+
+const getList = (url: string) => axiosClient.get(url).then((res) => res?.data ?? [])

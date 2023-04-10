@@ -11,22 +11,25 @@ export const useEndpoints = () => {
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
                 ACTIVITIES: {
-                    GET: 'task_activities?relations=teams',
+                    GET: 'task_activities',
                     POST: 'task_activities/',
                     PUT: 'task_activities/',
                     DELETE: 'task_activities/',
+                    DROPDOWN: '/options/task_activities'
                 },
                 TYPES: {
-                    GET: 'task_types?relations=teams',
+                    GET: 'task_types',
                     POST: 'task_types/',
                     PUT: 'task_types/',
                     DELETE: 'task_types/',
+                    DROPDOWN: '/options/task_types'
                 },
                 SPRINT: {
-                    GET: 'sprints?relations=teams',
+                    GET: 'sprints',
                     POST: 'sprints/',
                     PUT: 'sprints/',
                     DELETE: 'sprints/',
+                    DROPDOWN: '/options/sprints'
                 },
             },
             HRSETTINGS: {
@@ -54,8 +57,6 @@ export const useEndpoints = () => {
                     PUT: 'holiday_types/',
                     DELETE: 'holiday_types/'
                 },
-
-
                 TEAMS: {
                     GET: 'teams',
                     POST: 'teams/',
@@ -63,7 +64,39 @@ export const useEndpoints = () => {
                     DELETE: 'teams/'
                 },
             },
-
+        },
+        EMPLOYEE201: {
+            GET: '/employees?all=1',
+            USERPROFILE: {
+                GET: '/employees',
+                POST: '/employees/',
+                PUT: '/employees/',
+                DELETE: '/employees/'
+            },
+            CLIENTSCHEDULE: {
+                GET: '/employee_clients/',
+                POST: '/employee_clients/',
+                PUT: '/employee_clients/',
+                DELETE: '/employee_clients/'
+            },
+            EVALUATION: {
+                GET: '/employee_evaluations/',
+                POST: '/employee_evaluations/',
+                PUT: '/employee_evaluations/',
+                DELETE: '/employee_evaluations/'
+            },
+            EMPLOYEEDOCUMENT: {
+                GET: '/employee/document/show/',
+                POST: '/employee/document/show/',
+                PUT: '/employee/document/show/',
+                DELETE: '/employee/document/show/'
+            },
+            MEMORANDUM: {
+                GET: '/memo/show/',
+                POST: '/memo/show/',
+                PUT: '/memo/show/',
+                DELETE: '/memo/show/'
+            },
         },
         TASKS: {
             GET: '/tasks',

@@ -1,71 +1,81 @@
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
-import { Layout } from "./components";
-import {
-    // Root
-    Login,
-    Dashboard,
-    TimeKeeping,
-    Leave,
-    Tasks,
-    EmployeeFiles,
-    SalaryAdjustment,
+import { Suspense, lazy } from "react";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom"
+import { Spin } from "antd"
+import styled from "styled-components";
+import { Layout } from "./components"
+import Login from './pages/Login'
+import TasksSettings from './pages/system-settings/task-settings/TasksSettings'
+import HRSettings from './pages/system-settings/hr-settings/HRSettings'
+import ExpenseSettings from './pages/system-settings/expense-settings/ExpenseSettings'
+import ClientSettings from './pages/system-settings/client-settings/ClientSettings'
+import EmployeeEdit from './pages/EmployeeEdit'
 
-    //* System Settings
-    // Tasks Settings
-    TaskActivities,
-    TasksSettings,
-    TaskTypes,
-    TaskSprint,
+// Root
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const TimeKeeping = lazy(() => import('./pages/TimeKeeping'))
+const Leave = lazy(() => import('./pages/Leave'))
+const Tasks = lazy(() => import('./pages/Tasks'))
+const EmployeeFiles = lazy(() => import('./pages/EmployeeFiles'))
+const SalaryAdjustment = lazy(() => import('./pages/SalaryAdjustment'))
 
-    // HR Settings
-    HRSettings,
-    BankDetails,
-    Benefits,
-    Holidays,
-    HolidayType,
-    DailyRate,
-    EmployeeStatus,
-    Department,
-    Team,
-    Position,
-    LeaveStatus,
-    LeaveDuration,
-    LeaveType,
-    SalaryAdjustmentType,
+// System Settings
+const TaskActivities = lazy(() => import('./pages/system-settings/task-settings/TaskActivities'))
+const TaskTypes = lazy(() => import('./pages/system-settings/task-settings/TaskTypes'))
+const TaskSprint = lazy(() => import('./pages/system-settings/task-settings/TaskSprint'))
 
-    // Expense Settings
-    ExpenseSettings,
-    Expense,
-    ExpenseType,
+// HR Settings
+const BankDetails = lazy(() => import('./pages/system-settings/hr-settings/BankDetails'))
+const Benefits = lazy(() => import('./pages/system-settings/hr-settings/Benefits'))
+const Holidays = lazy(() => import('./pages/system-settings/hr-settings/Holidays'))
+const HolidayType = lazy(() => import('./pages/system-settings/hr-settings/HolidayType'))
+const DailyRate = lazy(() => import('./pages/system-settings/hr-settings/DailyRate'))
+const EmployeeStatus = lazy(() => import('./pages/system-settings/hr-settings/EmployeeStatus'))
+const Department = lazy(() => import('./pages/system-settings/hr-settings/Department'))
+const Team = lazy(() => import('./pages/system-settings/hr-settings/Team'))
+const Position = lazy(() => import('./pages/system-settings/hr-settings/Position'))
+const LeaveStatus = lazy(() => import('./pages/system-settings/hr-settings/LeaveStatus'))
+const LeaveType = lazy(() => import('./pages/system-settings/hr-settings/LeaveType'))
+const LeaveDuration = lazy(() => import('./pages/system-settings/hr-settings/LeaveDuration'))
+const SalaryAdjustmentType = lazy(() => import('./pages/system-settings/hr-settings/SalaryAdjustmentType'))
 
-    // Client Settings
-    ClientSettings,
-    Client,
-    ClientBranch,
-    ClientBranchAdjustment,
+// Expense Settings
+const Expense = lazy(() => import('./pages/system-settings/expense-settings/Expense'))
+const ExpenseType = lazy(() => import('./pages/system-settings/expense-settings/ExpenseType'))
 
-    // Admin Settings
-    Roles,
-    Users,
-    AuditLogs,
+// Client Settings
+const Client = lazy(() => import('./pages/system-settings/client-settings/Client'))
+const ClientBranch = lazy(() => import('./pages/system-settings/client-settings/ClientBranch'))
+const ClientBranchAdjustment = lazy(() => import('./pages/system-settings/client-settings/ClientBranchAdjustment'))
 
-    //Employee 201 - Edit
-    EmployeeEdit,
-    EmployeeClientHistory,
-    EmployeeClientSchedule,
-    EmployeeSchedule,
-    EmployeeContracts,
-    EmployeeDocuments,
-    EmployeeEvaluations,
-    EmployeeGovernmentDocuments,
-    EmployeeLeaveCredits,
-    EmployeeMemorandums,
-    EmployeePayScheme,
-    EmployeeSalary,
-    EmployeeSalaryHistory,
-    EmployeeUserProfile,
-    SalaryRate,
-} from './pages'
+// Admin Settings
+const Users = lazy(() => import('./pages/admin-settings/Users'))
+const Roles = lazy(() => import('./pages/admin-settings/Roles'))
+const AuditLogs = lazy(() => import('./pages/admin-settings/AuditLogs'))
+
+// Employee Files (201)
+const ClientHistory = lazy(() => import('./pages/employee-201/ClientHistory'))
+const ClientSchedule = lazy(() => import('./pages/employee-201/ClientSchedule'))
+const Schedule = lazy(() => import('./pages/employee-201/Schedule'))
+const Contracts = lazy(() => import('./pages/employee-201/Contracts'))
+const EmployeeDocuments = lazy(() => import('./pages/employee-201/EmployeeDocuments'))
+const Evaluations = lazy(() => import('./pages/employee-201/Evaluations'))
+const GovernmentDocuments = lazy(() => import('./pages/employee-201/GovernmentDocuments'))
+const LeaveCredits = lazy(() => import('./pages/employee-201/LeaveCredits'))
+const Memorandums = lazy(() => import('./pages/employee-201/Memorandums'))
+const PayScheme = lazy(() => import('./pages/employee-201/PayScheme'))
+const EmployeeSalary = lazy(() => import('./pages/employee-201/EmployeeSalary'))
+const EmployeeSalaryHistory = lazy(() => import('./pages/employee-201/EmployeeSalaryHistory'))
+const EmployeeSalaryAdjustments = lazy(() => import('./pages/employee-201/EmployeeSalaryAdjustments'))
+const UserProfile = lazy(() => import('./pages/employee-201/UserProfile'))
+const EmployeeSalaryRate = lazy(() => import('./pages/employee-201/EmployeeSalaryRate'))
+
+function Content({ children }: { children: any }) {
+    return (
+        <Container>
+            {children}
+        </Container>
+    )
+}
 
 export const routes = createBrowserRouter([
     {
@@ -74,15 +84,15 @@ export const routes = createBrowserRouter([
         children: [
             {
                 path: 'dashboard',
-                element: <Dashboard />
+                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Dashboard /></Suspense>
             },
             {
                 path: 'timekeeping',
-                element: <TimeKeeping />
+                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><TimeKeeping /></Suspense>
             },
             {
                 path: 'systemsettings',
-                element: <div><Outlet /></div>,
+                element: <Outlet />,
                 children: [
                     {
                         path: 'tasksettings',
@@ -90,15 +100,15 @@ export const routes = createBrowserRouter([
                         children: [
                             {
                                 path: 'activities',
-                                element: <TaskActivities />,
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><TaskActivities /></Suspense>,
                             },
                             {
                                 path: 'types',
-                                element: <TaskTypes />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><TaskTypes /></Suspense>
                             },
                             {
-                                path: 'sprint',
-                                element: <TaskSprint />
+                                path: 'sprints',
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><TaskSprint /></Suspense>
                             },
                         ]
                     },
@@ -108,55 +118,55 @@ export const routes = createBrowserRouter([
                         children: [
                             {
                                 path: 'bankdetails',
-                                element: <BankDetails />,
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><BankDetails /></Suspense>,
                             },
                             {
                                 path: 'benefits',
-                                element: <Benefits />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Benefits /></Suspense>
                             },
                             {
                                 path: 'holidays',
-                                element: <Holidays />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Holidays /></Suspense>
                             },
                             {
                                 path: 'holidaytype',
-                                element: <HolidayType />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><HolidayType /></Suspense>
                             },
                             {
                                 path: 'dailyrate',
-                                element: <DailyRate />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><DailyRate /></Suspense>
                             },
                             {
                                 path: 'employeestatus',
-                                element: <EmployeeStatus />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeStatus /></Suspense>
                             },
                             {
                                 path: 'department',
-                                element: <Department />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Department /></Suspense>
                             },
                             {
                                 path: 'team',
-                                element: <Team />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Team /></Suspense>
                             },
                             {
                                 path: 'position',
-                                element: <Position />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Position /></Suspense>
                             },
                             {
                                 path: 'leavestatus',
-                                element: <LeaveStatus />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><LeaveStatus /></Suspense>
                             },
                             {
                                 path: 'leaveduration',
-                                element: <LeaveDuration />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><LeaveDuration /></Suspense>
                             },
                             {
                                 path: 'leavetype',
-                                element: <LeaveType />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><LeaveType /></Suspense>
                             },
                             {
                                 path: 'salaryadjustmenttype',
-                                element: <SalaryAdjustmentType />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><SalaryAdjustmentType /></Suspense>
                             },
                         ],
                     },
@@ -166,15 +176,15 @@ export const routes = createBrowserRouter([
                         children: [
                             {
                                 path: 'client',
-                                element: <Client />,
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Client /></Suspense>,
                             },
                             {
                                 path: 'clientbranch',
-                                element: <ClientBranch />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ClientBranch /></Suspense>
                             },
                             {
                                 path: 'clientbranchadjustment',
-                                element: <ClientBranchAdjustment />
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ClientBranchAdjustment /></Suspense>
                             },
                         ]
                     },
@@ -184,11 +194,11 @@ export const routes = createBrowserRouter([
                         children: [
                             {
                                 path: 'expense',
-                                element: <Expense />,
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Expense /></Suspense>,
                             },
                             {
                                 path: 'expensetype',
-                                element: <ExpenseType />,
+                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ExpenseType /></Suspense>,
                             },
                         ]
                     },
@@ -204,74 +214,79 @@ export const routes = createBrowserRouter([
             },
             {
                 path: 'tasks',
-                element: <Tasks />
+                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Tasks /></Suspense>
             },
             {
                 path: 'leave',
-                element: <Leave />
+                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Leave /></Suspense>
             },
             {
                 path: 'employee',
-                element: <EmployeeFiles />,
+                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeFiles /></Suspense>
             },
             {
                 path: 'salaryadjustments',
-                element: <SalaryAdjustment />,
+                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><SalaryAdjustment /></Suspense>
             },
             {
                 path: 'employee/edit/:employeeId',
-                element: <EmployeeEdit />,
+                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeEdit /></Suspense>,
                 children: [
                     {
                         path: 'clienthistory',
-                        element: <EmployeeClientHistory />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ClientHistory /></Suspense>
                     },
                     {
                         path: 'clientschedule',
-                        element: <EmployeeClientSchedule />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ClientSchedule /></Suspense>
                     },
                     {
                         path: 'contracts',
-                        element: <EmployeeContracts />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Contracts /></Suspense>
                     },
                     {
                         path: 'employeedocuments',
-                        element: <EmployeeDocuments />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeDocuments /></Suspense>
                     },
                     {
                         path: 'evaluations',
-                        element: <EmployeeEvaluations />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Evaluations /></Suspense>
                     },
                     {
                         path: 'governmentdocuments',
-                        element: <EmployeeGovernmentDocuments />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><GovernmentDocuments /></Suspense>
                     },
                     {
                         path: 'memorandums',
-                        element: <EmployeeMemorandums />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Memorandums /></Suspense>
                     },
                     {
                         path: 'payscheme',
-                        element: <EmployeePayScheme />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><PayScheme /></Suspense>
+                    },
+                    {
+                        path: 'leavecredits',
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><LeaveCredits /></Suspense>
                     },
                     {
                         path: 'salary',
-                        element: <EmployeeSalary />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeSalary /></Suspense>
                     },
                     {
                         path: 'salaryadjustments',
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeSalaryAdjustments /></Suspense>
                     },
                     {
                         path: 'salaryhistory',
-                        element: <EmployeeSalaryHistory />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeSalaryHistory /></Suspense>
                     },
                     {
                         path: 'employeeschedule',
-                        element: <EmployeeSchedule />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Schedule /></Suspense>
                     },
                     {
                         path: 'userprofile',
-                        element: <EmployeeUserProfile />
+                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><UserProfile /></Suspense>
                     },
                 ]
             },
@@ -282,3 +297,9 @@ export const routes = createBrowserRouter([
         element: <Login />
     },
 ])
+
+const Container = styled.div`
+    display: grid;
+    place-items: center;
+
+`

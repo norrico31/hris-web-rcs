@@ -1,22 +1,36 @@
 import { useState, useEffect } from 'react'
 import { Button, Form as AntDForm, Input, Modal, Select, Space, Upload } from 'antd'
-import { InboxOutlined } from '@ant-design/icons';
-import { ColumnsType } from 'antd/es/table';
+import { InboxOutlined } from '@ant-design/icons'
+import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table, Form } from './../../components';
+import { TabHeader, Table, Form } from './../../components'
+import { useEndpoints } from '../../shared/constants'
+import { useAxios } from '../../shared/lib/axios'
+import { IArguments, TableParams, IEmployeeDocument, EmployeeDocumentRes } from '../../shared/interfaces'
 
-interface IEmployeeDocuments {
-    id: string;
-    name: string;
-    description: string;
-}
+const [{ EMPLOYEE201: { EMPLOYEEDOCUMENT } }] = useEndpoints()
+const { GET } = useAxios()
+
 export default function EmployeeDocuments() {
-    const employeeId = useEmployeeId()
+    const { employeeId } = useEmployeeId()
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IEmployeeDocuments | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<IEmployeeDocument | undefined>(undefined)
 
-    const columns: ColumnsType<IEmployeeDocuments> = [
+    const [data, setData] = useState<IEmployeeDocument[]>([])
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
+
+    const columns: ColumnsType<IEmployeeDocument> = [
         {
             title: 'Document Type',
             key: 'document_type',
@@ -37,13 +51,26 @@ export default function EmployeeDocuments() {
             key: 'description',
             dataIndex: 'description',
         },
+    ]
 
-    ];
+    function fetchData(args?: IArguments) {
+        GET<EmployeeDocumentRes>(EMPLOYEEDOCUMENT.GET + `/${employeeId}`, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
+    }
 
-    const data: IEmployeeDocuments[] = []
-
-    function fetchData(search: string) {
-        console.log(search)
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({ search: str, page: 1 })
     }
 
     function handleDownload() {
@@ -59,15 +86,18 @@ export default function EmployeeDocuments() {
         <Card title='Documents'>
             <TabHeader
                 name='employee documents'
-                handleSearchData={fetchData}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />
             <Table
-                loading={false}
+                loading={loading}
                 columns={columns}
                 dataList={data}
-                onChange={(evt) => console.log(evt)}
+                tableParams={tableParams}
+                onChange={(pagination: TablePaginationConfig) => {
+                    fetchData({ page: pagination?.current, search })
+                }}
             />
             <DocumentsModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
@@ -82,7 +112,7 @@ export default function EmployeeDocuments() {
 type ModalProps = {
     title: string
     isModalOpen: boolean
-    selectedData?: IEmployeeDocuments
+    selectedData?: IEmployeeDocument
     handleCancel: () => void
 }
 

@@ -128,7 +128,7 @@ type ModalProps = {
 
 const { Item: FormItem, useForm } = AntDForm
 
-function TypesModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+export function TypesModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITaskTypes>()
     const [teams, setTeams] = useState<ITeam[]>([])
 

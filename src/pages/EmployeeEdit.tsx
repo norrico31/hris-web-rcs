@@ -1,9 +1,15 @@
+import { useState, useEffect } from 'react'
 import { useParams, Navigate, Outlet, useNavigate, useLocation, useOutletContext } from "react-router-dom"
 import { Tabs as AntDTabs } from 'antd'
 import styled from "styled-components"
 import { MainHeader } from './../components'
-import { employeeEditEls } from "../shared/constants"
+import { employeeEditEls, useEndpoints } from "../shared/constants"
 import { renderTitle } from "../shared/utils/utilities"
+import { IArguments, IUser } from '../shared/interfaces'
+import { useAxios } from '../shared/lib/axios'
+
+const [{ EMPLOYEE201: { USERPROFILE } }] = useEndpoints()
+const { GET } = useAxios()
 
 export default function EmployeeEdit() {
     renderTitle('Employee Edit')
@@ -11,12 +17,30 @@ export default function EmployeeEdit() {
     let { pathname } = useLocation()
     const navigate = useNavigate()
     if (employeeId == undefined) return <Navigate to='/employee' />
+
+    const [data, setData] = useState<IUser | undefined>()
+
+    useEffect(function fetchUserInfo() {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
+
+    function fetchData(args?: IArguments) {
+        GET(USERPROFILE.GET + `/${employeeId}`, args?.signal!)
+            .then(setData as any satisfies IUser);
+    }
+
+    const pathKey = pathname.split('/').pop()
     return <>
         <MainHeader>
-            <h1 className='color-white'>Employee Edit - Gerald / Full Name</h1>
+            <h1 className='color-white'>Employee Edit - {data?.full_name}</h1>
         </MainHeader>
         <Tabs
-            activeKey={pathname.slice(16, pathname.length)}
+            destroyInactiveTabPane
+            activeKey={'/' + pathKey}
             type="card"
             tabPosition="top"
             size='small'
@@ -27,15 +51,21 @@ export default function EmployeeEdit() {
             items={employeeEditEls.map((el) => ({
                 label: el.label,
                 key: el.key,
-                children: <Outlet context={{ employeeId }} />,
+                children: <Outlet context={{ employeeId, employeeInfo: data, fetchData }} />,
             }))}
         />
     </>
 }
 
-export function useEmployeeId(): string {
-    const { employeeId }: { employeeId: string } = useOutletContext()
-    return employeeId
+interface EmployeeOutletContext {
+    employeeId: string
+    employeeInfo: IUser
+    fetchData(args?: IArguments): void
+}
+
+export function useEmployeeId(): EmployeeOutletContext {
+    const { employeeId, employeeInfo, fetchData }: EmployeeOutletContext = useOutletContext()
+    return { employeeId, employeeInfo, fetchData } as const
 }
 
 const Tabs = styled(AntDTabs)`

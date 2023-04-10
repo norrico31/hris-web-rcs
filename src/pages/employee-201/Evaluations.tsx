@@ -4,20 +4,32 @@ import { InboxOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table, Form } from './../../components';
+import { TabHeader, Table, Form } from './../../components'
+import { IArguments, TableParams, IEmployeeEvaluation, EmployeeEvaluationRes } from '../../shared/interfaces'
+import { useEndpoints } from './../../shared/constants/endpoints'
+import { useAxios } from '../../shared/lib/axios'
 
-interface IEvaluations {
-    id: string;
-    name: string;
-    description: string;
-}
+const [{ EMPLOYEE201: { EVALUATION } }] = useEndpoints()
+const { GET } = useAxios()
 
 export default function Evaluations() {
-    const employeeId = useEmployeeId()
+    const { employeeId } = useEmployeeId()
+    const [data, setData] = useState<IEmployeeEvaluation[]>([])
+    const [selectedData, setSelectedData] = useState<IEmployeeEvaluation | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IEvaluations | undefined>(undefined)
+    const [loading, setLoading] = useState(true)
 
-    const columns: ColumnsType<IEvaluations> = [
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
+
+    const columns: ColumnsType<IEmployeeEvaluation> = [
         {
             title: 'Copy',
             key: 'copy',
@@ -43,13 +55,26 @@ export default function Evaluations() {
             key: 'description',
             dataIndex: 'description',
         },
+    ]
 
-    ];
+    function fetchData(args?: IArguments) {
+        GET<EmployeeEvaluationRes>(EVALUATION.GET + employeeId, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
+    }
 
-    const data: IEvaluations[] = []
-
-    function fetchData(search: string) {
-        console.log(search)
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({ search: str, page: 1 })
     }
 
     function handleDownload() {
@@ -65,7 +90,7 @@ export default function Evaluations() {
         <Card title='Evaluations'>
             <TabHeader
                 name='evaluations'
-                handleSearchData={fetchData}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />
@@ -88,7 +113,7 @@ export default function Evaluations() {
 type ModalProps = {
     title: string
     isModalOpen: boolean
-    selectedData?: IEvaluations
+    selectedData?: IEmployeeEvaluation
     handleCancel: () => void
 }
 

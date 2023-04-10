@@ -1,35 +1,30 @@
 import { Form as AntDForm } from 'antd'
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/es/table'
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table } from './../../components';
+import { TabHeader, Table } from '../../components'
 
-interface IGovernmentDocs {
+interface IEmployeeSalary {
     id: string;
     name: string;
     description: string;
 }
 const { useForm, Item } = AntDForm
 
-export default function GovernmentDocs() {
-    const employeeId = useEmployeeId()
+export default function EmployeeSalary() {
+    const { employeeId } = useEmployeeId()
     const [form] = useForm()
 
-    const columns: ColumnsType<IGovernmentDocs> = [
+    const columns: ColumnsType<IEmployeeSalary> = [
         {
-            title: 'Philhealth',
-            key: 'philhealth',
-            dataIndex: 'philhealth',
+            title: 'Gross Salary',
+            key: 'gross_salary',
+            dataIndex: 'gross_salary',
         },
         {
-            title: 'ID No.',
-            key: 'id_no',
-            dataIndex: 'id_no',
-        },
-        {
-            title: 'Attachments',
-            key: 'attachments',
-            dataIndex: 'attachments',
+            title: 'Salary Rate',
+            key: 'salary_rate',
+            dataIndex: 'salary_rate',
         },
         {
             title: 'Description',
@@ -39,7 +34,7 @@ export default function GovernmentDocs() {
 
     ];
 
-    const data: IGovernmentDocs[] = []
+    const data: IEmployeeSalary[] = []
 
     function fetchData(search: string) {
         console.log(search)
@@ -50,9 +45,9 @@ export default function GovernmentDocs() {
     }
 
     return (
-        <Card title='Government Docs'>
+        <Card title='Salary'>
             <TabHeader
-                name='government documents'
+                name='salary'
                 handleSearchData={fetchData}
                 handleDownload={handleDownload}
             />

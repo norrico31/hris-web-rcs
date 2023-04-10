@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { Button, Calendar, Col, Row, Divider as AntDDivider, Modal, Space, Popconfirm } from "antd"
+import { Button, Calendar, Col, Row, Divider as AntDDivider, Modal, Space, Popconfirm, message } from "antd"
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
 import { RxEnter, RxExit } from 'react-icons/rx'
 import { MainHeader, Divider, Box } from "../components"
 import AvatarPng from '../shared/assets/default_avatar.png'
 import { renderTitle } from "../shared/utils/utilities"
+import { MessageInstance } from "antd/es/message/interface";
 
 export default function TimeKeeping() {
     renderTitle('Timekeeping')
@@ -21,11 +22,13 @@ export default function TimeKeeping() {
     return (
         <>
             <MainHeader>
-                <Col>
-                    <h1 className='color-secondary'>Time Keeping</h1>
-                    <h3>{currentDay}</h3>
-                    <h2>{currentDate}</h2>
-                </Col>
+                <Space>
+                    <h1 className='color-white'>Time Keeping</h1>
+                    <Col>
+                        <h3 className="color-secondary">{currentDay}</h3>
+                        <h2 className="color-secondary">{currentDate}</h2>
+                    </Col>
+                </Space>
                 <Col>
                     <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>
                         <RxEnter />
@@ -70,22 +73,34 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
     const [mediaError, setMediaError] = useState('')
     const [coordinates, setCoordinates] = useState<{ lat: number; long: number; } | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [messageApi, contextHolder] = message.useMessage()
 
     useEffect(() => {
         const handleSuccess = (position: GeolocationPosition) => {
             setError(null)
-            const { latitude: lat, longitude: long } = position.coords;
-            setCoordinates({ lat, long });
-        };
+            const { latitude: lat, longitude: long } = position.coords
+            setCoordinates({ lat, long })
+        }
 
         const handleError = (error: GeolocationPositionError) => {
-            setError(error.message + '. Please reload the page and allow geolocation');
-        };
+            console.log(error)
+            setError(error.message + '. Please reload the page and allow geolocation')
+            messageApi.open({
+                type: 'error',
+                content: error.message + '. Please reload the page and allow geolocation',
+                duration: 0
+            })
+        }
 
         if (!navigator.geolocation) {
-            setError("Geolocation is not supported");
+            setError("Geolocation is not supported")
+            messageApi.open({
+                type: 'error',
+                content: 'Geolocation is not supported',
+                duration: 0
+            })
         } else {
-            navigator.geolocation.getCurrentPosition(handleSuccess, handleError);
+            navigator.geolocation.getCurrentPosition(handleSuccess, handleError)
         }
     }, [])
 
@@ -94,6 +109,10 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
             name: 'gerald tulala',
             image: imageSrc,
             location: coordinates
+        }
+        if (payload.image == null) {
+            setError('Please take a selfie photo')
+            return
         }
         console.log(payload, method)
         setImageSrc(null)
@@ -105,7 +124,12 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
         // }
     }
 
+    if (error == 'Please take a selfie photo') {
+        setTimeout(() => setError(''), 2000)
+    }
+
     return <Modal title='Time In/Out' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
+        {contextHolder}
         <Divider />
         <Row justify='center'>
             <Space direction="vertical" align="center">
@@ -115,10 +139,11 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
                     setMediaError={setMediaError}
                     isModalVideoOpen={isModalVideoOpen}
                     handleCloseCaptureModal={() => setIsModalVideoOpen(false)}
+                    messageApi={messageApi}
                 />
                 {mediaError}
                 {error}
-                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={!!mediaError || !!error}>TAKE A SELFIE</Button>
+                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={(!!mediaError || !!error) && error != 'Please take a selfie photo'}>TAKE A SELFIE</Button>
             </Space>
         </Row>
         <Divider style={{ margin: 10 }} />
@@ -161,9 +186,10 @@ type CapturePhotoModalProps = {
     setMediaError: React.Dispatch<React.SetStateAction<string>>
     isModalVideoOpen: boolean
     handleCloseCaptureModal: () => void
+    messageApi: MessageInstance
 }
 
-function CapturePhotoModal({ isModalVideoOpen, setImageSrc, handleCloseCaptureModal, setMediaError }: CapturePhotoModalProps) {
+function CapturePhotoModal({ isModalVideoOpen, setImageSrc, handleCloseCaptureModal, setMediaError, messageApi }: CapturePhotoModalProps) {
     const videoRef = useRef<HTMLVideoElement>(null)
     const streamRef = useRef<MediaStream | null>(null)
 
@@ -182,12 +208,16 @@ function CapturePhotoModal({ isModalVideoOpen, setImageSrc, handleCloseCaptureMo
                 }
             } catch (err) {
                 setMediaError('Permission Denied!. Please reload the page and allow camera device')
+                messageApi.open({
+                    type: 'error',
+                    content: 'Permission Denied!. Please reload the page and allow camera device',
+                    duration: 0
+                })
                 handleCloseCaptureModal()
                 console.error("Error accessing camera:", err)
             }
         }
         if (isModalVideoOpen) {
-            console.log('aha')
             startVideo()
         }
 

@@ -4,19 +4,32 @@ import { InboxOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table, Form } from './../../components';
+import { TabHeader, Table, Form } from './../../components'
+import { useEndpoints } from '../../shared/constants'
+import { useAxios } from '../../shared/lib/axios'
+import { IArguments, IMemorandum, MemorandumRes, TableParams } from '../../shared/interfaces';
 
-interface IMemorandums {
-    id: string;
-    name: string;
-    description: string;
-}
+const [{ EMPLOYEE201: { MEMORANDUM } }] = useEndpoints()
+const { GET } = useAxios()
+
 export default function Memorandums() {
-    const employeeId = useEmployeeId()
+    const { employeeId } = useEmployeeId()
+    const [data, setData] = useState<IMemorandum[]>([])
+    const [selectedData, setSelectedData] = useState<IMemorandum | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IMemorandums | undefined>(undefined)
+    const [loading, setLoading] = useState(true)
 
-    const columns: ColumnsType<IMemorandums> = [
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
+
+    const columns: ColumnsType<IMemorandum> = [
         {
             title: 'Document Type',
             key: 'document_type',
@@ -37,13 +50,26 @@ export default function Memorandums() {
             key: 'description',
             dataIndex: 'description',
         },
+    ]
 
-    ];
+    function fetchData(args?: IArguments) {
+        GET<MemorandumRes>(MEMORANDUM.GET + employeeId, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
+    }
 
-    const data: IMemorandums[] = []
-
-    function fetchData(search: string) {
-        console.log(search)
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({ search: str, page: 1 })
     }
 
     function handleDownload() {
@@ -59,7 +85,7 @@ export default function Memorandums() {
         <Card title='Memorandums'>
             <TabHeader
                 name='memorandums'
-                handleSearchData={fetchData}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />
@@ -82,7 +108,7 @@ export default function Memorandums() {
 type ModalProps = {
     title: string
     isModalOpen: boolean
-    selectedData?: IMemorandums
+    selectedData?: IMemorandum
     handleCancel: () => void
 }
 

@@ -130,7 +130,7 @@ interface ModalProps {
 
 const { Item: FormItem, useForm } = AntDForm
 
-function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+export function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITaskActivities>()
     const [teams, setTeams] = useState<ITeam[]>([])
 
@@ -148,6 +148,7 @@ function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCanc
             controller.abort()
         }
     }, [selectedData])
+
 
     function onFinish(values: ITaskActivities) {
         let { description, ...restValues } = values

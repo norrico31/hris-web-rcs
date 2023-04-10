@@ -36,7 +36,7 @@ export default function HolidayType() {
             title: 'Active',
             key: 'is_active',
             dataIndex: 'is_active',
-            render: (_, record) => record.is_active === '0' ? 'Inactive' : 'Active'
+            render: (_, record) => Number(record.is_active) == 0 ? 'Inactive' : 'Active'
         },
         {
             title: 'Description',

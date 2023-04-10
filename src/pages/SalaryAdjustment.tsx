@@ -132,10 +132,7 @@ export default function SalaryAdjustment() {
         <>
             <MainHeader>
                 <Col>
-                    <h2 className='color-secondary'>Salary</h2>
-                    <h1 className='color-secondary'>Adjustments</h1>
-                    {/* <h3>{currentDay}</h3> */}
-                    {/* <h2>{currentDate}</h2> */}
+                    <h1 className='color-white'>Salary Adjustment</h1>
                 </Col>
                 <Col>
                     <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>

@@ -23,10 +23,7 @@ export default function Leave() {
         <>
             <MainHeader>
                 <Col>
-                    <h2 className='color-secondary'>Leave</h2>
-                    <h1 className='color-secondary'>File Leave</h1>
-                    {/* <h3>{currentDay}</h3> */}
-                    {/* <h2>{currentDate}</h2> */}
+                    <h1 className='color-white'>Leave</h1>
                 </Col>
                 <Col>
                     <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>

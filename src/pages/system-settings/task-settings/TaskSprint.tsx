@@ -101,9 +101,9 @@ export default function TaskSprint() {
     }
 
     return (
-        <Card title='Task Sprint'>
+        <Card title='Sprints'>
             <TabHeader
-                name='task sprint'
+                name='sprint'
                 handleSearchData={(str: string) => {
                     setSearch(str)
                     fetchData({ search: str, page: 1 })
@@ -137,7 +137,7 @@ type ModalProps = {
 
 const { Item: FormItem, useForm } = AntDForm
 
-function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+export function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
     const [teams, setTeams] = useState<ITeam[]>([])
 

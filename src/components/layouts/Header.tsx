@@ -58,7 +58,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
         <Container style={{ paddingInline: 0 }}>
             <div className='header-wrapper'>
                 {burgerMenu}
-                <Text>HRIS</Text>
+                <Text>HR Portal</Text>
             </div>
             <div className='header-wrapper'>
                 <Dropdown menu={{ items }}>
