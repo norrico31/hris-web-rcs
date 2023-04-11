@@ -6,18 +6,14 @@ import dayjs from 'dayjs'
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from './../../components'
+import { IEmployeeContracts } from '../../shared/interfaces'
 
-interface IContractsEmployee {
-    id: string;
-    name: string;
-    description: string;
-}
-export default function ContractsEmployee() {
-    const { employeeId } = useEmployeeId()
+export default function EmployeeContracts() {
+    const { employeeId, employeeInfo } = useEmployeeId()
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IContractsEmployee | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<IEmployeeContracts | undefined>(undefined)
 
-    const columns: ColumnsType<IContractsEmployee> = [
+    const columns: ColumnsType<IEmployeeContracts> = [
         {
             title: 'Type',
             key: 'type',
@@ -39,8 +35,6 @@ export default function ContractsEmployee() {
             dataIndex: 'description',
         },
     ]
-
-    const data: IContractsEmployee[] = []
 
     function fetchData(search: string) {
         console.log(search)
@@ -66,7 +60,7 @@ export default function ContractsEmployee() {
             <Table
                 loading={false}
                 columns={columns}
-                dataList={data}
+                dataList={employeeInfo?.employee_contracts}
                 onChange={(evt) => console.log(evt)}
             />
             <ContractsModal
@@ -82,7 +76,7 @@ export default function ContractsEmployee() {
 type ModalProps = {
     title: string
     isModalOpen: boolean
-    selectedData?: IContractsEmployee
+    selectedData?: IEmployeeContracts
     handleCancel: () => void
 }
 
