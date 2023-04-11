@@ -4,6 +4,13 @@ export interface IUser {
     address: string | null
     birthday: string | null | Dayjs
     client_branch_id: string | null
+    bank_detail: {
+        account_number: string
+        bank_name: string
+        id: string
+        pay_scheme: string
+        user_id: string
+    }
     client_id: string | null
     created_at: string
     date_hired: string | null
