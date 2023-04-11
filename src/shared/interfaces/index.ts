@@ -14,6 +14,8 @@ export * from './system-settings/hr-settings/Holidays'
 export * from './system-settings/hr-settings/HolidayType'
 
 export * from './employee-201/Employees'
+export * from './employee-201/Benefits'
+export * from './employee-201/PayScheme'
 export * from './employee-201/ClientSchedule'
 export * from './employee-201/Evaluation'
 export * from './employee-201/Documents'

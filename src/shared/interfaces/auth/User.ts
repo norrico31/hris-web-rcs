@@ -1,22 +1,18 @@
 import { Dayjs } from "dayjs"
+import { IPayScheme, IEmployeeBenefits } from ".."
 
 export interface IUser {
     address: string | null
     birthday: string | null | Dayjs
     client_branch_id: string | null
-    bank_detail: {
-        account_number: string
-        bank_name: string
-        id: string
-        pay_scheme: string
-        user_id: string
-    }
+    bank_detail: IPayScheme
     client_id: string | null
     created_at: string
     date_hired: string | null
     deleted_at: string | null
     email: string
     employee_code: string | null
+    employee_benefits: IEmployeeBenefits[]
     employee_status: string | null
     ext_name: string | null
     first_name: string

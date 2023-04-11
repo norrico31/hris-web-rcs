@@ -4,6 +4,10 @@ export const employeeEditEls = [
         key: '/userprofile',
     },
     {
+        label: 'Benefits',
+        key: '/employeebenefits',
+    },
+    {
         label: 'Contracts',
         key: '/contracts',
     },

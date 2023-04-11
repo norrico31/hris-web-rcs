@@ -2,48 +2,44 @@ import { useState, useEffect } from 'react'
 import { Form as AntDForm, Modal, Input, DatePicker, Space, Button, Select } from 'antd'
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs'
-import { TabHeader, Table, Form, Card } from '../../../components'
+import { Card, Form, TabHeader, Table } from '../../components'
+import { useEmployeeId } from '../EmployeeEdit'
+import { IEmployeeBenefits } from '../../shared/interfaces'
 
-interface IBenefits {
-    id: string;
-    name: string;
-    description: string;
-}
 
-export default function Benefits() {
+export default function EmployeeBenefits() {
+    const { employeeId, employeeInfo } = useEmployeeId()
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<IBenefits | undefined>(undefined)
+    const [selectedData, setSelectedData] = useState<IEmployeeBenefits | undefined>(undefined)
 
-    const columns: ColumnsType<IBenefits> = [
+    const columns: ColumnsType<IEmployeeBenefits> = [
         {
             title: 'Benefit',
             key: 'benefit',
             dataIndex: 'benefit',
+            render: (_, record) => record?.benefit.name
         },
         {
             title: 'Amount',
-            key: 'amount',
-            dataIndex: 'amount',
+            key: 'benefit_amount',
+            dataIndex: 'benefit_amount',
         },
         {
             title: 'Schedule',
-            key: 'schedule',
-            dataIndex: 'schedule',
+            key: 'benefit_schedule',
+            dataIndex: 'benefit_schedule',
         },
         {
             title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
+            key: 'benefit_status',
+            dataIndex: 'benefit_status',
         },
         {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
         },
-
-    ];
-
-    const data: IBenefits[] = []
+    ]
 
     function fetchData(search: string) {
         console.log(search)
@@ -69,10 +65,10 @@ export default function Benefits() {
             <Table
                 loading={false}
                 columns={columns}
-                dataList={data}
+                dataList={employeeInfo?.employee_benefits}
                 onChange={(evt) => console.log(evt)}
             />
-            <BenefitsModal
+            <EmployeeBenefitsModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -85,13 +81,13 @@ export default function Benefits() {
 type ModalProps = {
     title: string
     isModalOpen: boolean
-    selectedData?: IBenefits
+    selectedData?: IEmployeeBenefits
     handleCancel: () => void
 }
 
 const { Item: Item, useForm } = AntDForm
 
-function BenefitsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
 
     // useEffect(() => {
