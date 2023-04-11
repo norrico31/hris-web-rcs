@@ -1,0 +1,1 @@
+export interface IBenefits { id: string, name: string }

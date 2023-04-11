@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs"
-import { IPayScheme, IEmployeeBenefits } from ".."
+import { IPayScheme, IEmployeeBenefits, IEmployeeClients } from ".."
 
 export interface IUser {
     address: string | null
@@ -12,6 +12,7 @@ export interface IUser {
     deleted_at: string | null
     email: string
     employee_code: string | null
+    employee_clients: IEmployeeClients[]
     employee_benefits: IEmployeeBenefits[]
     employee_status: string | null
     ext_name: string | null

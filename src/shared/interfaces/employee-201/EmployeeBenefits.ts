@@ -1,5 +1,6 @@
-export interface IEmployeeBenefits {
-    benefit: { id: string, name: string }
+import { IBenefits } from ".."
+
+export interface IEmployeeBenefits extends IBenefits {
     benefit_amount: number
     benefit_id: string
     benefit_schedule: string
