@@ -1,6 +1,7 @@
 import { IBenefits } from ".."
 
-export interface IEmployeeBenefits extends IBenefits {
+export interface IEmployeeBenefits {
+    benefit: IBenefits
     benefit_amount: number
     benefit_id: string
     benefit_schedule: string

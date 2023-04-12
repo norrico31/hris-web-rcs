@@ -4,9 +4,9 @@ import { InboxOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table, Form } from './../../components'
+import { TabHeader, Table, Form } from '../../components'
 import { IArguments, TableParams, IEmployeeEvaluation } from '../../shared/interfaces'
-import { useEndpoints } from './../../shared/constants/endpoints'
+import { useEndpoints } from '../../shared/constants/endpoints'
 import { useAxios } from '../../shared/lib/axios'
 
 const [{ EMPLOYEE201: { EVALUATION } }] = useEndpoints()

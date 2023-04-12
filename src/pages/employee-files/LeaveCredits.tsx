@@ -3,7 +3,7 @@ import { Descriptions } from 'antd'
 
 export default function LeaveCredits() {
     const { employeeId, employeeInfo } = useEmployeeId()
-    const { si_leaves, sick_leaves, vacation_leaves } = employeeInfo?.leave_credit
+    const { si_leaves, sick_leaves, vacation_leaves } = employeeInfo?.leave_credit ?? {}
     return (
         <div>
             <Descriptions

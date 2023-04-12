@@ -2,7 +2,7 @@ import { Form as AntDForm } from 'antd'
 import { ColumnsType } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table } from './../../components';
+import { TabHeader, Table } from '../../components';
 
 interface IGovernmentDocs {
     id: string;

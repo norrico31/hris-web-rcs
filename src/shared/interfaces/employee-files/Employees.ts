@@ -1,10 +1,5 @@
 import { IUser, AxiosGetData } from ".."
 
-interface IRelations {
-    id: string
-    name: string
-}
-
 export interface IEmployee extends IUser {
     id: string
     employee_no: string

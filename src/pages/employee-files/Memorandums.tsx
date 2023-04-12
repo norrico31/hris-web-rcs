@@ -4,7 +4,7 @@ import { InboxOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table, Form } from './../../components'
+import { TabHeader, Table, Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
 import { IArguments, IMemorandum, MemorandumRes, TableParams } from '../../shared/interfaces';
@@ -13,7 +13,7 @@ const [{ EMPLOYEE201: { MEMORANDUM } }] = useEndpoints()
 const { GET } = useAxios()
 
 export default function Memorandums() {
-    const { employeeId } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeId()
     const [data, setData] = useState<IMemorandum[]>([])
     const [selectedData, setSelectedData] = useState<IMemorandum | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -21,19 +21,19 @@ export default function Memorandums() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        const controller = new AbortController();
-        fetchData({ signal: controller.signal })
-        return () => {
-            controller.abort()
-        }
-    }, [])
+    // useEffect(() => {
+    //     const controller = new AbortController();
+    //     fetchData({ signal: controller.signal })
+    //     return () => {
+    //         controller.abort()
+    //     }
+    // }, [])
 
     const columns: ColumnsType<IMemorandum> = [
         {
             title: 'Document Type',
-            key: 'document_type',
-            dataIndex: 'document_type',
+            key: 'type',
+            dataIndex: 'type',
         },
         {
             title: 'Attachments',
@@ -52,24 +52,24 @@ export default function Memorandums() {
         },
     ]
 
-    function fetchData(args?: IArguments) {
-        GET<MemorandumRes>(MEMORANDUM.GET + employeeId, args?.signal!, { page: args?.page!, search: args?.search! })
-            .then((res) => {
-                setData(res?.data ?? [])
-                setTableParams({
-                    ...tableParams,
-                    pagination: {
-                        ...tableParams?.pagination,
-                        total: res?.total,
-                        current: res?.current_page,
-                    },
-                })
-            }).finally(() => setLoading(false))
-    }
+    // function fetchData(args?: IArguments) {
+    //     GET<MemorandumRes>(MEMORANDUM.GET + employeeId, args?.signal!, { page: args?.page!, search: args?.search! })
+    //         .then((res) => {
+    //             setData(res?.data ?? [])
+    //             setTableParams({
+    //                 ...tableParams,
+    //                 pagination: {
+    //                     ...tableParams?.pagination,
+    //                     total: res?.total,
+    //                     current: res?.current_page,
+    //                 },
+    //             })
+    //         }).finally(() => setLoading(false))
+    // }
 
     const handleSearch = (str: string) => {
         setSearch(str)
-        fetchData({ search: str, page: 1 })
+        // fetchData({ search: str, page: 1 })
     }
 
     function handleDownload() {
@@ -92,7 +92,7 @@ export default function Memorandums() {
             <Table
                 loading={false}
                 columns={columns}
-                dataList={data}
+                dataList={employeeInfo?.memos}
                 onChange={(evt) => console.log(evt)}
             />
             <MemorandumModal

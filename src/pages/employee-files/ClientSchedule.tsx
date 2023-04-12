@@ -3,7 +3,7 @@ import { Form as AntDForm } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table } from './../../components'
+import { TabHeader, Table } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, IEmployeeClients, ClientScheduleRes } from '../../shared/interfaces'
