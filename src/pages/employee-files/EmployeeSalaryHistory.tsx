@@ -1,21 +1,18 @@
 import { Form as AntDForm } from 'antd'
+import { useForm } from 'antd/es/form/Form'
 import { ColumnsType } from 'antd/es/table'
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
 import { TabHeader, Table } from '../../components'
-
-interface IEmployeeSalaryHistory {
-    id: string;
-    name: string;
-    description: string;
-}
-const { useForm, Item } = AntDForm
+import { IEmployeeSalary } from '../../shared/interfaces'
 
 export default function EmployeeSalaryHistory() {
-    const { employeeId } = useEmployeeId()
-    const [form] = useForm()
+    const { employeeId, employeeInfo } = useEmployeeId()
+    const [form] = useForm<IEmployeeSalary>()
 
-    const columns: ColumnsType<IEmployeeSalaryHistory> = [
+    console.log(employeeInfo?.salary_history)
+
+    const columns: ColumnsType<IEmployeeSalary> = [
         {
             title: 'Gross Salary',
             key: 'gross_salary',
@@ -25,16 +22,14 @@ export default function EmployeeSalaryHistory() {
             title: 'Salary Rate',
             key: 'salary_rate',
             dataIndex: 'salary_rate',
+            render: (_, record) => record.salary_rate.rate
         },
         {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
         },
-
-    ];
-
-    const data: IEmployeeSalaryHistory[] = []
+    ]
 
     function fetchData(search: string) {
         console.log(search)
@@ -45,16 +40,16 @@ export default function EmployeeSalaryHistory() {
     }
 
     return (
-        <Card title='Salary'>
+        <Card title='Salary History'>
             <TabHeader
-                name='salary'
+                name='salary history'
                 handleSearchData={fetchData}
                 handleDownload={handleDownload}
             />
             <Table
                 loading={false}
                 columns={columns}
-                dataList={data}
+                dataList={employeeInfo?.salary_history ?? []}
                 onChange={(evt) => console.log(evt)}
             />
         </Card>

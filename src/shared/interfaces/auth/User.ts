@@ -39,6 +39,7 @@ export interface IUser {
     resignation_date: string | null
     role_id: string
     salary: IEmployeeSalary
+    salary_history: IEmployeeSalary[]
     sss: ISss
     status: string | null
     suffix: string | null
