@@ -1,44 +1,12 @@
-import { Form as AntDForm } from 'antd'
-import { ColumnsType } from 'antd/es/table';
+import { Form as AntDForm, Row, Col } from 'antd'
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table } from '../../components';
 
-interface IGovernmentDocs {
-    id: string;
-    name: string;
-    description: string;
-}
 const { useForm, Item } = AntDForm
 
 export default function GovernmentDocs() {
-    const { employeeId } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeId()
     const [form] = useForm()
-
-    const columns: ColumnsType<IGovernmentDocs> = [
-        {
-            title: 'Philhealth',
-            key: 'philhealth',
-            dataIndex: 'philhealth',
-        },
-        {
-            title: 'ID No.',
-            key: 'id_no',
-            dataIndex: 'id_no',
-        },
-        {
-            title: 'Attachments',
-            key: 'attachments',
-            dataIndex: 'attachments',
-        },
-        {
-            title: 'Description',
-            key: 'description',
-            dataIndex: 'description',
-        },
-    ]
-
-    const data: IGovernmentDocs[] = []
 
     function fetchData(search: string) {
         console.log(search)
@@ -50,17 +18,20 @@ export default function GovernmentDocs() {
 
     return (
         <Card title='Government Docs'>
-            <TabHeader
-                name='government documents'
-                handleSearchData={fetchData}
-                handleDownload={handleDownload}
-            />
-            <Table
-                loading={false}
-                columns={columns}
-                dataList={data}
-                onChange={(evt) => console.log(evt)}
-            />
+            <Row gutter={[24, 24]} wrap>
+                <Col xs={8} sm={24} md={12} lg={8} xl={8}>
+                    <Card title='Pagibig'># {employeeInfo?.pagibig.pagibig_number}</Card>
+                </Col>
+                <Col xs={8} sm={24} md={12} lg={8} xl={8}>
+                    <Card title='Philhealth'># {employeeInfo?.philhealth.philhealth_number}</Card>
+                </Col>
+                <Col xs={8} sm={24} md={12} lg={8} xl={8}>
+                    <Card title='SSS'># {employeeInfo?.sss.sss_number}</Card>
+                </Col>
+                <Col xs={8} sm={24} md={12} lg={8} xl={8}>
+                    <Card title='Tin'># {employeeInfo?.tin.tin_number}</Card>
+                </Col>
+            </Row>
         </Card>
     )
 }
