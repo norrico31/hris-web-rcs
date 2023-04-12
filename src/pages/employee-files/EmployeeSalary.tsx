@@ -1,40 +1,14 @@
-import { Form as AntDForm } from 'antd'
-import { ColumnsType } from 'antd/es/table'
+import { Form as AntDForm, Descriptions } from 'antd'
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
-import { TabHeader, Table } from '../../components'
 
-interface IEmployeeSalary {
-    id: string;
-    name: string;
-    description: string;
-}
 const { useForm, Item } = AntDForm
 
 export default function EmployeeSalary() {
-    const { employeeId } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeId()
     const [form] = useForm()
 
-    const columns: ColumnsType<IEmployeeSalary> = [
-        {
-            title: 'Gross Salary',
-            key: 'gross_salary',
-            dataIndex: 'gross_salary',
-        },
-        {
-            title: 'Salary Rate',
-            key: 'salary_rate',
-            dataIndex: 'salary_rate',
-        },
-        {
-            title: 'Description',
-            key: 'description',
-            dataIndex: 'description',
-        },
-
-    ];
-
-    const data: IEmployeeSalary[] = []
+    console.log(employeeInfo?.salary)
 
     function fetchData(search: string) {
         console.log(search)
@@ -46,17 +20,15 @@ export default function EmployeeSalary() {
 
     return (
         <Card title='Salary'>
-            <TabHeader
-                name='salary'
-                handleSearchData={fetchData}
-                handleDownload={handleDownload}
-            />
-            <Table
-                loading={false}
-                columns={columns}
-                dataList={data}
-                onChange={(evt) => console.log(evt)}
-            />
+            <Descriptions
+                layout='vertical'
+                bordered
+                column={{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }}
+            >
+                <Descriptions.Item label="Salary">{employeeInfo?.salary.gross_salary}</Descriptions.Item>
+                <Descriptions.Item label="Salary Rate">{employeeInfo?.salary.salary_rate.rate}</Descriptions.Item>
+                <Descriptions.Item label="Description">{employeeInfo?.salary.description}</Descriptions.Item>
+            </Descriptions>
         </Card>
     )
 }

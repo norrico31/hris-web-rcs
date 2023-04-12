@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs"
-import { IPayScheme, IEmployeeBenefits, IEmployeeClients, IEmployeeContracts, IEmployeeEvaluation, ILeaveCredits, IMemorandum, IPagibig, IPhilhealth, ITin, ISss } from ".."
+import { IPayScheme, IEmployeeBenefits, IEmployeeClients, IEmployeeContracts, IEmployeeEvaluation, ILeaveCredits, IMemorandum, IPagibig, IPhilhealth, ITin, ISss, IEmployeeSalary } from ".."
 
 export interface IUser {
     address: string | null
@@ -38,6 +38,7 @@ export interface IUser {
     position_name: string | null
     resignation_date: string | null
     role_id: string
+    salary: IEmployeeSalary
     sss: ISss
     status: string | null
     suffix: string | null
