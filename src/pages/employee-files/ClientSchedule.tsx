@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Form as AntDForm, Row, Col, Input, DatePicker, Button } from 'antd'
-import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
-import { TabHeader, Table, Form } from '../../components'
+import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, IClientSchedule, ClientScheduleRes } from '../../shared/interfaces'

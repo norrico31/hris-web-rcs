@@ -48,7 +48,7 @@ export const useAxios = () => {
 
     const PUT = async <T extends Partial<{ id: string }>>(url: string, data: T) => {
         try {
-            const res = await axiosClient.put(url + data.id, data)
+            const res = await axiosClient.put(url, data)
             Alert.information('Update Success', res.data.message)
             return Promise.resolve(res)
         } catch (error) {

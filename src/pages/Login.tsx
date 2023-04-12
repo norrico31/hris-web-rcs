@@ -25,6 +25,8 @@ export default function Login() {
         setError(undefined)
         try {
             const res = await POST(LOGIN, values)
+            console.log('results: ', res)
+            if (res?.data?.data?.token == undefined) return <Navigate to='/login' />
             localStorage.setItem('t', JSON.stringify(res?.data?.data?.token))
             setToken(res?.data?.data?.token)
         } catch (error: any) {

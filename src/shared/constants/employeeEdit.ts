@@ -48,6 +48,10 @@ export const employeeEditPaths = [
         key: '/salaryhistory',
     },
     {
+        label: 'Salary Adjustment Type',
+        key: '/salaryadjustmenttype',
+    },
+    {
         label: 'Leave Credits',
         key: '/leavecredits',
     },

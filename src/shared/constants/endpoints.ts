@@ -66,7 +66,10 @@ export const useEndpoints = () => {
             },
         },
         EMPLOYEE201: {
-            GET: '/employees?all=1',
+            GET: '/employees',
+            POST: '/employee/',
+            PUT: '/employee/update/',
+            DELETE: '/employee/',
             USERPROFILE: {
                 GET: '/employees',
                 POST: '/employees/',

@@ -1,6 +1,6 @@
-import { IUser, AxiosGetData } from ".."
+import { AxiosGetData } from ".."
 
-export interface IEmployeeDocument extends IUser {
+export interface IEmployeeDocument {
     id: string;
     name: string;
     description: string;

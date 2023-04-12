@@ -9,9 +9,11 @@ import { IArguments, IUser } from '../../shared/interfaces'
 import dayjs from 'dayjs'
 
 const { useForm, Item } = AntDForm
+const [{ EMPLOYEE201 }] = useEndpoints()
+const { PUT } = useAxios()
 
 export default function UserProfileEmployee() {
-    const { employeeId, employeeInfo } = useEmployeeCtx()
+    const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(true)
 
@@ -21,7 +23,13 @@ export default function UserProfileEmployee() {
 
     function onFinish(val: IUser) {
         setLoading(true)
-        console.log(val)
+        PUT(EMPLOYEE201.PUT + employeeId, val)
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((err) => {
+                console.log('Error: ', err)
+            })
         // do put route
         setLoading(false)
     }
@@ -146,8 +154,8 @@ export default function UserProfileEmployee() {
                         <Item
                             label="Contact #1"
                             name="contact_number1"
-                            required
-                            rules={[{ required: true, message: 'Please contact number!' }]}
+                        // required
+                        // rules={[{ required: true, message: 'Please contact number!' }]}
                         >
                             <Input type='number' placeholder='Enter contact number...' />
                         </Item>
@@ -156,8 +164,8 @@ export default function UserProfileEmployee() {
                         <Item
                             label="Contact #2"
                             name="contact_number2"
-                            required
-                            rules={[{ required: true, message: 'Please contact number!' }]}
+                        // required
+                        // rules={[{ required: true, message: 'Please contact number!' }]}
                         >
                             <Input type='number' placeholder='Enter contact number...' />
                         </Item>
