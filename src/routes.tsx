@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom"
-import { Spin } from "antd"
+import { Skeleton } from "antd"
 import styled from "styled-components";
 import { Layout } from "./components"
 import Login from './pages/Login'
@@ -85,11 +85,11 @@ export const routes = createBrowserRouter([
         children: [
             {
                 path: 'dashboard',
-                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Dashboard /></Suspense>
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Dashboard /></Suspense>
             },
             {
                 path: 'timekeeping',
-                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><TimeKeeping /></Suspense>
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><TimeKeeping /></Suspense>
             },
             {
                 path: 'systemsettings',
@@ -101,15 +101,15 @@ export const routes = createBrowserRouter([
                         children: [
                             {
                                 path: 'activities',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><TaskActivities /></Suspense>,
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskActivities /></Suspense>,
                             },
                             {
                                 path: 'types',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><TaskTypes /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskTypes /></Suspense>
                             },
                             {
                                 path: 'sprints',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><TaskSprint /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskSprint /></Suspense>
                             },
                         ]
                     },
@@ -119,55 +119,55 @@ export const routes = createBrowserRouter([
                         children: [
                             {
                                 path: 'bankdetails',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><BankDetails /></Suspense>,
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><BankDetails /></Suspense>,
                             },
                             {
                                 path: 'benefits',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Benefits /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><Benefits /></Suspense>
                             },
                             {
                                 path: 'holidays',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Holidays /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><Holidays /></Suspense>
                             },
                             {
                                 path: 'holidaytype',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><HolidayType /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><HolidayType /></Suspense>
                             },
                             {
                                 path: 'dailyrate',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><DailyRate /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><DailyRate /></Suspense>
                             },
                             {
                                 path: 'employeestatus',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeStatus /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeStatus /></Suspense>
                             },
                             {
                                 path: 'department',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Department /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><Department /></Suspense>
                             },
                             {
                                 path: 'team',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Team /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><Team /></Suspense>
                             },
                             {
                                 path: 'position',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Position /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><Position /></Suspense>
                             },
                             {
                                 path: 'leavestatus',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><LeaveStatus /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveStatus /></Suspense>
                             },
                             {
                                 path: 'leaveduration',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><LeaveDuration /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveDuration /></Suspense>
                             },
                             {
                                 path: 'leavetype',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><LeaveType /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveType /></Suspense>
                             },
                             {
                                 path: 'salaryadjustmenttype',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><SalaryAdjustmentType /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><SalaryAdjustmentType /></Suspense>
                             },
                         ],
                     },
@@ -177,15 +177,15 @@ export const routes = createBrowserRouter([
                         children: [
                             {
                                 path: 'client',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Client /></Suspense>,
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><Client /></Suspense>,
                             },
                             {
                                 path: 'clientbranch',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ClientBranch /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientBranch /></Suspense>
                             },
                             {
                                 path: 'clientbranchadjustment',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ClientBranchAdjustment /></Suspense>
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientBranchAdjustment /></Suspense>
                             },
                         ]
                     },
@@ -195,11 +195,11 @@ export const routes = createBrowserRouter([
                         children: [
                             {
                                 path: 'expense',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Expense /></Suspense>,
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><Expense /></Suspense>,
                             },
                             {
                                 path: 'expensetype',
-                                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ExpenseType /></Suspense>,
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><ExpenseType /></Suspense>,
                             },
                         ]
                     },
@@ -215,83 +215,83 @@ export const routes = createBrowserRouter([
             },
             {
                 path: 'tasks',
-                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Tasks /></Suspense>
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Tasks /></Suspense>
             },
             {
                 path: 'leave',
-                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Leave /></Suspense>
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Leave /></Suspense>
             },
             {
                 path: 'employee',
-                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeFiles /></Suspense>
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeFiles /></Suspense>
             },
             {
                 path: 'salaryadjustments',
-                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><SalaryAdjustment /></Suspense>
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><SalaryAdjustment /></Suspense>
             },
             {
                 path: 'employee/edit/:employeeId',
-                element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeEdit /></Suspense>,
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeEdit /></Suspense>,
                 children: [
                     {
                         path: 'employeebenefits',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeBenefits /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeBenefits /></Suspense>
                     },
                     {
                         path: 'clienthistory',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ClientHistory /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientHistory /></Suspense>
                     },
                     {
                         path: 'clientschedule',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><ClientSchedule /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientSchedule /></Suspense>
                     },
                     {
                         path: 'contracts',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Contracts /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><Contracts /></Suspense>
                     },
                     {
                         path: 'employeedocuments',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeDocuments /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeDocuments /></Suspense>
                     },
                     {
                         path: 'evaluations',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Evaluations /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><Evaluations /></Suspense>
                     },
                     {
                         path: 'governmentdocuments',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><GovernmentDocuments /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><GovernmentDocuments /></Suspense>
                     },
                     {
                         path: 'memorandums',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Memorandums /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><Memorandums /></Suspense>
                     },
                     {
                         path: 'payscheme',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><PayScheme /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><PayScheme /></Suspense>
                     },
                     {
                         path: 'leavecredits',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><LeaveCredits /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveCredits /></Suspense>
                     },
                     {
                         path: 'salary',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeSalary /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalary /></Suspense>
                     },
                     {
                         path: 'salaryadjustments',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeSalaryAdjustments /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryAdjustments /></Suspense>
                     },
                     {
                         path: 'salaryhistory',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><EmployeeSalaryHistory /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryHistory /></Suspense>
                     },
                     {
                         path: 'employeeschedule',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><Schedule /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><Schedule /></Suspense>
                     },
                     {
                         path: 'userprofile',
-                        element: <Suspense fallback={<Content><Spin size="large" /></Content>}><UserProfile /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><UserProfile /></Suspense>
                     },
                 ]
             },

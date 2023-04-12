@@ -20,7 +20,6 @@ export default function Evaluations() {
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
-    console.log(employeeInfo.evaluations)
 
     const columns: ColumnsType<IEmployeeEvaluation> = [
         {
