@@ -47,8 +47,8 @@ export const hrSettingsPaths = [
         label: 'Leave Type',
         key: '/hrsettings/leavetype',
     },
-    {
-        label: 'Salary Adjustment Type',
-        key: '/hrsettings/salaryadjustmenttype',
-    },
+    // {
+    //     label: 'Salary Adjustment Type',
+    //     key: '/hrsettings/salaryadjustmenttype',
+    // },
 ]

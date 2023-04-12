@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Form as AntDForm } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { Card } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
+import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
@@ -14,7 +14,7 @@ const [{ EMPLOYEE201 }] = useEndpoints()
 const { GET } = useAxios()
 
 export default function ClientAndSchedule() {
-    const { employeeId, employeeInfo } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [form] = useForm()
     const [data, setData] = useState<IEmployeeClients[]>([])
     const [selectedData, setSelectedData] = useState<IEmployeeClients | undefined>(undefined)
@@ -37,9 +37,14 @@ export default function ClientAndSchedule() {
             render: (_, record) => record?.branch_name.branch_name
         },
         {
-            title: 'Schedule',
-            key: 'schedule',
-            dataIndex: 'schedule',
+            title: 'Start Date',
+            key: 'client_start_date',
+            dataIndex: 'client_start_date',
+        },
+        {
+            title: 'End Date',
+            key: 'client_end_date',
+            dataIndex: 'client_end_date',
         },
         {
             title: 'Description',
@@ -56,7 +61,7 @@ export default function ClientAndSchedule() {
     function handleDownload() {
         alert('download')
     }
-
+    // TODO: FORM LIKE IN THE USERPROFILE NOT TABLE
     return (
         <Card title='Client and Schedule'>
             <TabHeader

@@ -190,7 +190,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
             >
                 <Select placeholder='Select team...' allowClear showSearch>
                     {teams.map((team) => (
-                        <Select.Option value={team.id} key={team.id}>{team.name}</Select.Option>
+                        <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
                     ))}
                 </Select>
             </FormItem>

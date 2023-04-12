@@ -3,7 +3,7 @@ import { Button, Form as AntDForm, Input, Modal, Select, Space, Upload } from 'a
 import { InboxOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { Card } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
+import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
@@ -13,7 +13,7 @@ const [{ EMPLOYEE201: { MEMORANDUM } }] = useEndpoints()
 const { GET } = useAxios()
 
 export default function Memorandums() {
-    const { employeeId, employeeInfo } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [data, setData] = useState<IMemorandum[]>([])
     const [selectedData, setSelectedData] = useState<IMemorandum | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()

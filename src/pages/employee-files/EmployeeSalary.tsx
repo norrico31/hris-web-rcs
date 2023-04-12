@@ -1,11 +1,11 @@
 import { Form as AntDForm, Descriptions } from 'antd'
 import { Card } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
+import { useEmployeeCtx } from '../EmployeeEdit'
 
 const { useForm, Item } = AntDForm
 
 export default function EmployeeSalary() {
-    const { employeeId, employeeInfo } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [form] = useForm()
 
     console.log(employeeInfo?.salary)

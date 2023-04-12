@@ -1,4 +1,4 @@
-export const employeeEditEls = [
+export const employeeEditPaths = [
     {
         label: 'User Profile',
         key: '/userprofile',
@@ -27,10 +27,10 @@ export const employeeEditEls = [
         label: 'Documents',
         key: '/employeedocuments',
     },
-    {
-        label: 'Schedule',
-        key: '/employeeschedule',
-    },
+    // {
+    //     label: 'Schedule',
+    //     key: '/employeeschedule',
+    // },
     {
         label: 'Memorandums',
         key: '/memorandums',

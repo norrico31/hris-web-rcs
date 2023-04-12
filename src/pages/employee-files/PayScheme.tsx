@@ -1,9 +1,9 @@
 import React from 'react'
 import { Descriptions } from 'antd'
-import { useEmployeeId } from '../EmployeeEdit'
+import { useEmployeeCtx } from '../EmployeeEdit'
 
 export default function PayScheme() {
-    const { employeeId, employeeInfo } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     return (
         <div>
             <Descriptions

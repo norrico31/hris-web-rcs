@@ -3,12 +3,12 @@ import { Form as AntDForm, Modal, Input, DatePicker, Space, Button, Select } fro
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs'
 import { Card, Form, TabHeader, Table } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
+import { useEmployeeCtx } from '../EmployeeEdit'
 import { IEmployeeBenefits } from '../../shared/interfaces'
 
 
 export default function EmployeeBenefits() {
-    const { employeeId, employeeInfo } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployeeBenefits | undefined>(undefined)
 

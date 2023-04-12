@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Form as AntDForm, Input, Row, Col, Radio, DatePicker, Button } from 'antd'
 import { Card } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
+import { useEmployeeCtx } from '../EmployeeEdit'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
@@ -11,7 +11,7 @@ import dayjs from 'dayjs'
 const { useForm, Item } = AntDForm
 
 export default function UserProfileEmployee() {
-    const { employeeId, employeeInfo } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(true)
 

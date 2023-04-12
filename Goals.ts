@@ -3,10 +3,6 @@
 
 // ==================================
 // ==================================
-// TODO: Team (hr settings)
-// PENDING: Tasks (Root)
+// TODO: Employee Files 201 (PUT && POST method)
 // ==================================
 // ==================================
-
-
-// Dropdown/Inputs => color: #f1f1f1;

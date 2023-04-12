@@ -4,7 +4,7 @@ import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs from 'dayjs'
 import { Action, TabHeader, Table, Form, Card } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
+import { useEmployeeCtx } from '../EmployeeEdit'
 import { renderTitle } from '../../shared/utils/utilities'
 
 interface ISchedule extends Partial<{ id: string }> {
@@ -17,7 +17,7 @@ interface ISchedule extends Partial<{ id: string }> {
 
 export default function Schedule() {
     renderTitle('Schedule')
-    const employeeId = useEmployeeId()
+    const employeeId = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<ISchedule | undefined>(undefined)
 

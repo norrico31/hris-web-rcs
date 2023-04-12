@@ -3,7 +3,7 @@ import { useParams, Navigate, Outlet, useNavigate, useLocation, useOutletContext
 import { Tabs as AntDTabs } from 'antd'
 import styled from "styled-components"
 import { MainHeader } from './../components'
-import { employeeEditEls, useEndpoints } from "../shared/constants"
+import { employeeEditPaths, useEndpoints } from "../shared/constants"
 import { renderTitle } from "../shared/utils/utilities"
 import { IArguments, IUser } from '../shared/interfaces'
 import { useAxios } from '../shared/lib/axios'
@@ -48,7 +48,7 @@ export default function EmployeeEdit() {
             renderTabBar={(props, TabNavList) => (
                 <TabNavList {...props} mobile={false} />
             )}
-            items={employeeEditEls.map((el) => ({
+            items={employeeEditPaths.map((el) => ({
                 label: el.label,
                 key: el.key,
                 children: <Outlet context={{ employeeId, employeeInfo: data, fetchData }} />,
@@ -63,7 +63,7 @@ interface EmployeeOutletContext {
     fetchData(args?: IArguments): void
 }
 
-export function useEmployeeId(): EmployeeOutletContext {
+export function useEmployeeCtx(): EmployeeOutletContext {
     const { employeeId, employeeInfo, fetchData }: EmployeeOutletContext = useOutletContext()
     return { employeeId, employeeInfo, fetchData } as const
 }

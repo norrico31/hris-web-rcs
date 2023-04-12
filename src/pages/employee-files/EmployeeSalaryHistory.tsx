@@ -2,12 +2,12 @@ import { Form as AntDForm } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import { ColumnsType } from 'antd/es/table'
 import { Card } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
+import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table } from '../../components'
 import { IEmployeeSalary } from '../../shared/interfaces'
 
 export default function EmployeeSalaryHistory() {
-    const { employeeId, employeeInfo } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [form] = useForm<IEmployeeSalary>()
 
     console.log(employeeInfo?.salary_history)

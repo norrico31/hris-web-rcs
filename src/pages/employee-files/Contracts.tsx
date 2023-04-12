@@ -4,12 +4,12 @@ import { InboxOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import { Card } from '../../components'
-import { useEmployeeId } from '../EmployeeEdit'
+import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
 import { IEmployeeContracts } from '../../shared/interfaces'
 
 export default function EmployeeContracts() {
-    const { employeeId, employeeInfo } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployeeContracts | undefined>(undefined)
 

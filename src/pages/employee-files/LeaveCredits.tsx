@@ -1,8 +1,8 @@
-import { useEmployeeId } from '../EmployeeEdit'
 import { Descriptions } from 'antd'
+import { useEmployeeCtx } from '../EmployeeEdit'
 
 export default function LeaveCredits() {
-    const { employeeId, employeeInfo } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const { si_leaves, sick_leaves, vacation_leaves } = employeeInfo?.leave_credit ?? {}
     return (
         <div>
