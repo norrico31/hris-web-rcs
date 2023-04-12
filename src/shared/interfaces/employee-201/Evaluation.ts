@@ -1,24 +1,12 @@
-import { IUser, AxiosGetData } from ".."
+import { AxiosGetData } from ".."
 
-interface IRelations {
+export interface IEmployeeEvaluation {
+    copy: string
+    description: string
+    file_name: string
+    file_path: string
     id: string
-    name: string
-}
-
-export interface IEmployeeEvaluation extends IUser {
-    created_at: string
-    date: string
-    deleted_at: string | null
-    description: string | null
-    id: string
-    manhours: string
-    sprint: IRelations
-    sprint_id: string
-    task_activity: IRelations
-    task_activity_id: string
-    task_type: IRelations
-    task_type_id: string
-    updated_at: string
+    type: string
     user_id: string
 }
 

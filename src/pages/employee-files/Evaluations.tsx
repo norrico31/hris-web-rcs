@@ -5,7 +5,7 @@ import { ColumnsType } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeId } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from './../../components'
-import { IArguments, TableParams, IEmployeeEvaluation, EmployeeEvaluationRes } from '../../shared/interfaces'
+import { IArguments, TableParams, IEmployeeEvaluation } from '../../shared/interfaces'
 import { useEndpoints } from './../../shared/constants/endpoints'
 import { useAxios } from '../../shared/lib/axios'
 
@@ -13,21 +13,14 @@ const [{ EMPLOYEE201: { EVALUATION } }] = useEndpoints()
 const { GET } = useAxios()
 
 export default function Evaluations() {
-    const { employeeId } = useEmployeeId()
+    const { employeeId, employeeInfo } = useEmployeeId()
     const [data, setData] = useState<IEmployeeEvaluation[]>([])
     const [selectedData, setSelectedData] = useState<IEmployeeEvaluation | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        const controller = new AbortController();
-        fetchData({ signal: controller.signal })
-        return () => {
-            controller.abort()
-        }
-    }, [])
+    console.log(employeeInfo.evaluations)
 
     const columns: ColumnsType<IEmployeeEvaluation> = [
         {
@@ -57,24 +50,9 @@ export default function Evaluations() {
         },
     ]
 
-    function fetchData(args?: IArguments) {
-        GET<EmployeeEvaluationRes>(EVALUATION.GET + employeeId, args?.signal!, { page: args?.page!, search: args?.search! })
-            .then((res) => {
-                setData(res?.data ?? [])
-                setTableParams({
-                    ...tableParams,
-                    pagination: {
-                        ...tableParams?.pagination,
-                        total: res?.total,
-                        current: res?.current_page,
-                    },
-                })
-            }).finally(() => setLoading(false))
-    }
-
     const handleSearch = (str: string) => {
         setSearch(str)
-        fetchData({ search: str, page: 1 })
+        // fetchData({ search: str, page: 1 })
     }
 
     function handleDownload() {
@@ -97,7 +75,7 @@ export default function Evaluations() {
             <Table
                 loading={false}
                 columns={columns}
-                dataList={data}
+                dataList={employeeInfo?.evaluations ?? []}
                 onChange={(evt) => console.log(evt)}
             />
             <EvaluationsModal
