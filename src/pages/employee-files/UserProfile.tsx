@@ -172,7 +172,7 @@ export default function UserProfileEmployee() {
                     </Col>
                 </Row>
                 <Row justify='end'>
-                    <Button type='primary' htmlType='submit'>Submit</Button>
+                    <Button type='primary' htmlType='submit'>Update</Button>
                 </Row>
             </Form>
         </Card>

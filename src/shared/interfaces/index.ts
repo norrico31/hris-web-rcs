@@ -19,7 +19,6 @@ export * from './system-settings/client-settings/ClientBranch'
 
 export * from './employee-files/Employees'
 export * from './employee-files/EmployeeBenefits'
-export * from './employee-files/EmployeeClients'
 export * from './employee-files/Salary'
 export * from './employee-files/EmployeeContracts'
 export * from './employee-files/GovernmentDocuments'
