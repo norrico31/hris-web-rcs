@@ -25,6 +25,9 @@ export * from './system-settings/client-settings/Client'
 export * from './system-settings/client-settings/ClientBranch'
 export * from './system-settings/client-settings/ClientAdjustment'
 
+export * from './system-settings/expense-settings/Expense'
+export * from './system-settings/expense-settings/ExpenseType'
+
 export * from './employee-files/Employees'
 export * from './employee-files/EmployeeBenefits'
 export * from './employee-files/Salary'

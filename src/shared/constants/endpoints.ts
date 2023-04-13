@@ -121,6 +121,22 @@ export const useEndpoints = () => {
                     PUT: '/client/adjustments/',
                     DELETE: '/client/adjustments/'
                 }
+            },
+            EXPENSESETTINGS: {
+                EXPENSE: {
+                    GET: '/expense',
+                    POST: '/expense/',
+                    PUT: '/expense/',
+                    DELETE: '/expense/'
+
+                },
+                EXPENSETYPE: {
+                    GET: '/expense_types',
+                    POST: '/expense_types/',
+                    PUT: '/expense_types/',
+                    DELETE: '/expense_types/'
+
+                }
             }
         },
         EMPLOYEE201: {

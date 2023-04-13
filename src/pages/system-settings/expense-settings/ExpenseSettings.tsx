@@ -14,7 +14,6 @@ export default function ClientSettings() {
     })), [])
 
     const activeKey = pathname.slice(15, pathname.length)
-    console.log(activeKey)
     const onChange = (key: string) => navigate('/systemsettings' + key)
 
     return <Tabs
