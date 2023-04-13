@@ -3,15 +3,28 @@ import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
-interface IPosition {
-    id: string;
-    name: string;
-    description: string;
-}
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { IArguments, IPosition, PositionRes, TableParams } from '../../../shared/interfaces'
+
+const { GET, DELETE, POST, PUT } = useAxios()
+const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 export default function Position() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IPosition[]>([])
     const [selectedData, setSelectedData] = useState<IPosition | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function () {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IPosition> = [
         {
@@ -36,78 +49,27 @@ export default function Position() {
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
-    const data: IPosition[] = [
-        {
-            id: '1',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '2',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '3',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '4',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '5',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '6',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '7',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '8',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '9',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '10',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '11',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '12',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    const fetchData = (args?: IArguments) => {
+        setLoading(true)
+        GET<PositionRes>(HRSETTINGS.POSITION.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(HRSETTINGS.POSITION.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IPosition) {
@@ -124,7 +86,7 @@ export default function Position() {
         <Card title='Positions'>
             <TabHeader
                 name='position'
-                handleSearchData={fetchData}
+                handleSearchData={() => null}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -138,6 +100,7 @@ export default function Position() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -149,11 +112,12 @@ interface ModalProps {
     isModalOpen: boolean
     selectedData?: IPosition
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function PositionModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function PositionModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IPosition>()
 
     useEffect(() => {
@@ -167,10 +131,11 @@ function PositionModal({ title, selectedData, isModalOpen, handleCancel }: Modal
     function onFinish(values: IPosition) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(HRSETTINGS.POSITION.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.POSITION.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Position`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>

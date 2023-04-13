@@ -3,16 +3,28 @@ import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { DepartmentRes, IArguments, IDepartment, TableParams } from '../../../shared/interfaces'
 
-interface IDepartment {
-    id: string;
-    name: string;
-    description: string;
-}
+const { GET, DELETE, POST, PUT } = useAxios()
+const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 export default function Department() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IDepartment[]>([])
     const [selectedData, setSelectedData] = useState<IDepartment | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function () {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IDepartment> = [
         {
@@ -37,78 +49,27 @@ export default function Department() {
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
-    const data: IDepartment[] = [
-        {
-            id: '1',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '2',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '3',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '4',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '5',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '6',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '7',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '8',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '9',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '10',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '11',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '12',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    const fetchData = (args?: IArguments) => {
+        setLoading(true)
+        GET<DepartmentRes>(HRSETTINGS.DEPARTMENT.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(HRSETTINGS.DEPARTMENT.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IDepartment) {
@@ -125,7 +86,7 @@ export default function Department() {
         <Card title='Departments'>
             <TabHeader
                 name='department'
-                handleSearchData={fetchData}
+                handleSearchData={() => null}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -139,6 +100,7 @@ export default function Department() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -150,11 +112,12 @@ interface ModalProps {
     isModalOpen: boolean
     selectedData?: IDepartment
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function DepartmentModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function DepartmentModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IDepartment>()
 
     useEffect(() => {
@@ -168,10 +131,11 @@ function DepartmentModal({ title, selectedData, isModalOpen, handleCancel }: Mod
     function onFinish(values: IDepartment) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(HRSETTINGS.DEPARTMENT.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.DEPARTMENT.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Department`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>

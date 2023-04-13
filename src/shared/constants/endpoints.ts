@@ -45,6 +45,12 @@ export const useEndpoints = () => {
                     PUT: '/dailyrates/',
                     DELETE: '/dailyrates/',
                 },
+                DEPARTMENT: {
+                    GET: '/departments',
+                    POST: '/departments/',
+                    PUT: '/departments/',
+                    DELETE: '/departments/',
+                },
                 EMPLOYEESTATUS: {
                     GET: '/employment_statuses',
                     POST: '/employment_statuses/',
@@ -56,6 +62,24 @@ export const useEndpoints = () => {
                     POST: '/benefits/',
                     PUT: '/benefits/',
                     DELETE: '/benefits/',
+                },
+                POSITION: {
+                    GET: '/positions',
+                    POST: '/positions/',
+                    PUT: '/positions/',
+                    DELETE: '/positions/',
+                },
+                LEAVEDURATION: {
+                    GET: '/leave/durations',
+                    POST: '/leave/durations/',
+                    PUT: '/leave/durations/',
+                    DELETE: '/leave/durations/',
+                },
+                LEAVETYPE: {
+                    GET: '/leave/types',
+                    POST: '/leave/types/',
+                    PUT: '/leave/types/',
+                    DELETE: '/leave/types/',
                 },
                 HOLIDAYS: {
                     GET: 'holidays',

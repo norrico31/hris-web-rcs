@@ -127,6 +127,7 @@ const { Item: FormItem, useForm } = AntDForm
 function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITeam>()
     const [error, setError] = useState('')
+
     useEffect(() => {
         if (selectedData != undefined) {
             form.setFieldsValue({ ...selectedData })
@@ -138,7 +139,7 @@ function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }
     function onFinish(values: ITeam) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(TEAMS.PUT, { ...restValues, id: selectedData.id }) : POST(TEAMS.POST, restValues)
+        let result = selectedData ? PUT(TEAMS.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(TEAMS.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
