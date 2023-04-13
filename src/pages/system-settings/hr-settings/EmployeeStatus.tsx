@@ -3,16 +3,28 @@ import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { EmployeeStatusRes, IArguments, IEmployeeStatus, TableParams } from '../../../shared/interfaces'
 
-interface IEmployeeStatus {
-    id: string;
-    name: string;
-    description?: string;
-}
+const { GET, DELETE, POST, PUT } = useAxios()
+const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 export default function EmployeeStatus() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IEmployeeStatus[]>([])
     const [selectedData, setSelectedData] = useState<IEmployeeStatus | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function () {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IEmployeeStatus> = [
         {
@@ -37,30 +49,27 @@ export default function EmployeeStatus() {
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
-    const data: IEmployeeStatus[] = [
-        {
-            id: '1',
-            name: 'Probitionary',
-        },
-        {
-            id: '2',
-            name: 'Regular',
-        },
-        {
-            id: '3',
-            name: 'Contractual',
-        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    const fetchData = (args?: IArguments) => {
+        setLoading(true)
+        GET<EmployeeStatusRes>(HRSETTINGS.EMPLOYEESTATUS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(HRSETTINGS.EMPLOYEESTATUS.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IEmployeeStatus) {
@@ -77,7 +86,7 @@ export default function EmployeeStatus() {
         <Card title='Employee Status'>
             <TabHeader
                 name='employee status'
-                handleSearchData={fetchData}
+                handleSearchData={() => null}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -91,22 +100,23 @@ export default function EmployeeStatus() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
 }
-
 
 interface ModalProps {
     title: string
     isModalOpen: boolean
     selectedData?: IEmployeeStatus
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function EmployeeStatusModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function EmployeeStatusModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IEmployeeStatus>()
 
     useEffect(() => {
@@ -120,10 +130,11 @@ function EmployeeStatusModal({ title, selectedData, isModalOpen, handleCancel }:
     function onFinish(values: IEmployeeStatus) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(HRSETTINGS.EMPLOYEESTATUS.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.EMPLOYEESTATUS.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Employee Status`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>

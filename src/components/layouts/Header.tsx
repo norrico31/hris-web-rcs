@@ -14,7 +14,7 @@ type Props = {
     setCollapsed: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const { POST } = useAxios()
+const { GET } = useAxios()
 const [{ AUTH: { LOGOUT, LOGIN } }] = useEndpoints()
 
 export default function Header({ collapsed, setCollapsed }: Props) {
@@ -45,7 +45,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
     function logout(evt: React.MouseEvent) {
         evt.stopPropagation()
         evt.preventDefault()
-        POST(LOGOUT, {})
+        GET(LOGOUT)
             .then(() => {
                 localStorage.clear()
                 setUser(undefined)

@@ -3,17 +3,28 @@ import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import { DailyRateRes, IArguments, IDailyRate, TableParams } from '../../../shared/interfaces'
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
 
-interface IDailyRate {
-    id: string;
-    name: string;
-    bank_branch: string
-    description?: string;
-}
+const { GET, DELETE, POST, PUT } = useAxios()
+const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 export default function DailyRate() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IDailyRate[]>([])
     const [selectedData, setSelectedData] = useState<IDailyRate | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function () {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IDailyRate> = [
         {
@@ -58,33 +69,27 @@ export default function DailyRate() {
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
-    const data: IDailyRate[] = [
-        {
-            id: '1',
-            name: 'BDO',
-            bank_branch: 'Santa Rosa'
-        },
-        {
-            id: '2',
-            name: 'BPI',
-            bank_branch: 'Santa Rosa'
-        },
-        {
-            id: '3',
-            name: 'Metro Bank',
-            bank_branch: 'Santa Rosa'
-        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    const fetchData = (args?: IArguments) => {
+        setLoading(true)
+        GET<DailyRateRes>(HRSETTINGS.DAILYRATE.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(HRSETTINGS.DAILYRATE.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IDailyRate) {
@@ -101,7 +106,7 @@ export default function DailyRate() {
         <Card title='Daily Rates'>
             <TabHeader
                 name='daily rate'
-                handleSearchData={fetchData}
+                handleSearchData={() => null}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -115,6 +120,7 @@ export default function DailyRate() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -126,11 +132,12 @@ interface ModalProps {
     isModalOpen: boolean
     selectedData?: IDailyRate
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function DailyRateModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IDailyRate>()
 
     useEffect(() => {
@@ -144,10 +151,11 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel }: Moda
     function onFinish(values: IDailyRate) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(HRSETTINGS.BENEFITS.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.BENEFITS.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Daily Rate`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>

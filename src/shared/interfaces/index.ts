@@ -11,6 +11,8 @@ export * from './system-settings/tasks-settings/TaskSprints'
 
 export * from './system-settings/hr-settings/Team'
 export * from './system-settings/hr-settings/BankDetails'
+export * from './system-settings/hr-settings/EmployeeStatus'
+export * from './system-settings/hr-settings/DailyRate'
 export * from './system-settings/hr-settings/Holidays'
 export * from './system-settings/hr-settings/HolidayType'
 export * from './system-settings/hr-settings/Benefits'

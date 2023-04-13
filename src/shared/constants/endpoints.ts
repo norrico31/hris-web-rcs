@@ -39,6 +39,18 @@ export const useEndpoints = () => {
                     PUT: '/bankingdetails/',
                     DELETE: '/bankingdetails/',
                 },
+                DAILYRATE: {
+                    GET: '/dailyrates',
+                    POST: '/dailyrates/',
+                    PUT: '/dailyrates/',
+                    DELETE: '/dailyrates/',
+                },
+                EMPLOYEESTATUS: {
+                    GET: '/employment_statuses',
+                    POST: '/employment_statuses/',
+                    PUT: '/employment_statuses/',
+                    DELETE: '/employment_statuses/',
+                },
                 BENEFITS: {
                     GET: '/benefits',
                     POST: '/benefits/',

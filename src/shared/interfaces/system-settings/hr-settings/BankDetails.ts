@@ -6,4 +6,5 @@ export interface IBankDetails {
     bank_branch: string
     description?: string;
 }
+
 export type BankDetailsRes = AxiosGetData<IBankDetails>
