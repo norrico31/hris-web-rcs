@@ -298,7 +298,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     <Button type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" htmlType="submit" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel}>
                         Cancel
                     </Button>
                 </Space>

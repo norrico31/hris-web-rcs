@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import { useAxios } from '../../../shared/lib/axios'
+import axiosClient, { useAxios } from '../../../shared/lib/axios'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useEndpoints } from '../../../shared/constants'
 import { IArguments, TableParams, TasksActivitiesRes, ITaskActivities, ITeam, TeamRes } from '../../../shared/interfaces'
@@ -142,7 +142,7 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
         }
 
         const controller = new AbortController();
-        GET<TeamRes>(HRSETTINGS.TEAMS.GET, controller.signal)
+        axiosClient(HRSETTINGS.TEAMS.OPTIONS, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
@@ -176,7 +176,7 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
                 required
                 rules={[{ required: true, message: 'Please enter team!' }]}
             >
-                <Select placeholder='Select team...' allowClear showSearch>
+                <Select placeholder='Select team...' optionFilterProp="children" allowClear showSearch>
                     {teams.map((team) => (
                         <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
                     ))}
@@ -190,7 +190,7 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
                     <Button type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" htmlType="submit" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel}>
                         Cancel
                     </Button>
                 </Space>

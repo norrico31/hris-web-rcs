@@ -161,7 +161,7 @@ function PositionModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                     <Button type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" htmlType="submit" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel}>
                         Cancel
                     </Button>
                 </Space>

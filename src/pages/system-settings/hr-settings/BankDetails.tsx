@@ -7,7 +7,7 @@ import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
 import { BankDetailsRes, IArguments, IBankDetails, TableParams } from '../../../shared/interfaces'
 
-const { GET } = useAxios()
+const { GET, POST, PUT } = useAxios()
 const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 export default function BankDetails() {
@@ -104,6 +104,7 @@ export default function BankDetails() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -115,11 +116,12 @@ interface ModalProps {
     isModalOpen: boolean
     selectedData?: IBankDetails
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IBankDetails>()
 
     useEffect(() => {
@@ -133,10 +135,11 @@ function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
     function onFinish(values: IBankDetails) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(HRSETTINGS.BANKDETAILS.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.BANKDETAILS.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Bank Details`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
@@ -151,7 +154,7 @@ function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
             </FormItem>
             <FormItem
                 label="Bank Branch"
-                name="name"
+                name="branch_name"
                 required
                 rules={[{ required: true, message: 'Please enter bank branch!' }]}
             >
@@ -170,7 +173,7 @@ function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
                     <Button type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" htmlType="submit" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel}>
                         Cancel
                     </Button>
                 </Space>

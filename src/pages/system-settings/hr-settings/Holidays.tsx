@@ -211,7 +211,7 @@ function HolidaysModal({ isModalOpen, handleClose }: ModalProps) {
                     <Button type="primary" htmlType="submit">
                         Create
                     </Button>
-                    <Button type="primary" htmlType="submit" onClick={handleClose}>
+                    <Button type="primary" onClick={handleClose}>
                         Cancel
                     </Button>
                 </Space>

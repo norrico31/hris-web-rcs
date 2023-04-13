@@ -130,7 +130,7 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
                     <Button type="primary" htmlType="submit">
                         Submit Request
                     </Button>
-                    <Button type="primary" htmlType="submit" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel}>
                         Cancel
                     </Button>
                 </Space>

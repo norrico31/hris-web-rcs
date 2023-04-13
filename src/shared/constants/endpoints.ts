@@ -94,6 +94,7 @@ export const useEndpoints = () => {
                     DELETE: 'holiday_types/'
                 },
                 TEAMS: {
+                    OPTIONS: 'options/teams',
                     GET: 'teams',
                     POST: 'teams/',
                     PUT: 'teams/',

@@ -3,7 +3,7 @@ import { Space, Button, Input, Form as AntDForm, DatePicker, Select } from 'antd
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import dayjs from 'dayjs'
-import { useAxios } from '../../../shared/lib/axios'
+import axiosClient, { useAxios } from '../../../shared/lib/axios'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { IArguments, TableParams, TaskSprintRes, ITaskSprint, ITeam, TeamRes } from '../../../shared/interfaces'
 import { useEndpoints } from '../../../shared/constants'
@@ -151,7 +151,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
         } else form.resetFields(undefined)
 
         const controller = new AbortController();
-        GET<TeamRes>(HRSETTINGS.TEAMS.GET, controller.signal)
+        axiosClient(HRSETTINGS.TEAMS.OPTIONS, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
@@ -188,7 +188,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
                 required
                 rules={[{ required: true, message: 'Please enter team!' }]}
             >
-                <Select placeholder='Select team...' allowClear showSearch>
+                <Select placeholder='Select team...' optionFilterProp="children" allowClear showSearch>
                     {teams.map((team) => (
                         <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
                     ))}
@@ -212,7 +212,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
                     <Button type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" htmlType="submit" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel}>
                         Cancel
                     </Button>
                 </Space>
