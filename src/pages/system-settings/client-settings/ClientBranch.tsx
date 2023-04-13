@@ -3,29 +3,45 @@ import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import axiosClient, { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { ClientBranchRes, IArguments, IClient, IClientBranch, TableParams } from '../../../shared/interfaces'
 
-interface IClientBranch {
-    id: string;
-    name: string;
-    client?: any
-    description?: string;
-}
+const { GET, POST, PUT, DELETE } = useAxios()
+const [{ SYSTEMSETTINGS: { CLIENTSETTINGS } }] = useEndpoints()
 
 export default function ClientBranch() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IClientBranch[]>([])
     const [selectedData, setSelectedData] = useState<IClientBranch | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function () {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IClientBranch> = [
         {
             title: 'Client Branch',
-            key: 'name',
-            dataIndex: 'name',
+            key: 'branch_name',
+            dataIndex: 'branch_name',
         },
         {
             title: 'Client',
             key: 'client_name',
             dataIndex: 'client_name',
             render: (_, record) => record.client?.name
+        },
+        {
+            title: 'Status',
+            key: 'is_active',
+            dataIndex: 'is_active',
         },
         {
             title: 'Description',
@@ -39,35 +55,32 @@ export default function ClientBranch() {
             align: 'center',
             render: (_: any, record: IClientBranch) => <Action
                 title='Employee Status'
-                name={record.name}
+                name={record.branch_name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
-    const data: IClientBranch[] = [
-        {
-            id: '1',
-            name: 'BDO',
-        },
-        {
-            id: '2',
-            name: 'BPI',
-        },
-        {
-            id: '3',
-            name: 'Metro Bank',
-        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    const fetchData = (args?: IArguments) => {
+        setLoading(true)
+        GET<ClientBranchRes>(CLIENTSETTINGS.CLIENTBRANCH.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(CLIENTSETTINGS.CLIENTBRANCH.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IClientBranch) {
@@ -84,7 +97,7 @@ export default function ClientBranch() {
         <Card title='Client Branches'>
             <TabHeader
                 name='client branch'
-                handleSearchData={fetchData}
+                handleSearchData={() => { }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -98,6 +111,7 @@ export default function ClientBranch() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -109,12 +123,14 @@ interface ModalProps {
     isModalOpen: boolean
     selectedData?: IClientBranch
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IClientBranch>()
+    const [clients, setClients] = useState<IClient[]>([])
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -122,22 +138,30 @@ function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel }: M
         } else {
             form.resetFields(undefined)
         }
+
+        const controller = new AbortController();
+        axiosClient(CLIENTSETTINGS.CLIENT.OPTIONS, { signal: controller.signal })
+            .then((res) => setClients(res?.data ?? []));
+        return () => {
+            controller.abort()
+        }
     }, [selectedData])
 
     function onFinish(values: IClientBranch) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(CLIENTSETTINGS.CLIENTBRANCH.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(CLIENTSETTINGS.CLIENTBRANCH.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Client Branch`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
                 label="Client Branch"
-                name="name"
+                name="branch_name"
                 required
                 rules={[{ required: true, message: 'Please enter client branch!' }]}
             >
@@ -149,9 +173,11 @@ function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel }: M
                     placeholder='Select client...'
                     allowClear
                     showSearch
+                    optionFilterProp="children"
                 >
-                    <Select.Option value="male">Male</Select.Option>
-                    <Select.Option value="female">Female</Select.Option>
+                    {clients.map((team) => (
+                        <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
+                    ))}
                 </Select>
             </FormItem>
 

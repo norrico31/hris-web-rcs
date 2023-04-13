@@ -101,6 +101,21 @@ export const useEndpoints = () => {
                     DELETE: 'teams/'
                 },
             },
+            CLIENTSETTINGS: {
+                CLIENT: {
+                    OPTIONS: '/options/clients',
+                    GET: '/clients',
+                    POST: '/clients/',
+                    PUT: '/clients/',
+                    DELETE: '/clients/'
+                },
+                CLIENTBRANCH: {
+                    GET: '/client_branches',
+                    POST: '/client_branches/',
+                    PUT: '/client_branches/',
+                    DELETE: '/client_branches/'
+                }
+            }
         },
         EMPLOYEE201: {
             GET: '/employees',

@@ -3,22 +3,54 @@ import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { IArguments, TableParams, IClient, ClientRes } from '../../../shared/interfaces'
 
-interface IClient {
-    id: string;
-    name: string;
-    description?: string;
-}
+const { GET, POST, PUT, DELETE } = useAxios()
+const [{ SYSTEMSETTINGS: { CLIENTSETTINGS } }] = useEndpoints()
 
 export default function Client() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IClient[]>([])
     const [selectedData, setSelectedData] = useState<IClient | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function () {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IClient> = [
         {
             title: 'Client',
             key: 'name',
             dataIndex: 'name',
+        },
+        {
+            title: 'Address',
+            key: 'address',
+            dataIndex: 'address',
+        },
+        {
+            title: 'Contact Person',
+            key: 'contact_person',
+            dataIndex: 'contact_person',
+        },
+        {
+            title: 'Contact Number',
+            key: 'contact_number',
+            dataIndex: 'contact_number',
+        },
+        {
+            title: 'Status',
+            key: 'status',
+            dataIndex: 'status',
         },
         {
             title: 'Description',
@@ -37,30 +69,27 @@ export default function Client() {
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
-    const data: IClient[] = [
-        {
-            id: '1',
-            name: 'BDO',
-        },
-        {
-            id: '2',
-            name: 'BPI',
-        },
-        {
-            id: '3',
-            name: 'Metro Bank',
-        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    const fetchData = (args?: IArguments) => {
+        setLoading(true)
+        GET<ClientRes>(CLIENTSETTINGS.CLIENT.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(CLIENTSETTINGS.CLIENT.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IClient) {
@@ -77,7 +106,7 @@ export default function Client() {
         <Card title='Clients'>
             <TabHeader
                 name='client'
-                handleSearchData={fetchData}
+                handleSearchData={() => { }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -91,6 +120,7 @@ export default function Client() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -102,11 +132,12 @@ interface ModalProps {
     isModalOpen: boolean
     selectedData?: IClient
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function ClientModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IClient>()
 
     useEffect(() => {
@@ -120,10 +151,11 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel }: ModalPr
     function onFinish(values: IClient) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(CLIENTSETTINGS.CLIENT.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(CLIENTSETTINGS.CLIENT.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Client`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
@@ -136,7 +168,30 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel }: ModalPr
             >
                 <Input placeholder='Enter client...' />
             </FormItem>
-
+            <FormItem
+                label="Address"
+                name="address"
+                required
+                rules={[{ required: true, message: 'Please enter address!' }]}
+            >
+                <Input placeholder='Enter address...' />
+            </FormItem>
+            <FormItem
+                label="Contact Number"
+                name="contact_number"
+                required
+                rules={[{ required: true, message: 'Please enter contact number!' }]}
+            >
+                <Input type='number' placeholder='Enter contact number...' />
+            </FormItem>
+            <FormItem
+                label="Contact Person"
+                name="contact_person"
+                required
+                rules={[{ required: true, message: 'Please enter contact person!' }]}
+            >
+                <Input type='text' placeholder='Enter contact person...' />
+            </FormItem>
             <FormItem
                 name="description"
                 label="Description"

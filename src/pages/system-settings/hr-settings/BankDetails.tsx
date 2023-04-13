@@ -74,6 +74,7 @@ export default function BankDetails() {
 
     function handleDelete(id: string) {
         console.log(id)
+        // TODO
     }
 
     function handleEdit(data: IBankDetails) {
