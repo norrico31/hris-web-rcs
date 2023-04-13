@@ -5,7 +5,7 @@ import { useEmployeeCtx } from '../EmployeeEdit'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
-import { IArguments, TableParams, IClientSchedule, ClientScheduleRes } from '../../shared/interfaces'
+import { IArguments, TableParams, IEmployeeClients, ClientScheduleRes } from '../../shared/interfaces'
 import dayjs from 'dayjs';
 
 const { useForm, Item } = AntDForm
@@ -16,8 +16,8 @@ const { GET } = useAxios()
 export default function ClientAndSchedule() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
     const [form] = useForm()
-    const [data, setData] = useState<IClientSchedule[]>([])
-    const [selectedData, setSelectedData] = useState<IClientSchedule | undefined>(undefined)
+    const [data, setData] = useState<IEmployeeClients[]>([])
+    const [selectedData, setSelectedData] = useState<IEmployeeClients | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -40,7 +40,7 @@ export default function ClientAndSchedule() {
         alert('download')
     }
 
-    function onFinish(val: IClientSchedule) {
+    function onFinish(val: IEmployeeClients) {
         setLoading(true)
         console.log(val)
         // do put route

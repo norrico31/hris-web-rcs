@@ -1,6 +1,7 @@
 import { IUser, AxiosGetData } from ".."
 import { IClientBranch, IClient } from ".."
-export interface IClientSchedule {
+
+export interface IEmployeeClients {
     client: IClient
     branch_name: IClientBranch
     client_branch_id: string
@@ -11,4 +12,4 @@ export interface IClientSchedule {
     user_id: string
 }
 
-export type ClientScheduleRes = AxiosGetData<IClientSchedule>
+export type ClientScheduleRes = AxiosGetData<IEmployeeClients>

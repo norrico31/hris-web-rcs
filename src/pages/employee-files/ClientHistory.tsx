@@ -6,7 +6,7 @@ import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
-import { IArguments, TableParams, IClientSchedule, ClientScheduleRes } from '../../shared/interfaces'
+import { IArguments, TableParams, IEmployeeClients, ClientScheduleRes } from '../../shared/interfaces'
 
 const { useForm, Item } = AntDForm
 
@@ -16,14 +16,14 @@ const { GET } = useAxios()
 export default function ClientHistory() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
     const [form] = useForm()
-    const [data, setData] = useState<IClientSchedule[]>([])
-    const [selectedData, setSelectedData] = useState<IClientSchedule | undefined>(undefined)
+    const [data, setData] = useState<IEmployeeClients[]>([])
+    const [selectedData, setSelectedData] = useState<IEmployeeClients | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    const columns: ColumnsType<IClientSchedule> = [
+    const columns: ColumnsType<IEmployeeClients> = [
         {
             title: 'Client',
             key: 'client',

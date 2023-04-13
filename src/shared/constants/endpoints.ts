@@ -34,16 +34,16 @@ export const useEndpoints = () => {
             },
             HRSETTINGS: {
                 BANKDETAILS: {
-                    GET: 'bank_details',
-                    POST: 'bank_details/',
-                    PUT: 'bank_details/',
-                    DELETE: 'bank_details/',
+                    GET: '/bankingdetails',
+                    POST: '/bankingdetails/',
+                    PUT: '/bankingdetails/',
+                    DELETE: '/bankingdetails/',
                 },
                 BENEFITS: {
-                    GET: 'benefits',
-                    POST: 'benefits/',
-                    PUT: 'benefits/',
-                    DELETE: 'benefits/',
+                    GET: '/benefits',
+                    POST: '/benefits/',
+                    PUT: '/benefits/',
+                    DELETE: '/benefits/',
                 },
                 HOLIDAYS: {
                     GET: 'holidays',
@@ -70,6 +70,18 @@ export const useEndpoints = () => {
             POST: '/employee/',
             PUT: '/employee/update/',
             DELETE: '/employee/',
+            BENEFITS: {
+                GET: '/employee_benefits',
+                POST: '/employee_benefits/',
+                PUT: '/employee_benefits/',
+                DELETE: '/employee_benefits/'
+            },
+            CONTRACTS: {
+                GET: '/employee_contracts',
+                POST: '/employee_contracts/',
+                PUT: '/employee_contracts/',
+                DELETE: '/employee_contracts/'
+            },
             USERPROFILE: {
                 GET: '/employees',
                 POST: '/employees/',

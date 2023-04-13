@@ -2,15 +2,21 @@ import { useState, useEffect } from 'react'
 import { Form as AntDForm, Modal, Input, DatePicker, Space, Button, Select } from 'antd'
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs'
-import { Card, Form, TabHeader, Table } from '../../components'
+import { Action, Card, Form, TabHeader, Table } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { IEmployeeBenefits } from '../../shared/interfaces'
+import { useAxios } from '../../shared/lib/axios'
+import { useEndpoints } from '../../shared/constants'
 
+const [{ EMPLOYEE201 }] = useEndpoints()
+const { PUT, DELETE, POST } = useAxios()
 
 export default function EmployeeBenefits() {
-    const { employeeId, employeeInfo } = useEmployeeCtx()
+    const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployeeBenefits | undefined>(undefined)
+
+
 
     const columns: ColumnsType<IEmployeeBenefits> = [
         {
@@ -39,10 +45,28 @@ export default function EmployeeBenefits() {
             key: 'description',
             dataIndex: 'description',
         },
+        {
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_, record: IEmployeeBenefits) => <Action
+                title='Activity'
+                name={record?.benefit.name}
+                onConfirm={() => handleDelete(record?.id)}
+                onClick={() => handleEdit(record)}
+            />
+        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    function handleDelete(id: string) {
+        DELETE(EMPLOYEE201.BENEFITS.DELETE, id)
+            .finally(fetchData)
+    }
+
+    function handleEdit(data: IEmployeeBenefits) {
+        setIsModalOpen(true)
+        setSelectedData(data)
     }
 
     function handleDownload() {
@@ -58,7 +82,7 @@ export default function EmployeeBenefits() {
         <Card title='Benefits'>
             <TabHeader
                 name='benefits'
-                handleSearchData={fetchData}
+                handleSearchData={() => null}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />
@@ -88,6 +112,7 @@ type ModalProps = {
 const { Item: Item, useForm } = AntDForm
 
 function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+    const { employeeId, fetchData } = useEmployeeCtx()
     const [form] = useForm<Record<string, any>>()
 
     // useEffect(() => {
@@ -104,16 +129,16 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
     // }, [selectedData])
 
     function onFinish(values: Record<string, string>) {
-        let { date, description, ...restProps } = values
-        let [start_date, end_date] = date
-        start_date = dayjs(start_date).format('YYYY/MM/DD')
-        end_date = dayjs(end_date).format('YYYY/MM/DD')
-        restProps = { ...restProps, start_date, end_date, ...(description != undefined && { description }) }
-        console.log(restProps)
-
-        // if success
-        form.resetFields()
-        handleCancel()
+        let { date, description, ...restValues } = values
+        // let [start_date, end_date] = date
+        // start_date = dayjs(start_date).format('YYYY/MM/DD')
+        // end_date = dayjs(end_date).format('YYYY/MM/DD')
+        restValues = { ...restValues, ...(description != undefined && { description }) }
+        let result = selectedData ? PUT(EMPLOYEE201.BENEFITS.PUT + employeeId, { ...restValues, id: selectedData.id }) : POST(EMPLOYEE201.BENEFITS.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Benefit`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
@@ -134,7 +159,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
             >
                 <Input type='number' placeholder='Enter amount...' />
             </Item>
-            <Item
+            {/* <Item
                 label="Start and End Date"
                 name="date"
                 required
@@ -144,7 +169,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
                     style={{ width: '100%' }}
                     format='YYYY/MM/DD'
                 />
-            </Item>
+            </Item> */}
             <Item
                 label="Status"
                 name="status"

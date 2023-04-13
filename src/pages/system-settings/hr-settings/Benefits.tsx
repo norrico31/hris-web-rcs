@@ -2,51 +2,92 @@ import { useState, useEffect } from 'react'
 import { Form as AntDForm, Modal, Input, DatePicker, Space, Button, Select } from 'antd'
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs'
-import { TabHeader, Table, Form, Card } from '../../../components'
+import { TabHeader, Table, Form, Card, Action } from '../../../components'
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { BenefitsRes, IArguments, IBenefits, TableParams } from '../../../shared/interfaces'
 
-interface IBenefits {
-    id: string;
-    name: string;
-    description: string;
-}
+const { GET, DELETE, PUT, POST } = useAxios()
+const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 export default function Benefits() {
+    const [data, setData] = useState<IBenefits[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IBenefits | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function () {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IBenefits> = [
         {
             title: 'Benefit',
-            key: 'benefit',
-            dataIndex: 'benefit',
+            key: 'name',
+            dataIndex: 'name',
         },
         {
             title: 'Amount',
             key: 'amount',
             dataIndex: 'amount',
         },
-        {
-            title: 'Schedule',
-            key: 'schedule',
-            dataIndex: 'schedule',
-        },
+        // {
+        //     title: 'Schedule',
+        //     key: 'schedule',
+        //     dataIndex: 'schedule',
+        // },
         {
             title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
+            key: 'is_active',
+            dataIndex: 'is_active',
         },
         {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
         },
+        {
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_: any, record: IBenefits) => <Action
+                title='Bank Details'
+                name={record.name}
+                onConfirm={() => handleDelete(record.id)}
+                onClick={() => handleEdit(record)}
+            />
+        },
+    ]
 
-    ];
+    function handleDelete(id: string) {
+        DELETE(HRSETTINGS.BENEFITS.DELETE, id)
+            .finally(fetchData)
+    }
 
-    const data: IBenefits[] = []
-
-    function fetchData(search: string) {
-        console.log(search)
+    function handleEdit(data: IBenefits) {
+        setIsModalOpen(true)
+        setSelectedData(data)
+    }
+    const fetchData = (args?: IArguments) => {
+        setLoading(true)
+        GET<BenefitsRes>(HRSETTINGS.BENEFITS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
     function handleDownload() {
@@ -62,7 +103,7 @@ export default function Benefits() {
         <Card title='Benefits'>
             <TabHeader
                 name='benefits'
-                handleSearchData={fetchData}
+                handleSearchData={() => null}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />
@@ -77,6 +118,7 @@ export default function Benefits() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -87,44 +129,46 @@ type ModalProps = {
     isModalOpen: boolean
     selectedData?: IBenefits
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: Item, useForm } = AntDForm
 
-function BenefitsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<Record<string, any>>()
+function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
+    const [form] = useForm<IBenefits>()
 
-    // useEffect(() => {
-    //     if (selectedData != undefined) {
-    //         let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
+    useEffect(() => {
+        if (selectedData != undefined) {
+            // let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
+            form.setFieldsValue({
+                ...selectedData,
+                // date: date
+            })
+        } else {
+            form.resetFields(undefined)
+        }
+    }, [selectedData])
 
-    //         form.setFieldsValue({
-    //             ...selectedData,
-    //             date: date
-    //         })
-    //     } else {
-    //         form.resetFields(undefined)
-    //     }
-    // }, [selectedData])
+    function onFinish(values: IBenefits) {
+        let { description, ...restValues } = values
+        // let [start_date, end_date] = date
+        // start_date = dayjs(start_date).format('YYYY/MM/DD')
+        // end_date = dayjs(end_date).format('YYYY/MM/DD')
 
-    function onFinish(values: Record<string, string>) {
-        let { date, description, ...restProps } = values
-        let [start_date, end_date] = date
-        start_date = dayjs(start_date).format('YYYY/MM/DD')
-        end_date = dayjs(end_date).format('YYYY/MM/DD')
-        restProps = { ...restProps, start_date, end_date, ...(description != undefined && { description }) }
-        console.log(restProps)
-
-        // if success
-        form.resetFields()
-        handleCancel()
+        // TODO: for_payroll_calculation
+        restValues = { ...restValues, ...(description != undefined && { description }) }
+        let result = selectedData ? PUT(HRSETTINGS.BENEFITS.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.BENEFITS.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Benefit`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} >
             <Item
                 label="Benefit"
-                name="benefit"
+                name="name"
                 required
                 rules={[{ required: true, message: 'Please enter benefit!' }]}
             >
@@ -138,7 +182,7 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel }: Modal
             >
                 <Input type='number' placeholder='Enter amount...' />
             </Item>
-            <Item
+            {/* <Item
                 label="Start and End Date"
                 name="date"
                 required
@@ -148,10 +192,10 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel }: Modal
                     style={{ width: '100%' }}
                     format='YYYY/MM/DD'
                 />
-            </Item>
+            </Item> */}
             <Item
                 label="Status"
-                name="status"
+                name="is_active"
                 required
                 rules={[{ required: true, message: 'Please select status!' }]}
             >

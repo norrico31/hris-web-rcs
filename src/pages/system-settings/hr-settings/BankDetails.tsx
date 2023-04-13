@@ -5,14 +5,7 @@ import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
-import { IArguments, TableParams } from '../../../shared/interfaces'
-
-interface IBankDetails {
-    id: string;
-    name: string;
-    bank_branch: string
-    description?: string;
-}
+import { BankDetailsRes, IArguments, IBankDetails, TableParams } from '../../../shared/interfaces'
 
 const { GET } = useAxios()
 const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
@@ -25,13 +18,13 @@ export default function BankDetails() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    // useEffect(function fetchData() {
-    //     const controller = new AbortController();
-    //     fetchData({ signal: controller.signal })
-    //     return () => {
-    //         controller.abort()
-    //     }
-    // }, [])
+    useEffect(function () {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IBankDetails> = [
         {
@@ -61,24 +54,23 @@ export default function BankDetails() {
                 onClick={() => handleEdit(record)}
             />
         },
+    ]
 
-    ];
-
-    // const fetchData = (args?: IArguments) => {
-    //     setLoading(true)
-    //     GET<TasksActivitiesRes>(HRSETTINGS.BANKDETAILS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
-    //         .then((res) => {
-    //             setData(res?.data ?? [])
-    //             setTableParams({
-    //                 ...tableParams,
-    //                 pagination: {
-    //                     ...tableParams?.pagination,
-    //                     total: res?.total,
-    //                     current: res?.current_page,
-    //                 },
-    //             })
-    //         }).finally(() => setLoading(false))
-    // }
+    const fetchData = (args?: IArguments) => {
+        setLoading(true)
+        GET<BankDetailsRes>(HRSETTINGS.BANKDETAILS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
+    }
 
     function handleDelete(id: string) {
         console.log(id)

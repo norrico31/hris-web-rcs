@@ -3,13 +3,18 @@ import { Modal, Form as AntDForm, Input, Select, Space, Button, Upload } from 'a
 import { InboxOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
-import { Card } from '../../components'
+import { Action, Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
 import { IEmployeeContracts } from '../../shared/interfaces'
+import { useAxios } from '../../shared/lib/axios'
+import { useEndpoints } from '../../shared/constants'
+
+const [{ EMPLOYEE201 }] = useEndpoints()
+const { PUT, DELETE, POST } = useAxios()
 
 export default function EmployeeContracts() {
-    const { employeeId, employeeInfo } = useEmployeeCtx()
+    const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployeeContracts | undefined>(undefined)
 
@@ -34,10 +39,28 @@ export default function EmployeeContracts() {
             key: 'description',
             dataIndex: 'description',
         },
+        {
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_, record: IEmployeeContracts) => <Action
+                title='Activity'
+                name={record?.type}
+                onConfirm={() => handleDelete(record?.id)}
+                onClick={() => handleEdit(record)}
+            />
+        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    function handleDelete(id: string) {
+        DELETE(EMPLOYEE201.CONTRACTS.DELETE, id)
+            .finally(fetchData)
+    }
+
+    function handleEdit(data: IEmployeeContracts) {
+        setIsModalOpen(true)
+        setSelectedData(data)
     }
 
     function handleDownload() {
@@ -53,7 +76,7 @@ export default function EmployeeContracts() {
         <Card title='Contracts'>
             <TabHeader
                 name='contracts'
-                handleSearchData={fetchData}
+                handleSearchData={() => null}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />
@@ -84,19 +107,20 @@ const { Item: Item, useForm } = AntDForm
 
 function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
+    const { employeeId, fetchData } = useEmployeeCtx()
 
-    // useEffect(() => {
-    //     if (selectedData != undefined) {
-    //         let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
+    useEffect(() => {
+        if (selectedData != undefined) {
+            // let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
 
-    //         form.setFieldsValue({
-    //             ...selectedData,
-    //             date: date
-    //         })
-    //     } else {
-    //         form.resetFields(undefined)
-    //     }
-    // }, [selectedData])
+            form.setFieldsValue({
+                ...selectedData,
+                // date: date
+            })
+        } else {
+            form.resetFields(undefined)
+        }
+    }, [selectedData])
 
     const normFile = (e: any) => {
         if (Array.isArray(e)) {
@@ -113,17 +137,19 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
     }
 
     function onFinish(values: Record<string, string>) {
-        console.log(values)
         // let { date, description, ...restProps } = values
         // let [start_date, end_date] = date
         // start_date = dayjs(start_date).format('YYYY/MM/DD')
         // end_date = dayjs(end_date).format('YYYY/MM/DD')
         // restProps = { ...restProps, start_date, end_date, ...(description != undefined && { description }) }
         // console.log(restProps)
-
-        // if success
-        form.resetFields()
-        handleCancel()
+        let { date, description, ...restValues } = values
+        restValues = { ...restValues, ...(description != undefined && { description }) }
+        let result = selectedData ? PUT(EMPLOYEE201.CONTRACTS.PUT + employeeId, { ...restValues, id: selectedData.id }) : POST(EMPLOYEE201.CONTRACTS.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Contract`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
