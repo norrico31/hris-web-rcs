@@ -195,7 +195,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         let { date, description, ...restValues } = values
         date = dayjs(date).format('YYYY/MM/DD') as any
         restValues = { ...restValues, user_id: selectedData ? selectedData.user_id : user?.id!, date, ...(description != undefined && { description }) } as any
-        let result = selectedData ? PUT(TASKS.PUT, { ...restValues, id: selectedData.id }) : POST(TASKS.POST, restValues)
+        let result = selectedData ? PUT(TASKS.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(TASKS.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()

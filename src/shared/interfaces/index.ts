@@ -23,6 +23,7 @@ export * from './system-settings/hr-settings/Benefits'
 
 export * from './system-settings/client-settings/Client'
 export * from './system-settings/client-settings/ClientBranch'
+export * from './system-settings/client-settings/ClientAdjustment'
 
 export * from './employee-files/Employees'
 export * from './employee-files/EmployeeBenefits'

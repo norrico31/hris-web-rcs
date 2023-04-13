@@ -12,7 +12,7 @@ import { useAxios } from './../shared/lib/axios';
 import { IArguments, TableParams, IEmployee, Employee201Res } from '../shared/interfaces'
 
 const [{ EMPLOYEE201 }] = useEndpoints()
-const { GET } = useAxios()
+const { GET, POST } = useAxios()
 
 export default function EmployeeFiles() {
     renderTitle('Employee')
@@ -79,8 +79,8 @@ export default function EmployeeFiles() {
                 onClick={() => navigate('/employee/edit/' + record.id + '/userprofile')}
             />
         },
-
     ]
+
     function fetchData(args?: IArguments) {
         GET<Employee201Res>(EMPLOYEE201.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
@@ -135,6 +135,7 @@ export default function EmployeeFiles() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </>
     )
@@ -145,10 +146,11 @@ type ModalProps = {
     isModalOpen: boolean
     selectedData?: IEmployee
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 const { Item: FormItem, useForm } = AntDForm
 
-function EmployeeModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function EmployeeModal({ title, selectedData, fetchData, isModalOpen, handleCancel }: ModalProps) {
     const [current, setCurrent] = useState(0)
     const [stepOneInputs, setStepOneInputs] = useState<IStepOne | undefined>(undefined)
     const [stepTwoInputs, setStepTwoInputs] = useState<IStepTwo | undefined>(undefined)
@@ -203,6 +205,7 @@ function EmployeeModal({ title, selectedData, isModalOpen, handleCancel }: Modal
                     setCurrent(current - 1)
                     setStepFourInputs(val)
                 }}
+                fetchData={fetchData}
                 handleResetSteps={handleResetSteps}
                 payload={payload}
             />
@@ -590,9 +593,10 @@ interface IStepFourProps {
     previousStep: (val: IStepFour) => void
     handleResetSteps(): void
     payload: Payload
+    fetchData(args?: IArguments): void
 }
 
-function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, handleResetSteps }: IStepFourProps) {
+function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fetchData, handleResetSteps }: IStepFourProps) {
     const [form] = useForm<IStepFour>()
 
     useEffect(() => {
@@ -612,8 +616,10 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, ha
         }
         setStepFourInputs(stepFourPayload)
         payload = { ...payload, ...stepFourPayload }
-        console.log(payload)
-        // if success hit handleResetSteps()
+        POST(EMPLOYEE201.POST, payload).then(() => {
+            form.resetFields()
+            handleResetSteps()
+        }).finally(fetchData)
     }
 
     return <Form form={form} onFinish={onFinish}>

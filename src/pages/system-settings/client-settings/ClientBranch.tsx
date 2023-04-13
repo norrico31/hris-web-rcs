@@ -140,7 +140,7 @@ function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel, fet
         }
 
         const controller = new AbortController();
-        axiosClient(CLIENTSETTINGS.CLIENT.OPTIONS, { signal: controller.signal })
+        axiosClient(CLIENTSETTINGS.CLIENT.DROPDOWN, { signal: controller.signal })
             .then((res) => setClients(res?.data ?? []));
         return () => {
             controller.abort()

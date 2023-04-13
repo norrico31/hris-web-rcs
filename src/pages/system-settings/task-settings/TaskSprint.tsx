@@ -151,7 +151,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
         } else form.resetFields(undefined)
 
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.TEAMS.OPTIONS, { signal: controller.signal })
+        axiosClient(HRSETTINGS.TEAMS.DROPDOWN, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
@@ -165,7 +165,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
         end_date = dayjs(end_date).format('YYYY/MM/DD')
         restValues = { ...restValues, start_date, end_date, ...(description != undefined && { description }) }
 
-        let result = selectedData ? PUT(TASKSSETTINGS.SPRINT.PUT, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.SPRINT.POST, restValues)
+        let result = selectedData ? PUT(TASKSSETTINGS.SPRINT.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.SPRINT.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()

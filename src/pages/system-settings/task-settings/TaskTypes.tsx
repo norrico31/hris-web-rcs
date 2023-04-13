@@ -140,7 +140,7 @@ export function TypesModal({ title, selectedData, isModalOpen, fetchData, handle
         }
 
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.TEAMS.OPTIONS, { signal: controller.signal })
+        axiosClient(HRSETTINGS.TEAMS.DROPDOWN, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
@@ -151,7 +151,7 @@ export function TypesModal({ title, selectedData, isModalOpen, fetchData, handle
     function onFinish(values: ITaskTypes) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(TASKSSETTINGS.TYPES.PUT, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.TYPES.POST, restValues)
+        let result = selectedData ? PUT(TASKSSETTINGS.TYPES.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.TYPES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()

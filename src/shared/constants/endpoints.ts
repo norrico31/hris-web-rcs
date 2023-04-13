@@ -11,24 +11,24 @@ export const useEndpoints = () => {
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
                 ACTIVITIES: {
-                    GET: 'task_activities',
-                    POST: 'task_activities/',
-                    PUT: 'task_activities/',
-                    DELETE: 'task_activities/',
+                    GET: '/task_activities',
+                    POST: '/task_activities/',
+                    PUT: '/task_activities/',
+                    DELETE: '/task_activities/',
                     DROPDOWN: '/options/task_activities'
                 },
                 TYPES: {
-                    GET: 'task_types',
-                    POST: 'task_types/',
-                    PUT: 'task_types/',
-                    DELETE: 'task_types/',
+                    GET: '/task_types',
+                    POST: '/task_types/',
+                    PUT: '/task_types/',
+                    DELETE: '/task_types/',
                     DROPDOWN: '/options/task_types'
                 },
                 SPRINT: {
-                    GET: 'sprints',
-                    POST: 'sprints/',
-                    PUT: 'sprints/',
-                    DELETE: 'sprints/',
+                    GET: '/sprints',
+                    POST: '/sprints/',
+                    PUT: '/sprints/',
+                    DELETE: '/sprints/',
                     DROPDOWN: '/options/sprints'
                 },
             },
@@ -94,7 +94,7 @@ export const useEndpoints = () => {
                     DELETE: 'holiday_types/'
                 },
                 TEAMS: {
-                    OPTIONS: 'options/teams',
+                    DROPDOWN: 'options/teams',
                     GET: 'teams',
                     POST: 'teams/',
                     PUT: 'teams/',
@@ -103,7 +103,7 @@ export const useEndpoints = () => {
             },
             CLIENTSETTINGS: {
                 CLIENT: {
-                    OPTIONS: '/options/clients',
+                    DROPDOWN: '/options/clients',
                     GET: '/clients',
                     POST: '/clients/',
                     PUT: '/clients/',
@@ -114,12 +114,18 @@ export const useEndpoints = () => {
                     POST: '/client_branches/',
                     PUT: '/client_branches/',
                     DELETE: '/client_branches/'
+                },
+                CLIENTADJUSTMENT: {
+                    GET: '/client/adjustments',
+                    POST: '/client/adjustments/',
+                    PUT: '/client/adjustments/',
+                    DELETE: '/client/adjustments/'
                 }
             }
         },
         EMPLOYEE201: {
             GET: '/employees',
-            POST: '/employee/',
+            POST: '/employee/store',
             PUT: '/employee/update/',
             DELETE: '/employee/',
             BENEFITS: {

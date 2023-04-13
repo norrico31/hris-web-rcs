@@ -8,7 +8,7 @@ export const clientSettingsPaths = [
         key: '/clientsettings/clientbranch',
     },
     {
-        label: 'Client Branch Adjustment',
-        key: '/clientsettings/clientbranchadjustment',
+        label: 'Client Adjustment',
+        key: '/clientsettings/clientadjustment',
     },
 ]

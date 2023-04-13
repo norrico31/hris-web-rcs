@@ -7,7 +7,7 @@ import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
 import { BankDetailsRes, IArguments, IBankDetails, TableParams } from '../../../shared/interfaces'
 
-const { GET, POST, PUT } = useAxios()
+const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 export default function BankDetails() {
@@ -73,8 +73,8 @@ export default function BankDetails() {
     }
 
     function handleDelete(id: string) {
-        console.log(id)
-        // TODO
+        DELETE(HRSETTINGS.BANKDETAILS.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IBankDetails) {

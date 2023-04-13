@@ -44,7 +44,7 @@ const ExpenseType = lazy(() => import('./pages/system-settings/expense-settings/
 // Client Settings
 const Client = lazy(() => import('./pages/system-settings/client-settings/Client'))
 const ClientBranch = lazy(() => import('./pages/system-settings/client-settings/ClientBranch'))
-const ClientBranchAdjustment = lazy(() => import('./pages/system-settings/client-settings/ClientBranchAdjustment'))
+const ClientAdjustment = lazy(() => import('./pages/system-settings/client-settings/ClientAdjustment'))
 
 // Admin Settings
 const Users = lazy(() => import('./pages/admin-settings/Users'))
@@ -180,8 +180,8 @@ export const routes = createBrowserRouter([
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientBranch /></Suspense>
                             },
                             {
-                                path: 'clientbranchadjustment',
-                                element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientBranchAdjustment /></Suspense>
+                                path: 'clientadjustment',
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientAdjustment /></Suspense>
                             },
                         ]
                     },
