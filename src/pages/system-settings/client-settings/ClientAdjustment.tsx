@@ -16,7 +16,6 @@ export default function ClientAdjustment() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController()
@@ -63,7 +62,6 @@ export default function ClientAdjustment() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        setLoading(true)
         GET<ClientAdjustmentRes>(CLIENTSETTINGS.CLIENTADJUSTMENT.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -75,7 +73,7 @@ export default function ClientAdjustment() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     function handleDelete(id: string) {
@@ -140,7 +138,7 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
         }
 
         const controller = new AbortController();
-        axiosClient(CLIENTSETTINGS.CLIENT.DROPDOWN, { signal: controller.signal })
+        axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
             .then((res) => setClients(res?.data ?? []));
         return () => {
             controller.abort()

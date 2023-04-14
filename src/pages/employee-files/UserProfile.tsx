@@ -15,14 +15,12 @@ const { PUT } = useAxios()
 export default function UserProfileEmployee() {
     const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
     const [form] = useForm<IUser>()
-    const [loading, setLoading] = useState(true)
 
     useEffect(function fetchUserInfo() {
         form.setFieldsValue({ ...employeeInfo, birthday: dayjs(employeeInfo?.birthday, 'YYYY/MM/DD') })
     }, [employeeInfo])
 
     function onFinish(val: IUser) {
-        setLoading(true)
         PUT(EMPLOYEE201.PUT + employeeId, val)
             .then((res) => {
                 console.log(res)
@@ -31,7 +29,6 @@ export default function UserProfileEmployee() {
                 console.log('Error: ', err)
             })
         // do put route
-        setLoading(false)
     }
     return (
         <Card title='Personal Information'>

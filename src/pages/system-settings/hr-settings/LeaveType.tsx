@@ -16,7 +16,6 @@ export default function LeaveType() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -52,7 +51,6 @@ export default function LeaveType() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        setLoading(true)
         GET<LeaveTypeRes>(HRSETTINGS.LEAVETYPE.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -64,7 +62,7 @@ export default function LeaveType() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     function handleDelete(id: string) {

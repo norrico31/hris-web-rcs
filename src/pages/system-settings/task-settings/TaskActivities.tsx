@@ -16,7 +16,6 @@ export default function TaskActivities() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -58,7 +57,6 @@ export default function TaskActivities() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        setLoading(true)
         GET<TasksActivitiesRes>(TASKSSETTINGS.ACTIVITIES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -70,7 +68,7 @@ export default function TaskActivities() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     const handleSearch = (str: string) => {
@@ -142,7 +140,7 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
         }
 
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.TEAMS.DROPDOWN, { signal: controller.signal })
+        axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()

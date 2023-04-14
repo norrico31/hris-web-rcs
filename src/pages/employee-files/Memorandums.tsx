@@ -19,7 +19,6 @@ export default function Memorandums() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     // useEffect(() => {
     //     const controller = new AbortController();
@@ -64,7 +63,7 @@ export default function Memorandums() {
     //                     current: res?.current_page,
     //                 },
     //             })
-    //         }).finally(() => setLoading(false))
+    //         })
     // }
 
     const handleSearch = (str: string) => {
@@ -90,7 +89,6 @@ export default function Memorandums() {
                 handleDownload={handleDownload}
             />
             <Table
-                loading={false}
                 columns={columns}
                 dataList={employeeInfo?.memos}
                 onChange={(evt) => console.log(evt)}

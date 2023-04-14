@@ -21,7 +21,6 @@ export default function ClientAndSchedule() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(false)
 
     // useEffect(function fetchUserInfo() {
     //     form.setFieldsValue({
@@ -41,10 +40,8 @@ export default function ClientAndSchedule() {
     }
 
     function onFinish(val: IEmployeeClients) {
-        setLoading(true)
         console.log(val)
         // do put route
-        setLoading(false)
     }
 
     // TODO: FORM LIKE IN THE USERPROFILE NOT TABLE

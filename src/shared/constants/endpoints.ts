@@ -15,21 +15,21 @@ export const useEndpoints = () => {
                     POST: '/task_activities/',
                     PUT: '/task_activities/',
                     DELETE: '/task_activities/',
-                    DROPDOWN: '/options/task_activities'
+                    LISTS: '/options/task_activities'
                 },
                 TYPES: {
                     GET: '/task_types',
                     POST: '/task_types/',
                     PUT: '/task_types/',
                     DELETE: '/task_types/',
-                    DROPDOWN: '/options/task_types'
+                    LISTS: '/options/task_types'
                 },
                 SPRINT: {
                     GET: '/sprints',
                     POST: '/sprints/',
                     PUT: '/sprints/',
                     DELETE: '/sprints/',
-                    DROPDOWN: '/options/sprints'
+                    LISTS: '/options/sprints'
                 },
             },
             HRSETTINGS: {
@@ -94,7 +94,7 @@ export const useEndpoints = () => {
                     DELETE: 'holiday_types/'
                 },
                 TEAMS: {
-                    DROPDOWN: 'options/teams',
+                    LISTS: 'options/teams',
                     GET: 'teams',
                     POST: 'teams/',
                     PUT: 'teams/',
@@ -103,14 +103,14 @@ export const useEndpoints = () => {
             },
             CLIENTSETTINGS: {
                 CLIENT: {
-                    DROPDOWN: '/options/clients',
+                    LISTS: '/options/clients',
                     GET: '/clients',
                     POST: '/clients/',
                     PUT: '/clients/',
                     DELETE: '/clients/'
                 },
                 CLIENTBRANCH: {
-                    DROPDOWN: '/options/client_branches',
+                    LISTS: '/options/client_branches',
                     GET: '/client_branches',
                     POST: '/client_branches/',
                     PUT: '/client_branches/',
@@ -136,9 +136,17 @@ export const useEndpoints = () => {
                     POST: '/expense_types/',
                     PUT: '/expense_types/',
                     DELETE: '/expense_types/'
-
                 }
             }
+        },
+        ADMINSETTINGS: {
+            ROLE: {
+                LISTS: '/options/roles',
+                GET: '/roles',
+                POST: '/roles/',
+                PUT: '/roles/',
+                DELETE: '/roles/'
+            },
         },
         EMPLOYEE201: {
             GET: '/employees',

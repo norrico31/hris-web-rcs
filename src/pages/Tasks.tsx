@@ -23,7 +23,6 @@ export default function Tasks() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -84,7 +83,6 @@ export default function Tasks() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        setLoading(true)
         GET<TasksRes>(TASKS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -96,7 +94,7 @@ export default function Tasks() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     const handleSearch = (str: string) => {
@@ -144,7 +142,6 @@ export default function Tasks() {
                 handleDownload={() => handleDownload()}
             />
             <Table
-                loading={loading}
                 columns={columns}
                 dataList={data}
                 onChange={(pagination: TablePaginationConfig) => {
@@ -172,7 +169,6 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     const [isModalTypes, setIsModalTypes] = useState(false)
     const [isModalSprints, setIsModalSprints] = useState(false)
     const [tasks, setTasks] = useTasksServices()
-    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -186,8 +182,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     }, [selectedData])
 
     async function fetchList(url: string, key: string) {
-        setLoading(true)
-        const data = await getList(url).finally(() => setLoading(false))
+        const data = await getList(url)
         setTasks((prevTasks) => ({ ...prevTasks, [key]: data }))
     }
 
@@ -231,7 +226,6 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             placeholder='Select task activity'
                             allowClear
                             showSearch
-                            loading={loading}
                         >
                             {tasks.activities?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -252,7 +246,6 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             placeholder='Select task type'
                             allowClear
                             showSearch
-                            loading={loading}
                         >
                             {tasks.types?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -273,7 +266,6 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             placeholder='Select sprint'
                             allowClear
                             showSearch
-                            loading={loading}
                         >
                             {tasks.sprints?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -306,19 +298,19 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         </Form>
         <ActivityModal
             title='Create'
-            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.DROPDOWN, 'activities')}
+            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS, 'activities')}
             isModalOpen={isModalActivity}
             handleCancel={() => setIsModalActivity(false)}
         />
         <TypesModal
             title='Create'
-            fetchData={() => fetchList(TASKSSETTINGS.TYPES.DROPDOWN, 'types')}
+            fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS, 'types')}
             isModalOpen={isModalTypes}
             handleCancel={() => setIsModalTypes(false)}
         />
         <SprintModal
             title='Create'
-            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.DROPDOWN, 'sprints')}
+            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS, 'sprints')}
             isModalOpen={isModalSprints}
             handleCancel={() => setIsModalSprints(false)}
         />

@@ -15,7 +15,6 @@ export default function Benefits() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IBenefits | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
-    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -75,7 +74,6 @@ export default function Benefits() {
         setSelectedData(data)
     }
     const fetchData = (args?: IArguments) => {
-        setLoading(true)
         GET<BenefitsRes>(HRSETTINGS.BENEFITS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -87,7 +85,7 @@ export default function Benefits() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     function handleDownload() {

@@ -19,7 +19,6 @@ export default function Evaluations() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     const columns: ColumnsType<IEmployeeEvaluation> = [
         {
@@ -72,7 +71,6 @@ export default function Evaluations() {
                 handleDownload={handleDownload}
             />
             <Table
-                loading={false}
                 columns={columns}
                 dataList={employeeInfo?.evaluations ?? []}
                 onChange={(evt) => console.log(evt)}

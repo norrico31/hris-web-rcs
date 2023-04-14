@@ -16,7 +16,6 @@ export default function BankDetails() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -57,7 +56,6 @@ export default function BankDetails() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        setLoading(true)
         GET<BankDetailsRes>(HRSETTINGS.BANKDETAILS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -69,7 +67,7 @@ export default function BankDetails() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     function handleDelete(id: string) {
@@ -95,7 +93,6 @@ export default function BankDetails() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={false}
                 columns={columns}
                 dataList={data}
                 onChange={(evt) => console.log(evt)}

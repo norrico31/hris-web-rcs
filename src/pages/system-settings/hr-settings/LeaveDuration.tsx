@@ -16,7 +16,6 @@ export default function LeaveDuration() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -52,7 +51,6 @@ export default function LeaveDuration() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        setLoading(true)
         GET<LeaveDurationRes>(HRSETTINGS.LEAVEDURATION.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -64,7 +62,7 @@ export default function LeaveDuration() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     function handleDelete(id: string) {

@@ -21,7 +21,6 @@ export default function ClientHistory() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(false)
 
     const columns: ColumnsType<IEmployeeClients> = [
         {
@@ -70,7 +69,6 @@ export default function ClientHistory() {
                 handleDownload={handleDownload}
             />
             <Table
-                loading={loading}
                 columns={columns}
                 dataList={employeeInfo?.employee_clients ?? []}
                 tableParams={tableParams}

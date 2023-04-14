@@ -5,18 +5,16 @@ import { FilterValue, TableCurrentDataSource } from 'antd/es/table/interface'
 import { TableParams } from '../shared/interfaces'
 
 type TableListProps<T> = {
-    loading: boolean
     columns: ColumnsType<T>
     tableParams?: TableParams
     onChange?: ((pagination: TablePaginationConfig, filters: Record<string, FilterValue | null>, sorter: any, extra: TableCurrentDataSource<any>) => void) | undefined
     dataList: T
 }
 
-export default function Table({ loading, columns, dataList, tableParams, onChange }: TableListProps<any>) {
+export default function Table({ columns, dataList, tableParams, onChange }: TableListProps<any>) {
     return (
         <div>
             <AntDTable
-                loading={loading}
                 dataSource={dataList}
                 pagination={{
                     ...tableParams?.pagination,

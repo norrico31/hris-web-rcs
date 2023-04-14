@@ -92,6 +92,10 @@ export const routes = createBrowserRouter([
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TimeKeeping /></Suspense>
             },
             {
+                path: 'roles',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Roles /></Suspense>
+            },
+            {
                 path: 'systemsettings',
                 element: <Outlet />,
                 children: [

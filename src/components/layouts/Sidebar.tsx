@@ -100,7 +100,6 @@ const menus = [
                 <SiExpensify />,
             ),
         ]
-
     ),
     getItemLinks(
         'Admin Settings',
@@ -108,18 +107,18 @@ const menus = [
         <MdAdminPanelSettings />,
         [
             getItemLinks(
-                <Link to='/adminsettings/users'>Users</Link>,
-                '/adminsettings/users',
+                <Link to='/users'>Users</Link>,
+                '/users',
                 <FaUsers />,
             ),
             getItemLinks(
-                <Link to='/adminsettings/role'>Role</Link>,
-                '/adminsettings/role',
+                <Link to='/roles'>Roles</Link>,
+                '/roles',
                 <FaCriticalRole />,
             ),
             getItemLinks(
-                <Link to='/adminsettings/auditlogs'>Audit Logs</Link>,
-                '/adminsettings/auditlogs',
+                <Link to='/auditlogs'>Audit Logs</Link>,
+                '/auditlogs',
                 <AiOutlineAudit />,
             ),
         ]

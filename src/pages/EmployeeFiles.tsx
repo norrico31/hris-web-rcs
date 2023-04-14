@@ -23,7 +23,6 @@ export default function EmployeeFiles() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const controller = new AbortController();
@@ -93,7 +92,7 @@ export default function EmployeeFiles() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     const handleSearch = (str: string) => {
@@ -458,8 +457,8 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
         const controller = new AbortController();
         (async () => {
             try {
-                const clientPromise = axiosClient(CLIENTSETTINGS.CLIENT.DROPDOWN, { signal: controller.signal })
-                const clientBranchPromise = axiosClient(CLIENTSETTINGS.CLIENTBRANCH.DROPDOWN, { signal: controller.signal })
+                const clientPromise = axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
+                const clientBranchPromise = axiosClient(CLIENTSETTINGS.CLIENTBRANCH.LISTS, { signal: controller.signal })
                 const [clientRes, clientBranchRes] = await Promise.allSettled([clientPromise, clientBranchPromise]) as any
                 setClients(clientRes?.value.data ?? [])
                 setClientBranches(clientBranchRes?.value.data ?? [])

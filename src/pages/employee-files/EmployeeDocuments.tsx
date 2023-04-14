@@ -20,7 +20,6 @@ export default function EmployeeDocuments() {
     const [data, setData] = useState<IEmployeeDocument[]>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
-    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const controller = new AbortController();
@@ -65,7 +64,7 @@ export default function EmployeeDocuments() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     const handleSearch = (str: string) => {
@@ -91,7 +90,6 @@ export default function EmployeeDocuments() {
                 handleDownload={handleDownload}
             />
             <Table
-                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}

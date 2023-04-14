@@ -17,7 +17,6 @@ export default function TaskSprint() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -70,7 +69,6 @@ export default function TaskSprint() {
     ]
 
     function fetchData(args?: IArguments) {
-        setLoading(true)
         GET<TaskSprintRes>(TASKSSETTINGS.SPRINT.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -82,7 +80,7 @@ export default function TaskSprint() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     function handleDelete(id: string) {
@@ -151,7 +149,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
         } else form.resetFields(undefined)
 
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.TEAMS.DROPDOWN, { signal: controller.signal })
+        axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()

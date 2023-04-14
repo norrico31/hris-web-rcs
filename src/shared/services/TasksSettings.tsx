@@ -46,9 +46,9 @@ export const useTasksServices = () => {
 }
 
 const urls = [
-    TASKSSETTINGS.ACTIVITIES.DROPDOWN,
-    TASKSSETTINGS.TYPES.DROPDOWN,
-    TASKSSETTINGS.SPRINT.DROPDOWN,
+    TASKSSETTINGS.ACTIVITIES.LISTS,
+    TASKSSETTINGS.TYPES.LISTS,
+    TASKSSETTINGS.SPRINT.LISTS,
 ]
 
 const promises = (urls: string[], signal: AbortSignal) => {

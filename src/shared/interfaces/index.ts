@@ -5,6 +5,8 @@ export * from './auth/User'
 
 export * from './Tasks'
 
+export * from './admin-settings/Role'
+
 export * from './system-settings/tasks-settings/TaskActivities'
 export * from './system-settings/tasks-settings/TaskTypes'
 export * from './system-settings/tasks-settings/TaskSprints'

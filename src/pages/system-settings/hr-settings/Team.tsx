@@ -16,7 +16,6 @@ export default function Team() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -52,7 +51,6 @@ export default function Team() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        setLoading(true)
         GET<TeamRes>(TEAMS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -64,7 +62,7 @@ export default function Team() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     const handleSearch = (str: string) => {

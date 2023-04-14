@@ -16,7 +16,6 @@ export default function TaskTypes() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -59,7 +58,6 @@ export default function TaskTypes() {
     ]
 
     function fetchData(args?: IArguments) {
-        setLoading(true)
         GET<TaskTypesRes>(TASKSSETTINGS.TYPES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -71,7 +69,7 @@ export default function TaskTypes() {
                         current: res?.current_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
     }
 
     function handleDelete(id: string) {
@@ -140,7 +138,7 @@ export function TypesModal({ title, selectedData, isModalOpen, fetchData, handle
         }
 
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.TEAMS.DROPDOWN, { signal: controller.signal })
+        axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
