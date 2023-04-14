@@ -3,9 +3,8 @@
 
 // ==================================
 // ==================================
-// TODO: Employee Files 201 (PUT && POST method)
-// PENDING: TimeKeeping (Error validation)
-// PENDING: System Settings
-// PENDING: Admin Settings
+// TODO: Users page (Admin Settings UI)
+// PENDING: Employee Files 201 (PUT && POST method)
+// PENDING: Display the dropdown list for employee files create (Bank Name)
 // ==================================
 // ==================================

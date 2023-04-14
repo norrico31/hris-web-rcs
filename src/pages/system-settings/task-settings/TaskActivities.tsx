@@ -99,7 +99,6 @@ export default function TaskActivities() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}

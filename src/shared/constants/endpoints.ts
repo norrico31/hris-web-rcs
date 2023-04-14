@@ -46,12 +46,14 @@ export const useEndpoints = () => {
                     DELETE: '/dailyrates/',
                 },
                 DEPARTMENT: {
+                    LISTS: '/options/departments',
                     GET: '/departments',
                     POST: '/departments/',
                     PUT: '/departments/',
                     DELETE: '/departments/',
                 },
                 EMPLOYEESTATUS: {
+                    LISTS: '/options/employment_statuses',
                     GET: '/employment_statuses',
                     POST: '/employment_statuses/',
                     PUT: '/employment_statuses/',
@@ -64,6 +66,7 @@ export const useEndpoints = () => {
                     DELETE: '/benefits/',
                 },
                 POSITION: {
+                    LISTS: '/options/positions',
                     GET: '/positions',
                     POST: '/positions/',
                     PUT: '/positions/',
@@ -82,23 +85,23 @@ export const useEndpoints = () => {
                     DELETE: '/leave/types/',
                 },
                 HOLIDAYS: {
-                    GET: 'holidays',
-                    POST: 'holidays/',
-                    PUT: 'holidays/',
-                    DELETE: 'holidays/'
+                    GET: '/holidays',
+                    POST: '/holidays/',
+                    PUT: '/holidays/',
+                    DELETE: '/holidays/'
                 },
                 HOLIDAYTYPES: {
-                    GET: 'holiday_types',
-                    POST: 'holiday_types/',
-                    PUT: 'holiday_types/',
-                    DELETE: 'holiday_types/'
+                    GET: '/holiday_types',
+                    POST: '/holiday_types/',
+                    PUT: '/holiday_types/',
+                    DELETE: '/holiday_types/'
                 },
                 TEAMS: {
-                    LISTS: 'options/teams',
-                    GET: 'teams',
-                    POST: 'teams/',
-                    PUT: 'teams/',
-                    DELETE: 'teams/'
+                    LISTS: '/options/teams',
+                    GET: '/teams',
+                    POST: '/teams/',
+                    PUT: '/teams/',
+                    DELETE: '/teams/'
                 },
             },
             CLIENTSETTINGS: {

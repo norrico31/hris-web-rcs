@@ -36,6 +36,7 @@ const Position = lazy(() => import('./pages/system-settings/hr-settings/Position
 const LeaveStatus = lazy(() => import('./pages/system-settings/hr-settings/LeaveStatus'))
 const LeaveType = lazy(() => import('./pages/system-settings/hr-settings/LeaveType'))
 const LeaveDuration = lazy(() => import('./pages/system-settings/hr-settings/LeaveDuration'))
+const Salaries = lazy(() => import('./pages/system-settings/hr-settings/Salaries'))
 
 // Expense Settings
 const Expense = lazy(() => import('./pages/system-settings/expense-settings/Expense'))
@@ -168,6 +169,10 @@ export const routes = createBrowserRouter([
                             {
                                 path: 'leavetype',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveType /></Suspense>
+                            },
+                            {
+                                path: 'salaries',
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><Salaries /></Suspense>
                             },
                         ],
                     },

@@ -98,7 +98,6 @@ export default function TaskTypes() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={loading}
                 columns={columns}
                 dataList={data}
                 onChange={(pagination: TablePaginationConfig) => {

@@ -4,14 +4,14 @@ import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Steps, Row,
 import { LoadingOutlined, UserOutlined, CreditCardOutlined, UsergroupAddOutlined } from '@ant-design/icons'
 import { ColumnsType } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { Card, Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
-import { useEndpoints } from './../shared/constants/endpoints';
-import axiosClient, { useAxios } from './../shared/lib/axios';
-import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch } from '../shared/interfaces'
+import { useEndpoints } from './../shared/constants/endpoints'
+import axiosClient, { useAxios } from './../shared/lib/axios'
+import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment } from '../shared/interfaces'
 
-const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS } }] = useEndpoints()
+const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
 const { GET, POST } = useAxios()
 
 export default function EmployeeFiles() {
@@ -117,6 +117,7 @@ export default function EmployeeFiles() {
         setSelectedData(undefined)
         setIsModalOpen(false)
     }
+
     return (
         <>
             <MainHeader>
@@ -128,10 +129,9 @@ export default function EmployeeFiles() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />
-            <Table loading={false} columns={columns} dataList={data} />
+            <Table columns={columns} dataList={data} />
             <EmployeeModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
-                selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
                 fetchData={fetchData}
@@ -143,20 +143,18 @@ export default function EmployeeFiles() {
 type ModalProps = {
     title: string
     isModalOpen: boolean
-    selectedData?: IEmployee
     handleCancel: () => void
     fetchData(args?: IArguments): void
 }
 const { Item: FormItem, useForm } = AntDForm
 
-function EmployeeModal({ title, selectedData, fetchData, isModalOpen, handleCancel }: ModalProps) {
+function EmployeeModal({ title, fetchData, isModalOpen, handleCancel }: ModalProps) {
     const [current, setCurrent] = useState(0)
     const [stepOneInputs, setStepOneInputs] = useState<IStepOne | undefined>(undefined)
     const [stepTwoInputs, setStepTwoInputs] = useState<IStepTwo | undefined>(undefined)
     const [stepThreeInputs, setStepThreeInputs] = useState<IStepThree | undefined>(undefined)
     const [stepFourInputs, setStepFourInputs] = useState<IStepFour | undefined>(undefined)
 
-    // useEffect when selected data
 
     const payload = {
         ...stepOneInputs!,
@@ -250,12 +248,17 @@ interface IStepOne {
     middle_name: string
     gender: string
     marital_status: string
+    department_id: string
     birthday: string
     address: string
     mobile_number1: string
-    employee_status: string
     position_id: string
     status: string
+    role_id: string
+    employment_id: string
+
+    date_hired: string | Dayjs
+    resignation_date: string | Dayjs
 }
 
 interface IStepOneProps {
@@ -268,10 +271,39 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     const [form] = useForm<IStepOne>()
 
     useEffect(() => {
-        if (stepOneInputs) {
-            form.setFieldsValue({ ...stepOneInputs })
-        }
+        if (stepOneInputs) form.setFieldsValue({ ...stepOneInputs })
     }, [stepOneInputs])
+
+    const [lists, setLists] = useState<{ employeeStatus: IEmployeeStatus[]; positions: IPosition[]; roles: IRole[]; departments: IDepartment[] }>({
+        employeeStatus: [],
+        positions: [],
+        roles: [],
+        departments: []
+    })
+
+    useEffect(() => {
+        const controller = new AbortController();
+        (async () => {
+            try {
+                const employeeStatusPromise = axiosClient(HRSETTINGS.EMPLOYEESTATUS.LISTS, { signal: controller.signal })
+                const positionsPromise = axiosClient(HRSETTINGS.POSITION.LISTS, { signal: controller.signal })
+                const rolesPromise = axiosClient(ADMINSETTINGS.ROLE.LISTS, { signal: controller.signal })
+                const departmentPromise = axiosClient(HRSETTINGS.DEPARTMENT.LISTS, { signal: controller.signal })
+                const [employeeStatusRes, positionsRes, rolesRes, departmentRes] = await Promise.allSettled([employeeStatusPromise, positionsPromise, rolesPromise, departmentPromise]) as any
+                setLists({
+                    employeeStatus: employeeStatusRes?.value?.data ?? [],
+                    positions: positionsRes?.value?.data ?? [],
+                    roles: rolesRes?.value?.data ?? [],
+                    departments: departmentRes?.value?.data ?? [],
+                })
+            } catch (error) {
+                console.error('error fetching clients: ', error)
+            }
+        })()
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     function onFinish(values: Record<string, any>) {
         setStepOneInputs(formValues(values) as IStepOne)
@@ -321,8 +353,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         <Select.Option value="female">Female</Select.Option>
                     </Select>
                 </FormItem>
-            </Col>
-            <Col span={8}>
                 <FormItem
                     label="Marital Status"
                     name="marital_status"
@@ -350,10 +380,19 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         style={{ width: '100%' }}
                     />
                 </FormItem>
-
+            </Col>
+            <Col span={8}>
                 <FormItem
                     label="Contact Number"
                     name="mobile_number1"
+                    required
+                    rules={[{ required: true, message: 'Please enter contact number!' }]}
+                >
+                    <Input type='number' placeholder='Enter contact number...' />
+                </FormItem>
+                <FormItem
+                    label="Contact Number 2"
+                    name="mobile_number2"
                     required
                     rules={[{ required: true, message: 'Please enter contact number!' }]}
                 >
@@ -364,40 +403,74 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 </FormItem>
                 <FormItem
                     label="Employee Status"
-                    name="employee_status"
+                    name="employee_status_id"
                     required
-                    rules={[{ required: true, message: 'Please enter employee status!' }]}
+                    rules={[{ required: true, message: 'Please select employee status!' }]}
                 >
-                    <Input placeholder='Enter employee status..' />
+                    <Select
+                        placeholder='Select employee status...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
+                    >
+                        {lists?.employeeStatus.map((emp) => (
+                            <Select.Option value={emp.id} key={emp.id} style={{ color: '#777777' }}>{emp.name}</Select.Option>
+                        ))}
+                    </Select>
                 </FormItem>
-            </Col>
-            <Col span={8}>
-                {/* <FormItem
+                <FormItem
                     label="Department"
-                    name="department"
+                    name="department_id"
                     required
                     rules={[{ required: true, message: 'Please select department!' }]}
                 >
                     <Select
                         placeholder='Select department...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
                     >
-                        <Select.Option value="active">Active</Select.Option>
-                        <Select.Option value="inactive">Inactive</Select.Option>
+                        {lists?.departments.map((dep) => (
+                            <Select.Option value={dep.id} key={dep.id} style={{ color: '#777777' }}>{dep.name}</Select.Option>
+                        ))}
                     </Select>
-                </FormItem> */}
+                </FormItem>
                 <FormItem
                     label="Position"
                     name="position_id"
                     required
-                    rules={[{ required: true, message: 'Please enter position!' }]}
+                    rules={[{ required: true, message: 'Please select position!' }]}
                 >
                     <Select
-                        placeholder='Select position...'
+                        placeholder='Select employee status...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
                     >
-                        <Select.Option value="active">Active</Select.Option>
-                        <Select.Option value="inactive">Inactive</Select.Option>
+                        {lists?.positions.map((pos) => (
+                            <Select.Option value={pos.id} key={pos.id} style={{ color: '#777777' }}>{pos.name}</Select.Option>
+                        ))}
                     </Select>
                 </FormItem>
+                <FormItem
+                    label="Role"
+                    name="role_id"
+                    required
+                    rules={[{ required: true, message: 'Please select role!' }]}
+                >
+                    <Select
+                        placeholder='Select employee status...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
+                    >
+                        {lists?.roles.map((role) => (
+                            <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.name}</Select.Option>
+                        ))}
+                    </Select>
+                </FormItem>
+            </Col>
+            <Col span={8}>
                 <FormItem
                     label="Status"
                     name="status"
@@ -410,6 +483,26 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         <Select.Option value="active">Active</Select.Option>
                         <Select.Option value="inactive">Inactive</Select.Option>
                     </Select>
+                </FormItem>
+                <FormItem
+                    label="Date Hired"
+                    name="date_hired"
+                    required
+                    rules={[{ required: true, message: 'Please select date hired!' }]}
+                >
+                    <DatePicker
+                        format='YYYY/MM/DD'
+                        style={{ width: '100%' }}
+                    />
+                </FormItem>
+                <FormItem
+                    label="Date Resigned"
+                    name="resignation_date"
+                >
+                    <DatePicker
+                        format='YYYY/MM/DD'
+                        style={{ width: '100%' }}
+                    />
                 </FormItem>
                 <FormItem
                     label="Current Address"
@@ -434,8 +527,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
 interface IStepTwo {
     client_id: string
     client_branch_id: string
-    date_hired: string
-    resignation_date: string
+    start_date: string | Dayjs | null
+    end_date: string | Dayjs | null
 }
 
 interface IStepTwoProps {
@@ -491,10 +584,13 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                         ))}
                     </Select>
                 </FormItem>
+            </Col>
+            <Col span={8}>
                 <FormItem
                     name='client_branch_id'
-                // label="Client Branch" 
-                // required rules={[{ required: true, message: 'Please select client branch!' }]}
+                    label="Client Branch"
+                // required 
+                // rules={[{ required: true, message: 'Please select client branch!' }]}
                 >
                     <Select
                         placeholder='Select client branch...'
@@ -508,21 +604,24 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                     </Select>
                 </FormItem>
             </Col>
+        </Row>
+        <Divider />
+        <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col span={8}>
                 <FormItem
-                    label="Date Hired"
-                    name="date_hired"
-                    required
-                    rules={[{ required: true, message: 'Please select date hired!' }]}
+                    label="Start Date"
+                    name="start_date"
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
                         style={{ width: '100%' }}
                     />
                 </FormItem>
+            </Col>
+            <Col span={8}>
                 <FormItem
-                    label="Date Resigned"
-                    name="resignation_date"
+                    label="End Date"
+                    name="end_date"
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -545,10 +644,8 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
 }
 
 interface IStepThree {
-    client_id: string
-    client_branch_id: string
-    date_hired: string
-    resignation_date: string
+    salary_rate: string
+    basic_rate: string
 }
 
 interface IStepThreeProps {
@@ -580,7 +677,6 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
         stepThree()
     }
 
-
     return <Form form={form} onFinish={onFinish}>
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col>
@@ -605,7 +701,6 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
         </FormItem>
     </Form>
 }
-
 
 interface IStepFour {
     pay_scheme: string
@@ -643,7 +738,13 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
             }
         }
         setStepFourInputs(stepFourPayload)
-        payload = { ...payload, ...stepFourPayload }
+        payload = {
+            ...payload,
+            ...stepFourPayload,
+            birthday: dayjs(payload?.birthday).format('YYYY-MM-DD'),
+            date_hired: dayjs(payload?.date_hired).format('YYYY-MM-DD'),
+            resignation_date: dayjs(payload?.resignation_date).format('YYYY-MM-DD'),
+        }
         POST(EMPLOYEE201.POST, payload).then(() => {
             form.resetFields()
             handleResetSteps()

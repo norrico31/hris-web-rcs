@@ -97,7 +97,6 @@ export default function HolidayType() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={loading}
                 columns={columns}
                 dataList={data}
                 onChange={(pagination: TablePaginationConfig) => {

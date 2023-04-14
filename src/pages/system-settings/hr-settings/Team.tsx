@@ -93,7 +93,6 @@ export default function Team() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}

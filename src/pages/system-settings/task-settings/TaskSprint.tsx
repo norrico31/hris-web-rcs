@@ -109,7 +109,6 @@ export default function TaskSprint() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={loading}
                 columns={columns}
                 dataList={data}
                 onChange={(pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search })}
