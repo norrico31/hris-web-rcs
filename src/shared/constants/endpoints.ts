@@ -110,6 +110,7 @@ export const useEndpoints = () => {
                     DELETE: '/clients/'
                 },
                 CLIENTBRANCH: {
+                    DROPDOWN: '/options/client_branches',
                     GET: '/client_branches',
                     POST: '/client_branches/',
                     PUT: '/client_branches/',
@@ -141,7 +142,7 @@ export const useEndpoints = () => {
         },
         EMPLOYEE201: {
             GET: '/employees',
-            POST: '/employee/store',
+            POST: '/employees',
             PUT: '/employee/update/',
             DELETE: '/employee/',
             BENEFITS: {

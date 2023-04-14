@@ -8,10 +8,10 @@ import dayjs from 'dayjs'
 import { Card, Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useEndpoints } from './../shared/constants/endpoints';
-import { useAxios } from './../shared/lib/axios';
-import { IArguments, TableParams, IEmployee, Employee201Res } from '../shared/interfaces'
+import axiosClient, { useAxios } from './../shared/lib/axios';
+import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch } from '../shared/interfaces'
 
-const [{ EMPLOYEE201 }] = useEndpoints()
+const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS } }] = useEndpoints()
 const { GET, POST } = useAxios()
 
 export default function EmployeeFiles() {
@@ -448,10 +448,27 @@ interface IStepTwoProps {
 
 function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: IStepTwoProps) {
     const [form] = useForm<IStepTwo>()
+    const [clients, setClients] = useState<IClient[]>([])
+    const [clientBranches, setClientBranches] = useState<IClientBranch[]>([])
 
     useEffect(() => {
         if (stepTwoInputs) {
             form.setFieldsValue({ ...stepTwoInputs })
+        }
+        const controller = new AbortController();
+        (async () => {
+            try {
+                const clientPromise = axiosClient(CLIENTSETTINGS.CLIENT.DROPDOWN, { signal: controller.signal })
+                const clientBranchPromise = axiosClient(CLIENTSETTINGS.CLIENTBRANCH.DROPDOWN, { signal: controller.signal })
+                const [clientRes, clientBranchRes] = await Promise.allSettled([clientPromise, clientBranchPromise]) as any
+                setClients(clientRes?.value.data ?? [])
+                setClientBranches(clientBranchRes?.value.data ?? [])
+            } catch (error) {
+                console.error('error fetching clients: ', error)
+            }
+        })()
+        return () => {
+            controller.abort()
         }
     }, [stepTwoInputs])
 
@@ -466,17 +483,29 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                 <FormItem name='client_id' label="Client" required rules={[{ required: true, message: 'Please select client!' }]}>
                     <Select
                         placeholder='Select client...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
                     >
-                        <Select.Option value="male">Male</Select.Option>
-                        <Select.Option value="female">Female</Select.Option>
+                        {clients.map((client) => (
+                            <Select.Option value={client.id} key={client.id} style={{ color: '#777777' }}>{client.name}</Select.Option>
+                        ))}
                     </Select>
                 </FormItem>
-                <FormItem name='client_branch_id' label="Client Branch" required rules={[{ required: true, message: 'Please select client branch!' }]}>
+                <FormItem
+                    name='client_branch_id'
+                // label="Client Branch" 
+                // required rules={[{ required: true, message: 'Please select client branch!' }]}
+                >
                     <Select
                         placeholder='Select client branch...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
                     >
-                        <Select.Option value="male">Male</Select.Option>
-                        <Select.Option value="female">Female</Select.Option>
+                        {clientBranches.map((clientBranch) => (
+                            <Select.Option value={clientBranch.id} key={clientBranch.id} style={{ color: '#777777' }}>{clientBranch.branch_name}</Select.Option>
+                        ))}
                     </Select>
                 </FormItem>
             </Col>

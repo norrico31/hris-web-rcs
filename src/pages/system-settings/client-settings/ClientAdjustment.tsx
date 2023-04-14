@@ -19,7 +19,7 @@ export default function ClientAdjustment() {
     const [loading, setLoading] = useState(true)
 
     useEffect(function () {
-        const controller = new AbortController();
+        const controller = new AbortController()
         fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
@@ -175,8 +175,8 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
                     showSearch
                     optionFilterProp="children"
                 >
-                    {clients.map((team) => (
-                        <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
+                    {clients.map((client) => (
+                        <Select.Option value={client.id} key={client.id} style={{ color: '#777777' }}>{client.name}</Select.Option>
                     ))}
                 </Select>
             </FormItem>
