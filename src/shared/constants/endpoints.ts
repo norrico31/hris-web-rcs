@@ -103,6 +103,13 @@ export const useEndpoints = () => {
                     PUT: '/teams/',
                     DELETE: '/teams/'
                 },
+                SALARYRATES: {
+                    LISTS: '/options/salary_rates',
+                    GET: '/salary_rates',
+                    POST: '/salary_rates/',
+                    PUT: '/salary_rates/',
+                    DELETE: '/salary_rates/'
+                },
             },
             CLIENTSETTINGS: {
                 CLIENT: {
@@ -143,12 +150,19 @@ export const useEndpoints = () => {
             }
         },
         ADMINSETTINGS: {
-            ROLE: {
+            ROLES: {
                 LISTS: '/options/roles',
                 GET: '/roles',
                 POST: '/roles/',
                 PUT: '/roles/',
                 DELETE: '/roles/'
+            },
+            USERS: {
+                LISTS: '/options/users',
+                GET: '/users',
+                POST: '/users/',
+                PUT: '/users/',
+                DELETE: '/users/'
             },
         },
         EMPLOYEE201: {

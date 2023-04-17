@@ -6,6 +6,7 @@ export * from './auth/User'
 export * from './Tasks'
 
 export * from './admin-settings/Role'
+export * from './admin-settings/Users'
 
 export * from './system-settings/tasks-settings/TaskActivities'
 export * from './system-settings/tasks-settings/TaskTypes'
@@ -22,6 +23,7 @@ export * from './system-settings/hr-settings/Position'
 export * from './system-settings/hr-settings/Holidays'
 export * from './system-settings/hr-settings/HolidayType'
 export * from './system-settings/hr-settings/Benefits'
+export * from './system-settings/hr-settings/SalaryRates'
 
 export * from './system-settings/client-settings/Client'
 export * from './system-settings/client-settings/ClientBranch'

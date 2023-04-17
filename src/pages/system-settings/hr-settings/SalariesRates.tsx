@@ -5,14 +5,14 @@ import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
-import { IArguments, IPosition, PositionRes, TableParams } from '../../../shared/interfaces'
+import { IArguments, ISalaryRates, SalaryRatesRes, TableParams } from '../../../shared/interfaces'
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
-export default function Position() {
-    const [data, setData] = useState<IPosition[]>([])
-    const [selectedData, setSelectedData] = useState<IPosition | undefined>(undefined)
+export default function SalaryRates() {
+    const [data, setData] = useState<ISalaryRates[]>([])
+    const [selectedData, setSelectedData] = useState<ISalaryRates | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -25,11 +25,11 @@ export default function Position() {
         }
     }, [])
 
-    const columns: ColumnsType<IPosition> = [
+    const columns: ColumnsType<ISalaryRates> = [
         {
-            title: 'Position',
-            key: 'name',
-            dataIndex: 'name',
+            title: 'Salary Rates',
+            key: 'rate',
+            dataIndex: 'rate',
         },
         {
             title: 'Description',
@@ -41,9 +41,9 @@ export default function Position() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IPosition) => <Action
-                title='Position'
-                name={record.name}
+            render: (_: any, record: ISalaryRates) => <Action
+                title='SalaryRates'
+                name={record.rate}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
             />
@@ -51,7 +51,7 @@ export default function Position() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<PositionRes>(HRSETTINGS.POSITION.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<SalaryRatesRes>(HRSETTINGS.SALARYRATES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -66,11 +66,11 @@ export default function Position() {
     }
 
     function handleDelete(id: string) {
-        DELETE(HRSETTINGS.POSITION.DELETE, id)
+        DELETE(HRSETTINGS.SALARYRATES.DELETE, id)
             .finally(fetchData)
     }
 
-    function handleEdit(data: IPosition) {
+    function handleEdit(data: ISalaryRates) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -81,9 +81,9 @@ export default function Position() {
     }
 
     return (
-        <Card title='Positions'>
+        <Card title='Salary Ratess'>
             <TabHeader
-                name='position'
+                name='salary rate'
                 handleSearchData={() => null}
                 handleCreate={() => setIsModalOpen(true)}
             />
@@ -92,7 +92,7 @@ export default function Position() {
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <PositionModal
+            <SalaryRatesModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
@@ -107,15 +107,15 @@ export default function Position() {
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: IPosition
+    selectedData?: ISalaryRates
     handleCancel: () => void
     fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function PositionModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
-    const [form] = useForm<IPosition>()
+function SalaryRatesModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
+    const [form] = useForm<ISalaryRates>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -125,25 +125,25 @@ function PositionModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
         }
     }, [selectedData])
 
-    function onFinish(values: IPosition) {
+    function onFinish(values: ISalaryRates) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(HRSETTINGS.POSITION.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.POSITION.POST, restValues)
+        let result = selectedData ? PUT(HRSETTINGS.SALARYRATES.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.SALARYRATES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
         }).finally(fetchData)
     }
 
-    return <Modal title={`${title} - Position`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Salary Rates`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="Position Name"
-                name="name"
+                label="Salary Rate"
+                name="rate"
                 required
-                rules={[{ required: true, message: 'Please enter position name!' }]}
+                rules={[{ required: true, message: 'Please enter salary rate!' }]}
             >
-                <Input placeholder='Enter position name...' />
+                <Input placeholder='Enter salary rate...' />
             </FormItem>
 
             <FormItem

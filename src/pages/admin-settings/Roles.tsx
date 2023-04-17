@@ -51,7 +51,7 @@ export default function Roles() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<RoleRes>(ADMINSETTINGS.ROLE.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<RoleRes>(ADMINSETTINGS.ROLES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -66,7 +66,7 @@ export default function Roles() {
     }
 
     function handleDelete(id: string) {
-        DELETE(ADMINSETTINGS.ROLE.DELETE, id)
+        DELETE(ADMINSETTINGS.ROLES.DELETE, id)
             .finally(fetchData)
     }
 
@@ -128,7 +128,7 @@ function RoleModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
     function onFinish(values: IRole) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(ADMINSETTINGS.ROLE.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(ADMINSETTINGS.ROLE.POST, restValues)
+        let result = selectedData ? PUT(ADMINSETTINGS.ROLES.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(ADMINSETTINGS.ROLES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
