@@ -101,14 +101,13 @@ export default function ExpenseType() {
     }
 
     return (
-        <Card title='ExpenseTypes'>
+        <Card title='Expense Types'>
             <TabHeader
-                name='client'
+                name='expense types'
                 handleSearchData={() => { }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={false}
                 columns={columns}
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
@@ -156,7 +155,7 @@ function ExpenseTypeModal({ title, selectedData, isModalOpen, handleCancel, fetc
         }).finally(fetchData)
     }
 
-    return <Modal title={`${title} - ExpenseType`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Expense Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
                 label="Expense Type"

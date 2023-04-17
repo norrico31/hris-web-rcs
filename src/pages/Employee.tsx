@@ -146,7 +146,7 @@ export default function Employee() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />
-            <Table loading={false} columns={columns} dataList={data} />
+            <Table columns={columns} dataList={data} />
             <EmployeeModal
                 title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
                 selectedData={selectedData}

@@ -129,7 +129,7 @@ export default function Schedule() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />
-            <Table loading={false} columns={columns} dataList={data} />
+            <Table columns={columns} dataList={data} />
             <ScheduleModal
                 title={`${selectedData != undefined ? 'Edit' : 'Create'}`}
                 selectedData={selectedData}

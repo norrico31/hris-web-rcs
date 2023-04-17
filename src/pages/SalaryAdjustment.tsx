@@ -14,6 +14,7 @@ interface ISalaryAdjustment extends Partial<{ id: string }> {
     date: string
     description: string;
 }
+
 export default function SalaryAdjustment() {
     renderTitle('Salary Adjustment')
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -141,7 +142,7 @@ export default function SalaryAdjustment() {
                     </Button>
                 </Col>
             </MainHeader>
-            <Table loading={false} columns={columns} dataList={data} />
+            <Table columns={columns} dataList={data} />
             <SalaryAdjustmentModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}

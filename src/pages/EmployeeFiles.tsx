@@ -287,7 +287,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
             try {
                 const employeeStatusPromise = axiosClient(HRSETTINGS.EMPLOYEESTATUS.LISTS, { signal: controller.signal })
                 const positionsPromise = axiosClient(HRSETTINGS.POSITION.LISTS, { signal: controller.signal })
-                const rolesPromise = axiosClient(ADMINSETTINGS.ROLE.LISTS, { signal: controller.signal })
+                const rolesPromise = axiosClient(ADMINSETTINGS.ROLES.LISTS, { signal: controller.signal })
                 const departmentPromise = axiosClient(HRSETTINGS.DEPARTMENT.LISTS, { signal: controller.signal })
                 const [employeeStatusRes, positionsRes, rolesRes, departmentRes] = await Promise.allSettled([employeeStatusPromise, positionsPromise, rolesPromise, departmentPromise]) as any
                 setLists({
@@ -551,7 +551,7 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
         (async () => {
             try {
                 const clientPromise = axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
-                const clientBranchPromise = axiosClient(CLIENTSETTINGS.CLIENTBRANCH.LISTS, { signal: controller.signal })
+                const clientBranchPromise = axiosClient(CLIENTSETTINGS.CLIENTBRANCH.LISTS, { signal: controller.signal })  // TODO: filter by client_id
                 const [clientRes, clientBranchRes] = await Promise.allSettled([clientPromise, clientBranchPromise]) as any
                 setClients(clientRes?.value.data ?? [])
                 setClientBranches(clientBranchRes?.value.data ?? [])

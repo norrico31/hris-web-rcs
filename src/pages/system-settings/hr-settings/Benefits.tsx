@@ -106,7 +106,6 @@ export default function Benefits() {
                 handleDownload={handleDownload}
             />
             <Table
-                loading={false}
                 columns={columns}
                 dataList={data}
                 onChange={(evt) => console.log(evt)}

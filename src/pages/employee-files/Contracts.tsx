@@ -81,7 +81,6 @@ export default function EmployeeContracts() {
                 handleDownload={handleDownload}
             />
             <Table
-                loading={false}
                 columns={columns}
                 dataList={employeeInfo?.employee_contracts}
                 onChange={(evt) => console.log(evt)}

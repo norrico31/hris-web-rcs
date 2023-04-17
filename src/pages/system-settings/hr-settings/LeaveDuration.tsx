@@ -88,7 +88,6 @@ export default function LeaveDuration() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={false}
                 columns={columns}
                 dataList={data}
                 onChange={(evt) => console.log(evt)}

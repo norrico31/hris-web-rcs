@@ -103,7 +103,7 @@ export default function Expense() {
     return (
         <Card title='Expenses'>
             <TabHeader
-                name='client'
+                name='expense'
                 handleSearchData={() => { }}
                 handleCreate={() => setIsModalOpen(true)}
             />

@@ -3,21 +3,31 @@ import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
-interface ILeaveStatus {
-    id: string;
-    name: string;
-    description: string;
-}
+import { useAxios } from '../../../shared/lib/axios'
+import { useEndpoints } from '../../../shared/constants'
+import { IArguments, ILeaveStatuses, LeaveStatusesRes, TableParams } from '../../../shared/interfaces'
 
-// TODO
+const { GET, DELETE, POST, PUT } = useAxios()
+const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
-export default function LeaveStatus() {
+export default function LeaveStatuses() {
+    const [data, setData] = useState<ILeaveStatuses[]>([])
+    const [selectedData, setSelectedData] = useState<ILeaveStatuses | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedData, setSelectedData] = useState<ILeaveStatus | undefined>(undefined)
 
-    const columns: ColumnsType<ILeaveStatus> = [
+    useEffect(function () {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
+
+    const columns: ColumnsType<ILeaveStatuses> = [
         {
-            title: 'Leave Status Name',
+            title: 'Leave Status',
             key: 'name',
             dataIndex: 'name',
         },
@@ -31,88 +41,36 @@ export default function LeaveStatus() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: ILeaveStatus) => <Action
-                title='Leave Status'
+            render: (_: any, record: ILeaveStatuses) => <Action
+                title='leave status'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
-    const data: ILeaveStatus[] = [
-        {
-            id: '1',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '2',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '3',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '4',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '5',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '6',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '7',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '8',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '9',
-            name: 'John Brown',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '10',
-            name: 'Jim Green',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '11',
-            name: 'Joe Black',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '12',
-            name: 'Disabled User',
-            description: 'Sydney No. 1 Lake Park',
-        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    const fetchData = (args?: IArguments) => {
+        GET<LeaveStatusesRes>(HRSETTINGS.LEAVESTATUSES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            })
     }
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(HRSETTINGS.LEAVESTATUSES.DELETE, id)
+            .finally(fetchData)
     }
 
-    function handleEdit(data: ILeaveStatus) {
+    function handleEdit(data: ILeaveStatuses) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
@@ -125,38 +83,38 @@ export default function LeaveStatus() {
     return (
         <Card title='Leave Status'>
             <TabHeader
-                name='leave status'
-                handleSearchData={fetchData}
+                name='status'
+                handleSearchData={() => null}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
-                loading={false}
                 columns={columns}
                 dataList={data}
                 onChange={(evt) => console.log(evt)}
             />
-            <LeaveStatusModal
+            <LeaveStatusesModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
 }
 
-
 interface ModalProps {
     title: string
     isModalOpen: boolean
-    selectedData?: ILeaveStatus
+    selectedData?: ILeaveStatuses
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function LeaveStatusModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<ILeaveStatus>()
+function LeaveStatusesModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
+    const [form] = useForm<ILeaveStatuses>()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -166,13 +124,14 @@ function LeaveStatusModal({ title, selectedData, isModalOpen, handleCancel }: Mo
         }
     }, [selectedData])
 
-    function onFinish(values: ILeaveStatus) {
+    function onFinish(values: ILeaveStatuses) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        console.log(restValues)
-        // if success
-        form.resetFields()
-        handleCancel()
+        let result = selectedData ? PUT(HRSETTINGS.LEAVESTATUSES.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.LEAVESTATUSES.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
     return <Modal title={`${title} - Leave Status`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>

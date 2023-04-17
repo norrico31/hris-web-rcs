@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Switch } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
@@ -28,33 +28,44 @@ export default function DailyRate() {
     const columns: ColumnsType<IDailyRate> = [
         {
             title: 'Daily Rate Code',
-            key: 'code',
-            dataIndex: 'code',
+            key: 'daily_rate_code',
+            dataIndex: 'daily_rate_code',
         },
         {
             title: 'Daily Rate Name',
-            key: 'bank_branch',
-            dataIndex: 'bank_branch',
+            key: 'name',
+            dataIndex: 'name',
         },
         {
             title: 'Daily rate per Hour',
-            key: 'rate_per_hour',
-            dataIndex: 'rate_per_hour',
+            key: 'daily_rate_per_hour',
+            dataIndex: 'daily_rate_per_hour',
         },
         {
             title: 'Overtime Rate per Hour',
-            key: 'overtime_rate',
-            dataIndex: 'overtime_rate',
+            key: 'overtime_rate_per_hour',
+            dataIndex: 'overtime_rate_per_hour',
         },
         {
-            title: 'Night Differential Overtime Rate per Hour',
-            key: 'night_overtime_rate',
-            dataIndex: 'night_overtime_rate',
+            title: 'Night Differential Rate per Hour',
+            key: 'night_diff_rate_per_hour',
+            dataIndex: 'night_diff_rate_per_hour',
+        },
+        {
+            title: 'Night Differential Rate per Hour (OVERTIME)',
+            key: 'night_diff_rate_per_hour',
+            dataIndex: 'night_diff_rate_per_hour',
         },
         {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
+        },
+        {
+            title: 'Active',
+            key: 'is_active',
+            dataIndex: 'is_active',
+            render: (_, record) => record?.is_active ? 'ACTIVE' : 'INACTIVE'
         },
         {
             title: 'Action',
@@ -139,7 +150,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
 
     useEffect(() => {
         if (selectedData != undefined) {
-            form.setFieldsValue({ ...selectedData })
+            form.setFieldsValue({ ...selectedData, is_active: Number(selectedData.is_active) })
         } else {
             form.resetFields(undefined)
         }
@@ -148,7 +159,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
     function onFinish(values: IDailyRate) {
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(HRSETTINGS.BENEFITS.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.BENEFITS.POST, restValues)
+        let result = selectedData ? PUT(HRSETTINGS.DAILYRATE.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.DAILYRATE.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -159,7 +170,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
         <Form form={form} onFinish={onFinish}>
             <FormItem
                 label="Daily Rate Code"
-                name="code"
+                name="daily_rate_code"
                 required
                 rules={[{ required: true, message: 'Please enter code!' }]}
             >
@@ -175,22 +186,36 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
             </FormItem>
 
             <FormItem
-                name="Daily rate per Hour"
-                label="rate"
+                label="Daily rate per Hour"
+                name="daily_rate_per_hour"
             >
                 <Input type='number' placeholder='Enter rate...' />
             </FormItem>
             <FormItem
-                name="Overtime Rate per Hour"
-                label="overtime"
+                label="Overtime Rate per Hour"
+                name="overtime_rate_per_hour"
             >
                 <Input type='number' placeholder='Enter overtime rate hour...' />
             </FormItem>
             <FormItem
-                name="Night Differential Overtime Rate per Hour"
-                label="overtime"
+                label="Night Differential Rate per Hour"
+                name="night_diff_rate_per_hour"
             >
                 <Input type='number' placeholder='Enter overtime rate hour...' />
+            </FormItem>
+            <FormItem
+                label="Night Differential Overtime Rate per Hour"
+                name="night_diff_ot_rate_per_hour"
+            >
+                <Input type='number' placeholder='Enter overtime rate hour...' />
+            </FormItem>
+            <FormItem
+                label="Active"
+                name="is_active"
+                valuePropName="checked"
+                initialValue={true}
+            >
+                <Switch />
             </FormItem>
             <FormItem
                 name="description"

@@ -47,7 +47,6 @@ export default function EmployeeSalaryHistory() {
                 handleDownload={handleDownload}
             />
             <Table
-                loading={false}
                 columns={columns}
                 dataList={employeeInfo?.salary_history ?? []}
                 onChange={(evt) => console.log(evt)}

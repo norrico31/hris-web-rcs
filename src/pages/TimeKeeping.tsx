@@ -6,7 +6,12 @@ import { RxEnter, RxExit } from 'react-icons/rx'
 import { MainHeader, Divider, Box } from "../components"
 import AvatarPng from '../shared/assets/default_avatar.png'
 import { renderTitle } from "../shared/utils/utilities"
-import { MessageInstance } from "antd/es/message/interface";
+import { MessageInstance } from "antd/es/message/interface"
+import { useAxios } from './../shared/lib/axios'
+import { useEndpoints } from "../shared/constants"
+
+const [{ TIMEKEEPING }] = useEndpoints()
+const { GET, POST } = useAxios()
 
 export default function TimeKeeping() {
     renderTitle('Timekeeping')
@@ -106,22 +111,20 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
 
     function postTimeInOut(method: string) {
         const payload = {
-            name: 'gerald tulala',
-            image: imageSrc,
+            photo: imageSrc,
             location: coordinates
         }
-        if (payload.image == null) {
+        if (payload.photo == null) {
             setError('Please take a selfie photo')
             return
         }
-        console.log(payload, method)
-        setImageSrc(null)
-        handleClose()
-        // if (method == 'timein') {
+        POST(TIMEKEEPING.TIMEIN, payload)
+            .then((res) => {
+                console.log(res)
+                // setImageSrc(null)
+                // handleClose()
+            })
 
-        // } else {
-
-        // }
     }
 
     if (error == 'Please take a selfie photo') {

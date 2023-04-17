@@ -81,7 +81,7 @@ export default function SalaryRates() {
     }
 
     return (
-        <Card title='Salary Ratess'>
+        <Card title='Salary Rates'>
             <TabHeader
                 name='salary rate'
                 handleSearchData={() => null}
@@ -102,7 +102,6 @@ export default function SalaryRates() {
         </Card>
     )
 }
-
 
 interface ModalProps {
     title: string

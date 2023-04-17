@@ -8,6 +8,10 @@ export const useEndpoints = () => {
         DASHBOARD: {
             GET: '',
         },
+        TIMEKEEPING: {
+            TIMEIN: '/time_keepings/time_in',
+            TIMEOUT: '/time_keepings/time_out'
+        },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
                 ACTIVITIES: {
@@ -40,10 +44,10 @@ export const useEndpoints = () => {
                     DELETE: '/bankingdetails/',
                 },
                 DAILYRATE: {
-                    GET: '/dailyrates',
-                    POST: '/dailyrates/',
-                    PUT: '/dailyrates/',
-                    DELETE: '/dailyrates/',
+                    GET: '/daily_rates',
+                    POST: '/daily_rates/',
+                    PUT: '/daily_rates/',
+                    DELETE: '/daily_rates/',
                 },
                 DEPARTMENT: {
                     LISTS: '/options/departments',
@@ -73,16 +77,22 @@ export const useEndpoints = () => {
                     DELETE: '/positions/',
                 },
                 LEAVEDURATION: {
-                    GET: '/leave/durations',
-                    POST: '/leave/durations/',
-                    PUT: '/leave/durations/',
-                    DELETE: '/leave/durations/',
+                    GET: '/leave_durations',
+                    POST: '/leave_durations/',
+                    PUT: '/leave_durations/',
+                    DELETE: '/leave_durations/',
+                },
+                LEAVESTATUSES: {
+                    GET: '/leave_statuses',
+                    POST: '/leave_statuses/',
+                    PUT: '/leave_statuses/',
+                    DELETE: '/leave_statuses/',
                 },
                 LEAVETYPE: {
-                    GET: '/leave/types',
-                    POST: '/leave/types/',
-                    PUT: '/leave/types/',
-                    DELETE: '/leave/types/',
+                    GET: '/leave_types',
+                    POST: '/leave_types/',
+                    PUT: '/leave_types/',
+                    DELETE: '/leave_types/',
                 },
                 HOLIDAYS: {
                     GET: '/holidays',
@@ -127,15 +137,15 @@ export const useEndpoints = () => {
                     DELETE: '/client_branches/'
                 },
                 CLIENTADJUSTMENT: {
-                    GET: '/client/adjustments',
-                    POST: '/client/adjustments/',
-                    PUT: '/client/adjustments/',
-                    DELETE: '/client/adjustments/'
+                    GET: '/client_adjustments',
+                    POST: '/client_adjustments/',
+                    PUT: '/client_adjustments/',
+                    DELETE: '/client_adjustments/'
                 }
             },
             EXPENSESETTINGS: {
                 EXPENSE: {
-                    GET: '/expense',
+                    GET: '/expenses',
                     POST: '/expense/',
                     PUT: '/expense/',
                     DELETE: '/expense/'
