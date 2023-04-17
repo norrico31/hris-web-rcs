@@ -5,6 +5,18 @@
 // ==================================
 // TODO: Users page (Admin Settings UI)
 // PENDING: Employee Files 201 (PUT && POST method)
-// PENDING: Display the dropdown list for employee files create (Bank Name)
 // ==================================
 // ==================================
+
+// TODOS
+// PENDING: /bangkingdetails
+// PENDING: /leave_statuses
+// PENDING: /leave_durations
+// PENDING: /client_adjustments
+// PENDING: /expenses
+// PENDING: /expense_types
+// PENDING: /users
+
+// PENDING: search query
+// PENDING: pageSize query
+// PENDING: download endpoints

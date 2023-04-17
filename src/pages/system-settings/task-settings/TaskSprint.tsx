@@ -111,6 +111,7 @@ export default function TaskSprint() {
             <Table
                 columns={columns}
                 dataList={data}
+                tableParams={tableParams}
                 onChange={(pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search })}
             />
             <SprintModal

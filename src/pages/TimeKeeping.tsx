@@ -108,8 +108,8 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
             navigator.geolocation.getCurrentPosition(handleSuccess, handleError)
         }
     }, [])
-
-    function postTimeInOut(method: string) {
+    // TODO
+    function postTimeInOut(method: 'timein' | 'timeout') {
         const payload = {
             photo: imageSrc,
             location: coordinates
@@ -118,7 +118,7 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
             setError('Please take a selfie photo')
             return
         }
-        POST(TIMEKEEPING.TIMEIN, payload)
+        POST(method == 'timein' ? TIMEKEEPING.TIMEIN : TIMEKEEPING.TIMEOUT, payload)
             .then((res) => {
                 console.log(res)
                 // setImageSrc(null)

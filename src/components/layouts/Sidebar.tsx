@@ -116,11 +116,11 @@ const menus = [
                 '/roles',
                 <FaCriticalRole />,
             ),
-            getItemLinks(
-                <Link to='/auditlogs'>Audit Logs</Link>,
-                '/auditlogs',
-                <AiOutlineAudit />,
-            ),
+            // getItemLinks(
+            //     <Link to='/auditlogs'>Audit Logs</Link>,
+            //     '/auditlogs',
+            //     <AiOutlineAudit />,
+            // ),
         ]
     ),
     getItemLinks(
@@ -128,21 +128,21 @@ const menus = [
         '/tasks',
         <FaTasks />
     ),
-    getItemLinks(
-        <Link to='/leave'>Leave</Link>,
-        '/leave',
-        <AiOutlineCalendar />
-    ),
+    // getItemLinks(
+    //     <Link to='/leave'>Leave</Link>,
+    //     '/leave',
+    //     <AiOutlineCalendar />
+    // ),
     getItemLinks(
         <Link to='/employee'>Employee Files</Link>,
         '/employee',
         <FaUsersCog />
     ),
-    getItemLinks(
-        <Link to='/salaryadjustments'>Salary Adjustments</Link>,
-        '/salaryadjustments',
-        <AiOutlineDollarCircle />
-    ),
+    // getItemLinks(
+    //     <Link to='/salaryadjustments'>Salary Adjustments</Link>,
+    //     '/salaryadjustments',
+    //     <AiOutlineDollarCircle />
+    // ),
 ]
 
 function getItemLinks(

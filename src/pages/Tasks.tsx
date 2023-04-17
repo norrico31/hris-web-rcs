@@ -144,7 +144,9 @@ export default function Tasks() {
             <Table
                 columns={columns}
                 dataList={data}
-                onChange={(pagination: TablePaginationConfig) => {
+                tableParams={tableParams}
+                onChange={(pagination: TablePaginationConfig, filters) => {
+                    console.log(pagination)
                     fetchData({ page: pagination?.current, search })
                 }}
             />
