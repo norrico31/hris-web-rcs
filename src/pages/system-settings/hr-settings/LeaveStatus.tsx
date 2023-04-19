@@ -96,7 +96,7 @@ export default function LeaveStatuses() {
         <Card title='Leave Status'>
             <TabHeader
                 name='status'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

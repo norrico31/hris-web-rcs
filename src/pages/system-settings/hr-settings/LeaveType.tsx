@@ -96,7 +96,7 @@ export default function LeaveType() {
         <Card title='Leave Types'>
             <TabHeader
                 name='leave types'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
 import Modal from 'antd/es/modal/Modal'
-import { ColumnsType } from "antd/es/table"
+import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import axiosClient, { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
@@ -62,7 +62,7 @@ export default function ClientBranch() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<ClientBranchRes>(CLIENTSETTINGS.CLIENTBRANCH.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<ClientBranchRes>(CLIENTSETTINGS.CLIENTBRANCH.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -71,10 +71,22 @@ export default function ClientBranch() {
                         ...tableParams?.pagination,
                         total: res?.total,
                         current: res?.current_page,
+                        pageSize: res?.per_page,
                     },
                 })
             })
     }
+
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(CLIENTSETTINGS.CLIENTBRANCH.DELETE, id)
@@ -95,13 +107,14 @@ export default function ClientBranch() {
         <Card title='Client Branches'>
             <TabHeader
                 name='client branch'
-                handleSearchData={() => { }}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 columns={columns}
                 dataList={data}
-                onChange={(evt) => console.log(evt)}
+                tableParams={tableParams}
+                onChange={onChange}
             />
             <ClientBranchModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}

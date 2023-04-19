@@ -106,7 +106,7 @@ export default function Benefits() {
         <Card title='Benefits'>
             <TabHeader
                 name='benefits'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

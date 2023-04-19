@@ -101,7 +101,7 @@ export default function BankDetails() {
         <Card title='Bank Details'>
             <TabHeader
                 name='bank details'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

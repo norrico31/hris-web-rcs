@@ -96,7 +96,7 @@ export default function Position() {
         <Card title='Positions'>
             <TabHeader
                 name='position'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

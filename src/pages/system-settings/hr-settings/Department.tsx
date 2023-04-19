@@ -96,7 +96,7 @@ export default function Department() {
         <Card title='Departments'>
             <TabHeader
                 name='department'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

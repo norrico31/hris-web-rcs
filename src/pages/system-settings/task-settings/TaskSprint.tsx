@@ -114,7 +114,7 @@ export default function TaskSprint() {
         <Card title='Sprints'>
             <TabHeader
                 name='sprint'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
