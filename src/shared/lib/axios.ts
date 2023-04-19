@@ -21,9 +21,10 @@ axiosClient.interceptors.response.use((res) => res, err => Promise.reject(err))
 export const useAxios = () => {
     // const POST = <T>(url: string, data: T) => axiosSanctum(axiosClient.post('/api' + url, data))
 
-    const GET = async <T extends unknown>(url: string, signal?: AbortSignal, tableParams?: { page: number; search: string }) => {
+    const GET = async <T extends unknown>(url: string, signal?: AbortSignal, tableParams?: { page: number; search: string; limit: number }) => {
         let query = tableParams?.page && "?page=" + tableParams?.page
         query = (tableParams?.search ? (query + '&search=' + tableParams?.search) : query) ?? ''
+        query = tableParams?.limit ? (query + '&limit=' + tableParams?.limit) : query
         try {
             const res = await axiosClient.get<AxiosGet<T>>(url + query, { signal })
             return Promise.resolve(res?.data?.data) as Promise<T>

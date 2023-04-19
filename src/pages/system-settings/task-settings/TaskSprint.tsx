@@ -69,7 +69,7 @@ export default function TaskSprint() {
     ]
 
     function fetchData(args?: IArguments) {
-        GET<TaskSprintRes>(TASKSSETTINGS.SPRINT.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<TaskSprintRes>(TASKSSETTINGS.SPRINT.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -78,10 +78,22 @@ export default function TaskSprint() {
                         ...tableParams?.pagination,
                         total: res?.total,
                         current: res?.current_page,
+                        pageSize: res?.per_page,
                     },
                 })
             })
     }
+
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(TASKSSETTINGS.SPRINT.DELETE, id)
@@ -102,17 +114,14 @@ export default function TaskSprint() {
         <Card title='Sprints'>
             <TabHeader
                 name='sprint'
-                handleSearchData={(str: string) => {
-                    setSearch(str)
-                    fetchData({ search: str, page: 1 })
-                }}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
-                onChange={(pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search })}
+                onChange={onChange}
             />
             <SprintModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}

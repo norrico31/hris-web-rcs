@@ -58,7 +58,7 @@ export default function TaskTypes() {
     ]
 
     function fetchData(args?: IArguments) {
-        GET<TaskTypesRes>(TASKSSETTINGS.TYPES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<TaskTypesRes>(TASKSSETTINGS.TYPES.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -67,10 +67,22 @@ export default function TaskTypes() {
                         ...tableParams?.pagination,
                         total: res?.total,
                         current: res?.current_page,
+                        pageSize: res?.per_page,
                     },
                 })
             })
     }
+
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(TASKSSETTINGS.TYPES.DELETE, id)
@@ -91,18 +103,13 @@ export default function TaskTypes() {
         <Card title='Task Types'>
             <TabHeader
                 name='task types'
-                handleSearchData={(str: string) => {
-                    setSearch(str)
-                    fetchData({ search: str, page: 1 })
-                }}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 columns={columns}
                 dataList={data}
-                onChange={(pagination: TablePaginationConfig) => {
-                    fetchData({ page: pagination?.current, search })
-                }}
+                onChange={onChange}
             />
             <TypesModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}

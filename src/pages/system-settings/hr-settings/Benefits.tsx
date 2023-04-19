@@ -15,6 +15,7 @@ export default function Benefits() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IBenefits | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
 
     useEffect(function () {
         const controller = new AbortController();
@@ -31,15 +32,10 @@ export default function Benefits() {
             dataIndex: 'name',
         },
         {
-            title: 'Amount',
-            key: 'amount',
-            dataIndex: 'amount',
+            title: 'Payrol Calculation',
+            key: 'for_payroll_calculation',
+            dataIndex: 'for_payroll_calculation',
         },
-        // {
-        //     title: 'Schedule',
-        //     key: 'schedule',
-        //     dataIndex: 'schedule',
-        // },
         {
             title: 'Status',
             key: 'is_active',
@@ -67,6 +63,11 @@ export default function Benefits() {
     function handleDelete(id: string) {
         DELETE(HRSETTINGS.BENEFITS.DELETE, id)
             .finally(fetchData)
+    }
+
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({ search: str, page: 1 })
     }
 
     function handleEdit(data: IBenefits) {
@@ -101,7 +102,7 @@ export default function Benefits() {
         <Card title='Benefits'>
             <TabHeader
                 name='benefits'
-                handleSearchData={() => null}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />
@@ -148,11 +149,6 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
 
     function onFinish(values: IBenefits) {
         let { description, ...restValues } = values
-        // let [start_date, end_date] = date
-        // start_date = dayjs(start_date).format('YYYY/MM/DD')
-        // end_date = dayjs(end_date).format('YYYY/MM/DD')
-
-        // TODO: for_payroll_calculation
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(HRSETTINGS.BENEFITS.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.BENEFITS.POST, restValues)
         result.then(() => {
@@ -172,24 +168,13 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 <Input placeholder='Enter benefit...' />
             </Item>
             <Item
-                label="Amount"
-                name="amount"
+                label="Payroll Calculation"
+                name="for_payroll_calculation"
                 required
-                rules={[{ required: true, message: 'Please amount!' }]}
+                rules={[{ required: true, message: 'Please payment calculation!' }]}
             >
-                <Input type='number' placeholder='Enter amount...' />
+                <Input type='number' placeholder='Enter payment calculation...' />
             </Item>
-            {/* <Item
-                label="Start and End Date"
-                name="date"
-                required
-                rules={[{ required: true, message: 'Please select date!' }]}
-            >
-                <DatePicker
-                    style={{ width: '100%' }}
-                    format='YYYY/MM/DD'
-                />
-            </Item> */}
             <Item
                 label="Status"
                 name="is_active"

@@ -57,7 +57,7 @@ export default function TaskActivities() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<TasksActivitiesRes>(TASKSSETTINGS.ACTIVITIES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<TasksActivitiesRes>(TASKSSETTINGS.ACTIVITIES.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -66,6 +66,7 @@ export default function TaskActivities() {
                         ...tableParams?.pagination,
                         total: res?.total,
                         current: res?.current_page,
+                        pageSize: res?.per_page,
                     },
                 })
             })
@@ -73,8 +74,14 @@ export default function TaskActivities() {
 
     const handleSearch = (str: string) => {
         setSearch(str)
-        fetchData({ search: str, page: 1 })
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
     }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(TASKSSETTINGS.ACTIVITIES.DELETE, id)
@@ -102,9 +109,7 @@ export default function TaskActivities() {
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
-                onChange={(pagination: TablePaginationConfig) => {
-                    fetchData({ page: pagination?.current, search })
-                }}
+                onChange={onChange}
             />
             <ActivityModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
