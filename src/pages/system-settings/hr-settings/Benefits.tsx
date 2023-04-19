@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Form as AntDForm, Modal, Input, DatePicker, Space, Button, Select } from 'antd'
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import dayjs from 'dayjs'
 import { TabHeader, Table, Form, Card, Action } from '../../../components'
 import { useAxios } from '../../../shared/lib/axios'
@@ -65,17 +65,13 @@ export default function Benefits() {
             .finally(fetchData)
     }
 
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({ search: str, page: 1 })
-    }
-
     function handleEdit(data: IBenefits) {
         setIsModalOpen(true)
         setSelectedData(data)
     }
+
     const fetchData = (args?: IArguments) => {
-        GET<BenefitsRes>(HRSETTINGS.BENEFITS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<BenefitsRes>(HRSETTINGS.BENEFITS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -84,14 +80,22 @@ export default function Benefits() {
                         ...tableParams?.pagination,
                         total: res?.total,
                         current: res?.current_page,
+                        pageSize: res?.per_page,
                     },
                 })
             })
     }
 
-    function handleDownload() {
-        alert('download')
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
     }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleCloseModal() {
         setSelectedData(undefined)
@@ -104,12 +108,12 @@ export default function Benefits() {
                 name='benefits'
                 handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={handleDownload}
             />
             <Table
                 columns={columns}
+                tableParams={tableParams}
                 dataList={data}
-                onChange={(evt) => console.log(evt)}
+                onChange={onChange}
             />
             <BenefitsModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}

@@ -44,6 +44,7 @@ export const useEndpoints = () => {
                     DELETE: '/bank_details/',
                 },
                 DAILYRATE: {
+                    LISTS: '/options/daily_rates',
                     GET: '/daily_rates',
                     POST: '/daily_rates/',
                     PUT: '/daily_rates/',
@@ -101,6 +102,7 @@ export const useEndpoints = () => {
                     DELETE: '/holidays/'
                 },
                 HOLIDAYTYPES: {
+                    LISTS: '/options/holiday_types',
                     GET: '/holiday_types',
                     POST: '/holiday_types/',
                     PUT: '/holiday_types/',

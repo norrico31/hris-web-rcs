@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { Button, Calendar, Col, Form as AntDForm, Row, Divider as AntDDivider, Modal, Space, Input, TimePicker, Select } from "antd"
+import { Button, Calendar, Col, Form as AntDForm, Row, Divider as AntDDivider, Modal, Space, Input, TimePicker, Select, DatePicker, Switch } from "antd"
 import { MdOutlineHolidayVillage } from 'react-icons/md'
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
-import { MainHeader, Form, Box, Action, TabHeader, Card } from "../../../components"
+import { MainHeader, Form, Box, Action, TabHeader, Card, Table } from "../../../components"
 import { renderTitle } from "../../../shared/utils/utilities"
-import { useAxios } from "../../../shared/lib/axios"
+import axiosClient, { useAxios } from "../../../shared/lib/axios"
 import { useEndpoints } from "../../../shared/constants"
-import { IArguments, TableParams, IHoliday, HolidayRes } from "../../../shared/interfaces"
+import { IArguments, TableParams, IHoliday, HolidayRes, IHolidayType, IDailyRate } from "../../../shared/interfaces"
+import { ColumnsType, TablePaginationConfig } from "antd/es/table";
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS }] = useEndpoints()
@@ -29,7 +30,7 @@ export default function Holidays() {
     }, [])
 
     function fetchData(args?: IArguments) {
-        GET<HolidayRes>(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<HolidayRes>(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -43,12 +44,67 @@ export default function Holidays() {
             })
     }
 
-    const onPanelChange = (value: Dayjs) => {
-        console.log(value.format('YYYY-MM-DD'));
+    const columns: ColumnsType<IHoliday> = [
+        {
+            title: 'Holiday Name',
+            key: 'name',
+            dataIndex: 'name',
+        },
+        {
+            title: 'Holiday Date',
+            key: 'holiday_date',
+            dataIndex: 'holiday_date',
+        },
+        {
+            title: 'Holiday Type',
+            key: 'holiday_type',
+            dataIndex: 'holiday_type',
+            render: (_, record) => record.holiday_type?.name
+        },
+        {
+            title: 'Local',
+            key: 'is_local',
+            dataIndex: 'is_local',
+        },
+        {
+            title: 'Active',
+            key: 'is_active',
+            dataIndex: 'is_active',
+            render: (_, record) => record.is_active == 1 ? 'ACTIVE' : 'INACTIVE'
+        },
+        {
+            title: 'Description',
+            key: 'description',
+            dataIndex: 'description',
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_: any, record: IHoliday) => <Action
+                title='Bank Details'
+                name={record.name}
+                onConfirm={() => handleDelete(record.id)}
+                onClick={() => handleEdit(record)}
+            />
+        },
+    ]
+
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
     }
 
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYS.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IHoliday) {
@@ -61,98 +117,81 @@ export default function Holidays() {
         setIsModalOpen(false)
     }
 
-    const currentDay = dayjs().format('dddd')
-    const currentDate = dayjs().format('MMMM DD')
-
     return (
         <Card title='Holidays'>
             <TabHeader
-                name='holiday type'
-                // handleSearchData={fetchData}
+                name='bank details'
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
-            <Row justify='space-around' wrap>
-                <Col1 xs={24} sm={24} md={14} lg={14} xl={14}>
-                    <Calendar onPanelChange={onPanelChange} />
-                </Col1>
-                <Col2 xs={24} sm={24} md={9} lg={9} xl={8} height={700} style={{ overflowX: 'auto' }}>
-                    <h2 style={{ color: '#ABABAB' }}>List of holidays for this month</h2>
-                    <div>
-                        <AntDDivider />
-                        <Box title="New Year's Day">
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <p>January 01, 2023</p>
-                                {/* <Action
-                                    title='Employee Status'
-                                    name='Aha'
-                                    onConfirm={() => { }}
-                                    onClick={() => { }}
-                                /> */}
-                            </div>
-                        </Box>
-                    </div>
-                    <div>
-                        <AntDDivider />
-                        <Box title="New Year's Day">
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <p>January 01, 2023</p>
-                                {/* <Action
-                                    title='Employee Status'
-                                    name='Aha'
-                                    onConfirm={() => { }}
-                                    onClick={() => { }}
-                                /> */}
-                            </div>
-                        </Box>
-                    </div>
-                    {/* <AntDDivider />
-                    <Box title="Time in">
-                        <p>January 01, 2023</p>
-                    </Box>
-                    <AntDDivider />
-                    <Box title="Time in">
-                        <p>January 01, 2023</p>
-                    </Box>
-                    <AntDDivider />
-                    <Box title="Time in">
-                        <p>January 01, 2023</p>
-                    </Box> */}
-                    {/* <AntDDivider />
-                    <Box title="Time out">
-                        <b>06:44 PM</b>
-                        <p>March 22</p>
-                    </Box> */}
-                </Col2>
-            </Row>
+            <Table
+                columns={columns}
+                dataList={data}
+                tableParams={tableParams}
+                onChange={onChange}
+            />
             <HolidaysModal
+                title={selectedData != undefined ? 'Edit' : 'Create'}
+                selectedData={selectedData}
                 isModalOpen={isModalOpen}
-                handleClose={() => setIsModalOpen(false)}
+                handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
 }
 
 type ModalProps = {
+    title: string
+    selectedData?: IHoliday
     isModalOpen: boolean
-    handleClose: () => void
+    handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 const { Item: FormItem, useForm } = AntDForm
 
-function HolidaysModal({ isModalOpen, handleClose }: ModalProps) {
-    const [form] = useForm<any>()
+function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
+    const [form] = useForm<IHoliday>()
+    const [lists, setLists] = useState<{ holidayTypes: IHolidayType[]; dailyRates: IDailyRate[] }>({ dailyRates: [], holidayTypes: [] })
 
-    function onFinish(values: any) {
-        // if success
-        let { description, ...restProps } = values
-        // date = dayjs(date, 'YYYY/MM/DD') as any
-        restProps = { ...restProps, ...(description != undefined && { description }) } as any
-        console.log(restProps)
-        form.resetFields()
-        handleClose()
+    useEffect(() => {
+        if (selectedData != undefined) {
+            form.setFieldsValue({ ...selectedData, holiday_date: dayjs(selectedData?.holiday_date, 'YYYY-MM-DD'), is_active: Number(selectedData.is_active) })
+        } else {
+            form.resetFields(undefined)
+        }
+        const controller = new AbortController();
+        (async () => {
+            try {
+                const holidayPromise = axiosClient(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.LISTS, { signal: controller.signal })
+                const dailyRatePromise = axiosClient(SYSTEMSETTINGS.HRSETTINGS.DAILYRATE.LISTS, { signal: controller.signal })
+                const [holidayRes, dailyRateRes] = await Promise.allSettled([holidayPromise, dailyRatePromise]) as any
+                setLists({
+                    dailyRates: holidayRes?.value?.data ?? [],
+                    holidayTypes: dailyRateRes?.value?.data ?? []
+                })
+            } catch (error) {
+                return error
+            }
+        })()
+        return () => {
+            controller.abort()
+        }
+    }, [selectedData])
+
+    function onFinish(values: IHoliday) {
+        let { description, holiday_date, ...restValues } = values
+        holiday_date = dayjs(holiday_date).format('YYYY-MM-DD') as any
+        restValues = { ...restValues, holiday_date, ...(description != undefined && { description }) } as any
+        let result = selectedData ? PUT(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYS.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYS.POST, restValues)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(fetchData)
     }
 
-    return <Modal title='Create Holiday' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish} initialValues={{ time_in: dayjs('08:00:00', 'HH:mm:ss'), time_out: dayjs('05:00:00', 'HH:mm:ss') }}>
+    return <Modal title={`${title} - Holiday`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+        <Form form={form} onFinish={onFinish}>
             <FormItem
                 label="Holiday Name"
                 name="name"
@@ -163,43 +202,60 @@ function HolidaysModal({ isModalOpen, handleClose }: ModalProps) {
             </FormItem>
             <FormItem
                 label="Holiday Type"
-                name="holiday_type"
+                name="holiday_type_id"
                 required
                 rules={[{ required: true, message: 'Please enter holiday type!' }]}
             >
-                <Select placeholder='Enter holiday type...'>
+                <Select placeholder='Select holiday type...' optionFilterProp="children" allowClear showSearch>
+                    {lists?.holidayTypes.map((holiday) => (
+                        <Select.Option value={holiday.id} key={holiday.id} style={{ color: '#777777' }}>{holiday.name}</Select.Option>
+                    ))}
                 </Select>
             </FormItem>
             <Row justify='space-between'>
                 <Col span={11}>
                     <FormItem
                         label="Daily Rate"
-                        name="rate"
+                        name="daily_rate_id"
                         required
-                        rules={[{ required: true, message: 'Please enter daily rate!' }]}
+                        rules={[{ required: true, message: 'Please select daily rate!' }]}
                     >
-                        <Input type='number' placeholder='Enter daily rate...' />
+                        <Select placeholder='Select Daily Rate...' optionFilterProp="children" allowClear showSearch>
+                            {lists?.dailyRates.map((daily) => (
+                                <Select.Option value={daily.id} key={daily.id} style={{ color: '#777777' }}>{daily.name}</Select.Option>
+                            ))}
+                        </Select>
                     </FormItem>
                 </Col>
                 <Col span={11}>
                     <FormItem
                         label="Holiday Date"
-                        name="date"
+                        name="holiday_date"
                         required
                         rules={[{ required: true, message: 'Please select holiday date!' }]}
                     >
-                        <TimePicker style={{ width: '100%' }} />
+                        <DatePicker style={{ width: '100%' }} />
                     </FormItem>
                 </Col>
             </Row>
             <FormItem
                 label="Locally Observed?"
-                name="observed"
+                name="is_local"
                 required
                 rules={[{ required: true, message: 'Please locally observed!' }]}
             >
                 <Select placeholder='Enter locally observed...'>
+                    <Select.Option value='yes' style={{ color: '#777777' }}>Yes</Select.Option>
+                    <Select.Option value='no' style={{ color: '#777777' }}>No</Select.Option>
                 </Select>
+            </FormItem>
+            <FormItem
+                label="Active"
+                name="is_active"
+                valuePropName="checked"
+                initialValue={true}
+            >
+                <Switch />
             </FormItem>
             <FormItem name="description" label="Description">
                 <Input.TextArea placeholder='Enter description...' />
@@ -207,9 +263,9 @@ function HolidaysModal({ isModalOpen, handleClose }: ModalProps) {
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">
-                        Create
+                        {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleClose}>
+                    <Button type="primary" onClick={handleCancel}>
                         Cancel
                     </Button>
                 </Space>
