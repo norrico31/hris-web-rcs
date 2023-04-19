@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
-import { ColumnsType } from "antd/es/table"
+import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
@@ -28,8 +28,8 @@ export default function LeaveType() {
     const columns: ColumnsType<ILeaveType> = [
         {
             title: 'Leave Type Name',
-            key: 'name',
-            dataIndex: 'name',
+            key: 'type',
+            dataIndex: 'type',
         },
         {
             title: 'Description',
@@ -51,7 +51,7 @@ export default function LeaveType() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<LeaveTypeRes>(HRSETTINGS.LEAVETYPE.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<LeaveTypeRes>(HRSETTINGS.LEAVETYPE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -60,10 +60,22 @@ export default function LeaveType() {
                         ...tableParams?.pagination,
                         total: res?.total,
                         current: res?.current_page,
+                        pageSize: res?.per_page,
                     },
                 })
             })
     }
+
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+    }
+
+    const handleChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(HRSETTINGS.LEAVETYPE.DELETE, id)
@@ -84,13 +96,14 @@ export default function LeaveType() {
         <Card title='Leave Types'>
             <TabHeader
                 name='leave types'
-                handleSearchData={() => null}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 columns={columns}
                 dataList={data}
-                onChange={(evt) => console.log(evt)}
+                tableParams={tableParams}
+                onChange={handleChange}
             />
             <LeaveTypeModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
@@ -139,7 +152,7 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
         <Form form={form} onFinish={onFinish}>
             <FormItem
                 label="Leave Type Name"
-                name="name"
+                name="type"
                 required
                 rules={[{ required: true, message: 'Please enter leave type name!' }]}
             >
@@ -149,6 +162,8 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
             <FormItem
                 name="description"
                 label="Description"
+                required
+                rules={[{ required: true, message: 'Please enter description!' }]}
             >
                 <Input placeholder='Enter Description...' />
             </FormItem>

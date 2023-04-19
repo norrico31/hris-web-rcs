@@ -51,7 +51,7 @@ export default function Team() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<TeamRes>(TEAMS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<TeamRes>(TEAMS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -60,6 +60,7 @@ export default function Team() {
                         ...tableParams?.pagination,
                         total: res?.total,
                         current: res?.current_page,
+                        pageSize: res?.per_page,
                     },
                 })
             })
@@ -67,8 +68,14 @@ export default function Team() {
 
     const handleSearch = (str: string) => {
         setSearch(str)
-        fetchData({ search: str, page: 1 })
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
     }
+
+    const handleChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(TEAMS.DELETE, id)
@@ -96,9 +103,7 @@ export default function Team() {
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
-                onChange={(pagination: TablePaginationConfig) => {
-                    fetchData({ page: pagination?.current, search })
-                }}
+                onChange={handleChange}
             />
             <TeamModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}

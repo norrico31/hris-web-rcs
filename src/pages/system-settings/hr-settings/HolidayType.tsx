@@ -57,7 +57,7 @@ export default function HolidayType() {
     ]
 
     function fetchData(args?: IArguments) {
-        GET<HolidayTypeRes>(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<HolidayTypeRes>(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -66,10 +66,22 @@ export default function HolidayType() {
                         ...tableParams?.pagination,
                         total: res?.total,
                         current: res?.current_page,
+                        pageSize: res?.per_page,
                     },
                 })
             })
     }
+
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+    }
+
+    const handleChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.DELETE, id)
@@ -90,18 +102,14 @@ export default function HolidayType() {
         <Card title='Holiday Type'>
             <TabHeader
                 name='holiday type'
-                handleSearchData={(str: string) => {
-                    setSearch(str)
-                    fetchData({ search: str, page: 1 })
-                }}
+                handleSearchData={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 columns={columns}
+                tableParams={tableParams}
                 dataList={data}
-                onChange={(pagination: TablePaginationConfig) => {
-                    fetchData({ page: pagination?.current, search })
-                }}
+                onChange={handleChange}
             />
             <HolidayTypeModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
