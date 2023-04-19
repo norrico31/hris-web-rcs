@@ -12,7 +12,7 @@ import { useEndpoints } from '../../shared/constants'
 
 const [{ EMPLOYEE201 }] = useEndpoints()
 const { PUT, DELETE, POST } = useAxios()
-
+// TODO
 export default function EmployeeContracts() {
     const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)

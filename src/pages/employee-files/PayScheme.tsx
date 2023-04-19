@@ -2,7 +2,7 @@ import React from 'react'
 import { Descriptions } from 'antd'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { Card } from '../../components'
-
+// TODO: PUT method
 export default function PayScheme() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
     return (

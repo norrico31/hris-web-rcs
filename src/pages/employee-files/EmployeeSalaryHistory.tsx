@@ -5,7 +5,7 @@ import { Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table } from '../../components'
 import { IEmployeeSalary } from '../../shared/interfaces'
-
+// TODO: PUT method
 export default function EmployeeSalaryHistory() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
     const [form] = useForm<IEmployeeSalary>()

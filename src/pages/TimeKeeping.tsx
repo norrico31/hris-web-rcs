@@ -52,11 +52,6 @@ export default function TimeKeeping() {
                         <b>06:44 AM</b>
                         <p>March 22</p>
                     </Box>
-                    {/* <AntDDivider />
-                    <Box title="Time out">
-                        <b>06:44 PM</b>
-                        <p>March 22</p>
-                    </Box> */}
                 </Col2>
             </Row>
             <TimeKeepingModal
@@ -108,7 +103,9 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
             navigator.geolocation.getCurrentPosition(handleSuccess, handleError)
         }
     }, [])
+
     // TODO
+
     function postTimeInOut(method: 'timein' | 'timeout') {
         const payload = {
             photo: imageSrc,
@@ -118,13 +115,13 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
             setError('Please take a selfie photo')
             return
         }
+        console.log(payload)
         POST(method == 'timein' ? TIMEKEEPING.TIMEIN : TIMEKEEPING.TIMEOUT, payload)
             .then((res) => {
                 console.log(res)
                 // setImageSrc(null)
                 // handleClose()
-            })
-
+            }).finally(handleClose)
     }
 
     if (error == 'Please take a selfie photo') {

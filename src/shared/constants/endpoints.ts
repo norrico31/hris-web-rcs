@@ -38,10 +38,10 @@ export const useEndpoints = () => {
             },
             HRSETTINGS: {
                 BANKDETAILS: {
-                    GET: '/bankingdetails',
-                    POST: '/bankingdetails/',
-                    PUT: '/bankingdetails/',
-                    DELETE: '/bankingdetails/',
+                    GET: '/bank_details',
+                    POST: '/bank_details/',
+                    PUT: '/bank_details/',
+                    DELETE: '/bank_details/',
                 },
                 DAILYRATE: {
                     GET: '/daily_rates',
@@ -77,16 +77,16 @@ export const useEndpoints = () => {
                     DELETE: '/positions/',
                 },
                 LEAVEDURATION: {
-                    GET: '/leave_durations',
-                    POST: '/leave_durations/',
-                    PUT: '/leave_durations/',
-                    DELETE: '/leave_durations/',
+                    GET: '/leave_duration',
+                    POST: '/leave_duration/',
+                    PUT: '/leave_duration/',
+                    DELETE: '/leave_duration/',
                 },
                 LEAVESTATUSES: {
-                    GET: '/leave_statuses',
-                    POST: '/leave_statuses/',
-                    PUT: '/leave_statuses/',
-                    DELETE: '/leave_statuses/',
+                    GET: '/leave_status',
+                    POST: '/leave_status/',
+                    PUT: '/leave_status/',
+                    DELETE: '/leave_status/',
                 },
                 LEAVETYPE: {
                     GET: '/leave_types',
@@ -137,10 +137,10 @@ export const useEndpoints = () => {
                     DELETE: '/client_branches/'
                 },
                 CLIENTADJUSTMENT: {
-                    GET: '/client_adjustments',
-                    POST: '/client_adjustments/',
-                    PUT: '/client_adjustments/',
-                    DELETE: '/client_adjustments/'
+                    GET: '/client_adjustment',
+                    POST: '/client_adjustment/',
+                    PUT: '/client_adjustment/',
+                    DELETE: '/client_adjustment/'
                 }
             },
             EXPENSESETTINGS: {

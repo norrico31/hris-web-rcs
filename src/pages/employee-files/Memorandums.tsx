@@ -11,7 +11,7 @@ import { IArguments, IMemorandum, MemorandumRes, TableParams } from '../../share
 
 const [{ EMPLOYEE201: { MEMORANDUM } }] = useEndpoints()
 const { GET } = useAxios()
-
+// TODO
 export default function Memorandums() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
     const [data, setData] = useState<IMemorandum[]>([])

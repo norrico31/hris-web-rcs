@@ -3,7 +3,7 @@ import { Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 
 const { useForm, Item } = AntDForm
-
+// TODO: PUT method
 export default function EmployeeSalary() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
     const [form] = useForm()

@@ -1,7 +1,7 @@
 import { Descriptions } from 'antd'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { Card } from '../../components'
-
+// TODO: PUT method
 export default function LeaveCredits() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
     const { si_leaves, sick_leaves, vacation_leaves } = employeeInfo?.leave_credit ?? {}
