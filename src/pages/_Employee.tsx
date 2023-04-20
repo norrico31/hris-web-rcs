@@ -478,6 +478,7 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col span={8}>
                 <FormItem name='client_id' label="Client" required rules={[{ required: true, message: 'Please select client!' }]}>
+                    {/* dropdown /options/clients */}
                     <Select
                         placeholder='Select client...'
                     >
@@ -486,6 +487,7 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                     </Select>
                 </FormItem>
                 <FormItem name='client_branch_id' label="Client Branch" required rules={[{ required: true, message: 'Please select client branch!' }]}>
+                    {/* dropdown /options/client_branches */}
                     <Select
                         placeholder='Select client branch...'
                     >
@@ -554,25 +556,16 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
     }, [stepThreeInputs])
 
     function onFinish(values: Record<string, any>) {
-        let stepThreePayload = {} as IStepThree
-        for (const val in values) {
-            if (values[val] == undefined) {
-                stepThreePayload = { ...stepThreePayload, [val]: null }
-            } else {
-                stepThreePayload = { ...stepThreePayload, [val]: values[val] }
-            }
-        }
-        setStepThreeInputs(stepThreePayload)
+        setStepThreeInputs(formValues(values) as IStepThree)
         stepThree()
     }
-
 
     return <Form form={form} onFinish={onFinish}>
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col>
-                <FormItem name='salary_rate' label="Salary Rate" required rules={[{ required: true, message: 'Please enter salary rate!' }]}>
+                <FormItem name='salary_rate_id' label="Salary Rate" required rules={[{ required: true, message: 'Please enter salary rate!' }]}>
+                    {/* dropdown /options/salary_rates */}
                     <Input type='number' placeholder='Enter salary rate...' />
-
                 </FormItem>
                 <FormItem name='basic_rate' label="Basic Rate" required rules={[{ required: true, message: 'Please select basic rate!' }]}>
                     <Input type='number' placeholder='Enter basic rate...' />
@@ -617,14 +610,14 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, ha
     }, [stepFourInputs])
 
     function onFinish(values: Record<string, any>) {
-        let stepFourPayload = {} as IStepFour
-        for (const val in values) {
-            if (values[val] == undefined) {
-                stepFourPayload = { ...stepFourPayload, [val]: null }
-            } else {
-                stepFourPayload = { ...stepFourPayload, [val]: values[val] }
-            }
-        }
+        let stepFourPayload = formValues(values) as IStepFour
+        // for (const val in values) {
+        //     if (values[val] == undefined) {
+        //         stepFourPayload = { ...stepFourPayload, [val]: null }
+        //     } else {
+        //         stepFourPayload = { ...stepFourPayload, [val]: values[val] }
+        //     }
+        // }
         setStepFourInputs(stepFourPayload)
         payload = { ...payload, ...stepFourPayload }
         console.log(payload)

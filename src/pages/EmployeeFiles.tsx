@@ -9,7 +9,7 @@ import { Card, Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useEndpoints } from './../shared/constants/endpoints'
 import axiosClient, { useAxios } from './../shared/lib/axios'
-import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment } from '../shared/interfaces'
+import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates } from '../shared/interfaces'
 
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
 const { GET, POST } = useAxios()
@@ -155,7 +155,6 @@ function EmployeeModal({ title, fetchData, isModalOpen, handleCancel }: ModalPro
     const [stepThreeInputs, setStepThreeInputs] = useState<IStepThree | undefined>(undefined)
     const [stepFourInputs, setStepFourInputs] = useState<IStepFour | undefined>(undefined)
 
-
     const payload = {
         ...stepOneInputs!,
         ...stepTwoInputs!,
@@ -213,7 +212,6 @@ function EmployeeModal({ title, fetchData, isModalOpen, handleCancel }: ModalPro
     return <Modal title={`${title} - Employee`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender width={850}>
         <Steps
             current={current}
-            // onChange={onChange}
             items={[
                 {
                     title: 'Step 1',
@@ -589,7 +587,7 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                 <FormItem
                     name='client_branch_id'
                     label="Client Branch"
-                // required 
+                // required
                 // rules={[{ required: true, message: 'Please select client branch!' }]}
                 >
                     <Select
@@ -657,32 +655,39 @@ interface IStepThreeProps {
 
 function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousStep }: IStepThreeProps) {
     const [form] = useForm<IStepThree>()
+    const [salaryRates, setSalaryRates] = useState<ISalaryRates[]>([])
 
     useEffect(() => {
         if (stepThreeInputs) {
             form.setFieldsValue({ ...stepThreeInputs })
         }
+        const controller = new AbortController();
+        axiosClient(HRSETTINGS.SALARYRATES.LISTS, { signal: controller.signal })
+            .then((res) => setSalaryRates(res?.data ?? []))
+        return () => {
+            controller.abort()
+        }
     }, [stepThreeInputs])
 
     function onFinish(values: Record<string, any>) {
-        let stepThreePayload = {} as IStepThree
-        for (const val in values) {
-            if (values[val] == undefined) {
-                stepThreePayload = { ...stepThreePayload, [val]: null }
-            } else {
-                stepThreePayload = { ...stepThreePayload, [val]: values[val] }
-            }
-        }
-        setStepThreeInputs(stepThreePayload)
+        setStepThreeInputs(formValues(values) as IStepThree)
         stepThree()
     }
 
     return <Form form={form} onFinish={onFinish}>
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col>
-                <FormItem name='salary_rate' label="Salary Rate" required rules={[{ required: true, message: 'Please enter salary rate!' }]}>
-                    <Input type='number' placeholder='Enter salary rate...' />
-
+                <FormItem name='salary_rate_id' label="Salary Rate" required rules={[{ required: true, message: 'Please enter salary rate!' }]}>
+                    <Select
+                        placeholder='Select salary rate...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
+                    >
+                        {salaryRates.map((salary) => (
+                            <Select.Option value={salary.id} key={salary.id} style={{ color: '#777777' }}>{salary.rate}</Select.Option>
+                        ))}
+                    </Select>
                 </FormItem>
                 <FormItem name='basic_rate' label="Basic Rate" required rules={[{ required: true, message: 'Please select basic rate!' }]}>
                     <Input type='number' placeholder='Enter basic rate...' />
@@ -729,14 +734,7 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
     }, [stepFourInputs])
 
     function onFinish(values: Record<string, any>) {
-        let stepFourPayload = {} as IStepFour
-        for (const val in values) {
-            if (values[val] == undefined) {
-                stepFourPayload = { ...stepFourPayload, [val]: null }
-            } else {
-                stepFourPayload = { ...stepFourPayload, [val]: values[val] }
-            }
-        }
+        let stepFourPayload = formValues(values) as IStepFour
         setStepFourInputs(stepFourPayload)
         payload = {
             ...payload,

@@ -10,7 +10,8 @@ export const useEndpoints = () => {
         },
         TIMEKEEPING: {
             TIMEIN: '/time_keepings/time_in',
-            TIMEOUT: '/time_keepings/time_out'
+            TIMEOUT: '/time_keepings/time_out',
+            GET: '/time_keepings'
         },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
@@ -154,6 +155,7 @@ export const useEndpoints = () => {
 
                 },
                 EXPENSETYPE: {
+                    LISTS: '/options/expense_types',
                     GET: '/expense_types',
                     POST: '/expense_types/',
                     PUT: '/expense_types/',

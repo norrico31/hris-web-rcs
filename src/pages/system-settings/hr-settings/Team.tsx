@@ -10,6 +10,8 @@ import { IArguments, TableParams, ITeam, TeamRes } from '../../../shared/interfa
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { HRSETTINGS: { TEAMS } } }] = useEndpoints()
 
+// TODO: add Department Lists
+
 export default function Team() {
     const [data, setData] = useState<ITeam[]>([])
     const [selectedData, setSelectedData] = useState<ITeam | undefined>(undefined)

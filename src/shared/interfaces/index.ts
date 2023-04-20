@@ -4,6 +4,7 @@ export * from './utils/Axios'
 export * from './auth/User'
 
 export * from './Tasks'
+export * from './TimeKeeping'
 
 export * from './admin-settings/Role'
 export * from './admin-settings/Users'

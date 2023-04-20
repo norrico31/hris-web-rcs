@@ -9,20 +9,35 @@ import { renderTitle } from "../shared/utils/utilities"
 import { MessageInstance } from "antd/es/message/interface"
 import { useAxios } from './../shared/lib/axios'
 import { useEndpoints } from "../shared/constants"
+import { useAuthContext } from "../shared/contexts/Auth";
 
 const [{ TIMEKEEPING }] = useEndpoints()
 const { GET, POST } = useAxios()
 
 export default function TimeKeeping() {
     renderTitle('Timekeeping')
+    const { user } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    const currentDay = dayjs().format('dddd')
+    const currentDate = dayjs().format('MMMM DD')
+
+    function fetchData() {
+        const today = dayjs().format('YYYY-MM-DD')
+        GET(TIMEKEEPING.GET + '?from=' + today + '&to=' + today + '&user_id=' + user?.id + '&limit=10')
+            .then((res) => {
+                console.log('get results: ', res)
+            })
+    }
 
     const onPanelChange = (value: Dayjs) => {
         console.log(value.format('YYYY-MM-DD'));
     }
 
-    const currentDay = dayjs().format('dddd')
-    const currentDate = dayjs().format('MMMM DD')
 
     return (
         <>
@@ -55,6 +70,7 @@ export default function TimeKeeping() {
                 </Col2>
             </Row>
             <TimeKeepingModal
+                fetchData={fetchData}
                 isModalOpen={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
             />
@@ -64,22 +80,24 @@ export default function TimeKeeping() {
 
 type ModalProps = {
     isModalOpen: boolean
+    fetchData(): void
     handleClose: () => void
 }
 
-function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
+function TimeKeepingModal({ fetchData, isModalOpen, handleClose }: ModalProps) {
     const [isModalVideoOpen, setIsModalVideoOpen] = useState(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
     const [mediaError, setMediaError] = useState('')
-    const [coordinates, setCoordinates] = useState<{ lat: number; long: number; } | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number; } | null>(null)
+    const [error, setError] = useState<string | null>(null)
     const [messageApi, contextHolder] = message.useMessage()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         const handleSuccess = (position: GeolocationPosition) => {
             setError(null)
-            const { latitude: lat, longitude: long } = position.coords
-            setCoordinates({ lat, long })
+            const { latitude, longitude } = position.coords
+            setCoordinates({ latitude, longitude })
         }
 
         const handleError = (error: GeolocationPositionError) => {
@@ -107,6 +125,7 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
     // TODO
 
     function postTimeInOut(method: 'timein' | 'timeout') {
+        setLoading(true)
         const payload = {
             photo: imageSrc,
             location: coordinates
@@ -115,13 +134,15 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
             setError('Please take a selfie photo')
             return
         }
-        console.log(payload)
         POST(method == 'timein' ? TIMEKEEPING.TIMEIN : TIMEKEEPING.TIMEOUT, payload)
             .then((res) => {
-                console.log(res)
-                // setImageSrc(null)
-                // handleClose()
-            }).finally(handleClose)
+                console.log(res?.data.data)
+                fetchData()
+                setImageSrc(null)
+                handleClose()
+            }).finally(() => {
+                setLoading(false)
+            })
     }
 
     if (error == 'Please take a selfie photo') {
@@ -143,7 +164,7 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
                 />
                 {mediaError}
                 {error}
-                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={(!!mediaError || !!error) && error != 'Please take a selfie photo'}>TAKE A SELFIE</Button>
+                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={(!!mediaError || !!error || loading) && error != 'Please take a selfie photo'}>TAKE A SELFIE</Button>
             </Space>
         </Row>
         <Divider style={{ margin: 10 }} />
@@ -157,7 +178,8 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error}
+                    disabled={!!mediaError || !!error || loading}
+                    loading={loading}
                 >
                     Time In
                 </Button>
@@ -171,7 +193,8 @@ function TimeKeepingModal({ isModalOpen, handleClose }: ModalProps) {
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error}
+                    disabled={!!mediaError || !!error || loading}
+                    loading={loading}
                 >
                     Time Out
                 </Button>

@@ -9,14 +9,8 @@
 // ==================================
 
 // TODOS
-// PENDING: /bangkingdetails
-// PENDING: /leave_statuses
-// PENDING: /leave_durations
-// PENDING: /client_adjustments
-// PENDING: /expenses
-// PENDING: /expense_types
+// PENDING: Edit => Update
 // PENDING: /users
 
-// PENDING: search query
-// PENDING: pageSize query
+
 // PENDING: download endpoints

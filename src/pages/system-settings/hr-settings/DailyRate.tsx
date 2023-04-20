@@ -53,8 +53,8 @@ export default function DailyRate() {
         },
         {
             title: 'Night Differential Rate per Hour (OVERTIME)',
-            key: 'night_diff_rate_per_hour',
-            dataIndex: 'night_diff_rate_per_hour',
+            key: 'night_diff_ot_rate_per_hour',
+            dataIndex: 'night_diff_ot_rate_per_hour',
         },
         {
             title: 'Description',

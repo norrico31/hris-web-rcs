@@ -5,10 +5,10 @@ import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import axiosClient, { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
-import { ClientAdjustmentRes, IArguments, IClient, IClientAdjustment, TableParams } from '../../../shared/interfaces'
+import { ClientAdjustmentRes, IArguments, IClient, IClientAdjustment, IExpenseType, TableParams } from '../../../shared/interfaces'
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ SYSTEMSETTINGS: { CLIENTSETTINGS } }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { CLIENTSETTINGS, EXPENSESETTINGS } }] = useEndpoints()
 
 export default function ClientAdjustment() {
     const [data, setData] = useState<IClientAdjustment[]>([])
@@ -127,7 +127,6 @@ export default function ClientAdjustment() {
     )
 }
 
-
 interface ModalProps {
     title: string
     isModalOpen: boolean
@@ -140,7 +139,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IClientAdjustment>()
-    const [clients, setClients] = useState<IClient[]>([])
+    const [lists, setLists] = useState<{ clients: IClient[]; expenseTypes: IExpenseType[] }>({ clients: [], expenseTypes: [] })
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -150,8 +149,16 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
         }
 
         const controller = new AbortController();
-        axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
-            .then((res) => setClients(res?.data ?? []));
+        const clientPromise = axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
+        const expenseTypePromise = axiosClient(EXPENSESETTINGS.EXPENSETYPE.LISTS, { signal: controller.signal })
+        Promise.allSettled([clientPromise, expenseTypePromise])
+            .then(([clientRes, expenseRes]: any) => {
+                setLists({
+                    ...lists,
+                    clients: clientRes?.status == 'fulfilled' ? clientRes?.value.data : [],
+                    expenseTypes: expenseRes?.status == 'fulfilled' ? expenseRes?.value.data : []
+                })
+            });
         return () => {
             controller.abort()
         }
@@ -166,7 +173,7 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
             handleCancel()
         }).finally(fetchData)
     }
-    // TODO
+
     return <Modal title={`${title} - Client Adjustment`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
@@ -177,7 +184,6 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
             >
                 <Input placeholder='Enter client branch adjustment name...' />
             </FormItem>
-
             <FormItem name='client_id' label="Client" required rules={[{ required: true, message: 'Please select client!' }]}>
                 <Select
                     placeholder='Select client...'
@@ -185,8 +191,20 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
                     showSearch
                     optionFilterProp="children"
                 >
-                    {clients.map((client) => (
+                    {lists.clients?.map((client) => (
                         <Select.Option value={client.id} key={client.id} style={{ color: '#777777' }}>{client.name}</Select.Option>
+                    ))}
+                </Select>
+            </FormItem>
+            <FormItem name='expense_type_id' label="Expense Type" required rules={[{ required: true, message: 'Please select expense type!' }]}>
+                <Select
+                    placeholder='Select expense type...'
+                    allowClear
+                    showSearch
+                    optionFilterProp="children"
+                >
+                    {lists.expenseTypes?.map((expense) => (
+                        <Select.Option value={expense.id} key={expense.id} style={{ color: '#777777' }}>{expense.name}</Select.Option>
                     ))}
                 </Select>
             </FormItem>
