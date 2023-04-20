@@ -92,6 +92,7 @@ export default function Tasks() {
                         ...tableParams?.pagination,
                         total: res?.total,
                         current: res?.current_page,
+                        pageSize: res?.per_page,
                     },
                 })
             })
@@ -99,8 +100,14 @@ export default function Tasks() {
 
     const handleSearch = (str: string) => {
         setSearch(str)
-        fetchData({ search: str, page: 1 })
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
     }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(TASKS.DELETE, id)
@@ -145,10 +152,7 @@ export default function Tasks() {
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
-                onChange={(pagination: TablePaginationConfig, filters) => {
-                    console.log(pagination)
-                    fetchData({ page: pagination?.current, search })
-                }}
+                onChange={onChange}
             />
         </>
     )

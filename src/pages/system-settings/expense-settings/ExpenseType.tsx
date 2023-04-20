@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Switch } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
@@ -31,26 +31,27 @@ export default function ExpenseType() {
             key: 'name',
             dataIndex: 'name',
         },
-        // {
-        //     title: 'Address',
-        //     key: 'address',
-        //     dataIndex: 'address',
-        // },
-        // {
-        //     title: 'Contact Person',
-        //     key: 'contact_person',
-        //     dataIndex: 'contact_person',
-        // },
-        // {
-        //     title: 'Contact Number',
-        //     key: 'contact_number',
-        //     dataIndex: 'contact_number',
-        // },
-        // {
-        //     title: 'Status',
-        //     key: 'status',
-        //     dataIndex: 'status',
-        // },
+        {
+            title: 'Entry',
+            key: 'entry',
+            dataIndex: 'entry',
+        },
+        {
+            title: 'Taxable',
+            key: 'is_taxable',
+            dataIndex: 'is_taxable',
+        },
+        {
+            title: 'For Client Adustment',
+            key: 'for_client_adjustment',
+            dataIndex: 'for_client_adjustment',
+        },
+        {
+            title: 'Active',
+            key: 'is_active',
+            dataIndex: 'is_active',
+            render: (_, record) => record?.is_active ? 'ACTIVE' : 'INACTIVE'
+        },
         {
             title: 'Description',
             key: 'description',
@@ -139,7 +140,7 @@ function ExpenseTypeModal({ title, selectedData, isModalOpen, handleCancel, fetc
 
     useEffect(() => {
         if (selectedData != undefined) {
-            form.setFieldsValue({ ...selectedData })
+            form.setFieldsValue({ ...selectedData, is_active: Number(selectedData.is_active) })
         } else {
             form.resetFields(undefined)
         }
@@ -164,6 +165,22 @@ function ExpenseTypeModal({ title, selectedData, isModalOpen, handleCancel, fetc
                 rules={[{ required: true, message: 'Please enter expense name!' }]}
             >
                 <Input placeholder='Enter expense name...' />
+            </FormItem>
+            <FormItem
+                label="Entry"
+                name="entry"
+                required
+                rules={[{ required: true, message: 'Please enter expense entry!' }]}
+            >
+                <Input placeholder='Enter expense entry...' />
+            </FormItem>
+            <FormItem
+                label="Active"
+                name="is_active"
+                valuePropName="checked"
+                initialValue={true}
+            >
+                <Switch />
             </FormItem>
             {/* <FormItem
                 label="Address"

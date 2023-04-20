@@ -95,8 +95,8 @@ const menus = [
                 <IoIosPeople />,
             ),
             getItemLinks(
-                <Link to='/systemsettings/expensesettings/expense'>Expense</Link>,
-                '/systemsettings/expensesettings/expense',
+                <Link to='/systemsettings/expensesettings/expensetype'>Expense</Link>,
+                '/systemsettings/expensesettings/expensetype',
                 <SiExpensify />,
             ),
         ]

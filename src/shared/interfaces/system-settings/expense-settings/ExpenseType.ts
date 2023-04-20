@@ -1,16 +1,16 @@
 import { AxiosGetData } from "../../utils/Axios"
 
 export interface IExpenseType {
-    address: string
-    contact_number: string
-    contact_person: string
     created_at: string
     deleted_at: string | null
+    entry: string
+    for_client_adjustment: string
     id: string
+    is_active: number
+    is_taxable: string
     name: string
-    status: string
     updated_at: string
-    description?: string
+    description: string | null
 }
 
 export type ExpenseTypeRes = AxiosGetData<IExpenseType>
