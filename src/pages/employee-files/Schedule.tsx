@@ -124,7 +124,7 @@ export default function Schedule() {
         <Card title='Schedule'>
             <TabHeader
                 name='Schedule'
-                handleSearchData={fetchData}
+                handleSearch={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />

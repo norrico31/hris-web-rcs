@@ -51,7 +51,7 @@ export default function Roles() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<RoleRes>(ADMINSETTINGS.ROLES.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<RoleRes>(ADMINSETTINGS.ROLES.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -84,7 +84,7 @@ export default function Roles() {
         <Card title='Roles'>
             <TabHeader
                 name='role'
-                handleSearchData={() => null}
+                handleSearch={() => null}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

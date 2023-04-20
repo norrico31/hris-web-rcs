@@ -76,7 +76,7 @@ export default function EmployeeContracts() {
         <Card title='Contracts'>
             <TabHeader
                 name='contracts'
-                handleSearchData={() => null}
+                handleSearch={() => null}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />

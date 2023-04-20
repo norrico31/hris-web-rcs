@@ -83,7 +83,7 @@ export default function Tasks() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<TasksRes>(TASKS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<TasksRes>(TASKS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -137,7 +137,7 @@ export default function Tasks() {
             </MainHeader>
             <TabHeader
                 name='Tasks'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />

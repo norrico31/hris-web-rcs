@@ -81,7 +81,7 @@ export default function EmployeeFiles() {
     ]
 
     function fetchData(args?: IArguments) {
-        GET<Employee201Res>(EMPLOYEE201.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<Employee201Res>(EMPLOYEE201.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -125,7 +125,7 @@ export default function EmployeeFiles() {
             </MainHeader>
             <TabHeader
                 name='Employee'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />

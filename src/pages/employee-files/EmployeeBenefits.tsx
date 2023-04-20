@@ -82,7 +82,7 @@ export default function EmployeeBenefits() {
         <Card title='Benefits'>
             <TabHeader
                 name='benefits'
-                handleSearchData={() => null}
+                handleSearch={() => null}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />

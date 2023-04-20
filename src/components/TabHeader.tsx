@@ -5,9 +5,9 @@ import styled from 'styled-components'
 
 type Props = {
     name: string
-    handleSearch: (term: string) => void
     handleCreate?: () => void
     handleDownload?: () => void
+    handleSearch: (term: string) => void
 }
 
 export default function TabHeader({ name, handleSearch, handleCreate, handleDownload }: Props) {

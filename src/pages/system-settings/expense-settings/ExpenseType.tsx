@@ -71,7 +71,7 @@ export default function ExpenseType() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<ExpenseTypeRes>(EXPENSESETTINGS.EXPENSETYPE.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<ExpenseTypeRes>(EXPENSESETTINGS.EXPENSETYPE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -104,7 +104,7 @@ export default function ExpenseType() {
         <Card title='Expense Types'>
             <TabHeader
                 name='expense types'
-                handleSearchData={() => { }}
+                handleSearch={() => { }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

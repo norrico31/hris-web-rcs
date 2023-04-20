@@ -125,7 +125,7 @@ export default function Schedule() {
             </MainHeader>
             <TabHeader
                 name='Schedule'
-                handleSearchData={fetchData}
+                handleSearch={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />

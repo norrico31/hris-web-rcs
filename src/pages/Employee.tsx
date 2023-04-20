@@ -142,7 +142,7 @@ export default function Employee() {
             </MainHeader>
             <TabHeader
                 name='Employee'
-                handleSearchData={fetchData}
+                handleSearch={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />

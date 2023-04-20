@@ -71,7 +71,7 @@ export default function Expense() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<ExpenseRes>(EXPENSESETTINGS.EXPENSE.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<ExpenseRes>(EXPENSESETTINGS.EXPENSE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -104,7 +104,7 @@ export default function Expense() {
         <Card title='Expenses'>
             <TabHeader
                 name='expense'
-                handleSearchData={() => { }}
+                handleSearch={() => { }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

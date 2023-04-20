@@ -51,7 +51,7 @@ export default function Users() {
     ]
 
     const fetchData = (args?: IArguments) => {
-        GET<UserRes>(ADMINSETTINGS.USERS.GET, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<UserRes>(ADMINSETTINGS.USERS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -84,7 +84,7 @@ export default function Users() {
         <Card title='Users'>
             <TabHeader
                 name='user'
-                handleSearchData={() => null}
+                handleSearch={() => null}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table

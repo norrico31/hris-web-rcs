@@ -66,7 +66,7 @@ export default function Evaluations() {
         <Card title='Evaluations'>
             <TabHeader
                 name='evaluations'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />

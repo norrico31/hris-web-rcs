@@ -68,7 +68,7 @@ export default function Holidays() {
         <Card title='Holidays'>
             <TabHeader
                 name='holiday type'
-                // handleSearchData={fetchData}
+                handleSearch={() => { }}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Row justify='space-around' wrap>

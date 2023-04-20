@@ -53,7 +53,7 @@ export default function EmployeeDocuments() {
     ]
 
     function fetchData(args?: IArguments) {
-        GET<EmployeeDocumentRes>(EMPLOYEEDOCUMENT.GET + `/${employeeId}`, args?.signal!, { page: args?.page!, search: args?.search! })
+        GET<EmployeeDocumentRes>(EMPLOYEEDOCUMENT.GET + `/${employeeId}`, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -85,7 +85,7 @@ export default function EmployeeDocuments() {
         <Card title='Documents'>
             <TabHeader
                 name='employee documents'
-                handleSearchData={handleSearch}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />
