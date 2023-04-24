@@ -138,6 +138,7 @@ const { Item: FormItem, useForm } = AntDForm
 export function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITaskActivities>()
     const [teams, setTeams] = useState<ITeam[]>([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -154,19 +155,22 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
         }
     }, [selectedData])
 
-
     function onFinish(values: ITaskActivities) {
+        setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(TASKSSETTINGS.ACTIVITIES.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.ACTIVITIES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Activity`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Activity Name"
                 name="name"
@@ -192,10 +196,10 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

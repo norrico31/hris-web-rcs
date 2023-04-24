@@ -17,6 +17,7 @@ export default function TaskSprint() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -69,6 +70,7 @@ export default function TaskSprint() {
     ]
 
     function fetchData(args?: IArguments) {
+        setLoading(true)
         GET<TaskSprintRes>(TASKSSETTINGS.SPRINT.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -81,7 +83,7 @@ export default function TaskSprint() {
                         pageSize: res?.per_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
@@ -118,6 +120,7 @@ export default function TaskSprint() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
@@ -147,6 +150,7 @@ const { Item: FormItem, useForm } = AntDForm
 export function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
     const [teams, setTeams] = useState<ITeam[]>([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -166,6 +170,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
     }, [selectedData])
 
     function onFinish(values: Record<string, string>) {
+        setLoading(true)
         let { date, description, ...restValues } = values
         let [start_date, end_date] = date
         start_date = dayjs(start_date).format('YYYY/MM/DD')
@@ -176,11 +181,14 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Sprint`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish} >
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Sprint Name"
                 name="name"
@@ -216,10 +224,10 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>
