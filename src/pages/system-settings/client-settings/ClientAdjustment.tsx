@@ -16,6 +16,7 @@ export default function ClientAdjustment() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController()
@@ -62,6 +63,7 @@ export default function ClientAdjustment() {
     ]
 
     const fetchData = (args?: IArguments) => {
+        setLoading(true)
         GET<ClientAdjustmentRes>(CLIENTSETTINGS.CLIENTADJUSTMENT.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -74,7 +76,7 @@ export default function ClientAdjustment() {
                         pageSize: res?.per_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
@@ -111,6 +113,7 @@ export default function ClientAdjustment() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
@@ -140,6 +143,7 @@ const { Item: FormItem, useForm } = AntDForm
 function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IClientAdjustment>()
     const [lists, setLists] = useState<{ clients: IClient[]; expenseTypes: IExpenseType[] }>({ clients: [], expenseTypes: [] })
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -165,13 +169,17 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
     }, [selectedData])
 
     function onFinish(values: IClientAdjustment) {
+        setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(CLIENTSETTINGS.CLIENTADJUSTMENT.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(CLIENTSETTINGS.CLIENTADJUSTMENT.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Client Adjustment`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
@@ -225,10 +233,10 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
 
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

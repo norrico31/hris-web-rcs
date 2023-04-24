@@ -16,6 +16,7 @@ export default function Client() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -71,6 +72,7 @@ export default function Client() {
     ]
 
     const fetchData = (args?: IArguments) => {
+        setLoading(true)
         GET<ClientRes>(CLIENTSETTINGS.CLIENT.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -83,7 +85,7 @@ export default function Client() {
                         pageSize: res?.per_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
@@ -120,6 +122,7 @@ export default function Client() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
@@ -149,6 +152,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IClient>()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -159,13 +163,17 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
     }, [selectedData])
 
     function onFinish(values: IClient) {
+        setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(CLIENTSETTINGS.CLIENT.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(CLIENTSETTINGS.CLIENT.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Client`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
@@ -211,10 +219,10 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
 
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>
