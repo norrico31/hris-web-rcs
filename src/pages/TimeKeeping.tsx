@@ -38,16 +38,15 @@ export default function TimeKeeping() {
         console.log(value.format('YYYY-MM-DD'));
     }
 
-
     return (
         <>
             <MainHeader>
-                <Space>
+                <Space wrap>
                     <h1 className='color-white'>Time Keeping</h1>
-                    <Col>
+                    {/* <Col>
                         <h3 className="color-secondary">{currentDay}</h3>
                         <h2 className="color-secondary">{currentDate}</h2>
-                    </Col>
+                    </Col> */}
                 </Space>
                 <Col>
                     <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>
@@ -154,7 +153,7 @@ function TimeKeepingModal({ fetchData, isModalOpen, handleClose }: ModalProps) {
         <Divider />
         <Row justify='center'>
             <Space direction="vertical" align="center">
-                <img src={imageSrc ?? AvatarPng} alt='avatar' style={{ width: 450 }} />
+                <img src={imageSrc ?? AvatarPng} alt='avatar' style={{ maxWidth: 400 }} />
                 <CapturePhotoModal
                     setImageSrc={setImageSrc}
                     setMediaError={setMediaError}

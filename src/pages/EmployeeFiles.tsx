@@ -35,13 +35,13 @@ export default function EmployeeFiles() {
     const columns: ColumnsType<IEmployee> = [
         {
             title: 'Employee No.',
-            key: 'employee_no',
-            dataIndex: 'employee_no',
+            key: 'employee_code',
+            dataIndex: 'employee_code',
         },
         {
             title: 'Employee Name',
-            key: 'employee_name',
-            dataIndex: 'employee_name',
+            key: 'full_name',
+            dataIndex: 'full_name',
         },
         {
             title: 'Position',
@@ -539,6 +539,7 @@ interface IStepTwoProps {
 function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: IStepTwoProps) {
     const [form] = useForm<IStepTwo>()
     const [clients, setClients] = useState<IClient[]>([])
+    const [clientId, setClientId] = useState('')
     const [clientBranches, setClientBranches] = useState<IClientBranch[]>([])
 
     useEffect(() => {
@@ -562,6 +563,11 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
         }
     }, [stepTwoInputs])
 
+    function onChange(id: string) {
+        console.log(id)
+        setClientId(id)
+    }
+
     function onFinish(values: Record<string, any>) {
         setStepTwoInputs(formValues(values) as IStepTwo)
         stepTwo()
@@ -570,12 +576,14 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
     return <Form form={form} onFinish={onFinish}>
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col span={8}>
-                <FormItem name='client_id' label="Client" required rules={[{ required: true, message: 'Please select client!' }]}>
+                <FormItem name='client_id' label="Client" required rules={[{ required: true, message: 'Please select client!' }]} >
                     <Select
                         placeholder='Select client...'
                         allowClear
                         showSearch
                         optionFilterProp="children"
+                        value={clientId}
+                        onChange={onChange}
                     >
                         {clients.map((client) => (
                             <Select.Option value={client.id} key={client.id} style={{ color: '#777777' }}>{client.name}</Select.Option>
