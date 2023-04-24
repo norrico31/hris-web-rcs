@@ -20,6 +20,7 @@ export default function Holidays() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -30,6 +31,7 @@ export default function Holidays() {
     }, [])
 
     function fetchData(args?: IArguments) {
+        setLoading(true)
         GET<HolidayRes>(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -42,7 +44,7 @@ export default function Holidays() {
                         pageSize: res?.per_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const columns: ColumnsType<IHoliday> = [
@@ -126,6 +128,7 @@ export default function Holidays() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
@@ -154,6 +157,7 @@ const { Item: FormItem, useForm } = AntDForm
 function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IHoliday>()
     const [lists, setLists] = useState<{ holidayTypes: IHolidayType[]; dailyRates: IDailyRate[] }>({ dailyRates: [], holidayTypes: [] })
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -181,6 +185,7 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
     }, [selectedData])
 
     function onFinish(values: IHoliday) {
+        setLoading(true)
         let { description, holiday_date, ...restValues } = values
         holiday_date = dayjs(holiday_date).format('YYYY-MM-DD') as any
         restValues = { ...restValues, holiday_date, ...(description != undefined && { description }) } as any
@@ -188,11 +193,14 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Holiday`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Holiday Name"
                 name="name"
@@ -263,10 +271,10 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

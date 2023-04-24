@@ -177,7 +177,7 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
     }
 
     return <Modal title={`${title} - Client`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Client Name"
                 name="name"

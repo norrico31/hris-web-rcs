@@ -2,7 +2,7 @@ import { useState, useEffect, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Steps, Row, Col, Divider } from 'antd'
 import { LoadingOutlined, UserOutlined, CreditCardOutlined, UsergroupAddOutlined } from '@ant-design/icons'
-import { ColumnsType } from "antd/es/table"
+import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs, { Dayjs } from 'dayjs'
 import { Card, Action, TabHeader, Table, Form, MainHeader } from '../components'
@@ -12,7 +12,7 @@ import axiosClient, { useAxios } from './../shared/lib/axios'
 import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates } from '../shared/interfaces'
 
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
-const { GET, POST } = useAxios()
+const { GET, POST, DELETE } = useAxios()
 
 export default function EmployeeFiles() {
     renderTitle('Employee')
@@ -23,6 +23,7 @@ export default function EmployeeFiles() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const controller = new AbortController();
@@ -81,6 +82,7 @@ export default function EmployeeFiles() {
     ]
 
     function fetchData(args?: IArguments) {
+        setLoading(true)
         GET<Employee201Res>(EMPLOYEE201.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -92,16 +94,23 @@ export default function EmployeeFiles() {
                         current: res?.current_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
         setSearch(str)
-        fetchData({ search: str, page: 1 })
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
     }
 
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(EMPLOYEE201.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: IEmployee) {
@@ -129,7 +138,7 @@ export default function EmployeeFiles() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />
-            <Table columns={columns} dataList={data} />
+            <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} />
             <EmployeeModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
                 isModalOpen={isModalOpen}
@@ -734,6 +743,7 @@ interface IStepFourProps {
 
 function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fetchData, handleResetSteps }: IStepFourProps) {
     const [form] = useForm<IStepFour>()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (stepFourInputs) {
@@ -742,6 +752,7 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
     }, [stepFourInputs])
 
     function onFinish(values: Record<string, any>) {
+        setLoading(true)
         let stepFourPayload = formValues(values) as IStepFour
         setStepFourInputs(stepFourPayload)
         payload = {
@@ -754,10 +765,13 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
         POST(EMPLOYEE201.POST, payload).then(() => {
             form.resetFields()
             handleResetSteps()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
-    return <Form form={form} onFinish={onFinish}>
+    return <Form form={form} onFinish={onFinish} disabled={loading}>
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col>
                 <FormItem name='pay_scheme' label="Pay Scheme" required rules={[{ required: true, message: 'Please select pay scheme!' }]}>
@@ -778,10 +792,10 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
         </Row>
         <FormItem style={{ textAlign: 'right' }}>
             <Space>
-                <Button type="primary" onClick={() => previousStep({ ...form.getFieldsValue() })}>
+                <Button type="primary" onClick={() => previousStep({ ...form.getFieldsValue() })} loading={loading} disabled={loading}>
                     Previous Step
                 </Button>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                     Submit
                 </Button>
             </Space>

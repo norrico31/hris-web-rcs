@@ -16,6 +16,7 @@ export default function HolidayType() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -57,6 +58,7 @@ export default function HolidayType() {
     ]
 
     function fetchData(args?: IArguments) {
+        setLoading(true)
         GET<HolidayTypeRes>(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -69,7 +71,7 @@ export default function HolidayType() {
                         pageSize: res?.per_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
@@ -106,6 +108,7 @@ export default function HolidayType() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 tableParams={tableParams}
                 dataList={data}
@@ -135,6 +138,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<IHolidayType>()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -145,17 +149,21 @@ function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleC
     }, [selectedData])
 
     function onFinish(values: IHolidayType) {
+        setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.PUT, { ...restValues, id: selectedData.id }) : POST(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Holiday Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Holiday type name"
                 name="name"
@@ -182,10 +190,10 @@ function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleC
 
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

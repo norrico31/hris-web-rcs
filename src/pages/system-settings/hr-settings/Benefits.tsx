@@ -16,6 +16,7 @@ export default function Benefits() {
     const [selectedData, setSelectedData] = useState<IBenefits | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
+    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -71,6 +72,7 @@ export default function Benefits() {
     }
 
     const fetchData = (args?: IArguments) => {
+        setLoading(true)
         GET<BenefitsRes>(HRSETTINGS.BENEFITS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -83,7 +85,7 @@ export default function Benefits() {
                         pageSize: res?.per_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
@@ -110,6 +112,7 @@ export default function Benefits() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 tableParams={tableParams}
                 dataList={data}
@@ -138,6 +141,7 @@ const { Item: Item, useForm } = AntDForm
 
 function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IBenefits>()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -152,17 +156,21 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
     }, [selectedData])
 
     function onFinish(values: IBenefits) {
+        setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(HRSETTINGS.BENEFITS.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.BENEFITS.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Benefit`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish} >
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <Item
                 label="Benefit"
                 name="name"
@@ -201,10 +209,10 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
             </Item>
             <Item style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

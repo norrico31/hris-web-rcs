@@ -16,6 +16,7 @@ export default function DailyRate() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -65,7 +66,7 @@ export default function DailyRate() {
             title: 'Active',
             key: 'is_active',
             dataIndex: 'is_active',
-            render: (_, record) => record?.is_active ? 'ACTIVE' : 'INACTIVE'
+            render: (_, record) => Number(record?.is_active) ? 'ACTIVE' : 'INACTIVE'
         },
         {
             title: 'Action',
@@ -82,6 +83,7 @@ export default function DailyRate() {
     ]
 
     const fetchData = (args?: IArguments) => {
+        setLoading(true)
         GET<DailyRateRes>(HRSETTINGS.DAILYRATE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -94,7 +96,7 @@ export default function DailyRate() {
                         pageSize: res?.per_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
@@ -131,6 +133,7 @@ export default function DailyRate() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
@@ -160,6 +163,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IDailyRate>()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -170,17 +174,21 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
     }, [selectedData])
 
     function onFinish(values: IDailyRate) {
+        setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(HRSETTINGS.DAILYRATE.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.DAILYRATE.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Daily Rate`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Daily Rate Code"
                 name="daily_rate_code"
@@ -238,10 +246,10 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

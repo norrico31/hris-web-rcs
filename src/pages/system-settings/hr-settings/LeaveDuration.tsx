@@ -16,6 +16,7 @@ export default function LeaveDuration() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -51,6 +52,7 @@ export default function LeaveDuration() {
     ]
 
     const fetchData = (args?: IArguments) => {
+        setLoading(true)
         GET<LeaveDurationRes>(HRSETTINGS.LEAVEDURATION.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -63,7 +65,7 @@ export default function LeaveDuration() {
                         pageSize: res?.per_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
@@ -100,6 +102,7 @@ export default function LeaveDuration() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
@@ -128,6 +131,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function LeaveDurationModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<ILeaveDuration>()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -138,17 +142,21 @@ function LeaveDurationModal({ title, selectedData, isModalOpen, handleCancel, fe
     }, [selectedData])
 
     function onFinish(values: ILeaveDuration) {
+        setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(HRSETTINGS.LEAVEDURATION.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.LEAVEDURATION.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Leave Duration`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Leave Duration Name"
                 name="name"
@@ -167,10 +175,10 @@ function LeaveDurationModal({ title, selectedData, isModalOpen, handleCancel, fe
 
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

@@ -16,6 +16,7 @@ export default function LeaveType() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -51,6 +52,7 @@ export default function LeaveType() {
     ]
 
     const fetchData = (args?: IArguments) => {
+        setLoading(true)
         GET<LeaveTypeRes>(HRSETTINGS.LEAVETYPE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -63,7 +65,7 @@ export default function LeaveType() {
                         pageSize: res?.per_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
@@ -100,6 +102,7 @@ export default function LeaveType() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
@@ -129,6 +132,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<ILeaveType>()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -139,17 +143,21 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
     }, [selectedData])
 
     function onFinish(values: ILeaveType) {
+        setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(HRSETTINGS.LEAVETYPE.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(HRSETTINGS.LEAVETYPE.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Leave Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Leave Type Name"
                 name="type"
@@ -170,10 +178,10 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
 
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

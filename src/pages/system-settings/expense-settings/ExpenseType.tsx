@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm, Switch } from 'antd'
 import Modal from 'antd/es/modal/Modal'
-import { ColumnsType } from "antd/es/table"
+import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
@@ -16,6 +16,7 @@ export default function ExpenseType() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -50,7 +51,7 @@ export default function ExpenseType() {
             title: 'Active',
             key: 'is_active',
             dataIndex: 'is_active',
-            render: (_, record) => record?.is_active ? 'ACTIVE' : 'INACTIVE'
+            render: (_, record) => Number(record?.is_active) ? 'ACTIVE' : 'INACTIVE'
         },
         {
             title: 'Description',
@@ -72,6 +73,7 @@ export default function ExpenseType() {
     ]
 
     const fetchData = (args?: IArguments) => {
+        setLoading(true)
         GET<ExpenseTypeRes>(EXPENSESETTINGS.EXPENSETYPE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -83,8 +85,19 @@ export default function ExpenseType() {
                         current: res?.current_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
+
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(EXPENSESETTINGS.EXPENSETYPE.DELETE, id)
@@ -105,13 +118,15 @@ export default function ExpenseType() {
         <Card title='Expense Types'>
             <TabHeader
                 name='expense types'
-                handleSearch={() => { }}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
+                tableParams={tableParams}
                 dataList={data}
-                onChange={(evt) => console.log(evt)}
+                onChange={onChange}
             />
             <ExpenseTypeModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}
@@ -137,6 +152,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function ExpenseTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IExpenseType>()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -147,17 +163,21 @@ function ExpenseTypeModal({ title, selectedData, isModalOpen, handleCancel, fetc
     }, [selectedData])
 
     function onFinish(values: IExpenseType) {
+        setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(EXPENSESETTINGS.EXPENSETYPE.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(EXPENSESETTINGS.EXPENSETYPE.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Expense Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Expense Type"
                 name="name"
@@ -215,10 +235,10 @@ function ExpenseTypeModal({ title, selectedData, isModalOpen, handleCancel, fetc
 
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

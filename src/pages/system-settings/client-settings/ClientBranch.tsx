@@ -176,7 +176,7 @@ function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel, fet
     }
 
     return <Modal title={`${title} - Client Branch`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Client Branch"
                 name="branch_name"
