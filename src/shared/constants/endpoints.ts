@@ -243,6 +243,13 @@ export const useEndpoints = () => {
             POST: '',
             PUT: '',
             DELETE: ''
+        },
+        SALARYADJUSTMENT: {
+            LISTS: '/options/salary_adjustments',
+            GET: '/salary_adjustments',
+            POST: '/salary_adjustments',
+            PUT: '/salary_adjustments',
+            DELETE: '/salary_adjustments',
         }
     }
     return [ENDPOINTS]

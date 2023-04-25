@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react"
 import { Button, Col, DatePicker, Form as AntDForm, Input, Modal, Select, Space } from "antd"
-import { ColumnsType } from "antd/es/table"
+import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { AiOutlineCalendar } from 'react-icons/ai'
 import { Action, MainHeader, Table, Form } from "../components"
 import { renderTitle } from "../shared/utils/utilities"
 import dayjs from "dayjs"
+import { useAxios } from "../shared/lib/axios"
+import { useEndpoints } from "../shared/constants"
+import { IArguments, TableParams } from "../shared/interfaces"
 
 interface ISalaryAdjustment extends Partial<{ id: string }> {
     task_activity: string[]
@@ -15,10 +18,25 @@ interface ISalaryAdjustment extends Partial<{ id: string }> {
     description: string;
 }
 
+const { GET, POST, PUT, DELETE } = useAxios()
+const [{ SALARYADJUSTMENT }] = useEndpoints()
+
 export default function SalaryAdjustment() {
     renderTitle('Salary Adjustment')
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<ISalaryAdjustment[]>([])
     const [selectedData, setSelectedData] = useState<ISalaryAdjustment | undefined>(undefined)
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(function fetch() {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<ISalaryAdjustment> = [
         {
@@ -65,55 +83,39 @@ export default function SalaryAdjustment() {
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
-
-    const data: ISalaryAdjustment[] = [
-        {
-            id: '1',
-            task_activity: ['John Brown', 'John Brown', 'John Brown'],
-            task_type: ['John Brown', 'John Brown', 'John Brown'],
-            sprint_name: ['John Brown', 'John Brown', 'John Brown'],
-            date: '2023/03/20',
-            manhours: '7',
-            description: 'New York No. 1 Lake Park',
-        },
-        {
-            id: '2',
-            task_activity: ['Jim Green', 'Jim Green', 'Jim Green'],
-            task_type: ['Jim Green', 'Jim Green', 'Jim Green'],
-            sprint_name: ['Jim Green', 'Jim Green', 'Jim Green'],
-            date: '2023/03/22',
-            manhours: '8',
-            description: 'London No. 1 Lake Park',
-        },
-        {
-            id: '3',
-            task_activity: ['Joe Black', 'Jim Green', 'Jim Green'],
-            task_type: ['Joe Black', 'Jim Green', 'Jim Green'],
-            sprint_name: ['Joe Black', 'Jim Green', 'Jim Green'],
-            date: '2023/03/28',
-            manhours: '10',
-            description: 'Sydney No. 1 Lake Park',
-        },
-        {
-            id: '4',
-            task_activity: ['Disabled User'],
-            task_type: ['Disabled User'],
-            sprint_name: ['Disabled User'],
-            date: '2023/04/09',
-            manhours: '7',
-            description: 'Sydney No. 1 Lake Park',
-        },
     ]
 
-    function fetchData(search: string) {
-        console.log(search)
+    const fetchData = (args?: IArguments) => {
+        setLoading(true)
+        GET<any>(SALARYADJUSTMENT.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                        pageSize: res?.per_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
     }
 
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
-        console.log(id)
+        DELETE(SALARYADJUSTMENT.DELETE, id)
+            .finally(fetchData)
     }
 
     function handleEdit(data: ISalaryAdjustment) {

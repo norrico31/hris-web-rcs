@@ -14,6 +14,7 @@ export default function AuditLogs() {
     const [data, setData] = useState<IAuditLogs[]>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
+    const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
@@ -80,6 +81,7 @@ export default function AuditLogs() {
     ]
 
     const fetchData = (args?: IArguments) => {
+        setLoading(true)
         GET<AuditLogsRes>(ADMINSETTINGS.AUDITLOGS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -91,7 +93,7 @@ export default function AuditLogs() {
                         current: res?.current_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
@@ -112,6 +114,7 @@ export default function AuditLogs() {
                 handleSearch={handleSearch}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}

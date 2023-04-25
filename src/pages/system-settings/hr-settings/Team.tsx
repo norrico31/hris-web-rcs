@@ -11,8 +11,6 @@ import { Alert } from '../../../shared/lib/alert'
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { HRSETTINGS: { TEAMS, DEPARTMENT } } }] = useEndpoints()
 
-// TODO: add Department Lists
-
 export default function Team() {
     const [data, setData] = useState<ITeam[]>([])
     const [selectedData, setSelectedData] = useState<ITeam | undefined>(undefined)

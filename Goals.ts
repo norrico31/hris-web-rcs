@@ -8,10 +8,8 @@
 // ==================================
 // ==================================
 
-// TODOS
-// PENDING: Audit Logs (Page)
+// TODO: Salary Adjustments (Page)
 // PENDING: Leave (Page)
-// PENDING: Salary Adjustments (Page)
 
 
 // PENDING: download endpoints
