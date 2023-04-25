@@ -244,10 +244,10 @@ function SalaryAdjustmentModal({ title, selectedData, isModalOpen, handleCancel 
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button id={selectedData != undefined ? 'Edit' : 'Create'} type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button id='cancel' type="primary" onClick={handleCancel}>
                         Cancel
                     </Button>
                 </Space>

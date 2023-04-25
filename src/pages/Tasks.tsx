@@ -301,10 +301,10 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
+                    <Button id={selectedData != undefined ? 'Edit' : 'Create'} type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
+                    <Button id='cancel' type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

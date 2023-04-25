@@ -231,6 +231,20 @@ export const useEndpoints = () => {
                 PUT: '/memo/show/',
                 DELETE: '/memo/show/'
             },
+            GOVERNMENTDOCS: {
+                PAGIBIG: {
+                    PUT: '/employee_pagibigs/'
+                },
+                PHILHEALTH: {
+                    PUT: '/employee_philhealths/'
+                },
+                TIN: {
+                    PUT: '/employee_tins/'
+                },
+                SSS: {
+                    PUT: '/employee_sss/'
+                },
+            }
         },
         TASKS: {
             GET: '/tasks',
