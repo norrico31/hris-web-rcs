@@ -101,6 +101,10 @@ export const routes = createBrowserRouter([
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Users /></Suspense>
             },
             {
+                path: 'auditlogs',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><AuditLogs /></Suspense>
+            },
+            {
                 path: 'systemsettings',
                 element: <Outlet />,
                 children: [

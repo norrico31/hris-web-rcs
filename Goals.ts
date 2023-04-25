@@ -9,8 +9,9 @@
 // ==================================
 
 // TODOS
-// PENDING: Edit => Update
-// PENDING: /users
+// PENDING: Audit Logs (Page)
+// PENDING: Leave (Page)
+// PENDING: Salary Adjustments (Page)
 
 
 // PENDING: download endpoints

@@ -560,8 +560,8 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
             try {
                 const clientPromise = await axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
                 setClients(clientPromise?.data ?? [])
-            } catch (error) {
-                console.error('error fetching clients: ', error)
+            } catch (error: any) {
+                throw new Error(error)
             }
         })()
         return () => {
@@ -570,9 +570,9 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
     }, [stepTwoInputs])
 
     async function onChange(id: string) {
-        console.log(id)
         setClientId(id)
         try {
+            if (id == null || id == undefined || id == '') return
             const res = await axiosClient.get(CLIENTSETTINGS.CLIENTBRANCH.LISTS + '?client_id=' + id)
             setClientBranches(res?.data ?? [])
         } catch (error) {
@@ -607,13 +607,14 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                 <FormItem
                     name='client_branch_id'
                     label="Client Branch"
-                // required
-                // rules={[{ required: true, message: 'Please select client branch!' }]}
+                    required
+                    rules={[{ required: true, message: 'Please select client branch!' }]}
                 >
                     <Select
                         placeholder='Select client branch...'
                         allowClear
                         showSearch
+                        disabled={!clientBranches.length}
                         optionFilterProp="children"
                     >
                         {clientBranches.map((clientBranch) => (
@@ -697,7 +698,12 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
     return <Form form={form} onFinish={onFinish}>
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col>
-                <FormItem name='salary_rate_id' label="Salary Rate" required rules={[{ required: true, message: 'Please enter salary rate!' }]}>
+                <FormItem
+                    name='salary_rate_id'
+                    label="Salary Rate"
+                // required 
+                // rules={[{ required: true, message: 'Please enter salary rate!' }]}
+                >
                     <Select
                         placeholder='Select salary rate...'
                         allowClear
