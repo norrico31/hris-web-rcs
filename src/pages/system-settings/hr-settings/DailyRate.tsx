@@ -31,42 +31,50 @@ export default function DailyRate() {
             title: 'Daily Rate Code',
             key: 'daily_rate_code',
             dataIndex: 'daily_rate_code',
+            width: 120
         },
         {
             title: 'Daily Rate Name',
             key: 'name',
             dataIndex: 'name',
+            width: 200
         },
         {
             title: 'Daily rate per Hour',
             key: 'daily_rate_per_hour',
             dataIndex: 'daily_rate_per_hour',
+            width: 200
         },
         {
             title: 'Overtime Rate per Hour',
             key: 'overtime_rate_per_hour',
             dataIndex: 'overtime_rate_per_hour',
+            width: 200
         },
         {
             title: 'Night Differential Rate per Hour',
             key: 'night_diff_rate_per_hour',
             dataIndex: 'night_diff_rate_per_hour',
+            width: 200
         },
         {
             title: 'Night Differential Rate per Hour (OVERTIME)',
             key: 'night_diff_ot_rate_per_hour',
             dataIndex: 'night_diff_ot_rate_per_hour',
+            width: 200
         },
         {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
+            width: 120
         },
         {
             title: 'Active',
             key: 'is_active',
             dataIndex: 'is_active',
-            render: (_, record) => Number(record?.is_active) ? 'ACTIVE' : 'INACTIVE'
+            render: (_, record) => Number(record?.is_active) ? 'ACTIVE' : 'INACTIVE',
+            width: 120
         },
         {
             title: 'Action',
@@ -78,7 +86,8 @@ export default function DailyRate() {
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
-            />
+            />,
+            width: 200
         },
     ]
 
@@ -140,7 +149,7 @@ export default function DailyRate() {
                 onChange={onChange}
             />
             <DailyRateModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
@@ -209,26 +218,34 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
             <FormItem
                 label="Daily rate per Hour"
                 name="daily_rate_per_hour"
+                required
+                rules={[{ required: true, message: 'Please enter daily rate per hour!' }]}
             >
-                <Input type='number' placeholder='Enter rate...' />
+                <Input type='number' placeholder='Enter daily rate per hour...' />
             </FormItem>
             <FormItem
                 label="Overtime Rate per Hour"
                 name="overtime_rate_per_hour"
+                required
+                rules={[{ required: true, message: 'Please enter overtime rate hour!' }]}
             >
                 <Input type='number' placeholder='Enter overtime rate hour...' />
             </FormItem>
             <FormItem
                 label="Night Differential Rate per Hour"
                 name="night_diff_rate_per_hour"
+                required
+                rules={[{ required: true, message: 'Please enter night differential rate per hour!' }]}
             >
-                <Input type='number' placeholder='Enter overtime rate hour...' />
+                <Input type='number' placeholder='Enter night differential rate per hour...' />
             </FormItem>
             <FormItem
                 label="Night Differential Overtime Rate per Hour"
                 name="night_diff_ot_rate_per_hour"
+                required
+                rules={[{ required: true, message: 'Please enter night differential overtime rate per hour!' }]}
             >
-                <Input type='number' placeholder='Enter overtime rate hour...' />
+                <Input type='number' placeholder='Enter night differential overtime rate per hour...' />
             </FormItem>
             <FormItem
                 label="Active"
@@ -247,7 +264,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        {selectedData != undefined ? 'Edit' : 'Create'}
+                        {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
                     <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel

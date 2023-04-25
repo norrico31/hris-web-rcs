@@ -25,9 +25,9 @@ export default function EmployeeSalary() {
                 bordered
                 column={{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }}
             >
-                <Descriptions.Item label="Salary">{employeeInfo?.salary.gross_salary}</Descriptions.Item>
-                <Descriptions.Item label="Salary Rate">{employeeInfo?.salary.salary_rate.rate}</Descriptions.Item>
-                <Descriptions.Item label="Description">{employeeInfo?.salary.description}</Descriptions.Item>
+                <Descriptions.Item label="Salary">{employeeInfo?.salary?.gross_salary}</Descriptions.Item>
+                <Descriptions.Item label="Salary Rate">{employeeInfo?.salary?.salary_rate?.rate}</Descriptions.Item>
+                <Descriptions.Item label="Description">{employeeInfo?.salary?.description}</Descriptions.Item>
             </Descriptions>
         </Card>
     )

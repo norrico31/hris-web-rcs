@@ -92,7 +92,7 @@ export default function EmployeeBenefits() {
                 onChange={(evt) => console.log(evt)}
             />
             <EmployeeBenefitsModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
@@ -191,7 +191,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
             <Item style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">
-                        {selectedData != undefined ? 'Edit' : 'Create'}
+                        {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
                     <Button type="primary" onClick={handleCancel}>
                         Cancel

@@ -22,7 +22,7 @@ export default function EmployeeSalaryHistory() {
             title: 'Salary Rate',
             key: 'salary_rate',
             dataIndex: 'salary_rate',
-            render: (_, record) => record.salary_rate.rate
+            render: (_, record) => record?.salary_rate?.rate
         },
         {
             title: 'Description',

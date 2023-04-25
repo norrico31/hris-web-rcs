@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import { useAxios } from '../../../shared/lib/axios'
+import axiosClient, { useAxios } from '../../../shared/lib/axios'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useEndpoints } from '../../../shared/constants'
-import { IArguments, TableParams, ITeam, TeamRes } from '../../../shared/interfaces'
+import { IArguments, TableParams, ITeam, TeamRes, IDepartment } from '../../../shared/interfaces'
+import { Alert } from '../../../shared/lib/alert'
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ SYSTEMSETTINGS: { HRSETTINGS: { TEAMS } } }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { HRSETTINGS: { TEAMS, DEPARTMENT } } }] = useEndpoints()
 
 // TODO: add Department Lists
 
@@ -83,6 +84,7 @@ export default function Team() {
 
     function handleDelete(id: string) {
         DELETE(TEAMS.DELETE, id)
+            .catch(err => Alert.warning('Delete Unsuccessful', err?.response?.data?.message))
             .finally(fetchData)
     }
 
@@ -111,7 +113,7 @@ export default function Team() {
                 onChange={handleChange}
             />
             <TeamModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 fetchData={fetchData}
@@ -133,6 +135,7 @@ const { Item: FormItem, useForm } = AntDForm
 
 function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITeam>()
+    const [departments, setDepartments] = useState<IDepartment[]>([])
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
@@ -140,6 +143,12 @@ function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }
             form.setFieldsValue({ ...selectedData })
         } else {
             form.resetFields(undefined)
+        }
+        const controller = new AbortController();
+        axiosClient(DEPARTMENT.LISTS, { signal: controller.signal })
+            .then((res) => setDepartments(res?.data ?? []));
+        return () => {
+            controller.abort()
         }
     }, [selectedData])
 
@@ -167,13 +176,25 @@ function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }
             >
                 <Input placeholder='Enter team name...' />
             </FormItem>
+            <FormItem
+                label="Departments"
+                name="department_id"
+                required
+                rules={[{ required: true, message: 'Please select department!' }]}
+            >
+                <Select placeholder='Select team...' optionFilterProp="children" allowClear showSearch>
+                    {departments.map((dep) => (
+                        <Select.Option value={dep.id} key={dep.id} style={{ color: '#777777' }}>{dep.name}</Select.Option>
+                    ))}
+                </Select>
+            </FormItem>
             <FormItem name="description" label="Description">
                 <Input placeholder='Enter Description...' />
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        {selectedData != undefined ? 'Edit' : 'Create'}
+                        {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
                     <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel

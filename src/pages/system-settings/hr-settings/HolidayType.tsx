@@ -115,7 +115,7 @@ export default function HolidayType() {
                 onChange={handleChange}
             />
             <HolidayTypeModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 fetchData={fetchData}
@@ -191,7 +191,7 @@ function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleC
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        {selectedData != undefined ? 'Edit' : 'Create'}
+                        {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
                     <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel

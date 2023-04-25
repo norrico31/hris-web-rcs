@@ -8,7 +8,7 @@ export interface IClientAdjustment {
     created_at: string
     deleted_at: string | null
     id: string
-    is_active: string
+    is_active: number
     updated_at: string
     description?: string
 }

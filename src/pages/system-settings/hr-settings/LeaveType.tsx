@@ -109,7 +109,7 @@ export default function LeaveType() {
                 onChange={handleChange}
             />
             <LeaveTypeModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
@@ -179,7 +179,7 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        {selectedData != undefined ? 'Edit' : 'Create'}
+                        {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
                     <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel

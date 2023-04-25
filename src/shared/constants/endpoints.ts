@@ -176,7 +176,9 @@ export const useEndpoints = () => {
                 GET: '/users',
                 POST: '/users/',
                 PUT: '/users/',
-                DELETE: '/users/'
+                DELETE: '/users/',
+                ACTIVATE: '/users/internal-user-activate/',
+                DEACTIVATE: '/users/user-deactivate/'
             },
         },
         EMPLOYEE201: {

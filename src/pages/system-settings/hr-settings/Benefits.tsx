@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Form as AntDForm, Modal, Input, DatePicker, Space, Button, Select } from 'antd'
+import { Form as AntDForm, Modal, Input, DatePicker, Space, Button, Select, Radio } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import dayjs from 'dayjs'
 import { TabHeader, Table, Form, Card, Action } from '../../../components'
@@ -36,6 +36,7 @@ export default function Benefits() {
             title: 'Payrol Calculation',
             key: 'for_payroll_calculation',
             dataIndex: 'for_payroll_calculation',
+            render: (_, record) => Number(record?.for_payroll_calculation) ? 'True' : 'False'
         },
         {
             title: 'Status',
@@ -119,7 +120,7 @@ export default function Benefits() {
                 onChange={onChange}
             />
             <BenefitsModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
@@ -184,9 +185,12 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 label="Payroll Calculation"
                 name="for_payroll_calculation"
                 required
-                rules={[{ required: true, message: 'Please payment calculation!' }]}
+                rules={[{ required: true, message: 'Please select payment calculation!' }]}
             >
-                <Input type='number' placeholder='Enter payment calculation...' />
+                <Radio.Group>
+                    <Radio value="0">False</Radio>
+                    <Radio value="1">True</Radio>
+                </Radio.Group>
             </Item>
             <Item
                 label="Status"
@@ -210,7 +214,7 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
             <Item style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        {selectedData != undefined ? 'Edit' : 'Create'}
+                        {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
                     <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel

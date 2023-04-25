@@ -29,8 +29,8 @@ export default function ClientAdjustment() {
     const columns: ColumnsType<IClientAdjustment> = [
         {
             title: 'Client Adjustment',
-            key: 'branch_name',
-            dataIndex: 'branch_name',
+            key: 'name',
+            dataIndex: 'name',
         },
         {
             title: 'Client',
@@ -42,6 +42,7 @@ export default function ClientAdjustment() {
             title: 'Status',
             key: 'is_active',
             dataIndex: 'is_active',
+            render: (_, record) => Number(record?.is_active) ? 'ACTIVE' : 'INACTIVE'
         },
         {
             title: 'Description',
@@ -120,7 +121,7 @@ export default function ClientAdjustment() {
                 onChange={onChange}
             />
             <ClientAdjustmentModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
@@ -147,7 +148,7 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
 
     useEffect(() => {
         if (selectedData != undefined) {
-            form.setFieldsValue({ ...selectedData })
+            form.setFieldsValue({ ...selectedData, is_active: Number(selectedData?.is_active) })
         } else {
             form.resetFields(undefined)
         }
@@ -186,7 +187,7 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Client Adjustment"
-                name="branch_name"
+                name="name"
                 required
                 rules={[{ required: true, message: 'Please enter client branch adjustment name!' }]}
             >
@@ -234,7 +235,7 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        {selectedData != undefined ? 'Edit' : 'Create'}
+                        {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
                     <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel

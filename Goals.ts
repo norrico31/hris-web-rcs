@@ -14,3 +14,6 @@
 
 
 // PENDING: download endpoints
+
+// https
+// lt --subdomain staging-hrportal.redcoresolutions --port 8000

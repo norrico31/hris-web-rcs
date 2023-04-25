@@ -140,7 +140,7 @@ export default function EmployeeFiles() {
             />
             <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} />
             <EmployeeModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
                 fetchData={fetchData}
@@ -558,11 +558,8 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
         const controller = new AbortController();
         (async () => {
             try {
-                const clientPromise = axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
-                const clientBranchPromise = axiosClient(CLIENTSETTINGS.CLIENTBRANCH.LISTS, { signal: controller.signal })  // TODO: filter by client_id
-                const [clientRes, clientBranchRes] = await Promise.allSettled([clientPromise, clientBranchPromise]) as any
-                setClients(clientRes?.value.data ?? [])
-                setClientBranches(clientBranchRes?.value.data ?? [])
+                const clientPromise = await axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
+                setClients(clientPromise?.data ?? [])
             } catch (error) {
                 console.error('error fetching clients: ', error)
             }
@@ -572,9 +569,15 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
         }
     }, [stepTwoInputs])
 
-    function onChange(id: string) {
+    async function onChange(id: string) {
         console.log(id)
         setClientId(id)
+        try {
+            const res = await axiosClient.get(CLIENTSETTINGS.CLIENTBRANCH.LISTS + '?client_id=' + id)
+            setClientBranches(res?.data ?? [])
+        } catch (error) {
+            return Promise.reject(error)
+        }
     }
 
     function onFinish(values: Record<string, any>) {

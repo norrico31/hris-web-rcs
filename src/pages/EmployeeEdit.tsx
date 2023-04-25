@@ -12,7 +12,7 @@ const [{ EMPLOYEE201: { USERPROFILE } }] = useEndpoints()
 const { GET } = useAxios()
 
 export default function EmployeeEdit() {
-    renderTitle('Employee Edit')
+    renderTitle('Employee Update')
     const { employeeId } = useParams()
     let { pathname } = useLocation()
     const navigate = useNavigate()
@@ -36,7 +36,7 @@ export default function EmployeeEdit() {
     const pathKey = pathname.split('/').pop()
     return <>
         <MainHeader>
-            <h1 className='color-white'>Employee Edit - {data?.full_name}</h1>
+            <h1 className='color-white'>Employee Update - {data?.full_name}</h1>
         </MainHeader>
         <Tabs
             destroyInactiveTabPane

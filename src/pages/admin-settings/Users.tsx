@@ -9,7 +9,7 @@ import { IArguments, IUser, UserRes, TableParams } from '../../shared/interfaces
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
-// TODO
+
 export default function Users() {
     const [data, setData] = useState<IUser[]>([])
     const [selectedData, setSelectedData] = useState<IUser | undefined>(undefined)
@@ -65,6 +65,14 @@ export default function Users() {
             })
     }
 
+    function userActivation(url: string, id: string) {
+        POST(url + id, {})
+            .then((res) => {
+                console.log(res)
+            })
+            .finally(fetchData)
+    }
+
     function handleDelete(id: string) {
         DELETE(ADMINSETTINGS.USERS.DELETE, id)
             .finally(fetchData)
@@ -93,7 +101,7 @@ export default function Users() {
                 onChange={(evt) => console.log(evt)}
             />
             <UserModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
@@ -138,12 +146,36 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
     return <Modal title={`${title} - User`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish}>
             <FormItem
-                label="User Name"
-                name="name"
+                label="First Name"
+                name="first_name"
                 required
-                rules={[{ required: true, message: 'Please enter user name!' }]}
+                rules={[{ required: true, message: 'Please enter first name!' }]}
             >
-                <Input placeholder='Enter user name...' />
+                <Input placeholder='Enter first name...' />
+            </FormItem>
+            <FormItem
+                label="Middle Name"
+                name="middle_name"
+                required
+                rules={[{ required: true, message: 'Please enter middle name!' }]}
+            >
+                <Input placeholder='Enter middle name...' />
+            </FormItem>
+            <FormItem
+                label="Last Name"
+                name="last_name"
+                required
+                rules={[{ required: true, message: 'Please enter last name!' }]}
+            >
+                <Input placeholder='Enter last name...' />
+            </FormItem>
+            <FormItem
+                label="Email Address"
+                name="email"
+                required
+                rules={[{ required: true, message: 'Please enter email address!' }]}
+            >
+                <Input type='email' placeholder='Enter email address...' />
             </FormItem>
             <FormItem
                 name="description"
@@ -154,7 +186,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">
-                        {selectedData != undefined ? 'Edit' : 'Create'}
+                        {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
                     <Button type="primary" onClick={handleCancel}>
                         Cancel
