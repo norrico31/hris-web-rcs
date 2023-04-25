@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Space, Button, Input, Form as AntDForm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
-import { ColumnsType } from "antd/es/table"
+import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../components"
 import { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
@@ -65,6 +65,17 @@ export default function Roles() {
             })
     }
 
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+
     function handleDelete(id: string) {
         DELETE(ADMINSETTINGS.ROLES.DELETE, id)
             .finally(fetchData)
@@ -84,13 +95,14 @@ export default function Roles() {
         <Card title='Roles'>
             <TabHeader
                 name='role'
-                handleSearch={() => null}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 columns={columns}
                 dataList={data}
-                onChange={(evt) => console.log(evt)}
+                tableParams={tableParams}
+                onChange={onChange}
             />
             <RoleModal
                 title={selectedData != undefined ? 'Update' : 'Create'}

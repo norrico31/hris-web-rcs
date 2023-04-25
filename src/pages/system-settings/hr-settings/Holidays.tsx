@@ -172,8 +172,8 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 const dailyRatePromise = axiosClient(SYSTEMSETTINGS.HRSETTINGS.DAILYRATE.LISTS, { signal: controller.signal })
                 const [holidayRes, dailyRateRes] = await Promise.allSettled([holidayPromise, dailyRatePromise]) as any
                 setLists({
-                    dailyRates: holidayRes?.value?.data ?? [],
-                    holidayTypes: dailyRateRes?.value?.data ?? []
+                    holidayTypes: holidayRes?.value?.data ?? [],
+                    dailyRates: dailyRateRes?.value?.data ?? []
                 })
             } catch (error) {
                 return error

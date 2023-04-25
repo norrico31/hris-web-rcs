@@ -180,6 +180,9 @@ export const useEndpoints = () => {
                 ACTIVATE: '/users/internal-user-activate/',
                 DEACTIVATE: '/users/user-deactivate/'
             },
+            AUDITLOGS: {
+                GET: '/audit_logs'
+            }
         },
         EMPLOYEE201: {
             GET: '/employees',

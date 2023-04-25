@@ -8,6 +8,7 @@ export * from './TimeKeeping'
 
 export * from './admin-settings/Role'
 export * from './admin-settings/Users'
+export * from './admin-settings/AuditLogs'
 
 export * from './system-settings/tasks-settings/TaskActivities'
 export * from './system-settings/tasks-settings/TaskTypes'

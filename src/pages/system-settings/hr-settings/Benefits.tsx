@@ -33,10 +33,10 @@ export default function Benefits() {
             dataIndex: 'name',
         },
         {
-            title: 'Payrol Calculation',
+            title: 'Payroll Calculation',
             key: 'for_payroll_calculation',
             dataIndex: 'for_payroll_calculation',
-            render: (_, record) => Number(record?.for_payroll_calculation) ? 'True' : 'False'
+            render: (_, record) => Number(record?.for_payroll_calculation) ? 'Yes' : 'No'
         },
         {
             title: 'Status',
@@ -188,8 +188,8 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 rules={[{ required: true, message: 'Please select payment calculation!' }]}
             >
                 <Radio.Group>
-                    <Radio value="0">False</Radio>
-                    <Radio value="1">True</Radio>
+                    <Radio value="0">No</Radio>
+                    <Radio value="1">Yes</Radio>
                 </Radio.Group>
             </Item>
             <Item

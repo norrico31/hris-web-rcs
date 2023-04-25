@@ -554,7 +554,10 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
     useEffect(() => {
         if (stepTwoInputs) {
             form.setFieldsValue({ ...stepTwoInputs })
+            setClientId(stepTwoInputs.client_id)
+            onChange(stepTwoInputs.client_id)
         }
+
         const controller = new AbortController();
         (async () => {
             try {
@@ -582,6 +585,7 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
 
     function onFinish(values: Record<string, any>) {
         setStepTwoInputs(formValues(values) as IStepTwo)
+        setClientId('')
         stepTwo()
     }
 
