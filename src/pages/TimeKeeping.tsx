@@ -43,10 +43,6 @@ export default function TimeKeeping() {
             <MainHeader>
                 <Space wrap>
                     <h1 className='color-white'>Time Keeping</h1>
-                    {/* <Col>
-                        <h3 className="color-secondary">{currentDay}</h3>
-                        <h2 className="color-secondary">{currentDate}</h2>
-                    </Col> */}
                 </Space>
                 <Col>
                     <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>

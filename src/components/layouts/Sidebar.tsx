@@ -10,7 +10,11 @@ import { BiTimeFive } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
 
-export default function Sidebar() {
+type Props = {
+    onSelect: () => void
+}
+
+export default function Sidebar({ onSelect }: Props) {
     let location = useLocation()
     const [locationKey, setLocationKey] = useState('')
 
@@ -35,6 +39,7 @@ export default function Sidebar() {
             activeKey={location.pathname}
             selectedKeys={[locationKey]}
             defaultSelectedKeys={[location.pathname]}
+            onSelect={onSelect}
             items={menus}
         />
     )

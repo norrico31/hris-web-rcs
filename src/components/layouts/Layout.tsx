@@ -25,6 +25,8 @@ export default function Layout() {
         }
         return false
     })
+    const [breakpoint, setBreakpoint] = useState(window.screen.width >= 768)
+    const [collapsedWidth, setCollapsedWidth] = useState(window.screen.width >= 768 ? 80 : 0)
 
     useEffect(() => {
         let cleanUp = false;
@@ -42,13 +44,27 @@ export default function Layout() {
         }
     }, [])
 
+    const onBreakpoint = () => {
+        if (!breakpoint) {
+            setCollapsedWidth(0)
+            setCollapsed(true)
+        } else {
+            setCollapsedWidth(80)
+        }
+        setBreakpoint(!breakpoint)
+    }
+
+    function handleSelect() {
+        return breakpoint && setCollapsed(true)
+    }
+
     return (
-        <AntdLayout style={{ minHeight: '95vh' }}>
-            <Sider trigger={null} collapsible collapsed={collapsed} width={280}>
+        <StyledLayout style={{ minHeight: '95vh' }}>
+            <Sider trigger={null} collapsible collapsed={collapsed} width={280} breakpoint='md' collapsedWidth={collapsedWidth} onBreakpoint={onBreakpoint}>
                 <div style={{ height: 64, padding: '.3rem', background: '#fff', display: 'grid', placeItems: 'center' }}>
                     <Logo collapsed={collapsed} />
                 </div>
-                <Sidebar />
+                <Sidebar onSelect={handleSelect} />
             </Sider>
             <AntdLayout>
                 <Header collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -56,9 +72,23 @@ export default function Layout() {
                     <Outlet />
                 </Content>
             </AntdLayout>
-        </AntdLayout>
+        </StyledLayout>
     );
 }
+
+const StyledLayout = styled(AntdLayout)`
+    @media(max-width: 767px) {
+        .ant-layout-sider {
+            position: absolute;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        .ant-layout-header {
+            z-index: 2;
+        }
+    }
+`
 
 const Content = styled(AntDContent)`
     margin: 24px 16px;

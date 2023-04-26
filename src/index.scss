@@ -124,3 +124,7 @@ h1 {
 .ant-tabs-nav-list {
     flex-wrap: wrap;
 }
+.ant-picker-panel .ant-picker-body td,
+.ant-picker-calendar-header .ant-picker-calendar-mode-switch >label {
+    z-index: 0;
+}
