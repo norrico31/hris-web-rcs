@@ -64,11 +64,11 @@ const MenuContainer = styled(AntdMenu)`
 type MenuItem = Required<MenuProps>['items'][number]
 
 const menus = [
-    getItemLinks(
-        <Link to='/dashboard' id="dashboard">Dashboard</Link>,
-        '/dashboard',
-        <AiFillAppstore />
-    ),
+    // getItemLinks(
+    //     <Link to='/dashboard' id="dashboard">Dashboard</Link>,
+    //     '/dashboard',
+    //     <AiFillAppstore />
+    // ),
     getItemLinks(
         <Link to='/timekeeping'>Time Keeping</Link>,
         '/timekeeping',

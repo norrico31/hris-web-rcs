@@ -139,14 +139,14 @@ export default function SalaryAdjustment() {
                 </Col>
                 <Col>
                     <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>
-                        Create Adjustment
+                        Create
                         <AiOutlineCalendar />
                     </Button>
                 </Col>
             </MainHeader>
             <Table columns={columns} dataList={data} />
             <SalaryAdjustmentModal
-                title={selectedData != undefined ? 'Edit' : 'Create'}
+                title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
@@ -244,7 +244,7 @@ function SalaryAdjustmentModal({ title, selectedData, isModalOpen, handleCancel 
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button id={selectedData != undefined ? 'Edit' : 'Create'} type="primary" htmlType="submit">
+                    <Button id={selectedData != undefined ? 'Update' : 'Create'} type="primary" htmlType="submit">
                         {selectedData != undefined ? 'Edit' : 'Create'}
                     </Button>
                     <Button id='cancel' type="primary" onClick={handleCancel}>

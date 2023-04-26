@@ -5,7 +5,7 @@ import { AiOutlineCalendar } from 'react-icons/ai'
 import { Col2 } from './TimeKeeping'
 import dayjs from 'dayjs'
 import styled from 'styled-components'
-import { renderTitle } from '../shared/utils/utilities';
+import { renderTitle } from '../shared/utils/utilities'
 
 interface ILeave extends Partial<{ id: string }> {
     task_activity: string[]

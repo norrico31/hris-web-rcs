@@ -19,9 +19,9 @@ export default function TimeKeeping() {
     const { user } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
 
-    useEffect(() => {
-        fetchData()
-    }, [])
+    // useEffect(() => {
+    //     fetchData()
+    // }, [])
 
     const currentDay = dayjs().format('dddd')
     const currentDate = dayjs().format('MMMM DD')

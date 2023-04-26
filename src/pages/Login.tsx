@@ -17,7 +17,7 @@ export default function Login() {
     const { token, setToken } = useAuthContext()
     const [messageApi, contextHolder] = useMessage()
 
-    if (token != undefined) return <Navigate to='/dashboard' />
+    if (token != undefined) return <Navigate to='/timekeeping' />
 
     const onFinish = async (values: Record<string, string>) => {
         //! GUARD CLAUSE (onSubmit || onFinish)
