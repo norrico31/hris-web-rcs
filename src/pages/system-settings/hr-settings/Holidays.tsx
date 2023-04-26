@@ -253,7 +253,7 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 required
                 rules={[{ required: true, message: 'Please locally observed!' }]}
             >
-                <Select placeholder='Enter locally observed...'>
+                <Select placeholder='Enter locally observed...' optionFilterProp="children" showSearch allowClear>
                     <Select.Option value='yes' style={{ color: '#777777' }}>Yes</Select.Option>
                     <Select.Option value='no' style={{ color: '#777777' }}>No</Select.Option>
                 </Select>

@@ -169,8 +169,6 @@ function LeaveStatusesModal({ title, selectedData, isModalOpen, handleCancel, fe
             <FormItem
                 name="description"
                 label="Description"
-                required
-                rules={[{ required: true, message: 'Please enter description!' }]}
             >
                 <Input placeholder='Enter Description...' />
             </FormItem>

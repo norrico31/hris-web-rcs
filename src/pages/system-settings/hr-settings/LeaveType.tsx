@@ -166,16 +166,12 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
             >
                 <Input placeholder='Enter leave type name...' />
             </FormItem>
-
             <FormItem
                 name="description"
                 label="Description"
-                required
-                rules={[{ required: true, message: 'Please enter description!' }]}
             >
                 <Input placeholder='Enter Description...' />
             </FormItem>
-
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>

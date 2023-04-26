@@ -180,7 +180,6 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
             >
                 <Input placeholder='Enter benefit...' />
             </Item>
-            {/* TODO: radio button (true/false) */}
             <Item
                 label="Payroll Calculation"
                 name="for_payroll_calculation"

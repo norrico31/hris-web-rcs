@@ -166,14 +166,12 @@ function PositionModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
             >
                 <Input placeholder='Enter position name...' />
             </FormItem>
-
             <FormItem
                 name="description"
                 label="Description"
             >
                 <Input placeholder='Enter Description...' />
             </FormItem>
-
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>

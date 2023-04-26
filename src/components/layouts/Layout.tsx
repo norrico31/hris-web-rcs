@@ -25,8 +25,8 @@ export default function Layout() {
         }
         return false
     })
-    const [breakpoint, setBreakpoint] = useState(window.screen.width >= 768)
-    const [collapsedWidth, setCollapsedWidth] = useState(window.screen.width >= 768 ? 80 : 0)
+    const [breakpoint, setBreakpoint] = useState(window.innerWidth >= 768)
+    const [collapsedWidth, setCollapsedWidth] = useState(window.innerWidth >= 768 ? 80 : 0)
 
     useEffect(() => {
         let cleanUp = false;

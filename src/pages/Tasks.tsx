@@ -240,6 +240,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             placeholder='Select task activity'
                             allowClear
                             showSearch
+                            optionFilterProp="children"
                         >
                             {tasks.activities?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -260,6 +261,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             placeholder='Select task type'
                             allowClear
                             showSearch
+                            optionFilterProp="children"
                         >
                             {tasks.types?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -280,6 +282,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             placeholder='Select sprint'
                             allowClear
                             showSearch
+                            optionFilterProp="children"
                         >
                             {tasks.sprints?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>

@@ -165,14 +165,12 @@ function EmployeeStatusModal({ title, selectedData, isModalOpen, handleCancel, f
             >
                 <Input placeholder='Enter employee status name...' />
             </FormItem>
-
             <FormItem
                 name="description"
                 label="Description"
             >
                 <Input placeholder='Enter Description...' />
             </FormItem>
-
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>

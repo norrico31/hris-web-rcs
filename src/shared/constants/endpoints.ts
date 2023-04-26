@@ -185,6 +185,7 @@ export const useEndpoints = () => {
             }
         },
         EMPLOYEE201: {
+            LISTS: '/options/employees',
             GET: '/employees',
             POST: '/employees',
             PUT: '/employee/update/',
@@ -259,11 +260,11 @@ export const useEndpoints = () => {
             DELETE: ''
         },
         SALARYADJUSTMENT: {
-            LISTS: '/options/salary_adjustments',
-            GET: '/salary_adjustments',
-            POST: '/salary_adjustments',
-            PUT: '/salary_adjustments',
-            DELETE: '/salary_adjustments',
+            LISTS: '/options/expense',
+            GET: '/expense',
+            POST: '/expense',
+            PUT: '/expense',
+            DELETE: '/expense',
         }
     }
     return [ENDPOINTS]

@@ -214,7 +214,6 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
             >
                 <Input placeholder='Enter daily rate name...' />
             </FormItem>
-
             <FormItem
                 label="Daily rate per Hour"
                 name="daily_rate_per_hour"

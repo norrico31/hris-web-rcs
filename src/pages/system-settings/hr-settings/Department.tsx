@@ -166,14 +166,12 @@ function DepartmentModal({ title, selectedData, isModalOpen, handleCancel, fetch
             >
                 <Input placeholder='Enter department name...' />
             </FormItem>
-
             <FormItem
                 name="description"
                 label="Description"
             >
                 <Input placeholder='Enter Description...' />
             </FormItem>
-
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
