@@ -1,3 +1,5 @@
+import { AxiosGetData } from "./utils/Axios"
+
 export interface ITimeKeeping {
     actual_time_in: string | null
     actual_time_out: string | null
@@ -31,3 +33,5 @@ export interface ITimeKeeping {
     updated_at: string | null
     user_id: string | null
 }
+
+export type TimeKeepingRes = AxiosGetData<ITimeKeeping>

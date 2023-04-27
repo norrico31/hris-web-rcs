@@ -177,8 +177,8 @@ export const useEndpoints = () => {
                 POST: '/users/',
                 PUT: '/users/',
                 DELETE: '/users/',
-                ACTIVATE: '/users/internal-user-activate/',
-                DEACTIVATE: '/users/user-deactivate/'
+                ACTIVATE: '/users/activate/',
+                DEACTIVATE: '/users/deactivate/'
             },
             AUDITLOGS: {
                 GET: '/audit_logs'

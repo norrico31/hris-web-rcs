@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Button, Calendar, Col, Row, Divider as AntDDivider, Modal, Space, Popconfirm, message } from "antd"
+import { Button, Calendar, Col, Row, Divider as AntDDivider, Modal, Space, Popconfirm, message, Spin } from "antd"
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
 import { RxEnter, RxExit } from 'react-icons/rx'
@@ -10,34 +10,41 @@ import { MessageInstance } from "antd/es/message/interface"
 import { useAxios } from './../shared/lib/axios'
 import { useEndpoints } from "../shared/constants"
 import { useAuthContext } from "../shared/contexts/Auth";
+import { ITimeKeeping, TimeKeepingRes } from "../shared/interfaces";
 
 const [{ TIMEKEEPING }] = useEndpoints()
 const { GET, POST } = useAxios()
 
+const timeKeepings = ['Time In', 'Time Out']
+
 export default function TimeKeeping() {
     renderTitle('Timekeeping')
     const { user } = useAuthContext()
+    const [data, setData] = useState<Array<ITimeKeeping>>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
-    // useEffect(() => {
-    //     fetchData()
-    // }, [])
+    useEffect(() => {
+        if (user) {
+            fetchData()
+        }
+    }, [user])
 
     const currentDay = dayjs().format('dddd')
     const currentDate = dayjs().format('MMMM DD')
 
     function fetchData() {
+        setLoading(true)
         const today = dayjs().format('YYYY-MM-DD')
-        GET(TIMEKEEPING.GET + '?from=' + today + '&to=' + today + '&user_id=' + user?.id + '&limit=10')
-            .then((res) => {
-                console.log('get results: ', res)
-            })
+        GET<TimeKeepingRes>(TIMEKEEPING.GET + '?from=' + today + '&to=' + today + '&user_id=' + user?.id + '&limit=10')
+            .then((res) => setData(res?.data ?? []))
+            .finally(() => setLoading(false))
     }
 
     const onPanelChange = (value: Dayjs) => {
         console.log(value.format('YYYY-MM-DD'));
     }
-
+    const timeLen = data.length ?? 0
     return (
         <>
             <MainHeader>
@@ -58,13 +65,37 @@ export default function TimeKeeping() {
                 <Col2 xs={24} sm={24} md={9} lg={9} xl={8} height={500}>
                     <h2 style={{ color: '#ABABAB' }}>Time In/Out</h2>
                     <AntDDivider />
-                    <Box title="Time in">
-                        <b>06:44 AM</b>
-                        <p>March 22</p>
-                    </Box>
+                    <Col>
+                        {loading ? <Spin /> : data.map((time, idx) => (
+                            <div key={time.id}>
+                                <Box title={timeKeepings[idx]}>
+                                    <Space>
+                                        <p>Time: </p><b>{time.time_in}</b>
+                                    </Space>
+                                    <Space>
+                                        <p>Date: </p><b>{time.time_keeping_date}</b>
+                                    </Space>
+                                </Box>
+                            </div>
+                        ))}
+                    </Col>
+                    {/* <div>
+                        <Box title="Time in">
+                            <b>06:44 AM</b>
+                            <p>March 22</p>
+                        </Box>
+                    </div>
+                    <div>
+                        <Divider />
+                        <Box title="Time in">
+                            <b>06:44 AM</b>
+                            <p>March 22</p>
+                        </Box>
+                    </div> */}
                 </Col2>
             </Row>
             <TimeKeepingModal
+                timeLen={timeLen}
                 fetchData={fetchData}
                 isModalOpen={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
@@ -77,9 +108,10 @@ type ModalProps = {
     isModalOpen: boolean
     fetchData(): void
     handleClose: () => void
+    timeLen: number
 }
 
-function TimeKeepingModal({ fetchData, isModalOpen, handleClose }: ModalProps) {
+function TimeKeepingModal({ fetchData, timeLen, isModalOpen, handleClose }: ModalProps) {
     const [isModalVideoOpen, setIsModalVideoOpen] = useState(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
     const [mediaError, setMediaError] = useState('')
@@ -131,7 +163,6 @@ function TimeKeepingModal({ fetchData, isModalOpen, handleClose }: ModalProps) {
         }
         POST(method == 'timein' ? TIMEKEEPING.TIMEIN : TIMEKEEPING.TIMEOUT, payload)
             .then((res) => {
-                console.log(res?.data.data)
                 fetchData()
                 setImageSrc(null)
                 handleClose()
@@ -173,7 +204,7 @@ function TimeKeepingModal({ fetchData, isModalOpen, handleClose }: ModalProps) {
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error || loading}
+                    disabled={!!mediaError || !!error || loading || !imageSrc || timeLen >= 1}
                     loading={loading}
                 >
                     Time In
@@ -188,7 +219,7 @@ function TimeKeepingModal({ fetchData, isModalOpen, handleClose }: ModalProps) {
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error || loading}
+                    disabled={!!mediaError || !!error || loading || !imageSrc || timeLen == 2}
                     loading={loading}
                 >
                     Time Out

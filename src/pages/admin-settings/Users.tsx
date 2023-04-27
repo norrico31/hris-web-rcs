@@ -77,7 +77,7 @@ export default function Users() {
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function userActivation(url: string, id: string) {
-        POST(url + id, {})
+        PUT(url + id, {})
             .then((res) => {
                 console.log(res)
             })

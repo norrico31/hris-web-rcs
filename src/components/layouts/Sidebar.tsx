@@ -6,7 +6,7 @@ import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalen
 import { MdAdminPanelSettings } from 'react-icons/md'
 import { FaTasks, FaCriticalRole, FaUsersCog, FaUsers } from 'react-icons/fa'
 import { GiHumanPyramid } from 'react-icons/gi'
-import { BiTimeFive } from 'react-icons/bi'
+import { BiTimeFive, BiTimer } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
 
@@ -78,6 +78,11 @@ const menus = [
         <Link to='/timekeeping'>Time Keeping</Link>,
         '/timekeeping',
         <BiTimeFive />
+    ),
+    getItemLinks(
+        <Link to='/whosinout'>Who's In/Out</Link>,
+        '/whosinout',
+        <BiTimer />
     ),
     getItemLinks(
         'System Settings',
