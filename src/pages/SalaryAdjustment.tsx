@@ -124,14 +124,11 @@ export default function SalaryAdjustment() {
         setSelectedData(data)
     }
 
-    function handleDownload() {
-        console.log('dowwnload')
-    }
-
     function handleCloseModal() {
         setSelectedData(undefined)
         setIsModalOpen(false)
     }
+
     return (
         <>
             <MainHeader>
@@ -190,6 +187,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         } else {
             form.resetFields(undefined)
         }
+
         const controller = new AbortController();
         (async () => {
             try {
@@ -218,7 +216,6 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
     }
 
     function onFinish(values: ISalaryAdjustment) {
-        // if success
         setLoading(true)
         let { expense_date, description, ...restValues } = values
         expense_date = dayjs(expense_date, 'YYYY/MM/DD') as any
@@ -237,7 +234,6 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         <Form form={form} onFinish={onFinish}>
             <Row justify='space-between' wrap>
                 <Col span={11}>
-                    {/* employee_id */}
                     <FormItem
                         label="Employee Name"
                         name="user_id"
@@ -255,7 +251,6 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                             ))}
                         </Select>
                     </FormItem>
-                    {/* expense_type_id */}
                     <FormItem
                         label="Expense Type"
                         name="expense_type_id"
@@ -329,8 +324,8 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                     <FormItem
                         label="Expense Description"
                         name="expense_description"
-                    // required
-                    // rules={[{ required: true, message: 'Please expense description!' }]}
+                        required
+                        rules={[{ required: true, message: 'Please expense description!' }]}
                     >
                         <Input.TextArea placeholder='Enter expense description...' />
                     </FormItem>
@@ -340,8 +335,8 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         name='receipt_attachment'
                         valuePropName="fileList"
                         getValueFromEvent={normFile}
-                    // required
-                    // rules={[{ required: true, message: 'Please receip file!' }]}
+                        required
+                        rules={[{ required: true, message: 'Please receip file!' }]}
                     >
                         <Upload listType="picture-card" beforeUpload={() => false}>
                             <div>

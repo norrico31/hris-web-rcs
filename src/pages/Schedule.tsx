@@ -58,8 +58,7 @@ export default function Schedule() {
                 onClick={() => handleEdit(record)}
             />
         },
-
-    ];
+    ]
 
     const data: ISchedule[] = [
         {
@@ -118,6 +117,7 @@ export default function Schedule() {
         setSelectedData(undefined)
         setIsModalOpen(false)
     }
+
     return (
         <>
             <MainHeader>
@@ -146,6 +146,7 @@ type ModalProps = {
     selectedData?: ISchedule
     handleCancel: () => void
 }
+
 const { Item: FormItem, useForm } = AntDForm
 
 function ScheduleModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {

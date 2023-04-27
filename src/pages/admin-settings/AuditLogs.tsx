@@ -29,16 +29,20 @@ export default function AuditLogs() {
             title: 'User',
             key: 'user_full_name',
             dataIndex: 'user_full_name',
+            width: 120,
         },
         {
             title: 'Account Type',
             key: 'account_type',
             dataIndex: 'account_type',
+            width: 120,
         },
         {
             title: 'Date',
             key: 'date',
             dataIndex: 'date',
+            width: 120,
+            align: 'center'
         },
         {
             title: 'Action',
@@ -48,7 +52,9 @@ export default function AuditLogs() {
                 const action = record?.action.toLowerCase()
                 const color = action == 'created' ? 'green' : action == 'updated' ? 'blue' : 'red'
                 return <Tag color={color}>{firstLetterCapitalize(record?.action)}</Tag>
-            }
+            },
+            width: 120,
+            align: 'center'
         },
         {
             title: 'Module',
@@ -57,7 +63,9 @@ export default function AuditLogs() {
             render: (_, record) => {
                 const module = record?.module_name.split('\\')
                 return module[module.length - 1]
-            }
+            },
+            width: 150,
+            align: 'center'
         },
         {
             title: 'Payload',
@@ -76,7 +84,9 @@ export default function AuditLogs() {
                     )
                 }
                 return payloadLists
-            }
+            },
+            align: 'center',
+            width: 300,
         },
     ]
 

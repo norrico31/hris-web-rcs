@@ -5,7 +5,7 @@ import { LoadingOutlined, UserOutlined, CreditCardOutlined, UsergroupAddOutlined
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs, { Dayjs } from 'dayjs'
-import { Card, Action, TabHeader, Table, Form, MainHeader } from '../components'
+import { Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useEndpoints } from './../shared/constants/endpoints'
 import axiosClient, { useAxios } from './../shared/lib/axios'
@@ -38,34 +38,42 @@ export default function EmployeeFiles() {
             title: 'Employee No.',
             key: 'employee_code',
             dataIndex: 'employee_code',
+            width: 130,
+            align: 'center'
         },
         {
             title: 'Employee Name',
             key: 'full_name',
             dataIndex: 'full_name',
+            width: 130,
+            align: 'center'
         },
         {
             title: 'Position',
             key: 'position',
             dataIndex: 'position',
+            width: 130,
         },
         {
             title: 'Department',
             key: 'department',
             dataIndex: 'department',
             align: 'center',
+            width: 130,
         },
         {
             title: 'Date Hired',
             key: 'date_hired',
             dataIndex: 'date_hired',
             align: 'center',
+            width: 110,
         },
         {
             title: 'Status',
             key: 'status',
             dataIndex: 'status',
             align: 'center',
+            width: 110,
         },
         {
             title: 'Action',
@@ -77,7 +85,8 @@ export default function EmployeeFiles() {
                 name={record.employee_name}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => navigate('/employee/edit/' + record.id + '/userprofile')}
-            />
+            />,
+            width: 200
         },
     ]
 
@@ -138,7 +147,7 @@ export default function EmployeeFiles() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
             />
-            <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} />
+            <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} onChange={onChange} />
             <EmployeeModal
                 title={selectedData != undefined ? 'Update' : 'Create'}
                 isModalOpen={isModalOpen}
@@ -155,6 +164,7 @@ type ModalProps = {
     handleCancel: () => void
     fetchData(args?: IArguments): void
 }
+
 const { Item: FormItem, useForm } = AntDForm
 
 function EmployeeModal({ title, fetchData, isModalOpen, handleCancel }: ModalProps) {
@@ -385,6 +395,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     <DatePicker
                         format='YYYY/MM/DD'
                         style={{ width: '100%' }}
+                        placeholder='Select date of birth'
                     />
                 </FormItem>
             </Col>
@@ -500,6 +511,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     <DatePicker
                         format='YYYY/MM/DD'
                         style={{ width: '100%' }}
+                        placeholder='Select date hired'
                     />
                 </FormItem>
                 <FormItem
@@ -509,15 +521,16 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     <DatePicker
                         format='YYYY/MM/DD'
                         style={{ width: '100%' }}
+                        placeholder='Select date resigned'
                     />
                 </FormItem>
                 <FormItem
                     label="Current Address"
                     name="address"
                     required
-                    rules={[{ required: true, message: 'Please enter address!' }]}
+                    rules={[{ required: true, message: 'Please enter current address!' }]}
                 >
-                    <Input.TextArea placeholder='Enter middle name...' style={{ minHeight: 190 }} />
+                    <Input.TextArea placeholder='Enter current address...' style={{ minHeight: 190 }} />
                 </FormItem>
             </Col>
         </Row>
