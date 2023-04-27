@@ -13,6 +13,11 @@ export const useEndpoints = () => {
             TIMEOUT: '/time_keepings/time_out',
             GET: '/time_keepings'
         },
+        WHOSINOUT: {
+            IN: '/time_keepings/whos/in?date=',
+            OUT: '/time_keepings/whos/out?date=',
+
+        },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
                 ACTIVITIES: {

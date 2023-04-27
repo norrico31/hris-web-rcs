@@ -80,7 +80,7 @@ const StyledLayout = styled(AntdLayout)`
     @media(max-width: 767px) {
         .ant-layout-sider {
             position: absolute;
-            height: 100vh;
+            height: 100%;
             z-index: 1;
         }
 

@@ -15,36 +15,31 @@ import { ITimeKeeping, TimeKeepingRes } from "../shared/interfaces";
 const [{ TIMEKEEPING }] = useEndpoints()
 const { GET, POST } = useAxios()
 
-const timeKeepings = ['Time In', 'Time Out']
-
 export default function TimeKeeping() {
     renderTitle('Timekeeping')
     const { user } = useAuthContext()
     const [data, setData] = useState<Array<ITimeKeeping>>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
+    const today = dayjs().format('YYYY-MM-DD')
+    const [selectedDate, setSelectedDate] = useState<Dayjs | string>(today)
 
     useEffect(() => {
-        if (user) {
-            fetchData()
-        }
+        if (user) fetchData()
     }, [user])
 
-    const currentDay = dayjs().format('dddd')
-    const currentDate = dayjs().format('MMMM DD')
-
-    function fetchData() {
+    function fetchData(today = dayjs().format('YYYY-MM-DD')) {
         setLoading(true)
-        const today = dayjs().format('YYYY-MM-DD')
         GET<TimeKeepingRes>(TIMEKEEPING.GET + '?from=' + today + '&to=' + today + '&user_id=' + user?.id + '&limit=10')
             .then((res) => setData(res?.data ?? []))
             .finally(() => setLoading(false))
     }
 
-    const onPanelChange = (value: Dayjs) => {
-        console.log(value.format('YYYY-MM-DD'));
+    const onSelect = (value: Dayjs) => {
+        setSelectedDate(value)
+        fetchData(value.format('YYYY-MM-DD'))
     }
-    const timeLen = data.length ?? 0
+
     return (
         <>
             <MainHeader>
@@ -52,7 +47,7 @@ export default function TimeKeeping() {
                     <h1 className='color-white'>Time Keeping</h1>
                 </Space>
                 <Col>
-                    <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>
+                    <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)} disabled={today != dayjs(selectedDate).format('YYYY-MM-DD')}>
                         <RxEnter />
                         Time in
                     </Button>
@@ -60,25 +55,42 @@ export default function TimeKeeping() {
             </MainHeader>
             <Row justify='space-around' wrap>
                 <Col1 xs={24} sm={24} md={14} lg={14} xl={14}>
-                    <Calendar onPanelChange={onPanelChange} />
+                    <Calendar onSelect={onSelect} />
                 </Col1>
                 <Col2 xs={24} sm={24} md={9} lg={9} xl={8} height={500}>
                     <h2 style={{ color: '#ABABAB' }}>Time In/Out</h2>
                     <AntDDivider />
-                    <Col>
-                        {loading ? <Spin /> : data.map((time, idx) => (
-                            <div key={time.id}>
-                                <Box title={timeKeepings[idx]}>
-                                    <Space>
-                                        <p>Time: </p><b>{time.time_in}</b>
-                                    </Space>
-                                    <Space>
-                                        <p>Date: </p><b>{time.time_keeping_date}</b>
+                    {loading ? <Spin /> : (data.length > 0 && data != undefined) ? (
+                        <Col>
+                            <div>
+                                <Box title='Time In'>
+                                    <Space direction='vertical'>
+                                        <Space>
+                                            <p>Time: </p><b>{data?.[0]?.time_in}</b>
+                                        </Space>
+                                        <Space>
+                                            <p>Date: </p><b>{data?.[0]?.time_keeping_date}</b>
+                                        </Space>
                                     </Space>
                                 </Box>
                             </div>
-                        ))}
-                    </Col>
+                            <Divider />
+                            {(data?.[0]?.time_out != null || data?.[0]?.time_out != undefined) && (
+                                <div>
+                                    <Box title='Time Out'>
+                                        <Space direction='vertical'>
+                                            <Space>
+                                                <p>Time: </p><b>{data[0].time_out}</b>
+                                            </Space>
+                                            <Space>
+                                                <p>Date: </p><b>{data[0].time_keeping_date}</b>
+                                            </Space>
+                                        </Space>
+                                    </Box>
+                                </div>
+                            )}
+                        </Col>
+                    ) : <p>No record on {dayjs(selectedDate).format('MMM') + ''} {dayjs(selectedDate).format('D') + ''}, {dayjs(selectedDate).format('YYYY') + ''}.</p>}
                     {/* <div>
                         <Box title="Time in">
                             <b>06:44 AM</b>
@@ -95,7 +107,7 @@ export default function TimeKeeping() {
                 </Col2>
             </Row>
             <TimeKeepingModal
-                timeLen={timeLen}
+                data={data[0]}
                 fetchData={fetchData}
                 isModalOpen={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
@@ -108,10 +120,10 @@ type ModalProps = {
     isModalOpen: boolean
     fetchData(): void
     handleClose: () => void
-    timeLen: number
+    data: ITimeKeeping
 }
 
-function TimeKeepingModal({ fetchData, timeLen, isModalOpen, handleClose }: ModalProps) {
+function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalProps) {
     const [isModalVideoOpen, setIsModalVideoOpen] = useState(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
     const [mediaError, setMediaError] = useState('')
@@ -128,7 +140,6 @@ function TimeKeepingModal({ fetchData, timeLen, isModalOpen, handleClose }: Moda
         }
 
         const handleError = (error: GeolocationPositionError) => {
-            console.log(error)
             setError(error.message + '. Please reload the page and allow geolocation')
             messageApi.open({
                 type: 'error',
@@ -190,7 +201,7 @@ function TimeKeepingModal({ fetchData, timeLen, isModalOpen, handleClose }: Moda
                 />
                 {mediaError}
                 {error}
-                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={(!!mediaError || !!error || loading) && error != 'Please take a selfie photo'}>TAKE A SELFIE</Button>
+                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={(!!mediaError || !!error || loading || data?.time_out != null) && error != 'Please take a selfie photo'}>TAKE A SELFIE</Button>
             </Space>
         </Row>
         <Divider style={{ margin: 10 }} />
@@ -201,10 +212,11 @@ function TimeKeepingModal({ fetchData, timeLen, isModalOpen, handleClose }: Moda
                 icon={<RxEnter />}
                 onConfirm={() => postTimeInOut('timein')}
                 okText='Time In'
+                disabled={data?.time_in != null && data?.time_out != null}
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error || loading || !imageSrc || timeLen >= 1}
+                    disabled={!!mediaError || !!error || loading || !imageSrc || (data?.time_in != null && data?.time_out != null)}
                     loading={loading}
                 >
                     Time In
@@ -216,10 +228,11 @@ function TimeKeepingModal({ fetchData, timeLen, isModalOpen, handleClose }: Moda
                 icon={<RxExit />}
                 onConfirm={() => postTimeInOut('timeout')}
                 okText='Time Out'
+                disabled={data?.time_out != null}
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error || loading || !imageSrc || timeLen == 2}
+                    disabled={!!mediaError || !!error || loading || !imageSrc || data?.time_out != null}
                     loading={loading}
                 >
                     Time Out
@@ -263,7 +276,6 @@ function CapturePhotoModal({ isModalVideoOpen, setImageSrc, handleCloseCaptureMo
                     duration: 0
                 })
                 handleCloseCaptureModal()
-                console.error("Error accessing camera:", err)
             }
         }
         if (isModalVideoOpen) {
