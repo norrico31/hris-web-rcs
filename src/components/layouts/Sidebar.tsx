@@ -75,6 +75,11 @@ const menus = [
         <AiFillAppstore />
     ),
     getItemLinks(
+        <Link to='/announcements' id="announcements">Announcements</Link>,
+        '/announcements',
+        <AiFillAppstore />
+    ),
+    getItemLinks(
         <Link to='/timekeeping' id='timekeeping'>Time Keeping</Link>,
         '/timekeeping',
         <BiTimeFive />

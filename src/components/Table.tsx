@@ -8,11 +8,12 @@ type TableListProps<T> = {
     loading?: boolean
     columns: ColumnsType<T>
     tableParams?: TableParams
+    isSizeChanger?: boolean
     onChange?: ((pagination: TablePaginationConfig, filters: Record<string, FilterValue | null>, sorter: any, extra: TableCurrentDataSource<any>) => void) | undefined
     dataList: T
 }
 
-function Table({ loading, columns, dataList, tableParams, onChange }: TableListProps<any>) {
+function Table({ loading, isSizeChanger = true, columns, dataList, tableParams, onChange }: TableListProps<any>) {
     return (
         <div>
             <AntDTable
@@ -20,7 +21,7 @@ function Table({ loading, columns, dataList, tableParams, onChange }: TableListP
                 dataSource={dataList}
                 pagination={{
                     ...tableParams?.pagination,
-                    showSizeChanger: true,
+                    showSizeChanger: isSizeChanger,
                     position: ['bottomCenter'],
                     showTotal: (number: number) => <p style={{ marginRight: '1rem' }}>Total: {number}</p>,
                     itemRender: ItemRender,

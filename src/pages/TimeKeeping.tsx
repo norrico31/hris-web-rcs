@@ -1,16 +1,18 @@
 import { useState, useRef, useEffect } from "react";
-import { Button, Calendar, Col, Row, Divider as AntDDivider, Modal, Space, Popconfirm, message, Spin } from "antd"
+import { Button, Calendar, Col, Row, Divider as AntDDivider, Modal, Space, Popconfirm, message, Spin, TablePaginationConfig, Typography, DatePicker, DatePickerProps } from "antd"
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
 import { RxEnter, RxExit } from 'react-icons/rx'
-import { MainHeader, Divider, Box } from "../components"
+import { MainHeader, Divider, Box, TabHeader, Table, Card } from "../components"
 import AvatarPng from '../shared/assets/default_avatar.png'
 import { renderTitle } from "../shared/utils/utilities"
 import { MessageInstance } from "antd/es/message/interface"
 import { useAxios } from './../shared/lib/axios'
 import { useEndpoints } from "../shared/constants"
 import { useAuthContext } from "../shared/contexts/Auth";
-import { ITimeKeeping, TimeKeepingRes } from "../shared/interfaces";
+import { IArguments, ITimeKeeping, TableParams, TimeKeepingRes } from "../shared/interfaces";
+import useWindowSize from "../shared/hooks/useWindowSize";
+import { ColumnsType } from "antd/es/table";
 
 const [{ TIMEKEEPING }] = useEndpoints()
 const { GET, POST } = useAxios()
@@ -21,40 +23,88 @@ export default function TimeKeeping() {
     const [data, setData] = useState<Array<ITimeKeeping>>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
-    const today = dayjs().format('YYYY-MM-DD')
-    const [selectedDate, setSelectedDate] = useState<Dayjs | string>(today)
+    const [today] = useState(dayjs().format('YYYY-MM-DD'))
+    // const [selectedDate, setSelectedDate] = useState<Dayjs | string>(today)
+    // const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [search, setSearch] = useState('')
+    const { width } = useWindowSize()
 
     useEffect(() => {
-        if (user) fetchData()
-    }, [user])
+        const controller = new AbortController();
+        if (user) fetchData({ date: today, args: { signal: controller.signal } })
+    }, [user, today])
 
-    function fetchData(today = dayjs().format('YYYY-MM-DD')) {
+    const fetchData = ({ args, date = dayjs().format('YYYY-MM-DD') }: { args?: IArguments; date?: Dayjs | string }) => {
         setLoading(true)
-        GET<TimeKeepingRes>(TIMEKEEPING.GET + '?from=' + today + '&to=' + today + '&user_id=' + user?.id + '&limit=10')
-            .then((res) => setData(res?.data ?? []))
-            .finally(() => setLoading(false))
+        const query = '?from=' + date + '&to=' + date + '&user_id=' + user?.id
+        GET<TimeKeepingRes>(TIMEKEEPING.GET + query, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                // setTableParams({
+                //     ...tableParams,
+                //     pagination: {
+                //         ...tableParams?.pagination,
+                //         total: res?.total,
+                //         current: res?.current_page,
+                //         pageSize: res?.per_page,
+                //     },
+                // })
+            }).finally(() => setLoading(false))
     }
 
-    const onSelect = (value: Dayjs) => {
-        setSelectedDate(value)
-        fetchData(value.format('YYYY-MM-DD'))
+    const columns: ColumnsType<ITimeKeeping> = [
+        {
+            title: 'Date',
+            key: 'time_keeping_date',
+            dataIndex: 'time_keeping_date',
+            width: 150
+        },
+        {
+            title: 'Time In',
+            key: 'time_in',
+            dataIndex: 'time_in',
+            width: 150
+        },
+        {
+            title: 'Time Out',
+            key: 'time_out',
+            dataIndex: 'time_out',
+            render: (_, record) => record?.time_out ?? '-',
+            width: 150
+        },
+    ]
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, date: today })
+
+    const handleDatePickerChange: DatePickerProps['onChange'] = (date, dateString) => {
+        fetchData({ date: dayjs(date).format('YYYY-MM-DD') })
     }
 
     return (
         <>
-            <MainHeader>
-                <Space wrap>
-                    <h1 className='color-white'>Time Keeping</h1>
-                </Space>
-                <Col>
-                    <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)} disabled={today != dayjs(selectedDate).format('YYYY-MM-DD')}>
-                        <RxEnter />
-                        Time in
-                    </Button>
-                </Col>
-            </MainHeader>
-            <Row justify='space-around' wrap>
-                <Col1 xs={24} sm={24} md={14} lg={14} xl={14}>
+            <Card title='Timekeeping'>
+                <DatePicker format='YYYY-MM-DD' onChange={handleDatePickerChange} />
+                <Divider />
+                <Table
+                    loading={loading}
+                    columns={columns}
+                    dataList={data}
+                    isSizeChanger={false}
+                    onChange={onChange}
+
+                />
+                <TimeKeepingModal
+                    data={data[0]}
+                    fetchData={fetchData}
+                    isModalOpen={isModalOpen}
+                    handleClose={() => setIsModalOpen(false)}
+                />
+            </Card>
+        </>
+    )
+}
+{/* <Row justify='space-around' wrap gutter={[24, 24]}>
+                <Col1 xs={24} sm={24} md={14} lg={14} xl={14} order={width >= 769 ? 0 : 2}>
                     <Calendar onSelect={onSelect} />
                 </Col1>
                 <Col2 xs={24} sm={24} md={9} lg={9} xl={8} height={500}>
@@ -91,34 +141,14 @@ export default function TimeKeeping() {
                             )}
                         </Col>
                     ) : <p>No record on {dayjs(selectedDate).format('MMM') + ''} {dayjs(selectedDate).format('D') + ''}, {dayjs(selectedDate).format('YYYY') + ''}.</p>}
-                    {/* <div>
-                        <Box title="Time in">
-                            <b>06:44 AM</b>
-                            <p>March 22</p>
-                        </Box>
-                    </div>
-                    <div>
-                        <Divider />
-                        <Box title="Time in">
-                            <b>06:44 AM</b>
-                            <p>March 22</p>
-                        </Box>
-                    </div> */}
                 </Col2>
-            </Row>
-            <TimeKeepingModal
-                data={data[0]}
-                fetchData={fetchData}
-                isModalOpen={isModalOpen}
-                handleClose={() => setIsModalOpen(false)}
-            />
-        </>
-    )
-}
-
+            </Row> */}
 type ModalProps = {
     isModalOpen: boolean
-    fetchData(): void
+    fetchData: ({ args, date }: {
+        args?: IArguments | undefined;
+        date?: string | dayjs.Dayjs | undefined;
+    }) => void
     handleClose: () => void
     data: ITimeKeeping
 }
@@ -160,8 +190,6 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
         }
     }, [])
 
-    // TODO
-
     function postTimeInOut(method: 'timein' | 'timeout') {
         setLoading(true)
         const payload = {
@@ -174,7 +202,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
         }
         POST(method == 'timein' ? TIMEKEEPING.TIMEIN : TIMEKEEPING.TIMEOUT, payload)
             .then((res) => {
-                fetchData()
+                fetchData({})
                 setImageSrc(null)
                 handleClose()
             }).finally(() => {

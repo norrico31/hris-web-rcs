@@ -18,6 +18,7 @@ const Tasks = lazy(() => import('./pages/Tasks'))
 const EmployeeFiles = lazy(() => import('./pages/EmployeeFiles'))
 const SalaryAdjustment = lazy(() => import('./pages/SalaryAdjustment'))
 const WhosInOut = lazy(() => import('./pages/WhosInOut'))
+const Announcements = lazy(() => import('./pages/Announcements'))
 
 // System Settings
 const TaskActivities = lazy(() => import('./pages/system-settings/task-settings/TaskActivities'))
@@ -104,6 +105,10 @@ export const routes = createBrowserRouter([
             {
                 path: 'auditlogs',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><AuditLogs /></Suspense>
+            },
+            {
+                path: 'announcements',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Announcements /></Suspense>
             },
             {
                 path: 'systemsettings',

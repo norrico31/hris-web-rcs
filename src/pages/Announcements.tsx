@@ -1,7 +1,11 @@
-import React from 'react'
+import { Card } from '../components'
+
+// TODO
 
 export default function Announcements() {
     return (
-        <div>Announcements</div>
+        <Card title='Announcements'>
+
+        </Card>
     )
 }

@@ -8,6 +8,13 @@ export const useEndpoints = () => {
         DASHBOARD: {
             GET: '',
         },
+        ANNOUNCEMENT: {
+            LISTS: '/options/announcements',
+            GET: '/announcements',
+            POST: '/announcements/',
+            PUT: '/announcements/',
+            DELETE: '/announcements/',
+        },
         TIMEKEEPING: {
             TIMEIN: '/time_keepings/time_in',
             TIMEOUT: '/time_keepings/time_out',
@@ -16,7 +23,6 @@ export const useEndpoints = () => {
         WHOSINOUT: {
             IN: '/time_keepings/whos/in?date=',
             OUT: '/time_keepings/whos/out?date=',
-
         },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
