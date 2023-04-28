@@ -36,6 +36,12 @@ export default function WhosInOut() {
             width: 150
         },
         {
+            title: 'Department',
+            key: 'department',
+            dataIndex: 'department',
+            width: 150
+        },
+        {
             title: 'Time In',
             key: 'time_in',
             dataIndex: 'time_in',
@@ -58,7 +64,7 @@ export default function WhosInOut() {
 
     const fetchData = ({ args, isIn }: { args?: IArguments; isIn?: boolean }) => {
         setLoading(true)
-        const url = !isIn ? WHOSINOUT.IN : WHOSINOUT.OUT
+        const url = isIn ? WHOSINOUT.IN : WHOSINOUT.OUT
         GET<TimeKeepingRes>(url + today, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -95,6 +101,9 @@ export default function WhosInOut() {
                     <Switch checked={isInOut} onChange={setIsInOut} />
                     <Typography.Title level={2} style={{ margin: 0 }}>Out</Typography.Title>
                 </Space>
+            </Row>
+            <Row justify='center'>
+                <Typography.Title level={4}>{dayjs(today).format('MMMM') + ''} {dayjs(today).format('D') + ''}, {dayjs(today).format('YYYY') + ''} - {dayjs(today).format('dddd')}</Typography.Title>
             </Row>
             <TabHeader
                 name="who's in and out"

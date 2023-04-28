@@ -27,10 +27,10 @@ export const employeeEditPaths = [
         label: 'Documents',
         key: '/employeedocuments',
     },
-    // {
-    //     label: 'Schedule',
-    //     key: '/employeeschedule',
-    // },
+    {
+        label: 'Schedule',
+        key: '/employeeschedule',
+    },
     {
         label: 'Memorandums',
         key: '/memorandums',

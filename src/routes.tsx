@@ -20,6 +20,10 @@ const SalaryAdjustment = lazy(() => import('./pages/SalaryAdjustment'))
 const WhosInOut = lazy(() => import('./pages/WhosInOut'))
 const Announcements = lazy(() => import('./pages/Announcements'))
 
+// Leaves
+const MyLeaves = lazy(() => import('./pages/leaves/MyLeave'))
+const ForApproval = lazy(() => import('./pages/leaves/ForApproval'))
+
 // System Settings
 const TaskActivities = lazy(() => import('./pages/system-settings/task-settings/TaskActivities'))
 const TaskTypes = lazy(() => import('./pages/system-settings/task-settings/TaskTypes'))
@@ -39,6 +43,7 @@ const LeaveStatus = lazy(() => import('./pages/system-settings/hr-settings/Leave
 const LeaveType = lazy(() => import('./pages/system-settings/hr-settings/LeaveType'))
 const LeaveDuration = lazy(() => import('./pages/system-settings/hr-settings/LeaveDuration'))
 const SalarRates = lazy(() => import('./pages/system-settings/hr-settings/SalariesRates'))
+const Schedules = lazy(() => import('./pages/system-settings/hr-settings/Schedules'))
 
 // Expense Settings
 const Expense = lazy(() => import('./pages/system-settings/expense-settings/Expense'))
@@ -58,7 +63,7 @@ const AuditLogs = lazy(() => import('./pages/admin-settings/AuditLogs'))
 const ClientHistory = lazy(() => import('./pages/employee-files/ClientHistory'))
 const EmployeeBenefits = lazy(() => import('./pages/employee-files/EmployeeBenefits'))
 const ClientSchedule = lazy(() => import('./pages/employee-files/ClientSchedule'))
-const Schedule = lazy(() => import('./pages/employee-files/Schedule'))
+// const EmployeeSchedule = lazy(() => import('./pages/employee-files/Schedule'))
 const Contracts = lazy(() => import('./pages/employee-files/Contracts'))
 const EmployeeDocuments = lazy(() => import('./pages/employee-files/EmployeeDocuments'))
 const Evaluations = lazy(() => import('./pages/employee-files/Evaluations'))
@@ -188,6 +193,10 @@ export const routes = createBrowserRouter([
                                 path: 'salaries',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><SalarRates /></Suspense>
                             },
+                            {
+                                path: 'schedules',
+                                element: <Suspense fallback={<Content><Skeleton /></Content>}><Schedules /></Suspense>
+                            },
                         ],
                     },
                     {
@@ -238,7 +247,17 @@ export const routes = createBrowserRouter([
             },
             {
                 path: 'leave',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><Leave /></Suspense>
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Leave /></Suspense>,
+                children: [
+                    {
+                        path: 'leaves',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><MyLeaves /></Suspense>,
+                    },
+                    {
+                        path: 'approval',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ForApproval /></Suspense>,
+                    },
+                ]
             },
             {
                 path: 'employee',
@@ -312,10 +331,10 @@ export const routes = createBrowserRouter([
                         path: 'salaryhistory',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryHistory /></Suspense>
                     },
-                    {
-                        path: 'employeeschedule',
-                        element: <Suspense fallback={<Content><Skeleton /></Content>}><Schedule /></Suspense>
-                    },
+                    // {
+                    //     path: 'employeeschedule',
+                    //     element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSchedule /></Suspense>
+                    // },
                     {
                         path: 'userprofile',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><UserProfile /></Suspense>

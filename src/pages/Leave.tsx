@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Button, Col, Row, Form as AntDForm, Divider, Calendar, Modal, Space, Input, DatePicker } from 'antd'
-import { MainHeader, Form, Box } from '../components'
+import { Button, Col, Row, Form as AntDForm, Divider, Calendar, Modal, Space, Input, DatePicker, Tabs as AntDTabs } from 'antd'
+import { MainHeader, Form, Box, } from '../components'
 import { AiOutlineCalendar } from 'react-icons/ai'
 import { Col2 } from './TimeKeeping'
 import dayjs from 'dayjs'
 import styled from 'styled-components'
 import { renderTitle } from '../shared/utils/utilities'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { leavePaths } from '../shared/constants';
 
 interface ILeave extends Partial<{ id: string }> {
     task_activity: string[]
@@ -16,9 +18,15 @@ interface ILeave extends Partial<{ id: string }> {
     description: string;
 }
 
+// TODO
+
 export default function Leave() {
     renderTitle('Leave')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const navigate = useNavigate()
+    let { pathname } = useLocation()
+
+    const pathKey = pathname.split('/').pop()
     return (
         <>
             <MainHeader>
@@ -32,7 +40,25 @@ export default function Leave() {
                     </Button>
                 </Col>
             </MainHeader>
-            <Row justify='space-around' wrap>
+            <Tabs
+                destroyInactiveTabPane
+                activeKey={'/' + pathKey}
+                type="card"
+                tabPosition="top"
+                size='small'
+                onChange={(k: string) => navigate('/leave' + k)}
+                renderTabBar={(props, TabNavList) => (
+                    <TabNavList {...props} mobile={false} />
+                )}
+                items={leavePaths.map((el) => ({
+                    label: el.label,
+                    key: el.key,
+                    children: <Outlet />,
+                    // children: <Outlet context={{ employeeId, employeeInfo: data, fetchData }} />,
+                }))}
+            />
+            {/* TABS */}
+            {/* <Row justify='space-around' wrap>
                 <Col1 xs={24} sm={24} md={14} lg={14} xl={15}>
                     <h2 style={{ color: '#ABABAB' }}>Leave Requests</h2>
                     <Divider />
@@ -54,7 +80,7 @@ export default function Leave() {
                 <Col2 xs={24} sm={24} md={9} lg={9} xl={8} height={350}>
                     <Calendar fullscreen={false} />
                 </Col2>
-            </Row>
+            </Row> */}
             <LeaveModal
                 isModalOpen={isModalOpen}
                 handleCancel={() => setIsModalOpen(false)}
@@ -139,10 +165,27 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
     </Modal>
 }
 
+function LeaveAdmin() { }
+function LeaveEmployee() { }
+
 const Col1 = styled(Col)`
     border: '1px solid #E5E5E5';
     border-radius: '8px';
     padding: '2rem';
     max-height: 700; 
     overflow-x: 'auto';
+`
+
+
+const Tabs = styled(AntDTabs)`
+    .ant-tabs-nav-list {
+        gap: 10px;
+    }
+    .ant-tabs-tab.ant-tabs-tab-active {
+        background: #9B3423;
+        color: #fff;
+    }
+    .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+        color: #fff;
+    }
 `

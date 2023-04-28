@@ -9,6 +9,7 @@ import dayjs from "dayjs"
 import axiosClient, { useAxios } from "../shared/lib/axios"
 import { useEndpoints } from "../shared/constants"
 import { IArguments, IEmployee, IExpenseType, TableParams } from "../shared/interfaces"
+import useMessage from "antd/es/message/useMessage"
 
 interface ISalaryAdjustment extends Partial<{ id: string }> {
     task_activity: string[]
@@ -216,6 +217,8 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         return e?.fileList;
     }
 
+    const [messageApi, contextHolder] = useMessage()
+
     function onFinish(values: ISalaryAdjustment) {
         setLoading(true)
         let { expense_date, receipt_attachment, description, ...restValues } = values
@@ -226,13 +229,22 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(() => {
-            fetchData()
-            setLoading(false)
         })
+            .catch((err) => {
+                messageApi.open({
+                    type: 'error',
+                    content: err.response.data.message ?? err.response.data.error,
+                    duration: 5
+                })
+            })
+            .finally(() => {
+                fetchData()
+                setLoading(false)
+            })
     }
 
     return <Modal title={`${title} - Adjustment`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender width={700}>
+        {contextHolder}
         <Form form={form} onFinish={onFinish}>
             <Row justify='space-between' wrap>
                 <Col span={11}>

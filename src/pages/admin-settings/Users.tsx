@@ -28,13 +28,23 @@ export default function Users() {
     const columns: ColumnsType<IUser> = [
         {
             title: 'User',
-            key: 'name',
-            dataIndex: 'name',
+            key: 'full_name',
+            dataIndex: 'full_name',
         },
         {
-            title: 'Description',
-            key: 'description',
-            dataIndex: 'description',
+            title: 'Email',
+            key: 'email',
+            dataIndex: 'email',
+        },
+        {
+            title: 'Role',
+            key: 'role',
+            dataIndex: 'role',
+        },
+        {
+            title: 'Department',
+            key: 'department',
+            dataIndex: 'department',
         },
         {
             title: 'Action',
@@ -100,7 +110,7 @@ export default function Users() {
     }
 
     return (
-        <Card title='Users'>
+        <Card title='User Management'>
             <TabHeader
                 name='user'
                 handleSearch={handleSearch}

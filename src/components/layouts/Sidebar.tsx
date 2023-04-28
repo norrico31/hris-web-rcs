@@ -9,6 +9,7 @@ import { GiHumanPyramid } from 'react-icons/gi'
 import { BiTimeFive, BiTimer } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
+import { TfiAnnouncement } from 'react-icons/tfi'
 
 type Props = {
     onSelect: () => void
@@ -77,10 +78,10 @@ const menus = [
     getItemLinks(
         <Link to='/announcements' id="announcements">Announcements</Link>,
         '/announcements',
-        <AiFillAppstore />
+        <TfiAnnouncement />
     ),
     getItemLinks(
-        <Link to='/timekeeping' id='timekeeping'>Time Keeping</Link>,
+        <Link to='/timekeeping' id='timekeeping'>Timekeeping</Link>,
         '/timekeeping',
         <BiTimeFive />
     ),
@@ -144,7 +145,7 @@ const menus = [
         <FaUsersCog />
     ),
     getItemLinks(
-        <Link to='/tasks'>Tasks</Link>,
+        <Link to='/tasks'>Tasks Management</Link>,
         '/tasks',
         <FaTasks />
     ),

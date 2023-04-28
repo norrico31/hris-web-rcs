@@ -83,7 +83,13 @@ export default function TimeKeeping() {
     return (
         <>
             <Card title='Timekeeping'>
-                <DatePicker format='YYYY-MM-DD' onChange={handleDatePickerChange} />
+                <Row wrap justify='space-between'>
+                    <DatePicker format='YYYY-MM-DD' onChange={handleDatePickerChange} />
+                    <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={!!data[0]?.time_in && !!data[0]?.time_out}>
+                        {/* <RxEnter /> */}
+                        {data[0]?.time_in ? 'Time In' : 'Time Out'}
+                    </Button>
+                </Row>
                 <Divider />
                 <Table
                     loading={loading}

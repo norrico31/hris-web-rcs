@@ -16,7 +16,7 @@ export default function Form<V>({ form, disabled, onFinish, initialValues, child
             form={form as any}
             onFinish={onFinish}
             autoComplete="off"
-            requiredMark='optional'
+            // requiredMark='optional'
             layout='vertical'
             initialValues={initialValues}
             disabled={disabled}

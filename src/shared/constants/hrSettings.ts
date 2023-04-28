@@ -12,43 +12,47 @@ export const hrSettingsPaths = [
         key: '/hrsettings/holidays',
     },
     {
-        label: 'Holiday Type',
+        label: 'Holiday Types',
         key: '/hrsettings/holidaytype',
     },
     {
-        label: 'Daily Rate',
+        label: 'Daily Rates',
         key: '/hrsettings/dailyrate',
     },
     {
-        label: 'Employee Status',
+        label: 'Employee Statuses',
         key: '/hrsettings/employeestatus',
     },
     {
-        label: 'Department',
+        label: 'Departments',
         key: '/hrsettings/department',
     },
     {
-        label: 'Team',
+        label: 'Teams',
         key: '/hrsettings/team',
     },
     {
-        label: 'Position',
+        label: 'Positions',
         key: '/hrsettings/position',
     },
     {
-        label: 'Leave Status',
+        label: 'Leave Statuses',
         key: '/hrsettings/leavestatus',
     },
     {
-        label: 'Leave Duration',
+        label: 'Leave Durations',
         key: '/hrsettings/leaveduration',
     },
     {
-        label: 'Leave Type',
+        label: 'Leave Types',
         key: '/hrsettings/leavetype',
     },
     {
         label: 'Salaries',
         key: '/hrsettings/salaries',
+    },
+    {
+        label: 'Schedules',
+        key: '/hrsettings/schedules',
     },
 ]

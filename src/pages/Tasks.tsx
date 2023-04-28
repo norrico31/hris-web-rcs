@@ -17,7 +17,7 @@ const { GET, POST, PUT, DELETE } = useAxios()
 const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS }, }] = useEndpoints()
 
 export default function Tasks() {
-    renderTitle('Tasks')
+    renderTitle('Tasks Management')
     const [data, setData] = useState<ITasks[]>([])
     const [selectedData, setSelectedData] = useState<ITasks | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -142,10 +142,10 @@ export default function Tasks() {
     ) : (
         <>
             <MainHeader>
-                <h1 className='color-white'>Tasks</h1>
+                <h1 className='color-white'>Tasks Management</h1>
             </MainHeader>
             <TabHeader
-                name='Tasks'
+                name='tasks management'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={() => handleDownload()}
@@ -212,7 +212,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     }
 
     return <>
-        <Title level={2}>Tasks - {title}</Title>
+        <Title level={2}>Tasks Management - {title}</Title>
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Task Name"
