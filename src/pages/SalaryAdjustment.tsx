@@ -16,6 +16,7 @@ interface ISalaryAdjustment extends Partial<{ id: string }> {
     sprint_name: string[]
     manhours: string
     expense_date: string
+    receipt_attachment: any
     description: string;
 }
 
@@ -217,9 +218,10 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
 
     function onFinish(values: ISalaryAdjustment) {
         setLoading(true)
-        let { expense_date, description, ...restValues } = values
+        let { expense_date, receipt_attachment, description, ...restValues } = values
         expense_date = dayjs(expense_date, 'YYYY/MM/DD') as any
-        restValues = { ...restValues, expense_date, ...(description != undefined && { description }) } as any
+        receipt_attachment = receipt_attachment ? receipt_attachment[0] : null
+        restValues = { ...restValues, expense_date, receipt_attachment, ...(description != undefined && { description }) } as any
         let result = selectedData ? PUT(SALARYADJUSTMENT.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(SALARYADJUSTMENT.POST, restValues)
         result.then(() => {
             form.resetFields()
@@ -324,8 +326,8 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                     <FormItem
                         label="Expense Description"
                         name="expense_description"
-                        required
-                        rules={[{ required: true, message: 'Please expense description!' }]}
+                    // required
+                    // rules={[{ required: true, message: 'Please expense description!' }]}
                     >
                         <Input.TextArea placeholder='Enter expense description...' />
                     </FormItem>
@@ -335,8 +337,8 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         name='receipt_attachment'
                         valuePropName="fileList"
                         getValueFromEvent={normFile}
-                        required
-                        rules={[{ required: true, message: 'Please receip file!' }]}
+                    // required
+                    // rules={[{ required: true, message: 'Please receip file!' }]}
                     >
                         <Upload listType="picture-card" beforeUpload={() => false}>
                             <div>

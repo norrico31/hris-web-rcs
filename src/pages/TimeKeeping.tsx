@@ -212,11 +212,11 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
                 icon={<RxEnter />}
                 onConfirm={() => postTimeInOut('timein')}
                 okText='Time In'
-                disabled={data?.time_in != null && data?.time_out != null}
+                disabled={(data?.time_in != null && data?.time_out != null) || data?.time_in != null}
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error || loading || !imageSrc || (data?.time_in != null && data?.time_out != null)}
+                    disabled={!!mediaError || !!error || loading || !imageSrc || (data?.time_in != null && data?.time_out != null) || data?.time_in != null}
                     loading={loading}
                 >
                     Time In

@@ -188,7 +188,7 @@ function EmployeeModal({ title, fetchData, isModalOpen, handleCancel }: ModalPro
         setStepFourInputs(undefined)
     }
 
-    const renderStepComponent = (current: number) => {
+    const renderStep = (current: number) => {
         const stepsComponent: { [k: number]: ReactNode } = {
             0: <StepOne
                 stepOneInputs={stepOneInputs}
@@ -255,7 +255,7 @@ function EmployeeModal({ title, fetchData, isModalOpen, handleCancel }: ModalPro
             ]}
         />
         <Divider />
-        {renderStepComponent(current)}
+        {renderStep(current)}
     </Modal>
 }
 
@@ -465,7 +465,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         showSearch
                         optionFilterProp="children"
                     >
-
+                        {/* TODO */}
                         {lists?.roles.map((role) => role.name.toLowerCase() == 'manager' && (
                             <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.name}</Select.Option>
                         ))}
@@ -502,7 +502,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         showSearch
                         optionFilterProp="children"
                     >
-                        {lists?.roles.map((role) => (
+                        {lists?.roles.map((role) => role.name.toLowerCase() != 'manager' && (
                             <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.name}</Select.Option>
                         ))}
                     </Select>

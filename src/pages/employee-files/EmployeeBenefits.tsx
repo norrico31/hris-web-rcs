@@ -16,8 +16,6 @@ export default function EmployeeBenefits() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployeeBenefits | undefined>(undefined)
 
-
-
     const columns: ColumnsType<IEmployeeBenefits> = [
         {
             title: 'Benefit',

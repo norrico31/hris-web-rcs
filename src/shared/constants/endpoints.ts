@@ -128,6 +128,13 @@ export const useEndpoints = () => {
                     PUT: '/salary_rates/',
                     DELETE: '/salary_rates/'
                 },
+                SCHEDULE: {
+                    LISTS: '/options/schedules',
+                    GET: '/schedules',
+                    POST: '/schedules/',
+                    PUT: '/schedules/',
+                    DELETE: '/schedules/'
+                },
             },
             CLIENTSETTINGS: {
                 CLIENT: {

@@ -1,54 +1,55 @@
 import { useState, useEffect } from 'react'
-import { Form as AntDForm, Row, Col, Input, DatePicker, Button } from 'antd'
+import { Form as AntDForm, Row, Col, Input, Grid, Button, Select } from 'antd'
 import { Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
-import { useAxios } from '../../shared/lib/axios'
+import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, IEmployeeClients, ClientScheduleRes } from '../../shared/interfaces'
 import dayjs from 'dayjs';
+import useWindowSize from '../../shared/hooks/useWindowSize'
 
 const { useForm, Item } = AntDForm
+const { useBreakpoint } = Grid
 
-const [{ EMPLOYEE201 }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 const { GET } = useAxios()
 // TODO
 export default function ClientAndSchedule() {
-    const { employeeId, employeeInfo } = useEmployeeCtx()
+    const { employeeInfo, fetchData } = useEmployeeCtx()
     const [form] = useForm()
-    const [data, setData] = useState<IEmployeeClients[]>([])
     const [selectedData, setSelectedData] = useState<IEmployeeClients | undefined>(undefined)
-    const [tableParams, setTableParams] = useState<TableParams | undefined>()
-    const [search, setSearch] = useState('')
-    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [schedules, setSchedules] = useState<Array<any>>([])
+    const { width } = useWindowSize()
 
-    // useEffect(function fetchUserInfo() {
-    //     form.setFieldsValue({
-    //         ...employeeInfo,
-    //         client_start_date: dayjs(employeeInfo?.birthday, 'YYYY/MM/DD'),
-    //         client_end_date: dayjs(employeeInfo?.birthday, 'YYYY/MM/DD'),
-    //     })
-    // }, [employeeInfo])
-
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        // fetchData({ search: str, page: 1 })
-    }
-
-    function handleDownload() {
-        alert('download')
-    }
+    useEffect(function fetchUserInfo() {
+        form.setFieldsValue({
+            ...employeeInfo,
+        })
+        const controller = new AbortController();
+        (async () => {
+            try {
+                const schedulePromise = axiosClient(HRSETTINGS.SCHEDULE.LISTS, { signal: controller.signal })
+                const [scheduleRes,] = await Promise.allSettled([schedulePromise]) as any
+                setSchedules(scheduleRes?.value?.data ?? [])
+            } catch (error) {
+                console.error('error fetching clients: ', error)
+            }
+        })()
+        return () => {
+            controller.abort()
+        }
+    }, [employeeInfo])
 
     function onFinish(val: IEmployeeClients) {
         console.log(val)
         // do put route
     }
 
-    // TODO: FORM LIKE IN THE USERPROFILE NOT TABLE
     return (
         <Card title='Client And Schedule'>
             <Form form={form} onFinish={onFinish}>
-                <Row justify='space-between'>
+                <Row justify={width >= 991 ? 'space-between' : 'center'}>
                     <Col xs={24} sm={24} md={22} lg={10} xl={10} >
                         <Item
                             label="Client"
@@ -70,31 +71,24 @@ export default function ClientAndSchedule() {
                         </Item>
                     </Col>
                 </Row>
-                <Row justify='space-between'>
+                <Row justify='center'>
                     <Col xs={24} sm={24} md={22} lg={10} xl={10} >
                         <Item
-                            label="Start Date"
-                            name="client_start_date"
+                            label="Schedule"
+                            name="schedule_id"
                             required
-                            rules={[{ required: true, message: 'Please select date of birth!' }]}
+                            rules={[{ required: true, message: 'Please select schedule!' }]}
                         >
-                            <DatePicker
-                                style={{ width: '100%' }}
-                                format='YYYY/MM/DD'
-                            />
-                        </Item>
-                    </Col>
-                    <Col xs={24} sm={24} md={22} lg={10} xl={10} >
-                        <Item
-                            label="End Date"
-                            name="client_end_date"
-                            required
-                            rules={[{ required: true, message: 'Please select date of birth!' }]}
-                        >
-                            <DatePicker
-                                style={{ width: '100%' }}
-                                format='YYYY/MM/DD'
-                            />
+                            <Select
+                                placeholder='Select schedule'
+                                allowClear
+                                showSearch
+                                optionFilterProp="children"
+                            >
+                                {schedules.map((sched) => (
+                                    <Select.Option value={sched.id} key={sched.id}>{sched.full_name}</Select.Option>
+                                ))}
+                            </Select>
                         </Item>
                     </Col>
                 </Row>
