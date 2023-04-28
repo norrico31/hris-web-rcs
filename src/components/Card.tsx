@@ -4,9 +4,9 @@ import styled from 'styled-components'
 
 const { Title } = Typography
 
-export default function Card({ level = 3, title, children }: { level?: 5 | 1 | 2 | 3 | 4; title: string; children: ReactNode }) {
+export default function Card({ level = 3, title, style, children }: { level?: 5 | 1 | 2 | 3 | 4; title: string; children: ReactNode; style?: React.CSSProperties }) {
     return (
-        <Container>
+        <Container style={style}>
             <Title level={level}>{title}</Title>
             {children}
         </Container>

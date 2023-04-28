@@ -454,13 +454,31 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     </Select>
                 </FormItem>
                 <FormItem
+                    label="Line Manager"
+                    name="position_type_id"
+                    required
+                    rules={[{ required: true, message: 'Please select position!' }]}
+                >
+                    <Select
+                        placeholder='Select line manager...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
+                    >
+
+                        {lists?.roles.map((role) => role.name.toLowerCase() == 'manager' && (
+                            <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.name}</Select.Option>
+                        ))}
+                    </Select>
+                </FormItem>
+                <FormItem
                     label="Position"
                     name="position_id"
                     required
                     rules={[{ required: true, message: 'Please select position!' }]}
                 >
                     <Select
-                        placeholder='Select employee status...'
+                        placeholder='Select position...'
                         allowClear
                         showSearch
                         optionFilterProp="children"
@@ -470,6 +488,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         ))}
                     </Select>
                 </FormItem>
+            </Col>
+            <Col span={8}>
                 <FormItem
                     label="Role"
                     name="role_id"
@@ -477,7 +497,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     rules={[{ required: true, message: 'Please select role!' }]}
                 >
                     <Select
-                        placeholder='Select employee status...'
+                        placeholder='Select role...'
                         allowClear
                         showSearch
                         optionFilterProp="children"
@@ -487,8 +507,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         ))}
                     </Select>
                 </FormItem>
-            </Col>
-            <Col span={8}>
                 <FormItem
                     label="Status"
                     name="status"

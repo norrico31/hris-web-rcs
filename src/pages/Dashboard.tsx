@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { Col, Row, Card as AntDCard, Typography, Calendar } from 'antd'
 import { renderTitle } from "../shared/utils/utilities"
+import { Card, Divider } from '../components'
 
 const infos = [
     {
@@ -19,6 +21,8 @@ const infos = [
     },
 ]
 
+const { Paragraph, Title } = Typography
+
 export default function Dashboard() {
     renderTitle('Dashboard')
     const [dataList, setDataList] = useState(infos)
@@ -27,28 +31,39 @@ export default function Dashboard() {
     const selectedUser: { [k: string]: string } = dataList.reduce((users, user) => ({ ...users, [user.id]: user }), {})
 
     return (
-        <div>
-            <h1>Dashboard</h1>
-            {dataList.map((info, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10, outline: '1px solid red', width: 200, margin: 10 }} onClick={() => {
-                    setName('')
-                    setSelectedId(info.id)
-                }}>
-                    <h2>{info.name}</h2>
-                    <p>{info.surname}</p>
-                </div>
-            ))}
-            <hr style={{ outline: '1px solid lime' }} />
-            {selectedId && (
+        <Card title='Dashboard'>
+            <Divider />
+            <Row justify='space-between' gutter={[24, 24]} wrap>
+                <Col xs={24} sm={24} md={22} lg={12} xl={11} >
+                    <AntDCard
+                        hoverable
+                        style={{ width: 400 }}
+                    // cover={}
 
-                <input type="text" style={{ margin: 10 }} value={name} onChange={(evt) => {
-                    if (selectedId) {
-                        setDataList(dataList.map((d) => d.id == selectedId ? { ...d, name: evt.target.value } : d))
-                    }
-                    setName(evt.target.value)
-                }} />
-            )}
-            {/* {selectedUser[selectedId]?.name} */}
-        </div>
+                    >
+                        <Title level={3}>Bailon, Christian</Title>
+                        <Paragraph>Operations Department</Paragraph>
+                        <Paragraph>Technical & Delivery Head</Paragraph>
+                        <Paragraph type='secondary'>christian.bailon@redcoresolutions.com</Paragraph>
+                        {/* <AntDCard.Meta title="" description="christian.bailon@redcoresolutions.com" /> */}
+                    </AntDCard>
+                </Col>
+                <Col xs={24} sm={24} md={22} lg={12} xl={11} >
+                    <div>
+                        <Calendar fullscreen={false} />
+                    </div>
+                </Col>
+                <Col xs={24} sm={24} md={22} lg={12} xl={11} >
+                    <AntDCard title='Announcements' style={{ minHeight: 500, maxHeight: 500 }}>
+
+                    </AntDCard>
+                </Col>
+                <Col xs={24} sm={24} md={22} lg={12} xl={11} >
+                    <Card title='Events' level={4} style={{ minHeight: 500, maxHeight: 500 }}>
+
+                    </Card>
+                </Col>
+            </Row>
+        </Card>
     )
 }

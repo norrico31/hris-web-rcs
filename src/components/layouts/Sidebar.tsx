@@ -69,18 +69,18 @@ const MenuContainer = styled(AntdMenu)`
 type MenuItem = Required<MenuProps>['items'][number]
 
 const menus = [
-    // getItemLinks(
-    //     <Link to='/dashboard' id="dashboard">Dashboard</Link>,
-    //     '/dashboard',
-    //     <AiFillAppstore />
-    // ),
     getItemLinks(
-        <Link to='/timekeeping'>Time Keeping</Link>,
+        <Link to='/dashboard' id="dashboard">Dashboard</Link>,
+        '/dashboard',
+        <AiFillAppstore />
+    ),
+    getItemLinks(
+        <Link to='/timekeeping' id='timekeeping'>Time Keeping</Link>,
         '/timekeeping',
         <BiTimeFive />
     ),
     getItemLinks(
-        <Link to='/whosinout'>Who's In/Out</Link>,
+        <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,
         '/whosinout',
         <BiTimer />
     ),

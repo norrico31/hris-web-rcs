@@ -166,7 +166,6 @@ function PositionModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
             >
                 <Input placeholder='Enter position name...' />
             </FormItem>
-            {/* Add position type */}
             <FormItem
                 name="description"
                 label="Description"
