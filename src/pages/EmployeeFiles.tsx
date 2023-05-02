@@ -848,9 +848,14 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
 }
 
 function formValues(values: Record<string, unknown>) {
-    let newValues = {}
+    const payload: { [k: string]: unknown } = {}
     for (const val in values) {
-        newValues = { ...newValues, ...(values[val] == undefined ? { [val]: null } : { [val]: values[val] }) }
+        payload[val] = values[val] != undefined ? values[val] : null
     }
-    return newValues
+    return payload as unknown
+    // let newValues = {}
+    // for (const val in values) {
+    //     newValues = { ...newValues, ...(values[val] == undefined ? { [val]: null } : { [val]: values[val] }) }
+    // }
+    // return newValues
 }

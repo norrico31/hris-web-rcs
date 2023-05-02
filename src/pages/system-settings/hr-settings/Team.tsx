@@ -34,6 +34,12 @@ export default function Team() {
             dataIndex: 'name',
         },
         {
+            title: 'Department',
+            key: 'department',
+            dataIndex: 'department',
+            render: (_, record) => record.department?.name
+        },
+        {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
