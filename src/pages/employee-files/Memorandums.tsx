@@ -162,7 +162,7 @@ function MemorandumModal({ title, selectedData, isModalOpen, handleCancel }: Mod
                 label="Type"
                 name="type"
                 required
-                rules={[{ required: true, message: 'Please enter type!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter document type...' />
             </Item>
@@ -181,7 +181,7 @@ function MemorandumModal({ title, selectedData, isModalOpen, handleCancel }: Mod
                 label="Status"
                 name="status"
                 required
-                rules={[{ required: true, message: 'Please select status!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select
                     placeholder='Select status...'

@@ -181,12 +181,12 @@ function ClientBranchModal({ title, selectedData, isModalOpen, handleCancel, fet
                 label="Client Branch"
                 name="branch_name"
                 required
-                rules={[{ required: true, message: 'Please enter client branch!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter client branch...' />
             </FormItem>
 
-            <FormItem name='client_id' label="Client" required rules={[{ required: true, message: 'Please select client!' }]}>
+            <FormItem name='client_id' label="Client" required rules={[{ required: true, message: '' }]}>
                 <Select
                     placeholder='Select client...'
                     allowClear

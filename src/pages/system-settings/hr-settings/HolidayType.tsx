@@ -168,7 +168,7 @@ function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleC
                 label="Holiday type name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter holiday type name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter holiday type name...' />
             </FormItem>

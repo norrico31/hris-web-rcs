@@ -117,7 +117,7 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
                 label="Leave Type"
                 name="leave_type_id"
                 required
-                rules={[{ required: true, message: 'Please enter types name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter type name...' />
             </FormItem>
@@ -125,7 +125,7 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
                 label="Start Date"
                 name="start_date"
                 required
-                rules={[{ required: true, message: 'Please select date!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <DatePicker
                     format='YYYY/MM/DD'
@@ -136,7 +136,7 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
                 label="End Date"
                 name="end_date"
                 required
-                rules={[{ required: true, message: 'Please select date!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <DatePicker
                     format='YYYY/MM/DD'
@@ -147,7 +147,7 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
                 label="Reason"
                 name="reason"
                 required
-                rules={[{ required: true, message: 'Please enter your reason for leave!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>

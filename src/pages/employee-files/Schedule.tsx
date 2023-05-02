@@ -177,7 +177,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, handleCancel }: Modal
                 label="Schedule Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter schedule name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter schedule name...' />
             </FormItem>
@@ -187,7 +187,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, handleCancel }: Modal
                         label="Time In"
                         name="time_in"
                         required
-                        rules={[{ required: true, message: 'Please select time in!' }]}
+                        rules={[{ required: true, message: '' }]}
                     >
                         <TimePicker style={{ width: '100%' }} />
                     </FormItem>
@@ -197,7 +197,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, handleCancel }: Modal
                         label="Time Out"
                         name="time_out"
                         required
-                        rules={[{ required: true, message: 'Please select time out!' }]}
+                        rules={[{ required: true, message: '' }]}
                     >
                         <TimePicker style={{ width: '100%' }} />
                     </FormItem>
@@ -207,7 +207,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, handleCancel }: Modal
                 label="Status"
                 name="status"
                 required
-                rules={[{ required: true, message: 'Please status!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter status...' />
             </FormItem>

@@ -175,7 +175,7 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
                 label="Activity Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter activity name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter activity name...' />
             </FormItem>
@@ -183,7 +183,7 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
                 label="Team"
                 name="team_id"
                 required
-                rules={[{ required: true, message: 'Please enter team!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select placeholder='Select team...' optionFilterProp="children" allowClear showSearch>
                     {teams.map((team) => (

@@ -193,7 +193,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
                 label="Sprint Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter types name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter type name...' />
             </FormItem>
@@ -201,7 +201,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
                 label="Team"
                 name="team_id"
                 required
-                rules={[{ required: true, message: 'Please enter team!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select placeholder='Select team...' optionFilterProp="children" allowClear showSearch>
                     {teams.map((team) => (
@@ -213,7 +213,7 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
                 label="Start and End Date"
                 name="date"
                 required
-                rules={[{ required: true, message: 'Please select date!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <DatePicker.RangePicker
                     format='YYYY/MM/DD'

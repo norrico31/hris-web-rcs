@@ -177,7 +177,7 @@ export function TypesModal({ title, selectedData, isModalOpen, fetchData, handle
                 label="Type Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter types name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter type name...' />
             </FormItem>
@@ -185,7 +185,7 @@ export function TypesModal({ title, selectedData, isModalOpen, fetchData, handle
                 label="Team"
                 name="team_id"
                 required
-                rules={[{ required: true, message: 'Please enter team!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select placeholder='Select team...' optionFilterProp="children" allowClear showSearch>
                     {teams.map((team) => (

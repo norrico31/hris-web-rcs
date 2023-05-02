@@ -166,10 +166,11 @@ export const useEndpoints = () => {
             },
             EXPENSESETTINGS: {
                 EXPENSE: {
+                    LISTS: '/options/expenses',
                     GET: '/expenses',
-                    POST: '/expense/',
-                    PUT: '/expense/',
-                    DELETE: '/expense/'
+                    POST: '/expenses/',
+                    PUT: '/expenses/',
+                    DELETE: '/expenses/'
 
                 },
                 EXPENSETYPE: {
@@ -277,13 +278,6 @@ export const useEndpoints = () => {
             PUT: '',
             DELETE: ''
         },
-        SALARYADJUSTMENT: {
-            LISTS: '/options/expense',
-            GET: '/expense',
-            POST: '/expense',
-            PUT: '/expense',
-            DELETE: '/expense',
-        }
     }
     return [ENDPOINTS]
 }

@@ -144,7 +144,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
                 label="Benefit"
                 name="benefit"
                 required
-                rules={[{ required: true, message: 'Please enter benefit!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter benefit...' />
             </Item>
@@ -152,7 +152,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
                 label="Amount"
                 name="amount"
                 required
-                rules={[{ required: true, message: 'Please amount!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input type='number' placeholder='Enter amount...' />
             </Item>
@@ -171,7 +171,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
                 label="Status"
                 name="status"
                 required
-                rules={[{ required: true, message: 'Please select status!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select
                     placeholder='Select status...'

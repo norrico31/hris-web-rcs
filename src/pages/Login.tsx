@@ -62,7 +62,7 @@ export default function Login() {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Please input your email!",
+                                    message: "",
                                 },
                             ]}
                         >
@@ -75,7 +75,7 @@ export default function Login() {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Please input your password!",
+                                    message: "",
                                 },
                             ]}
                         >

@@ -39,7 +39,7 @@ export default function UserProfileEmployee() {
                             label="Employee Code"
                             name="employee_code"
                             required
-                            rules={[{ required: true, message: 'Please employee code!' }]}
+                            rules={[{ required: true, message: '' }]}
                         >
                             <Input placeholder='Enter employee code...' />
                         </Item>
@@ -51,7 +51,7 @@ export default function UserProfileEmployee() {
                             label="Last Name"
                             name="last_name"
                             required
-                            rules={[{ required: true, message: 'Please last name!' }]}
+                            rules={[{ required: true, message: '' }]}
                         >
                             <Input placeholder='Enter last name...' />
                         </Item>
@@ -61,7 +61,7 @@ export default function UserProfileEmployee() {
                             label="First Name"
                             name="first_name"
                             required
-                            rules={[{ required: true, message: 'Please first name!' }]}
+                            rules={[{ required: true, message: '' }]}
                         >
                             <Input placeholder='Enter first name...' />
                         </Item>
@@ -89,7 +89,7 @@ export default function UserProfileEmployee() {
                             label="Gender"
                             name="gender"
                             required
-                            rules={[{ required: true, message: 'Please gender!' }]}
+                            rules={[{ required: true, message: '' }]}
                         >
                             <Radio.Group>
                                 <Radio value="male">Male</Radio>
@@ -102,7 +102,7 @@ export default function UserProfileEmployee() {
                             label="Marital Status"
                             name="status"
                             required
-                            rules={[{ required: true, message: 'Please marital status!' }]}
+                            rules={[{ required: true, message: '' }]}
                         >
                             <Radio.Group>
                                 <Radio value="single">Single</Radio>
@@ -127,7 +127,7 @@ export default function UserProfileEmployee() {
                             label="Date of Birth"
                             name="birthday"
                             required
-                            rules={[{ required: true, message: 'Please select date of birth!' }]}
+                            rules={[{ required: true, message: '' }]}
                         >
                             <DatePicker
                                 style={{ width: '100%' }}
@@ -140,7 +140,7 @@ export default function UserProfileEmployee() {
                             label="Current Address"
                             name="address"
                             required
-                            rules={[{ required: true, message: 'Please enter address!' }]}
+                            rules={[{ required: true, message: '' }]}
                         >
                             <Input placeholder='Enter address...' />
                         </Item>
@@ -152,7 +152,7 @@ export default function UserProfileEmployee() {
                             label="Contact #1"
                             name="contact_number1"
                         // required
-                        // rules={[{ required: true, message: 'Please contact number!' }]}
+                        // rules={[{ required: true, message: '' }]}
                         >
                             <Input type='number' placeholder='Enter contact number...' />
                         </Item>
@@ -162,7 +162,7 @@ export default function UserProfileEmployee() {
                             label="Contact #2"
                             name="contact_number2"
                         // required
-                        // rules={[{ required: true, message: 'Please contact number!' }]}
+                        // rules={[{ required: true, message: '' }]}
                         >
                             <Input type='number' placeholder='Enter contact number...' />
                         </Item>

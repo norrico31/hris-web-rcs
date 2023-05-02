@@ -153,7 +153,7 @@ function RoleModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                 label="Role Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter position name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter position name...' />
             </FormItem>

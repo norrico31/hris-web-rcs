@@ -202,7 +202,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
                 label="Daily Rate Code"
                 name="daily_rate_code"
                 required
-                rules={[{ required: true, message: 'Please enter code!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter code...' />
             </FormItem>
@@ -210,7 +210,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
                 label="Daily Rate Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter daily rate name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter daily rate name...' />
             </FormItem>
@@ -218,7 +218,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
                 label="Daily rate per Hour"
                 name="daily_rate_per_hour"
                 required
-                rules={[{ required: true, message: 'Please enter daily rate per hour!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input type='number' placeholder='Enter daily rate per hour...' />
             </FormItem>
@@ -226,7 +226,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
                 label="Overtime Rate per Hour"
                 name="overtime_rate_per_hour"
                 required
-                rules={[{ required: true, message: 'Please enter overtime rate hour!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input type='number' placeholder='Enter overtime rate hour...' />
             </FormItem>
@@ -234,7 +234,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
                 label="Night Differential Rate per Hour"
                 name="night_diff_rate_per_hour"
                 required
-                rules={[{ required: true, message: 'Please enter night differential rate per hour!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input type='number' placeholder='Enter night differential rate per hour...' />
             </FormItem>
@@ -242,7 +242,7 @@ function DailyRateModal({ title, selectedData, isModalOpen, handleCancel, fetchD
                 label="Night Differential Overtime Rate per Hour"
                 name="night_diff_ot_rate_per_hour"
                 required
-                rules={[{ required: true, message: 'Please enter night differential overtime rate per hour!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input type='number' placeholder='Enter night differential overtime rate per hour...' />
             </FormItem>

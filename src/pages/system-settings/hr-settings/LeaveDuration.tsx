@@ -161,7 +161,7 @@ function LeaveDurationModal({ title, selectedData, isModalOpen, handleCancel, fe
                 label="Leave Duration Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter leave duration name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter leave duration name...' />
             </FormItem>

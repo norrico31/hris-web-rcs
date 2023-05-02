@@ -166,7 +166,7 @@ function DocumentsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
                 label="Document Type"
                 name="document_type"
                 required
-                rules={[{ required: true, message: 'Please enter document type!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter document type...' />
             </Item>
@@ -185,7 +185,7 @@ function DocumentsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
                 label="Status"
                 name="status"
                 required
-                rules={[{ required: true, message: 'Please select status!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select
                     placeholder='Select status...'

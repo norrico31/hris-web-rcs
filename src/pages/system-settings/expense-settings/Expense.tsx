@@ -161,41 +161,16 @@ function ExpenseModal({ title, selectedData, isModalOpen, handleCancel, fetchDat
                 label="Expense Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter expense name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter expense name...' />
             </FormItem>
-            {/* <FormItem
-                label="Address"
-                name="address"
-                required
-                rules={[{ required: true, message: 'Please enter address!' }]}
-            >
-                <Input placeholder='Enter address...' />
-            </FormItem>
-            <FormItem
-                label="Contact Number"
-                name="contact_number"
-                required
-                rules={[{ required: true, message: 'Please enter contact number!' }]}
-            >
-                <Input type='number' placeholder='Enter contact number...' />
-            </FormItem>
-            <FormItem
-                label="Contact Person"
-                name="contact_person"
-                required
-                rules={[{ required: true, message: 'Please enter contact person!' }]}
-            >
-                <Input type='text' placeholder='Enter contact person...' />
-            </FormItem> */}
             <FormItem
                 name="description"
                 label="Description"
             >
                 <Input placeholder='Enter Description...' />
             </FormItem>
-
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit">

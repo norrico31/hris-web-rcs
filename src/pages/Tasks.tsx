@@ -218,7 +218,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                 label="Task Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter task name!' }]}
+                rules={[{ required: true, message: '!' }]}
             >
                 <Input placeholder='Enter task name...' />
             </FormItem>
@@ -226,7 +226,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                 label="Date"
                 name="date"
                 required
-                rules={[{ required: true, message: 'Please select date!' }]}
+                rules={[{ required: true, message: '!' }]}
             >
                 <DatePicker
                     format='YYYY/MM/DD'
@@ -235,7 +235,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             </FormItem>
             <Row gutter={[24, 24]} align='middle'>
                 <Col span={18}>
-                    <FormItem name='task_activity_id' label="Task Activity" required rules={[{ required: true, message: 'Please select task activity!' }]}>
+                    <FormItem name='task_activity_id' label="Task Activity" required rules={[{ required: true, message: '' }]}>
                         <Select
                             placeholder='Select task activity'
                             allowClear
@@ -256,7 +256,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             </Row>
             <Row gutter={[24, 24]} align='middle'>
                 <Col span={18}>
-                    <FormItem name='task_type_id' label="Task Type" required rules={[{ required: true, message: 'Please select task type!' }]}>
+                    <FormItem name='task_type_id' label="Task Type" required rules={[{ required: true, message: '' }]}>
                         <Select
                             placeholder='Select task type'
                             allowClear
@@ -277,7 +277,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             </Row>
             <Row gutter={[24, 24]} align='middle'>
                 <Col span={18}>
-                    <FormItem name='sprint_id' label="Sprint" required rules={[{ required: true, message: 'Please select task sprint!' }]}>
+                    <FormItem name='sprint_id' label="Sprint" required rules={[{ required: true, message: '' }]}>
                         <Select
                             placeholder='Select sprint'
                             allowClear
@@ -296,7 +296,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     </Button>
                 </Col>
             </Row>
-            <FormItem name="manhours" label="Manhours" required rules={[{ required: true, message: 'Please manhours!' }]}>
+            <FormItem name="manhours" label="Manhours" required rules={[{ required: true, message: '' }]}>
                 <Input placeholder='Enter manhours...' />
             </FormItem>
             <FormItem name="description" label="Description">

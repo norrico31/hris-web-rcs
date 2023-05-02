@@ -182,7 +182,7 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 label="Client Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter client!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter client...' />
             </FormItem>
@@ -190,7 +190,7 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 label="Address"
                 name="address"
                 required
-                rules={[{ required: true, message: 'Please enter address!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter address...' />
             </FormItem>
@@ -198,7 +198,7 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 label="Contact Number"
                 name="contact_number"
                 required
-                rules={[{ required: true, message: 'Please enter contact number!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input type='number' placeholder='Enter contact number...' />
             </FormItem>
@@ -206,7 +206,7 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 label="Contact Person"
                 name="contact_person"
                 required
-                rules={[{ required: true, message: 'Please enter contact person!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input type='text' placeholder='Enter contact person...' />
             </FormItem>
@@ -216,7 +216,6 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
             >
                 <Input placeholder='Enter Description...' />
             </FormItem>
-
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>

@@ -144,7 +144,7 @@ function EvaluationsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
                 label="Copy"
                 name="copy"
                 required
-                rules={[{ required: true, message: 'Please enter copy!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter copy...' />
             </Item>
@@ -152,7 +152,7 @@ function EvaluationsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
                 label="Type"
                 name="type"
                 required
-                rules={[{ required: true, message: 'Please select type!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select
                     placeholder='Select type...'
@@ -176,7 +176,7 @@ function EvaluationsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
                 label="Status"
                 name="status"
                 required
-                rules={[{ required: true, message: 'Please select status!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select
                     placeholder='Select status...'

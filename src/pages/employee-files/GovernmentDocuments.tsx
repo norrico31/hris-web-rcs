@@ -162,7 +162,7 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
                 label={title + ' Number'}
                 name={keyProp}
                 required
-                rules={[{ required: true, message: 'Please enter pagibig number!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input type='number' placeholder='Enter pagibig number...' />
             </FormItem>
@@ -170,7 +170,7 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
                 label='Upload File'
                 name='file'
                 required
-                rules={[{ required: true, message: 'Please upload file!' }]}
+                rules={[{ required: true, message: '' }]}
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
             >

@@ -167,7 +167,7 @@ function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel, fetc
                 label="Bank Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter bank name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter bank name...' />
             </FormItem>
@@ -175,7 +175,7 @@ function BankDetailsModal({ title, selectedData, isModalOpen, handleCancel, fetc
                 label="Bank Branch"
                 name="bank_branch"
                 required
-                rules={[{ required: true, message: 'Please enter bank branch!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter bank branch...' />
             </FormItem>

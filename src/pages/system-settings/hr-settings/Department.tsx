@@ -162,7 +162,7 @@ function DepartmentModal({ title, selectedData, isModalOpen, handleCancel, fetch
                 label="Department Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter department name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter department name...' />
             </FormItem>

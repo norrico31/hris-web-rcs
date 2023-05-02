@@ -171,7 +171,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                 label="First Name"
                 name="first_name"
                 required
-                rules={[{ required: true, message: 'Please enter first name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter first name...' />
             </FormItem>
@@ -179,7 +179,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                 label="Middle Name"
                 name="middle_name"
                 required
-                rules={[{ required: true, message: 'Please enter middle name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter middle name...' />
             </FormItem>
@@ -187,7 +187,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                 label="Last Name"
                 name="last_name"
                 required
-                rules={[{ required: true, message: 'Please enter last name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter last name...' />
             </FormItem>
@@ -195,7 +195,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                 label="Email Address"
                 name="email"
                 required
-                rules={[{ required: true, message: 'Please enter email address!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input type='email' placeholder='Enter email address...' />
             </FormItem>

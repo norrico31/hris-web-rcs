@@ -176,7 +176,7 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 label="Benefit"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter benefit!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter benefit...' />
             </Item>
@@ -184,7 +184,7 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 label="Payroll Calculation"
                 name="for_payroll_calculation"
                 required
-                rules={[{ required: true, message: 'Please select payment calculation!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Radio.Group>
                     <Radio value="0">No</Radio>
@@ -195,7 +195,7 @@ function BenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 label="Status"
                 name="is_active"
                 required
-                rules={[{ required: true, message: 'Please select status!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select
                     placeholder='Select status...'

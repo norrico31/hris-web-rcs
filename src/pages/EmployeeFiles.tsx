@@ -334,7 +334,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Employee No."
                     name="employee_code"
                     required
-                    rules={[{ required: true, message: 'Please enter employee no.!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Input placeholder='Enter employee no...' />
                 </FormItem>
@@ -342,7 +342,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="First Name"
                     name="first_name"
                     required
-                    rules={[{ required: true, message: 'Please enter first name!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Input placeholder='Enter first name...' />
                 </FormItem>
@@ -356,11 +356,11 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Last Name"
                     name="last_name"
                     required
-                    rules={[{ required: true, message: 'Please enter last name!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Input placeholder='Enter last name...' />
                 </FormItem>
-                <FormItem name='gender' label="Gender" required rules={[{ required: true, message: 'Please select gender!' }]}>
+                <FormItem name='gender' label="Gender" required rules={[{ required: true, message: '' }]}>
                     <Select
                         placeholder='Select gender...'
                         allowClear
@@ -374,7 +374,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Marital Status"
                     name="marital_status"
                     required
-                    rules={[{ required: true, message: 'Please select marital status!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select marital status...'
@@ -390,7 +390,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Date of Birth"
                     name="birthday"
                     required
-                    rules={[{ required: true, message: 'Please select date of birth!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -404,7 +404,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Contact Number"
                     name="mobile_number1"
                     required
-                    rules={[{ required: true, message: 'Please enter contact number!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Input type='number' placeholder='Enter contact number...' />
                 </FormItem>
@@ -412,18 +412,18 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Contact Number 2"
                     name="mobile_number2"
                     required
-                    rules={[{ required: true, message: 'Please enter contact number!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Input type='number' placeholder='Enter contact number...' />
                 </FormItem>
-                <FormItem name='email' label="Email Address" required rules={[{ required: true, message: 'Please enter email address!' }]}>
+                <FormItem name='email' label="Email Address" required rules={[{ required: true, message: '' }]}>
                     <Input type='email' placeholder='Enter email address...' />
                 </FormItem>
                 <FormItem
                     label="Employee Status"
                     name="employee_status_id"
                     required
-                    rules={[{ required: true, message: 'Please select employee status!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select employee status...'
@@ -440,7 +440,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Department"
                     name="department_id"
                     required
-                    rules={[{ required: true, message: 'Please select department!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select department...'
@@ -457,7 +457,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Line Manager"
                     name="position_type_id"
                     required
-                    rules={[{ required: true, message: 'Please select position!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select line manager...'
@@ -475,7 +475,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Position"
                     name="position_id"
                     required
-                    rules={[{ required: true, message: 'Please select position!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select position...'
@@ -494,7 +494,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Role"
                     name="role_id"
                     required
-                    rules={[{ required: true, message: 'Please select role!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select role...'
@@ -511,7 +511,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Status"
                     name="status"
                     required
-                    rules={[{ required: true, message: 'Please select status!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select status...'
@@ -524,7 +524,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Date Hired"
                     name="date_hired"
                     required
-                    rules={[{ required: true, message: 'Please select date hired!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -546,7 +546,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Current Address"
                     name="address"
                     required
-                    rules={[{ required: true, message: 'Please enter current address!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Input.TextArea placeholder='Enter current address...' style={{ minHeight: 190 }} />
                 </FormItem>
@@ -643,7 +643,7 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                     name='client_branch_id'
                     label="Client Branch"
                     required
-                    rules={[{ required: true, message: 'Please select client branch!' }]}
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select client branch...'
@@ -737,7 +737,7 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
                     name='salary_rate_id'
                     label="Salary Rate"
                 // required 
-                // rules={[{ required: true, message: 'Please enter salary rate!' }]}
+                // rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select salary rate...'
@@ -750,7 +750,7 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
                         ))}
                     </Select>
                 </FormItem>
-                <FormItem name='basic_rate' label="Basic Rate" required rules={[{ required: true, message: 'Please select basic rate!' }]}>
+                <FormItem name='basic_rate' label="Basic Rate" required rules={[{ required: true, message: '' }]}>
                     <Input type='number' placeholder='Enter basic rate...' />
                 </FormItem>
             </Col>
@@ -818,7 +818,7 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
     return <Form form={form} onFinish={onFinish} disabled={loading}>
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col>
-                <FormItem name='pay_scheme' label="Pay Scheme" required rules={[{ required: true, message: 'Please select pay scheme!' }]}>
+                <FormItem name='pay_scheme' label="Pay Scheme" required rules={[{ required: true, message: '' }]}>
                     <Select
                         placeholder='Select pay scheme...'
                     >
@@ -826,10 +826,10 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
                         <Select.Option value="bank_account">Bank Account</Select.Option>
                     </Select>
                 </FormItem>
-                <FormItem name='bank_name' label="Bank Name" required rules={[{ required: true, message: 'Please enter bank name!' }]}>
+                <FormItem name='bank_name' label="Bank Name" required rules={[{ required: true, message: '' }]}>
                     <Input type='text' placeholder='Enter bank name...' />
                 </FormItem>
-                <FormItem name='bank_account_number' label="Bank Account Number" required rules={[{ required: true, message: 'Please select bank account number!' }]}>
+                <FormItem name='bank_account_number' label="Bank Account Number" required rules={[{ required: true, message: '' }]}>
                     <Input type='number' placeholder='Enter bank account number...' />
                 </FormItem>
             </Col>

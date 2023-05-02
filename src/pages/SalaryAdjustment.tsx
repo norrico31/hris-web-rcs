@@ -22,7 +22,7 @@ interface ISalaryAdjustment extends Partial<{ id: string }> {
 }
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ SALARYADJUSTMENT, EMPLOYEE201, SYSTEMSETTINGS: { EXPENSESETTINGS: { EXPENSETYPE } }, ADMINSETTINGS }] = useEndpoints()
+const [{ EMPLOYEE201, SYSTEMSETTINGS: { EXPENSESETTINGS: { EXPENSE, EXPENSETYPE } }, ADMINSETTINGS }] = useEndpoints()
 
 export default function SalaryAdjustment() {
     renderTitle('Salary Adjustment')
@@ -90,7 +90,7 @@ export default function SalaryAdjustment() {
 
     const fetchData = (args?: IArguments) => {
         setLoading(true)
-        GET<any>(SALARYADJUSTMENT.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<any>(EXPENSE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -117,7 +117,7 @@ export default function SalaryAdjustment() {
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
-        DELETE(SALARYADJUSTMENT.DELETE, id)
+        DELETE(EXPENSE.DELETE, id)
             .finally(fetchData)
     }
 
@@ -225,7 +225,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         expense_date = dayjs(expense_date, 'YYYY/MM/DD') as any
         receipt_attachment = receipt_attachment ? receipt_attachment[0] : null
         restValues = { ...restValues, expense_date, receipt_attachment, ...(description != undefined && { description }) } as any
-        let result = selectedData ? PUT(SALARYADJUSTMENT.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(SALARYADJUSTMENT.POST, restValues)
+        let result = selectedData ? PUT(EXPENSE.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(EXPENSE.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -252,7 +252,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         label="Employee Name"
                         name="user_id"
                         required
-                        rules={[{ required: true, message: 'Please select employee!' }]}
+                        rules={[{ required: true, message: '' }]}
                     >
                         <Select
                             placeholder='Select employee'
@@ -269,7 +269,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         label="Expense Type"
                         name="expense_type_id"
                         required
-                        rules={[{ required: true, message: 'Please select expense type!' }]}
+                        rules={[{ required: true, message: '' }]}
                     >
                         <Select
                             placeholder='Select expense type'
@@ -285,7 +285,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                     <FormItem
                         label="Salary Adjustment Amount"
                         name='amount'
-                        required rules={[{ required: true, message: 'Please enter adjustment adjustment amount!' }]}
+                        required rules={[{ required: true, message: '' }]}
                     >
                         <Input type='number' placeholder='Enter adjustment adjustment amount...' />
                     </FormItem>
@@ -293,7 +293,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         label="Expense Date"
                         name="expense_date"
                         required
-                        rules={[{ required: true, message: 'Please select adjustment date!' }]}
+                        rules={[{ required: true, message: '' }]}
                     >
                         <DatePicker
                             format='YYYY/MM/DD'
@@ -306,7 +306,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                             label="Taxable"
                             name="is_taxable"
                             required
-                            rules={[{ required: true, message: 'Please select if taxable!' }]}
+                            rules={[{ required: true, message: '' }]}
                         >
                             <Radio.Group>
                                 <Radio value="no">No</Radio>
@@ -317,7 +317,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                             label="Active"
                             name="is_active"
                             required
-                            rules={[{ required: true, message: 'Please select if active!' }]}
+                            rules={[{ required: true, message: '' }]}
                         >
                             <Radio.Group>
                                 <Radio value="no">No</Radio>
@@ -331,7 +331,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         name="remarks"
                         label="Remarks"
                         required
-                        rules={[{ required: true, message: 'Please enter remarks!' }]}
+                        rules={[{ required: true, message: '' }]}
                     >
                         <Input.TextArea placeholder='Enter remarks...' />
                     </FormItem>
@@ -350,7 +350,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         valuePropName="fileList"
                         getValueFromEvent={normFile}
                     // required
-                    // rules={[{ required: true, message: 'Please receip file!' }]}
+                    // rules={[{ required: true, message: '' }]}
                     >
                         <Upload listType="picture-card" beforeUpload={() => false}>
                             <div>

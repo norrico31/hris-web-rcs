@@ -161,7 +161,7 @@ function LeaveStatusesModal({ title, selectedData, isModalOpen, handleCancel, fe
                 label="Leave Status Name"
                 name="name"
                 required
-                rules={[{ required: true, message: 'Please enter leave status name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter leave status name...' />
             </FormItem>

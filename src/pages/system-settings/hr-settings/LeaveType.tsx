@@ -162,7 +162,7 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
                 label="Leave Type Name"
                 name="type"
                 required
-                rules={[{ required: true, message: 'Please enter leave type name!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter leave type name...' />
             </FormItem>

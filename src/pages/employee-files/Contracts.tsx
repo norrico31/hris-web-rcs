@@ -157,7 +157,7 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
                 label="Type"
                 name="type"
                 required
-                rules={[{ required: true, message: 'Please enter type!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter type...' />
             </Item>
@@ -176,7 +176,7 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
                 label="Status"
                 name="status"
                 required
-                rules={[{ required: true, message: 'Please select status!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Select
                     placeholder='Select status...'
