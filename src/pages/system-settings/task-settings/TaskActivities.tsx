@@ -142,7 +142,7 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
 
     useEffect(() => {
         if (selectedData != undefined) {
-            form.setFieldsValue({ ...selectedData })
+            form.setFieldsValue({ ...selectedData! })
         } else {
             form.resetFields(undefined)
         }
@@ -157,9 +157,7 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
 
     function onFinish(values: ITaskActivities) {
         setLoading(true)
-        let { description, ...restValues } = values
-        restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(TASKSSETTINGS.ACTIVITIES.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.ACTIVITIES.POST, restValues)
+        const result = selectedData != undefined ? PUT(TASKSSETTINGS.ACTIVITIES.PUT + selectedData.id!, { ...formValues(values), id: selectedData.id! }) : POST(TASKSSETTINGS.ACTIVITIES.POST, formValues(values))
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -206,4 +204,12 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
             </FormItem>
         </Form>
     </Modal>
+}
+
+function formValues(values: ITaskActivities | any) {
+    const payload: { [k: string]: string | null } = {}
+    for (const k in values as { [k: string]: string | undefined }) {
+        payload[k] = values[k] != undefined ? values[k] : null;
+    }
+    return payload
 }
