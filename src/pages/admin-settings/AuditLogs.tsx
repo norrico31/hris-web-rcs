@@ -126,7 +126,7 @@ export default function AuditLogs() {
             <Table
                 loading={loading}
                 columns={columns}
-                dataList={data}
+                dataList={Object.values(data)}
                 tableParams={tableParams}
                 onChange={onChange}
             />
