@@ -48,25 +48,25 @@ export default function IssueLogs() {
             title: 'Action',
             key: 'action',
             dataIndex: 'action',
-            render: (_, record) => {
-                const action = record?.action.toLowerCase()
-                const color = action == 'created' ? 'green' : action == 'updated' ? 'blue' : 'red'
-                return <Tag color={color}>{firstLetterCapitalize(record?.action)}</Tag>
-            },
+            // render: (_, record) => {
+            //     const action = record?.action.toLowerCase()
+            //     const color = action == 'created' ? 'green' : action == 'updated' ? 'blue' : 'red'
+            //     return <Tag color={color}>{firstLetterCapitalize(record?.action)}</Tag>
+            // },
             width: 120,
             align: 'center'
         },
-        {
-            title: 'Module',
-            key: 'module_name',
-            dataIndex: 'module_name',
-            render: (_, record) => {
-                const module = record?.module_name.split('\\')
-                return module[module.length - 1]
-            },
-            width: 150,
-            align: 'center'
-        },
+        // {
+        //     title: 'Module',
+        //     key: 'module_name',
+        //     dataIndex: 'module_name',
+        //     render: (_, record) => {
+        //         const module = record?.module_name.split('\\')
+        //         return module[module.length - 1]
+        //     },
+        //     width: 150,
+        //     align: 'center'
+        // },
         {
             title: 'Payload',
             key: 'payload',
@@ -118,7 +118,7 @@ export default function IssueLogs() {
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     return (
-        <Card title='Audit Logs'>
+        <Card title='Issue Logs'>
             <TabHeader
                 name='audit logs'
                 handleSearch={handleSearch}

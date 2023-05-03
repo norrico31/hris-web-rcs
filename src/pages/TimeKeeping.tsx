@@ -60,16 +60,16 @@ export default function TimeKeeping() {
             width: 150
         },
         {
-            title: 'Time In',
-            key: 'time_in',
-            dataIndex: 'time_in',
+            title: 'Time',
+            key: 'time_keeping_time',
+            dataIndex: 'time_keeping_time',
             width: 150
         },
         {
-            title: 'Time Out',
-            key: 'time_out',
-            dataIndex: 'time_out',
-            render: (_, record) => record?.time_out ?? '-',
+            title: 'Time Type',
+            key: 'type',
+            dataIndex: 'type',
+            render: (_, record) => record?.type.split('_').join(' ') ?? '-',
             width: 150
         },
     ]
@@ -84,10 +84,10 @@ export default function TimeKeeping() {
         <>
             <Card title='Timekeeping'>
                 <Row wrap justify='space-between'>
-                    <DatePicker format='YYYY-MM-DD' onChange={handleDatePickerChange} />
+                    <DatePicker format='YYYY-MM-DD' defaultValue={dayjs()} onChange={handleDatePickerChange} />
                     <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={!!data[0]?.time_in && !!data[0]?.time_out}>
                         {/* <RxEnter /> */}
-                        {data[0]?.time_in ? 'Time In' : 'Time Out'}
+                        {(data[0] == undefined) ? 'Time In' : 'Time Out'}
                     </Button>
                 </Row>
                 <Divider />

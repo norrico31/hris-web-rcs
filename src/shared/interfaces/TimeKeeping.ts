@@ -17,6 +17,7 @@ export interface ITimeKeeping {
     for_late_computation: string | null
     for_under_time_computation: string | null
     id: string | null
+    type: string
     is_active: string | null
     leave_date: string | null
     leave_duration_id: string | null

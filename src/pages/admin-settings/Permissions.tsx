@@ -48,7 +48,7 @@ export default function Permissions() {
                 setPermissions(newPermissions ?? new Map())
             }).finally(() => setLoadingPermissions(false))
     }
-    console.log(permissions)
+
     return (
         <Card title='Permissions'>
             <Select
@@ -56,7 +56,7 @@ export default function Permissions() {
                 allowClear
                 showSearch
                 value={roleId}
-                loading={loadingRoles}
+                loading={loadingRoles || loadingPermissions}
                 disabled={loadingRoles}
                 onChange={(id) => {
                     if (id != undefined) {
@@ -72,15 +72,18 @@ export default function Permissions() {
                     <Select.Option key={r?.id} value={r?.id}>{r?.name}</Select.Option>
                 ))}
             </Select>
-            {Array.from(permissions.values()).map((per) => (
-                <div key={per.id}>
-                    {per.module}
-                </div>
-            ))}
-            {/* {Array.from(lists.values()).map(d => (
-                JSON.stringify(d.name)
-            ))} */}
+            {renderNames(permissions).map((permission) => {
+                return <PermissionCard permission={permission} key={permission.id} />
+            })}
             {/* {firstData.name} */}
         </Card>
     )
 }
+
+function PermissionCard({ permission }: { permission: IPermissions }) {
+    return <div key={permission.id}>
+        {permission.module} - {permission.action}
+    </div>
+}
+
+const renderNames = (permissions: Map<string, IPermissions>) => Array.from(permissions.values()).sort((a, b) => a?.action < b?.action ? 1 : -1)
