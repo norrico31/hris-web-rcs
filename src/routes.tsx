@@ -58,6 +58,8 @@ const ClientAdjustment = lazy(() => import('./pages/system-settings/client-setti
 const Users = lazy(() => import('./pages/admin-settings/Users'))
 const Roles = lazy(() => import('./pages/admin-settings/Roles'))
 const AuditLogs = lazy(() => import('./pages/admin-settings/AuditLogs'))
+const Permissions = lazy(() => import('./pages/admin-settings/Permissions'))
+const IssueLogs = lazy(() => import('./pages/admin-settings/IssueLogs'))
 
 // Employee Files (201)
 const ClientHistory = lazy(() => import('./pages/employee-files/ClientHistory'))
@@ -96,24 +98,32 @@ export const routes = createBrowserRouter([
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Dashboard /></Suspense>
             },
             {
-                path: 'timekeeping',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><TimeKeeping /></Suspense>
+                path: 'announcements',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Announcements /></Suspense>
             },
             {
-                path: 'roles',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><Roles /></Suspense>
+                path: 'timekeeping',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><TimeKeeping /></Suspense>
             },
             {
                 path: 'users',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Users /></Suspense>
             },
             {
+                path: 'roles',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Roles /></Suspense>
+            },
+            {
                 path: 'auditlogs',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><AuditLogs /></Suspense>
             },
             {
-                path: 'announcements',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><Announcements /></Suspense>
+                path: 'issuelogs',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><IssueLogs /></Suspense>
+            },
+            {
+                path: 'permissions',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Permissions /></Suspense>
             },
             {
                 path: 'systemsettings',

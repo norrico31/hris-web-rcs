@@ -65,7 +65,7 @@ export default function WhosInOut() {
     const fetchData = ({ args, isIn }: { args?: IArguments; isIn?: boolean }) => {
         setLoading(true)
         const url = isIn ? WHOSINOUT.IN : WHOSINOUT.OUT
-        GET<TimeKeepingRes>(url + today, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<TimeKeepingRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({

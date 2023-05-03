@@ -3,13 +3,14 @@ import { MenuProps, Menu as AntdMenu } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit } from 'react-icons/ai'
-import { MdAdminPanelSettings } from 'react-icons/md'
+import { MdAdminPanelSettings, MdLockOutline } from 'react-icons/md'
 import { FaTasks, FaCriticalRole, FaUsersCog, FaUsers } from 'react-icons/fa'
 import { GiHumanPyramid } from 'react-icons/gi'
 import { BiTimeFive, BiTimer } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
 import { TfiAnnouncement } from 'react-icons/tfi'
+import { GoIssueOpened } from 'react-icons/go'
 
 type Props = {
     onSelect: () => void
@@ -30,6 +31,8 @@ export default function Sidebar({ onSelect }: Props) {
             setLocationKey('/systemsettings/clientsettings/client')
         } else if (location?.pathname.includes('/systemsettings/expensesettings')) {
             setLocationKey('/systemsettings/expensesettings/expense')
+        } else if (location?.pathname.includes('/leave')) {
+            setLocationKey('/leave')
         } else setLocationKey(location?.pathname)
     }, [location.pathname])
 
@@ -133,9 +136,19 @@ const menus = [
                 <FaCriticalRole />,
             ),
             getItemLinks(
+                <Link to='/permissions'>Permissions</Link>,
+                '/permissions',
+                <MdLockOutline />,
+            ),
+            getItemLinks(
                 <Link to='/auditlogs'>Audit Logs</Link>,
                 '/auditlogs',
                 <AiOutlineAudit />,
+            ),
+            getItemLinks(
+                <Link to='/issuelogs'>Issue Logs</Link>,
+                '/issuelogs',
+                <GoIssueOpened />,
             ),
         ]
     ),

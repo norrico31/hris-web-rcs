@@ -9,7 +9,7 @@ import { Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useEndpoints } from './../shared/constants/endpoints'
 import axiosClient, { useAxios } from './../shared/lib/axios'
-import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates } from '../shared/interfaces'
+import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates, ILineManager } from '../shared/interfaces'
 
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
 const { GET, POST, DELETE } = useAxios()
@@ -291,10 +291,11 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
         if (stepOneInputs) form.setFieldsValue({ ...stepOneInputs })
     }, [stepOneInputs])
 
-    const [lists, setLists] = useState<{ employeeStatus: IEmployeeStatus[]; positions: IPosition[]; roles: IRole[]; departments: IDepartment[] }>({
+    const [lists, setLists] = useState<{ employeeStatus: IEmployeeStatus[]; positions: IPosition[]; roles: IRole[]; lineManagers: ILineManager[]; departments: IDepartment[] }>({
         employeeStatus: [],
         positions: [],
         roles: [],
+        lineManagers: [],
         departments: []
     })
 
@@ -305,12 +306,15 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 const employeeStatusPromise = axiosClient(HRSETTINGS.EMPLOYEESTATUS.LISTS, { signal: controller.signal })
                 const positionsPromise = axiosClient(HRSETTINGS.POSITION.LISTS, { signal: controller.signal })
                 const rolesPromise = axiosClient(ADMINSETTINGS.ROLES.LISTS, { signal: controller.signal })
+                const lineManagerPromise = axiosClient(ADMINSETTINGS.ROLES.LINEMANAGERS, { signal: controller.signal })
                 const departmentPromise = axiosClient(HRSETTINGS.DEPARTMENT.LISTS, { signal: controller.signal })
-                const [employeeStatusRes, positionsRes, rolesRes, departmentRes] = await Promise.allSettled([employeeStatusPromise, positionsPromise, rolesPromise, departmentPromise]) as any
+                const [employeeStatusRes, positionsRes, rolesRes, lineManagerRes, departmentRes] = await Promise.allSettled([employeeStatusPromise, positionsPromise, rolesPromise, lineManagerPromise, departmentPromise]) as any
+                console.log(employeeStatusRes?.value?.data)
                 setLists({
                     employeeStatus: employeeStatusRes?.value?.data ?? [],
                     positions: positionsRes?.value?.data ?? [],
                     roles: rolesRes?.value?.data ?? [],
+                    lineManagers: lineManagerRes?.value?.data ?? [],
                     departments: departmentRes?.value?.data ?? [],
                 })
             } catch (error) {
@@ -454,21 +458,16 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     </Select>
                 </FormItem>
                 <FormItem
-                    label="Line Manager"
-                    name="position_type_id"
+                    label="Status"
+                    name="status"
                     required
                     rules={[{ required: true, message: '' }]}
                 >
                     <Select
-                        placeholder='Select line manager...'
-                        allowClear
-                        showSearch
-                        optionFilterProp="children"
+                        placeholder='Select status...'
                     >
-                        {/* TODO */}
-                        {lists?.roles.map((role) => role.name.toLowerCase() == 'manager' && (
-                            <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.name}</Select.Option>
-                        ))}
+                        <Select.Option value="active">Active</Select.Option>
+                        <Select.Option value="inactive">Inactive</Select.Option>
                     </Select>
                 </FormItem>
                 <FormItem
@@ -502,22 +501,24 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         showSearch
                         optionFilterProp="children"
                     >
-                        {lists?.roles.map((role) => role.name.toLowerCase() != 'manager' && (
+                        {lists?.roles.map((role) => (
                             <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.name}</Select.Option>
                         ))}
                     </Select>
                 </FormItem>
                 <FormItem
-                    label="Status"
-                    name="status"
-                    required
-                    rules={[{ required: true, message: '' }]}
+                    label="Line Manager"
+                    name="position_type_id"
                 >
                     <Select
-                        placeholder='Select status...'
+                        placeholder='Select line manager...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
                     >
-                        <Select.Option value="active">Active</Select.Option>
-                        <Select.Option value="inactive">Inactive</Select.Option>
+                        {lists?.lineManagers.map((role) => (
+                            <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.full_name}</Select.Option>
+                        ))}
                     </Select>
                 </FormItem>
                 <FormItem
@@ -548,7 +549,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     required
                     rules={[{ required: true, message: '' }]}
                 >
-                    <Input.TextArea placeholder='Enter current address...' style={{ minHeight: 190 }} />
+                    <Input.TextArea placeholder='Enter current address...' style={{ minHeight: 200 }} />
                 </FormItem>
             </Col>
         </Row>

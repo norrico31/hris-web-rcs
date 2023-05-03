@@ -21,8 +21,8 @@ export const useEndpoints = () => {
             GET: '/time_keepings'
         },
         WHOSINOUT: {
-            IN: '/time_keepings/whos/in?date=',
-            OUT: '/time_keepings/whos/out?date=',
+            IN: '/time_keepings/whos/in',
+            OUT: '/time_keepings/whos/out',
         },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
@@ -184,6 +184,7 @@ export const useEndpoints = () => {
         },
         ADMINSETTINGS: {
             ROLES: {
+                LINEMANAGERS: '/options/line_managers',
                 LISTS: '/options/roles',
                 GET: '/roles',
                 POST: '/roles/',
@@ -201,6 +202,9 @@ export const useEndpoints = () => {
             },
             AUDITLOGS: {
                 GET: '/audit_logs'
+            },
+            ISSUELOGS: {
+                GET: '/laravel_logs'
             }
         },
         EMPLOYEE201: {
