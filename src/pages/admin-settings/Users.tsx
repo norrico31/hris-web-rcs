@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../components"
-import { useAxios } from '../../shared/lib/axios'
+import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
-import { IArguments, IUser, UserRes, TableParams } from '../../shared/interfaces'
+import { IArguments, IUser, UserRes, TableParams, IRole } from '../../shared/interfaces'
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
@@ -150,12 +150,21 @@ const { Item: FormItem, useForm } = AntDForm
 function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(false)
+    const [roles, setRoles] = useState<IRole[]>([])
 
     useEffect(() => {
         if (selectedData != undefined) {
             form.setFieldsValue({ ...selectedData })
         } else {
             form.resetFields(undefined)
+        }
+        const controller = new AbortController()
+        axiosClient(ADMINSETTINGS.ROLES.LISTS, { signal: controller.signal })
+            .then((res) => {
+                setRoles(res?.data ?? [])
+            });
+        return () => {
+            controller.abort()
         }
     }, [selectedData])
 
@@ -206,6 +215,23 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                 rules={[{ required: true, message: '' }]}
             >
                 <Input type='email' placeholder='Enter email address...' />
+            </FormItem>
+            <FormItem
+                label="Roles"
+                name="role_id"
+                required
+                rules={[{ required: true, message: '' }]}
+            >
+                <Select
+                    optionFilterProp="children"
+                    allowClear
+                    showSearch
+                    placeholder='Select a Role'
+                >
+                    {roles.map((r) => (
+                        <Select.Option key={r?.id} value={r?.id}>{r?.name}</Select.Option>
+                    ))}
+                </Select>
             </FormItem>
             <FormItem
                 name="description"

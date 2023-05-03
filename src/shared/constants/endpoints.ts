@@ -200,6 +200,9 @@ export const useEndpoints = () => {
                 ACTIVATE: '/users/activate/',
                 DEACTIVATE: '/users/deactivate/'
             },
+            PERMISSIONS: {
+                SHOW: '/roles/'
+            },
             AUDITLOGS: {
                 GET: '/audit_logs'
             },
