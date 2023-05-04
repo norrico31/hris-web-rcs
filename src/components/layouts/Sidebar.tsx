@@ -135,11 +135,11 @@ const menus = [
                 '/roles',
                 <FaCriticalRole />,
             ),
-            getItemLinks(
-                <Link to='/permissions'>Permissions</Link>,
-                '/permissions',
-                <MdLockOutline />,
-            ),
+            // getItemLinks(
+            //     <Link to='/permissions'>Permissions</Link>,
+            //     '/permissions',
+            //     <MdLockOutline />,
+            // ),
             getItemLinks(
                 <Link to='/auditlogs'>Audit Logs</Link>,
                 '/auditlogs',

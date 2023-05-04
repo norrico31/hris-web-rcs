@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm } from 'antd'
+import { useNavigate } from 'react-router-dom'
+import { Space, Button, Input, Form as AntDForm, Col, Popconfirm, Row } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import { Action, Table, Card, TabHeader, Form } from "../../components"
+import { Action, Table, Card, TabHeader, Form, MainHeader } from "../../components"
 import { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
 import { IArguments, IRole, RoleRes, TableParams } from '../../shared/interfaces'
+import { BsFillTrashFill, BsEye } from 'react-icons/bs'
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
 
 export default function Roles() {
     const [data, setData] = useState<IRole[]>([])
+    const navigate = useNavigate()
     const [selectedData, setSelectedData] = useState<IRole | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
@@ -42,12 +45,31 @@ export default function Roles() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IRole) => <Action
-                title='Role'
-                name={record.name}
-                onConfirm={() => handleDelete(record.id)}
-                onClick={() => handleEdit(record)}
-            />
+            render: (_: any, record: IRole) => <Space>
+                <Button
+                    id='edit'
+                    type='default'
+                    size='middle'
+                    onClick={() => navigate('/roles/' + record.id + '/permissions')}
+                    className='btn-edit'
+                >
+                    <Row align='middle' style={{ gap: 5 }}>
+                        <p style={{ color: '#fff' }}>View</p>
+                        <BsEye color='white' />
+                    </Row>
+                </Button>
+                <Popconfirm
+                    title={`Delete the ${record?.name}`}
+                    description={`Are you sure you want to delete ${name}?`}
+                    onConfirm={() => handleDelete(record?.id)}
+                    okText="Delete"
+                    cancelText="Cancel"
+                >
+                    <Button id='delete' type='primary' size='middle'>
+                        <BsFillTrashFill />
+                    </Button>
+                </Popconfirm>
+            </Space>
         },
     ]
 
@@ -94,12 +116,23 @@ export default function Roles() {
     }
 
     return (
-        <Card title='Roles'>
+        <>
+            <MainHeader>
+                <Col>
+                    <h1 className='color-white'>Roles</h1>
+                </Col>
+                <Col>
+                    <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>
+                        Create
+                    </Button>
+                </Col>
+            </MainHeader>
             <TabHeader
-                name='role'
+                name='roles'
                 handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
-            />
+            >
+                <Button type='primary'>View Archives</Button>
+            </TabHeader>
             <Table
                 loading={loading}
                 columns={columns}
@@ -107,80 +140,66 @@ export default function Roles() {
                 tableParams={tableParams}
                 onChange={onChange}
             />
-            <RoleModal
-                title={selectedData != undefined ? 'Update' : 'Create'}
-                selectedData={selectedData}
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-                fetchData={fetchData}
-            />
-        </Card>
+        </>
     )
 }
 
 
 interface ModalProps {
-    title: string
-    isModalOpen: boolean
-    selectedData?: IRole
+    selectedData: IRole
     handleCancel: () => void
-    fetchData(args?: IArguments): void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-function RoleModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
+export function RoleInputs({ selectedData, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<IRole>()
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        if (selectedData != undefined) {
-            form.setFieldsValue({ ...selectedData })
-        } else {
-            form.resetFields(undefined)
-        }
+        form.setFieldsValue({ ...selectedData })
     }, [selectedData])
 
     function onFinish(values: IRole) {
         setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(ADMINSETTINGS.ROLES.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(ADMINSETTINGS.ROLES.POST, restValues)
-        result.then(() => {
-            form.resetFields()
-            handleCancel()
-        }).finally(() => {
-            fetchData()
-            setLoading(false)
-        })
+        PUT(ADMINSETTINGS.ROLES.PUT + selectedData?.id, { ...restValues, id: selectedData.id })
+            .then(() => {
+                setTimeout(() => {
+                    form.resetFields()
+                    handleCancel()
+                }, 500)
+            }).finally(() => {
+                // fetchData()
+                setTimeout(() => setLoading(false), 500)
+            })
     }
 
-    return <Modal title={`${title} - Role`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish} disabled={loading}>
-            <FormItem
-                label="Role Name"
-                name="name"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <Input placeholder='Enter position name...' />
-            </FormItem>
-            <FormItem
-                name="description"
-                label="Description"
-            >
-                <Input placeholder='Enter Description...' />
-            </FormItem>
-            <FormItem style={{ textAlign: 'right' }}>
-                <Space>
-                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        {selectedData != undefined ? 'Update' : 'Create'}
-                    </Button>
-                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
-                        Cancel
-                    </Button>
-                </Space>
-            </FormItem>
-        </Form>
-    </Modal>
+    return <Form form={form} onFinish={onFinish} disabled={loading}>
+        <FormItem
+            label="Role Name"
+            name="name"
+            required
+            rules={[{ required: true, message: '' }]}
+        >
+            <Input placeholder='Enter position name...' />
+        </FormItem>
+        <FormItem
+            name="description"
+            label="Description"
+        >
+            <Input placeholder='Enter Description...' />
+        </FormItem>
+        <FormItem style={{ textAlign: 'right' }}>
+            <Space>
+                <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
+                    Update
+                </Button>
+                <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
+                    Cancel
+                </Button>
+            </Space>
+        </FormItem>
+    </Form>
 }

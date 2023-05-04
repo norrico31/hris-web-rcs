@@ -309,7 +309,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 const lineManagerPromise = axiosClient(ADMINSETTINGS.ROLES.LINEMANAGERS, { signal: controller.signal })
                 const departmentPromise = axiosClient(HRSETTINGS.DEPARTMENT.LISTS, { signal: controller.signal })
                 const [employeeStatusRes, positionsRes, rolesRes, lineManagerRes, departmentRes] = await Promise.allSettled([employeeStatusPromise, positionsPromise, rolesPromise, lineManagerPromise, departmentPromise]) as any
-                console.log(employeeStatusRes?.value?.data)
                 setLists({
                     employeeStatus: employeeStatusRes?.value?.data ?? [],
                     positions: positionsRes?.value?.data ?? [],
@@ -415,8 +414,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Contact Number 2"
                     name="mobile_number2"
-                    required
-                    rules={[{ required: true, message: '' }]}
+                // required
+                // rules={[{ required: true, message: '' }]}
                 >
                     <Input type='number' placeholder='Enter contact number...' />
                 </FormItem>
@@ -457,11 +456,11 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         ))}
                     </Select>
                 </FormItem>
-                <FormItem
+                {/* <FormItem
                     label="Status"
                     name="status"
-                    required
-                    rules={[{ required: true, message: '' }]}
+                // required
+                // rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select status...'
@@ -469,7 +468,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         <Select.Option value="active">Active</Select.Option>
                         <Select.Option value="inactive">Inactive</Select.Option>
                     </Select>
-                </FormItem>
+                </FormItem> */}
                 <FormItem
                     label="Position"
                     name="position_id"
@@ -509,6 +508,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Line Manager"
                     name="manager_id"
+                    required
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select line manager...'
@@ -524,8 +525,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Date Hired"
                     name="date_hired"
-                    required
-                    rules={[{ required: true, message: '' }]}
+                // required
+                // rules={[{ required: true, message: '' }]}
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -533,7 +534,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         placeholder='Select date hired'
                     />
                 </FormItem>
-                <FormItem
+                {/* <FormItem
                     label="Date Resigned"
                     name="resignation_date"
                 >
@@ -542,14 +543,14 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         style={{ width: '100%' }}
                         placeholder='Select date resigned'
                     />
-                </FormItem>
+                </FormItem> */}
                 <FormItem
                     label="Current Address"
                     name="address"
                     required
                     rules={[{ required: true, message: '' }]}
                 >
-                    <Input.TextArea placeholder='Enter current address...' style={{ minHeight: 200 }} />
+                    <Input.TextArea placeholder='Enter current address...' style={{ minHeight: 300 }} />
                 </FormItem>
             </Col>
         </Row>
@@ -807,13 +808,19 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
             date_hired: dayjs(payload?.date_hired).format('YYYY-MM-DD'),
             resignation_date: dayjs(payload?.resignation_date).format('YYYY-MM-DD'),
         }
-        POST(EMPLOYEE201.POST, payload).then(() => {
-            form.resetFields()
-            handleResetSteps()
-        }).finally(() => {
-            fetchData()
-            setLoading(false)
-        })
+        POST(EMPLOYEE201.POST, payload)
+            .then(() => {
+                form.resetFields()
+                handleResetSteps()
+            })
+            .catch((err) => {
+                // display error in notif
+                return Promise.reject(err?.response?.data?.message)
+            })
+            .finally(() => {
+                fetchData()
+                setLoading(false)
+            })
     }
 
     return <Form form={form} onFinish={onFinish} disabled={loading}>

@@ -17,3 +17,10 @@
 
 // https
 // lt --subdomain staging-hrportal.redcoresolutions --port 8000
+
+
+//* PENDING: REPORTS
+// Time keeping reports
+// Leave reports
+// Tasks reports
+// Overtime reports

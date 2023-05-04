@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, ReactNode } from 'react'
 import { Row, Col, Space, Button, Input, Divider as AntDDivider, Popconfirm } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
@@ -8,9 +8,10 @@ type Props = {
     handleCreate?: () => void
     handleDownload?: () => void
     handleSearch: (term: string) => void
+    children?: ReactNode
 }
 
-export default function TabHeader({ name, handleSearch, handleCreate, handleDownload }: Props) {
+export default function TabHeader({ name, handleSearch, handleCreate, handleDownload, children }: Props) {
     const [searchTerm, setSearchTerm] = useState('')
 
     const debouncedSearch = useCallback(debounce((handleSearch), 500), [])
@@ -22,7 +23,8 @@ export default function TabHeader({ name, handleSearch, handleCreate, handleDown
 
     return (
         <>
-            <Row justify='end' align='middle'>
+            <Row justify={children ? 'space-between' : 'end'} align='middle'>
+                {children}
                 <Space>
                     {handleDownload != undefined && (
                         <Popconfirm

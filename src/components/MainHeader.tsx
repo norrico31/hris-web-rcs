@@ -34,7 +34,7 @@ const Main = styled(Row)`
     .btn-timeinout {
         background: #F9C921;
         border: none;
-        color: #fff;
+        /* color: #fff; */
         display: flex;
         align-items: center;
         gap: .5rem;

@@ -27,6 +27,5 @@ export default function Action({ title, name, onConfirm, onClick }: ActionProps)
                 </Button>
             </Popconfirm>
         </Space>
-
     )
 }

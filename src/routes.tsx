@@ -114,16 +114,16 @@ export const routes = createBrowserRouter([
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Roles /></Suspense>
             },
             {
+                path: 'roles/:roleId/permissions',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Permissions /></Suspense>
+            },
+            {
                 path: 'auditlogs',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><AuditLogs /></Suspense>
             },
             {
                 path: 'issuelogs',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><IssueLogs /></Suspense>
-            },
-            {
-                path: 'permissions',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><Permissions /></Suspense>
             },
             {
                 path: 'systemsettings',

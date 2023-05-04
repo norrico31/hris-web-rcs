@@ -24,6 +24,7 @@ export default function TimeKeeping() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [today] = useState(dayjs().format('YYYY-MM-DD'))
+    const [selectedDate, setSelectedDate] = useState(today)
     // const [selectedDate, setSelectedDate] = useState<Dayjs | string>(today)
     // const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
@@ -78,6 +79,7 @@ export default function TimeKeeping() {
 
     const handleDatePickerChange: DatePickerProps['onChange'] = (date, dateString) => {
         fetchData({ date: dayjs(date).format('YYYY-MM-DD') })
+        setSelectedDate(dayjs(date).format('YYYY-MM-DD'))
     }
 
     return (
@@ -85,7 +87,7 @@ export default function TimeKeeping() {
             <Card title='Timekeeping'>
                 <Row wrap justify='space-between'>
                     <DatePicker format='YYYY-MM-DD' defaultValue={dayjs()} onChange={handleDatePickerChange} />
-                    <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={!!data[0]?.time_in && !!data[0]?.time_out}>
+                    <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={data.length > 1 || selectedDate != today}>
                         {/* <RxEnter /> */}
                         {(data[0] == undefined) ? 'Time In' : 'Time Out'}
                     </Button>

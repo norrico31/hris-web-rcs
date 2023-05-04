@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react"
-
-
-
+import { useParams, useNavigate } from "react-router-dom"
+import { Select } from "antd"
+import { Card, MainHeader } from "../../components"
 import { useAxios } from "../../shared/lib/axios"
 import { useEndpoints } from "../../shared/constants"
 import { IArguments, IPermissions, IRole, PermissionRes, RoleRes } from "../../shared/interfaces"
-import { Card } from "../../components"
-import { Select } from "antd"
+import { RoleInputs } from "./Roles"
+
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
 
 export default function Permissions() {
-    const [roles, setRoles] = useState<IRole[]>([])
-    const [roleId, setRoleId] = useState('Select a Role')
+    const [data, setData] = useState<IRole>()
+    const { roleId } = useParams()
+    const navigate = useNavigate()
     const [permissions, setPermissions] = useState<Map<string, IPermissions>>(new Map())
     const [loadingRoles, setLoadingRoles] = useState(true)
     const [loadingPermissions, setLoadingPermissions] = useState(true)
@@ -24,59 +25,33 @@ export default function Permissions() {
     // }, [])
 
     useEffect(function () {
-        const controller = new AbortController();
-        fetchRoles({ signal: controller.signal })
-        return () => {
-            controller.abort()
-        }
+        if (roleId != undefined) fetchPermissions(roleId)
     }, [])
-
-    const fetchRoles = (args?: IArguments) => {
-        setLoadingRoles(true)
-        GET<RoleRes>(ADMINSETTINGS.PERMISSIONS.SHOW, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
-            .then((res) => {
-                setRoles(res?.data ?? [])
-            }).finally(() => setLoadingRoles(false))
-    }
 
     const fetchPermissions = (roleId: string) => {
         setLoadingPermissions(true)
         GET<unknown>(ADMINSETTINGS.PERMISSIONS.SHOW + roleId)
             .then((data) => {
                 const result = data as IRole
+                setData(result)
                 const newPermissions = new Map(result?.modules.map((role) => [role.id, role]))
                 setPermissions(newPermissions ?? new Map())
             }).finally(() => setLoadingPermissions(false))
     }
 
     return (
-        <Card title='Permissions'>
-            <Select
-                optionFilterProp="children"
-                allowClear
-                showSearch
-                value={roleId}
-                loading={loadingRoles || loadingPermissions}
-                disabled={loadingRoles}
-                onChange={(id) => {
-                    if (id != undefined) {
-                        fetchPermissions(id)
-                        setRoleId(id)
-                    } else {
-                        setRoleId('Select a Role')
-                    }
-                }}
-                style={{ width: 200 }}
-            >
-                {roles.map((r) => (
-                    <Select.Option key={r?.id} value={r?.id}>{r?.name}</Select.Option>
-                ))}
-            </Select>
+        <>
+            <MainHeader>
+                <h1 className='color-white'>Role Update - {data?.name ?? 'Unknown'}</h1>
+            </MainHeader>
+            <RoleInputs selectedData={data!} handleCancel={() => navigate('/roles')} />
             {renderNames(permissions).map((permission) => {
                 return <PermissionCard permission={permission} key={permission.id} />
             })}
-            {/* {firstData.name} */}
-        </Card>
+        </>
+        // <Card title='Permissions'>
+        // {firstData.name}
+        // </Card>
     )
 }
 
