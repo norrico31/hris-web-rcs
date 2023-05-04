@@ -508,7 +508,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 </FormItem>
                 <FormItem
                     label="Line Manager"
-                    name="position_type_id"
+                    name="manager_id"
                 >
                     <Select
                         placeholder='Select line manager...'

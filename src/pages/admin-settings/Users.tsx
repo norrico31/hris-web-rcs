@@ -217,7 +217,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                 <Input type='email' placeholder='Enter email address...' />
             </FormItem>
             <FormItem
-                label="Roles"
+                label="Role"
                 name="role_id"
                 required
                 rules={[{ required: true, message: '' }]}
