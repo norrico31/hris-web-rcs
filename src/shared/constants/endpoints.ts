@@ -201,7 +201,8 @@ export const useEndpoints = () => {
                 DEACTIVATE: '/users/deactivate/'
             },
             PERMISSIONS: {
-                SHOW: '/roles/'
+                SHOW: '/roles/',
+                PUT: '/roles/permissions/'
             },
             AUDITLOGS: {
                 GET: '/audit_logs'
