@@ -5,10 +5,10 @@ import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../components"
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
-import { IArguments, IUser, UserRes, TableParams, IRole } from '../../shared/interfaces'
+import { IArguments, IUser, UserRes, TableParams, IRole, IDepartment } from '../../shared/interfaces'
 
 const { GET, DELETE, POST, PUT } = useAxios()
-const [{ ADMINSETTINGS }] = useEndpoints()
+const [{ ADMINSETTINGS, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 export default function Users() {
     const [data, setData] = useState<IUser[]>([])
@@ -150,7 +150,7 @@ const { Item: FormItem, useForm } = AntDForm
 function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(false)
-    const [roles, setRoles] = useState<IRole[]>([])
+    const [lists, setLists] = useState<{ roles: IRole[]; departments: IDepartment[] }>({ roles: [], departments: [] })
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -158,11 +158,21 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
         } else {
             form.resetFields(undefined)
         }
-        const controller = new AbortController()
-        axiosClient(ADMINSETTINGS.ROLES.LISTS, { signal: controller.signal })
-            .then((res) => {
-                setRoles(res?.data ?? [])
-            });
+        const controller = new AbortController();
+        (() => {
+            const rolePromise = axiosClient(ADMINSETTINGS.ROLES.LISTS, { signal: controller.signal })
+            const departmentPromise = axiosClient(HRSETTINGS.DEPARTMENT.LISTS, { signal: controller.signal })
+            Promise.allSettled([rolePromise, departmentPromise])
+                .then(([roleRes, departRes]) => {
+                    setLists({
+                        roles: roleRes?.status == 'fulfilled' ? roleRes?.value?.data : [],
+                        departments: departRes?.status == 'fulfilled' ? departRes?.value?.data : [],
+                    })
+                })
+        })()
+        // .then((res) => {
+        //     setRoles(res?.data ?? [])
+        // });
         return () => {
             controller.abort()
         }
@@ -228,8 +238,25 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                     showSearch
                     placeholder='Select a Role'
                 >
-                    {roles.map((r) => (
-                        <Select.Option key={r?.id} value={r?.id}>{r?.name}</Select.Option>
+                    {lists.roles.map((role) => (
+                        <Select.Option key={role?.id} value={role?.id}>{role?.name}</Select.Option>
+                    ))}
+                </Select>
+            </FormItem>
+            <FormItem
+                label="Department"
+                name="department_id"
+                required
+                rules={[{ required: true, message: '' }]}
+            >
+                <Select
+                    optionFilterProp="children"
+                    allowClear
+                    showSearch
+                    placeholder='Select a Department'
+                >
+                    {lists.departments.map((dep) => (
+                        <Select.Option key={dep?.id} value={dep?.id}>{dep?.name}</Select.Option>
                     ))}
                 </Select>
             </FormItem>
