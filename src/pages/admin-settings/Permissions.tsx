@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { Row, Switch, Collapse, Space, Skeleton, Col } from "antd"
-import { MainHeader } from "../../components"
+import { Row, Switch, Collapse, Skeleton, Col, Button } from "antd"
+import useWindowSize from "../../shared/hooks/useWindowSize"
 import { useAxios } from "../../shared/lib/axios"
 import { useEndpoints } from "../../shared/constants"
 import { IPermissions, IRole } from "../../shared/interfaces"
 import { RoleInputs } from "./Roles"
 import { firstLetterCapitalize } from "../../shared/utils/utilities"
+import { StyledRow } from "../EmployeeEdit"
 
 const { GET, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
@@ -15,11 +16,11 @@ export default function Permissions() {
     const [data, setData] = useState<IRole>()
     const { roleId } = useParams()
     const navigate = useNavigate()
+    const { width } = useWindowSize()
     const [modules, setModules] = useState<Record<string, IPermissions[]>>()
     const [loading, setLoading] = useState(true)
     const [loadingPermission, setLoadingPermission] = useState(false)
     // const firstData: IPermissions = permissions.values().next().value // to get the first element in Map
-
     useEffect(function () {
         if (roleId != undefined) fetchPermissions(roleId)
     }, [])
@@ -54,20 +55,24 @@ export default function Permissions() {
     return (
         <> {loading ? <Skeleton /> : (
             <>
-                <MainHeader>
-                    <h1 className='color-white'>Role Update - {data?.name ?? 'Unknown'}</h1>
-                </MainHeader>
+                <StyledRow justify='space-between' isCenter={width < 579}>
+                    <Col xs={24} sm={12} md={12} lg={12} xl={11}>
+                        <h2 className='color-white'>Role Update - {data?.name ?? 'Unknown'}</h2>
+                    </Col>
+                    <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}>
+                        <Button onClick={() => navigate('/roles')}>Back to Roles</Button>
+                    </Col>
+                </StyledRow>
                 <RoleInputs selectedData={data!} handleCancel={() => navigate('/roles')} />
                 <Collapse>
-                    <Collapse.Panel header='Update Permission' key='1'>
+                    <Collapse.Panel header='Update Permission' key='1123123'>
                         <Row gutter={[24, 24]}>
-                            {/* <Space direction="vertical" style={{ width: '100%' }}> */}
                             {Object.entries(modules ?? {}).map(([k, v]) => (
-                                <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                                    <Collapse key={k + v}>
+                                <Col key={k + v} xs={24} sm={12} md={12} lg={12} xl={12}>
+                                    <Collapse >
                                         <Collapse.Panel header={firstLetterCapitalize(k.split('_').join(' '))} key={k + v}>
                                             {actionSorter(v).map((val) => (
-                                                <Row justify='space-between' key={val.id} style={{ marginBottom: 5 }}>
+                                                <Row key={val.id} justify='space-between' style={{ marginBottom: 5 }}>
                                                     <p>{firstLetterCapitalize(val.action)}</p>
                                                     <Switch checked={flattenMapped.has(val.id)} disabled={loadingPermission} onChange={() => updatePermission(val.id)} />
                                                 </Row>
@@ -76,7 +81,6 @@ export default function Permissions() {
                                     </Collapse>
                                 </Col>
                             ))}
-                            {/* </Space> */}
                         </Row>
                     </Collapse.Panel>
                 </Collapse>
@@ -84,5 +88,4 @@ export default function Permissions() {
         )}</>
     )
 }
-
 const actionSorter = (v: IPermissions[]) => v.sort((a, b) => a.action > b.action ? 1 : -1)

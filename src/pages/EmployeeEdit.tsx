@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, Navigate, Outlet, useNavigate, useLocation, useOutletContext } from "react-router-dom"
-import { Tabs as AntDTabs } from 'antd'
+import { Tabs as AntDTabs, Button, Col, Row } from 'antd'
 import styled from "styled-components"
+import useWindowSize from '../shared/hooks/useWindowSize'
 import { MainHeader } from './../components'
 import { employeeEditPaths, useEndpoints } from "../shared/constants"
 import { renderTitle } from "../shared/utils/utilities"
@@ -16,6 +17,7 @@ export default function EmployeeEdit() {
     const { employeeId } = useParams()
     let { pathname } = useLocation()
     const navigate = useNavigate()
+    const { width } = useWindowSize()
     if (employeeId == undefined) return <Navigate to='/employee' />
 
     const [data, setData] = useState<IUser | undefined>()
@@ -35,9 +37,14 @@ export default function EmployeeEdit() {
 
     const pathKey = pathname.split('/').pop()
     return <>
-        <MainHeader>
-            <h1 className='color-white'>Employee Update - {data?.full_name}</h1>
-        </MainHeader>
+        <StyledRow justify='space-between' wrap align='middle' isCenter={width < 579}>
+            <Col xs={24} sm={12} md={12} lg={12} xl={11}>
+                <h2 className='color-white'>Employee Update - {data?.full_name}</h2>
+            </Col>
+            <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}>
+                <Button onClick={() => navigate('/employee')}>Back to employees</Button>
+            </Col>
+        </StyledRow>
         <Tabs
             destroyInactiveTabPane
             activeKey={'/' + pathKey}
@@ -56,6 +63,17 @@ export default function EmployeeEdit() {
         />
     </>
 }
+
+export const StyledRow = styled(Row) <{ isCenter?: boolean }>`
+    width: 100%;
+    background: rgb(155, 52, 35);
+    border-radius: 8px;
+    display: flex;
+    padding: 1rem 2rem;
+    margin-bottom: 2rem;
+    gap: ${({ isCenter }) => isCenter ? '.5rem' : 'initial'};
+    text-align: ${({ isCenter }) => isCenter ? 'center' : 'initial'};
+`
 
 interface EmployeeOutletContext {
     employeeId: string

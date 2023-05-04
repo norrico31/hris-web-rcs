@@ -31,6 +31,8 @@ export default function Sidebar({ onSelect }: Props) {
             setLocationKey('/systemsettings/clientsettings/client')
         } else if (location?.pathname.includes('/systemsettings/expensesettings')) {
             setLocationKey('/systemsettings/expensesettings/expense')
+        } else if (location?.pathname.includes('/roles')) {
+            setLocationKey('/roles')
         } else if (location?.pathname.includes('/leave')) {
             setLocationKey('/leave')
         } else setLocationKey(location?.pathname)

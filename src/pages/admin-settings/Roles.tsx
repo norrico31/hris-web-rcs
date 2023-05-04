@@ -105,13 +105,7 @@ export default function Roles() {
             .finally(fetchData)
     }
 
-    function handleEdit(data: IRole) {
-        setIsModalOpen(true)
-        setSelectedData(data)
-    }
-
     function handleCloseModal() {
-        setSelectedData(undefined)
         setIsModalOpen(false)
     }
 
@@ -140,19 +134,82 @@ export default function Roles() {
                 tableParams={tableParams}
                 onChange={onChange}
             />
+            <RoleModal
+                title='Create'
+                isModalOpen={isModalOpen}
+                handleCancel={handleCloseModal}
+                fetchData={fetchData}
+            />
         </>
     )
 }
 
 
-interface ModalProps {
+interface RoleInputProps {
     selectedData: IRole
+    fetchData?: (args?: IArguments) => void
     handleCancel: () => void
 }
 
 const { Item: FormItem, useForm } = AntDForm
 
-export function RoleInputs({ selectedData, fetchData, handleCancel }: ModalProps) {
+interface RoleModalProps {
+    title: string
+    isModalOpen: boolean
+    handleCancel: () => void
+    fetchData(args?: IArguments): void
+}
+
+function RoleModal({ title, isModalOpen, handleCancel, fetchData }: RoleModalProps) {
+    const [form] = useForm<IRole>()
+    const [loading, setLoading] = useState(false)
+
+    function onFinish(values: IRole) {
+        setLoading(true)
+        let { description, ...restValues } = values
+        restValues = { ...restValues, ...(description != undefined && { description }) }
+        POST(ADMINSETTINGS.ROLES.POST, restValues)
+            .then(() => {
+                form.resetFields()
+                handleCancel()
+            }).finally(() => {
+                fetchData()
+                setLoading(false)
+            })
+    }
+
+    return <Modal title={`${title} - Role`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
+            <FormItem
+                label="Role Name"
+                name="name"
+                required
+                rules={[{ required: true, message: '' }]}
+            >
+                <Input placeholder='Enter position name...' />
+            </FormItem>
+            <FormItem
+                name="description"
+                label="Description"
+            >
+                <Input placeholder='Enter Description...' />
+            </FormItem>
+            <FormItem style={{ textAlign: 'right' }}>
+                <Space>
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
+                        Create
+                    </Button>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
+                        Cancel
+                    </Button>
+                </Space>
+            </FormItem>
+        </Form>
+    </Modal>
+}
+
+
+export function RoleInputs({ selectedData, fetchData, handleCancel }: RoleInputProps) {
     const [form] = useForm<IRole>()
     const [loading, setLoading] = useState(false)
 
@@ -171,7 +228,7 @@ export function RoleInputs({ selectedData, fetchData, handleCancel }: ModalProps
                     handleCancel()
                 }, 500)
             }).finally(() => {
-                // fetchData()
+                fetchData?.()
                 setTimeout(() => setLoading(false), 500)
             })
     }
