@@ -280,6 +280,7 @@ export const useEndpoints = () => {
             POST: '/tasks/',
             PUT: '/tasks/',
             DELETE: '/tasks/',
+            DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/report_service/api/tasks_report'
         },
         LEAVE: {
             GET: '',

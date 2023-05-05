@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { useAuthContext } from '../shared/contexts/Auth'
 import { useTasksServices } from '../shared/services/TasksSettings'
@@ -18,12 +19,14 @@ const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS }, }] = useEndpoints()
 
 export default function Tasks() {
     renderTitle('Tasks Management')
+    const { user } = useAuthContext()
     const [data, setData] = useState<ITasks[]>([])
     const [selectedData, setSelectedData] = useState<ITasks | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [date, setDate] = useState([])
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -122,12 +125,41 @@ export default function Tasks() {
     }
 
     function handleDownload() {
-        console.log('dowwnload')
+        const start_date = dayjs(date[0]).format('YYYY-MM-DD')
+        const end_date = dayjs(date[1]).format('YYYY-MM-DD')
+        const formData = new FormData()
+        formData.append('start_date', start_date)
+        formData.append('end_date', end_date)
+        formData.append('user_id', user?.id!)
+        fetch(TASKS.DOWNLOAD, {
+            method: 'POST',
+            body: JSON.stringify(formData),
+            headers: {
+                "Accept": "multipart/form-data",
+                "Content-Type": "multipart/form-data",
+            },
+        })
+            .then((res: any) => {
+                console.log(res)
+                const url = window.URL.createObjectURL(new Blob([res.data]))
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', 'Tasks Management') // message must from backend
+                document.body.appendChild(link)
+                link.click()
+            })
+            .catch(err => {
+                console.log('error to: ', err)
+            })
     }
 
     function handleCloseModal() {
         setSelectedData(undefined)
         setIsModalOpen(false)
+    }
+
+    function handleChange(date: any) {
+        setDate(date)
     }
 
     return (selectedData || isModalOpen) ? (
@@ -148,8 +180,13 @@ export default function Tasks() {
                 name='tasks management'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={() => handleDownload()}
-            />
+                handleDownload={handleDownload}
+            >
+                <DatePicker.RangePicker
+                    format='YYYY/MM/DD'
+                    onChange={handleChange}
+                />
+            </TabHeader>
             <Table
                 loading={loading}
                 columns={columns}

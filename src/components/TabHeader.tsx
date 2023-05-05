@@ -34,7 +34,7 @@ export default function TabHeader({ name, handleSearch, handleCreate, handleDown
                             onConfirm={handleDownload}
                             okText='Download'
                         >
-                            <Button type='primary'>Download template</Button>
+                            <Button type='primary'>Download module</Button>
                         </Popconfirm>
                     )}
                     <Input.Search placeholder='Search...' value={searchTerm} onChange={onChange} />
