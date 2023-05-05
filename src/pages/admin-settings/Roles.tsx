@@ -12,9 +12,6 @@ import { BsFillTrashFill, BsEye } from 'react-icons/bs'
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
 
-const { confirm } = Modal;
-
-
 export default function Roles() {
     const [data, setData] = useState<IRole[]>([])
     const navigate = useNavigate()
@@ -169,28 +166,13 @@ function RoleModal({ title, isModalOpen, handleCancel, fetchData, navigate }: Ro
     const [form] = useForm<IRole>()
     const [loading, setLoading] = useState(false)
 
-    const showConfirm = (roleId?: string) => {
-        confirm({
-            title: 'Next Step',
-            icon: <ExclamationCircleFilled />,
-            content: 'Would you like to configure the permissions?',
-            onOk() {
-                navigate(`/roles/${roleId}/permissions`)
-            },
-            onCancel() {
-                form.resetFields()
-                handleCancel()
-            },
-        })
-    }
-
     function onFinish(values: IRole) {
         setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         POST(ADMINSETTINGS.ROLES.POST, restValues)
             .then((res) => {
-                showConfirm(res?.data?.data?.id)
+                navigate(`/roles/${res?.data?.data?.id}/permissions`)
                 form.resetFields()
                 handleCancel()
             }).finally(() => {
