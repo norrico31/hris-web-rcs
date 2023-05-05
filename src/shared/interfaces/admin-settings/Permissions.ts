@@ -7,7 +7,6 @@ export interface IPermissions {
     module: string
     create_at: string
     updated_at: any
-    laravel_through_key: string
 }
 
 export type PermissionRes = AxiosGetData<IPermissions>

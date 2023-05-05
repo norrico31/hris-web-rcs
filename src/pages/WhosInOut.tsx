@@ -61,7 +61,7 @@ export default function WhosInOut() {
             width: 150
         },
     ]
-
+    // TODO
     const fetchData = ({ args, isIn }: { args?: IArguments; isIn?: boolean }) => {
         setLoading(true)
         const url = !isIn ? WHOSINOUT.IN : WHOSINOUT.OUT
@@ -87,11 +87,11 @@ export default function WhosInOut() {
                 search: str,
                 page: tableParams?.pagination?.current ?? 1,
                 pageSize: tableParams?.pagination?.pageSize
-            }
+            }, isIn: isInOut
         })
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! } })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, isIn: isInOut })
 
     return (
         <Card title="Who's In and Out">

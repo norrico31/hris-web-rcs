@@ -158,10 +158,10 @@ export const useEndpoints = () => {
                     DELETE: '/client_branches/'
                 },
                 CLIENTADJUSTMENT: {
-                    GET: '/client_adjustment',
-                    POST: '/client_adjustment/',
-                    PUT: '/client_adjustment/',
-                    DELETE: '/client_adjustment/'
+                    GET: '/client_adjustments',
+                    POST: '/client_adjustments/',
+                    PUT: '/client_adjustments/',
+                    DELETE: '/client_adjustments/'
                 }
             },
             EXPENSESETTINGS: {
@@ -202,7 +202,8 @@ export const useEndpoints = () => {
             },
             PERMISSIONS: {
                 SHOW: '/roles/',
-                PUT: '/roles/permissions/'
+                PUT: '/roles/permissions/',
+                MODULES: '/modules'
             },
             AUDITLOGS: {
                 GET: '/audit_logs'

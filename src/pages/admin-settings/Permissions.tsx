@@ -13,49 +13,29 @@ const { GET, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
 
 export default function Permissions() {
-    const [data, setData] = useState<IRole>()
     const { roleId } = useParams()
     const navigate = useNavigate()
     const { width } = useWindowSize()
+    const [data, setData] = useState<IRole>()
     const [modules, setModules] = useState<Record<string, IPermissions[]>>()
     const [loading, setLoading] = useState(true)
     const [loadingPermission, setLoadingPermission] = useState(false)
     // const firstData: IPermissions = permissions.values().next().value // to get the first element in Map
     useEffect(function () {
-        if (roleId != undefined) fetchPermissions(roleId)
-        GET('/modules')
-            .then((res) => {
-                console.log(res)
-            })
+        if (roleId != undefined) fetchPermissionByRoleId(roleId)
+        fetchPermissions()
     }, [])
-
-    const fetchPermissions = (roleId: string) => {
-        GET<unknown>(ADMINSETTINGS.PERMISSIONS.SHOW + roleId)
-            .then((data) => {
-                const result = data as IRole
-                setData(result)
-                const modules = result?.modules.sort((a, b) => a.module > b.module ? 1 : -1)
-                const newModules = {} as { [k: string]: IPermissions[] }
-                for (let i = 0; i < modules?.length; i++) {
-                    if (!newModules[modules[i].name]) newModules[modules[i].name] = []
-                    newModules[modules[i].name].push(modules[i])
-                }
-                setModules(newModules)
-            }).finally(() => setLoading(false))
-    }
-
+    const fetchPermissions = () => GET<Record<string, IPermissions[]>>(ADMINSETTINGS.PERMISSIONS.MODULES).then(setModules).finally(() => setLoading(false))!
+    const fetchPermissionByRoleId = (roleId: string) => GET<IRole>(ADMINSETTINGS.PERMISSIONS.SHOW + roleId).then(setData).finally(() => setLoading(false))
     function updatePermission(permissionId: string) {
         setLoadingPermission(true)
         PUT(ADMINSETTINGS.PERMISSIONS.PUT + permissionId, { role_id: roleId, id: permissionId })
-            .then((res) => {
-                console.log(res)
-            })
             .finally(() => {
                 setLoadingPermission(false)
-                fetchPermissions(roleId!)
+                fetchPermissionByRoleId(roleId!)
             })
     }
-    const flattenMapped = new Map(Array.from(Object.values(modules ?? {})).flat().map((flat => [flat.id, flat])))
+    const flattenMapped = new Map(data?.modules.map((flat => [flat.id, flat])))
     return (
         <> {loading ? <Skeleton /> : (
             <>
@@ -71,9 +51,9 @@ export default function Permissions() {
                 <Collapse defaultActiveKey={['1']}>
                     <Collapse.Panel header='Update Permission' key='1'>
                         <Row gutter={[24, 24]}>
-                            {Object.entries(modules ?? {}).map(([k, v]) => (
+                            {Object.entries(modules ?? []).map(([k, v]) => (
                                 <Col key={k + v} xs={24} sm={12} md={12} lg={12} xl={12}>
-                                    <Collapse >
+                                    <Collapse>
                                         <Collapse.Panel header={firstLetterCapitalize(k.split('_').join(' '))} key={k + v}>
                                             {actionSorter(v).map((val) => (
                                                 <Row key={val.id} justify='space-between' style={{ marginBottom: 5 }}>
