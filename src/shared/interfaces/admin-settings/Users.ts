@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs"
-import { IPayScheme, IPermissions, IRole, IEmployeeBenefits, IEmployeeClients, IEmployeeContracts, IEmployeeEvaluation, ILeaveCredits, IMemorandum, IPagibig, IPhilhealth, ITin, ISss, IEmployeeSalary, AxiosGetData } from ".."
+import { IPayScheme, IPermissions, IRole, IEmployeeBenefits, IEmployeeClients, IEmployeeContracts, IEmployeeEvaluation, ILeaveCredits, IMemorandum, IPagibig, IPhilhealth, ITin, ISss, IEmployeeSalary, AxiosGetData, IDepartment } from ".."
 
 export interface IUser {
     address: string | null
@@ -10,6 +10,7 @@ export interface IUser {
     created_at: string
     date_hired: string | null
     deleted_at: string | null
+    department: IDepartment
     email: string
     employee_code: string | null
     employee_clients: IEmployeeClients[]
@@ -32,6 +33,7 @@ export interface IUser {
     mobile_number1: string | null
     mobile_number2: string | null
     no_of_children: number
+    is_activate: number | boolean;
     pagibig: IPagibig
     philhealth: IPhilhealth
     photo: string | null

@@ -33,35 +33,24 @@ export default function WhosInOut() {
             title: 'Name',
             key: 'full_name',
             dataIndex: 'full_name',
-            width: 150
+            width: 150,
+            render: (_, record) => record?.user?.full_name
         },
         {
             title: 'Department',
             key: 'department',
             dataIndex: 'department',
-            width: 150
+            width: 150,
+            render: (_, record) => record?.user?.department?.name
         },
         {
-            title: 'Time In',
-            key: 'time_in',
-            dataIndex: 'time_in',
-            width: 150
-        },
-        {
-            title: 'Time Out',
-            key: 'time_out',
-            dataIndex: 'time_out',
-            render: (_, record) => record?.time_out ?? '-',
-            width: 150
-        },
-        {
-            title: 'Date',
-            key: 'time_keeping_date',
-            dataIndex: 'time_keeping_date',
+            title: !isInOut ? 'Time In' : 'Time Out',
+            key: 'time_keeping_time',
+            dataIndex: 'time_keeping_time',
             width: 150
         },
     ]
-    // TODO
+
     const fetchData = ({ args, isIn }: { args?: IArguments; isIn?: boolean }) => {
         setLoading(true)
         const url = !isIn ? WHOSINOUT.IN : WHOSINOUT.OUT

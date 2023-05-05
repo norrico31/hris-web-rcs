@@ -1,3 +1,4 @@
+import { IUser } from "./admin-settings/Users"
 import { AxiosGetData } from "./utils/Axios"
 
 export interface ITimeKeeping {
@@ -32,6 +33,7 @@ export interface ITimeKeeping {
     time_out: string | null
     time_out_location: string | null
     updated_at: string | null
+    user: IUser
     user_id: string | null
 }
 

@@ -38,14 +38,18 @@ export default function Users() {
             dataIndex: 'email',
         },
         {
+            // TODO FILTERING
             title: 'Role',
             key: 'role',
             dataIndex: 'role',
+            render: (_, record) => record?.role?.name ?? '-'
         },
         {
+            // TODO FILTERING
             title: 'Department',
             key: 'department',
             dataIndex: 'department',
+            render: (_, record) => record?.department?.name ?? '-'
         },
         {
             title: 'Action',
@@ -58,6 +62,23 @@ export default function Users() {
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
             />
+        },
+        {
+            title: 'Activation',
+            key: 'activation',
+            dataIndex: 'activation',
+            align: 'center',
+            render: (_: any, record: IUser) => {
+                console.log(record?.is_active)
+                return (
+                    <div>
+                        <Button type={record?.is_active ? 'default' : 'primary'} onClick={() => {
+                            const urlActivate = record?.is_active ? ADMINSETTINGS.USERS.DEACTIVATE : ADMINSETTINGS.USERS.ACTIVATE
+                            userActivation(urlActivate, record?.id)
+                        }}>{record?.is_active ? 'Activate' : 'Deactivate'}</Button>
+                    </div>
+                )
+            }
         },
     ]
 
@@ -91,7 +112,7 @@ export default function Users() {
     function userActivation(url: string, id: string) {
         PUT(url + id, {})
             .then((res) => {
-                console.log(res)
+                console.log('USER ACTIVATION: ', res)
             })
             .finally(fetchData)
     }
@@ -260,12 +281,12 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                     ))}
                 </Select>
             </FormItem>
-            <FormItem
+            {/* <FormItem
                 name="description"
                 label="Description"
             >
                 <Input placeholder='Enter Description...' />
-            </FormItem>
+            </FormItem> */}
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
