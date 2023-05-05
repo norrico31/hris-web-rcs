@@ -508,8 +508,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Line Manager"
                     name="manager_id"
-                    required
-                    rules={[{ required: true, message: '' }]}
+                // required
+                // rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select line manager...'

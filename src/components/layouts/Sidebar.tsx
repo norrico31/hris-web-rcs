@@ -148,9 +148,9 @@ const menus = [
                 <AiOutlineAudit />,
             ),
             getItemLinks(
-                <Link to='/issuelogs'>Issue Logs</Link>,
+                <Link to='/issuelogs'>System Logs</Link>,
                 '/issuelogs',
-                <GoIssueOpened />,
+                <AiOutlineSetting />,
             ),
         ]
     ),

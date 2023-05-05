@@ -226,6 +226,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         receipt_attachment = receipt_attachment ? receipt_attachment[0] : null
         restValues = { ...restValues, expense_date, receipt_attachment, ...(description != undefined && { description }) } as any
         let result = selectedData ? PUT(EXPENSE.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(EXPENSE.POST, restValues)
+        // when there's attachment FORM DATA
         result.then(() => {
             form.resetFields()
             handleCancel()

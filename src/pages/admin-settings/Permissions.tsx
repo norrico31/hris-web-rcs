@@ -23,6 +23,10 @@ export default function Permissions() {
     // const firstData: IPermissions = permissions.values().next().value // to get the first element in Map
     useEffect(function () {
         if (roleId != undefined) fetchPermissions(roleId)
+        GET('/modules')
+            .then((res) => {
+                console.log(res)
+            })
     }, [])
 
     const fetchPermissions = (roleId: string) => {

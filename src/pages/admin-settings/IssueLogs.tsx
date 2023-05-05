@@ -26,15 +26,15 @@ export default function IssueLogs() {
 
     const columns: ColumnsType<IIssueLogs> = [
         {
-            title: 'User',
-            key: 'user_full_name',
-            dataIndex: 'user_full_name',
+            title: 'Environment',
+            key: 'env',
+            dataIndex: 'env',
             width: 120,
         },
         {
-            title: 'Account Type',
-            key: 'account_type',
-            dataIndex: 'account_type',
+            title: 'Service',
+            key: 'service',
+            dataIndex: 'service',
             width: 120,
         },
         {
@@ -43,50 +43,6 @@ export default function IssueLogs() {
             dataIndex: 'date',
             width: 120,
             align: 'center'
-        },
-        {
-            title: 'Action',
-            key: 'action',
-            dataIndex: 'action',
-            // render: (_, record) => {
-            //     const action = record?.action.toLowerCase()
-            //     const color = action == 'created' ? 'green' : action == 'updated' ? 'blue' : 'red'
-            //     return <Tag color={color}>{firstLetterCapitalize(record?.action)}</Tag>
-            // },
-            width: 120,
-            align: 'center'
-        },
-        // {
-        //     title: 'Module',
-        //     key: 'module_name',
-        //     dataIndex: 'module_name',
-        //     render: (_, record) => {
-        //         const module = record?.module_name.split('\\')
-        //         return module[module.length - 1]
-        //     },
-        //     width: 150,
-        //     align: 'center'
-        // },
-        {
-            title: 'Payload',
-            key: 'payload',
-            dataIndex: 'payload',
-            render: (_, record) => {
-                const payloadLists = []
-                const payload = Object.entries(record?.payload)
-                for (let i = 0; i < payload?.length; i++) {
-                    const [k, v] = payload[i] as any
-                    payloadLists.push(
-                        <div key={k + v} style={{ display: 'flex', gap: 5 }}>
-                            <b>{firstLetterCapitalize(k)}</b>:
-                            <div>{v}</div>
-                        </div>
-                    )
-                }
-                return payloadLists
-            },
-            align: 'center',
-            width: 300,
         },
     ]
 
