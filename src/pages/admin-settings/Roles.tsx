@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Space, Button, Input, Form as AntDForm, Col, Popconfirm, Row } from 'antd'
-import Modal from 'antd/es/modal/Modal'
+import { NavigateFunction, useNavigate } from 'react-router-dom'
+import { Space, Button, Input, Form as AntDForm, Col, Popconfirm, Row, Modal } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
+import { ExclamationCircleFilled } from '@ant-design/icons'
 import { Action, Table, Card, TabHeader, Form, MainHeader } from "../../components"
 import { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
@@ -11,6 +11,9 @@ import { BsFillTrashFill, BsEye } from 'react-icons/bs'
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
+
+const { confirm } = Modal;
+
 
 export default function Roles() {
     const [data, setData] = useState<IRole[]>([])
@@ -139,6 +142,7 @@ export default function Roles() {
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
                 fetchData={fetchData}
+                navigate={navigate}
             />
         </>
     )
@@ -158,18 +162,35 @@ interface RoleModalProps {
     isModalOpen: boolean
     handleCancel: () => void
     fetchData(args?: IArguments): void
+    navigate: NavigateFunction
 }
 
-function RoleModal({ title, isModalOpen, handleCancel, fetchData }: RoleModalProps) {
+function RoleModal({ title, isModalOpen, handleCancel, fetchData, navigate }: RoleModalProps) {
     const [form] = useForm<IRole>()
     const [loading, setLoading] = useState(false)
+
+    const showConfirm = (roleId?: string) => {
+        confirm({
+            title: 'Next Step',
+            icon: <ExclamationCircleFilled />,
+            content: 'Would you like to configure the permissions?',
+            onOk() {
+                navigate(`/roles/${roleId}/permissions`)
+            },
+            onCancel() {
+                form.resetFields()
+                handleCancel()
+            },
+        })
+    }
 
     function onFinish(values: IRole) {
         setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
         POST(ADMINSETTINGS.ROLES.POST, restValues)
-            .then(() => {
+            .then((res) => {
+                showConfirm(res?.data?.data?.id)
                 form.resetFields()
                 handleCancel()
             }).finally(() => {

@@ -273,7 +273,7 @@ interface IStepOne {
     status: string
     role_id: string
     employment_id: string
-
+    manager_id: string
     date_hired: string | Dayjs
     resignation_date: string | Dayjs
 }

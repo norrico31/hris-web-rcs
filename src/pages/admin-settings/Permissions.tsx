@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { Row, Switch, Collapse, Skeleton, Col, Button } from "antd"
+import { Row, Switch, Collapse, Skeleton, Col, Button, FloatButton } from "antd"
 import useWindowSize from "../../shared/hooks/useWindowSize"
 import { useAxios } from "../../shared/lib/axios"
 import { useEndpoints } from "../../shared/constants"
@@ -64,8 +64,8 @@ export default function Permissions() {
                     </Col>
                 </StyledRow>
                 <RoleInputs selectedData={data!} handleCancel={() => navigate('/roles')} />
-                <Collapse>
-                    <Collapse.Panel header='Update Permission' key='1123123'>
+                <Collapse defaultActiveKey={['1']}>
+                    <Collapse.Panel header='Update Permission' key='1'>
                         <Row gutter={[24, 24]}>
                             {Object.entries(modules ?? {}).map(([k, v]) => (
                                 <Col key={k + v} xs={24} sm={12} md={12} lg={12} xl={12}>
@@ -81,6 +81,7 @@ export default function Permissions() {
                                     </Collapse>
                                 </Col>
                             ))}
+                            <FloatButton.BackTop />
                         </Row>
                     </Collapse.Panel>
                 </Collapse>
