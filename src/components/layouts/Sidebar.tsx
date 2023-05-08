@@ -11,6 +11,8 @@ import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
 import { TfiAnnouncement } from 'react-icons/tfi'
 import { GoIssueOpened } from 'react-icons/go'
+import { useAuthContext } from '../../shared/contexts/Auth'
+import { IUser } from '../../shared/interfaces'
 
 type Props = {
     onSelect: () => void
@@ -19,7 +21,10 @@ type Props = {
 export default function Sidebar({ onSelect }: Props) {
     let location = useLocation()
     const [locationKey, setLocationKey] = useState('')
-
+    const { user } = useAuthContext()
+    const modules = new Map(user?.modules.map((d) => [d.name, d])) ?? new Map()
+    const firstMod: IUser = modules.values().next().value
+    console.log(firstMod)
     useEffect(() => {
         if (location?.pathname.includes('/employee/edit')) {
             setLocationKey('/employee')

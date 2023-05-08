@@ -20,7 +20,6 @@ export default function Permissions() {
     const [modules, setModules] = useState<Record<string, IPermissions[]>>()
     const [loading, setLoading] = useState(true)
     const [loadingPermission, setLoadingPermission] = useState(false)
-    // const firstData: IPermissions = permissions.values().next().value // to get the first element in Map
     useEffect(function () {
         if (roleId != undefined) fetchPermissionByRoleId(roleId)
         fetchPermissions()

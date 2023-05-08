@@ -5,7 +5,6 @@ export interface IEmployee extends IUser {
     employee_no: string
     employee_name: string
     position: string
-    department: string
     date_hired: string
     status: string
 }
