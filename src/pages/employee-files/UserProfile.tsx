@@ -6,7 +6,8 @@ import { useEmployeeCtx } from '../EmployeeEdit'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
-import { IArguments, IDepartment, IEmployeeStatus, ILineManager, IPosition, IRole, IUser } from '../../shared/interfaces'
+import { IDepartment, IEmployeeStatus, ILineManager, IPosition, IRole, IUser } from '../../shared/interfaces'
+import useMessage from 'antd/es/message/useMessage'
 
 const { useForm, Item } = AntDForm
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
@@ -15,6 +16,7 @@ const { PUT } = useAxios()
 export default function UserProfileEmployee() {
     const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
     const [form] = useForm<IUser>()
+    const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<{ employeeStatus: IEmployeeStatus[]; positions: IPosition[]; roles: IRole[]; lineManagers: ILineManager[]; departments: IDepartment[] }>({
         employeeStatus: [],
         positions: [],
@@ -22,14 +24,9 @@ export default function UserProfileEmployee() {
         lineManagers: [],
         departments: []
     })
+    const [messageApi, contextHolder] = useMessage()
 
-    useEffect(function fetchUserInfo() {
-        console.log('employee info: ', employeeInfo)
-        form.setFieldsValue({
-            ...employeeInfo,
-            birthday: dayjs(employeeInfo?.birthday, 'YYYY/MM/DD'),
-            employment_status_id: employeeInfo?.employment_status?.id
-        })
+    useEffect(() => {
         const controller = new AbortController();
         (async () => {
             try {
@@ -53,21 +50,42 @@ export default function UserProfileEmployee() {
         return () => {
             controller.abort()
         }
+    }, [])
+
+    useEffect(function fetchUserInfo() {
+        form.setFieldsValue({
+            ...employeeInfo,
+            birthday: employeeInfo?.birthday ? dayjs(employeeInfo?.birthday, 'YYYY/MM/DD') : null,
+            date_hired: employeeInfo?.date_hired ? dayjs(employeeInfo?.date_hired, 'YYYY/MM/DD') : null,
+            resignation_date: employeeInfo?.resignation_date ? dayjs(employeeInfo?.resignation_date, 'YYYY/MM/DD') : null,
+            manager_id: employeeInfo?.managers?.id,
+            employment_status_id: employeeInfo?.employment_status?.id,
+            position_id: employeeInfo?.position?.id
+        })
     }, [employeeInfo])
 
     function onFinish(val: IUser) {
+        setLoading(true)
         PUT(EMPLOYEE201.PUT + employeeId, val)
-            .then((res) => {
-                console.log(res)
+            .then(() => messageApi.open({
+                type: 'success',
+                content: 'User Profile Update Successfully!',
+                duration: 5
+            }))
+            .catch((err) => messageApi.open({
+                type: 'error',
+                content: err.response.data.message ?? err.response.data.error,
+                duration: 5
+            }))
+            .finally(() => {
+                fetchData()
+                setLoading(false)
             })
-            .catch((err) => {
-                console.log('Error: ', err)
-            })
-        // do put route
     }
     return (
         <Card title='Personal Information'>
-            <Form form={form} onFinish={onFinish}>
+            {contextHolder}
+            <Form form={form} onFinish={onFinish} disabled={loading}>
                 <Row>
                     <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                         <Item
@@ -85,8 +103,6 @@ export default function UserProfileEmployee() {
                         <Item
                             label="Last Name"
                             name="last_name"
-                            required
-                            rules={[{ required: true, message: '' }]}
                         >
                             <Input placeholder='Enter last name...' />
                         </Item>
@@ -95,8 +111,6 @@ export default function UserProfileEmployee() {
                         <Item
                             label="First Name"
                             name="first_name"
-                            required
-                            rules={[{ required: true, message: '' }]}
                         >
                             <Input placeholder='Enter first name...' />
                         </Item>
@@ -123,8 +137,6 @@ export default function UserProfileEmployee() {
                         <Item
                             label="Gender"
                             name="gender"
-                            required
-                            rules={[{ required: true, message: '' }]}
                         >
                             <Radio.Group>
                                 <Radio value="male">Male</Radio>
@@ -136,8 +148,6 @@ export default function UserProfileEmployee() {
                         <Item
                             label="Marital Status"
                             name="marital_status"
-                            required
-                            rules={[{ required: true, message: '' }]}
                         >
                             <Radio.Group>
                                 <Radio value="single">Single</Radio>
@@ -158,13 +168,10 @@ export default function UserProfileEmployee() {
                     </Col>
                 </Row>
                 <Row justify='space-between'>
-
                     <Col xs={24} sm={24} md={8} lg={6} xl={6} >
                         <Item
                             label="Date of Birth"
                             name="birthday"
-                            required
-                            rules={[{ required: true, message: '' }]}
                         >
                             <DatePicker
                                 style={{ width: '100%' }}
@@ -176,8 +183,6 @@ export default function UserProfileEmployee() {
                         <Item
                             label="Current Address"
                             name="address"
-                            required
-                            rules={[{ required: true, message: '' }]}
                         >
                             <Input placeholder='Enter address...' />
                         </Item>
@@ -187,9 +192,7 @@ export default function UserProfileEmployee() {
                     <Col xs={24} sm={24} md={11} lg={7} xl={7} >
                         <Item
                             label="Contact #1"
-                            name="contact_number1"
-                        // required
-                        // rules={[{ required: true, message: '' }]}
+                            name="mobile_number1"
                         >
                             <Input type='number' placeholder='Enter contact number...' />
                         </Item>
@@ -197,9 +200,7 @@ export default function UserProfileEmployee() {
                     <Col xs={24} sm={24} md={11} lg={7} xl={7} >
                         <Item
                             label="Contact #2"
-                            name="contact_number2"
-                        // required
-                        // rules={[{ required: true, message: '' }]}
+                            name="mobile_number2"
                         >
                             <Input type='number' placeholder='Enter contact number...' />
                         </Item>
@@ -214,7 +215,7 @@ export default function UserProfileEmployee() {
                     </Col>
                 </Row>
                 <Row justify='space-between'>
-                    <Col xs={24} sm={24} md={11} lg={5} xl={5} >
+                    <Col xs={24} sm={24} md={11} lg={7} xl={7} >
                         <Item
                             label="Employee Status"
                             name="employment_status_id"
@@ -231,7 +232,7 @@ export default function UserProfileEmployee() {
                             </Select>
                         </Item>
                     </Col>
-                    <Col xs={24} sm={24} md={11} lg={4} xl={4} >
+                    <Col xs={24} sm={24} md={11} lg={7} xl={7} >
                         <Item
                             label="Department"
                             name="department_id"
@@ -248,7 +249,26 @@ export default function UserProfileEmployee() {
                             </Select>
                         </Item>
                     </Col>
-                    <Col xs={24} sm={24} md={11} lg={4} xl={4} >
+                    <Col xs={24} sm={24} md={11} lg={7} xl={7} >
+                        <Item
+                            label="Line Manager"
+                            name="manager_id"
+                        >
+                            <Select
+                                placeholder='Select line manager...'
+                                allowClear
+                                showSearch
+                                optionFilterProp="children"
+                            >
+                                {lists?.lineManagers.map((role) => (
+                                    <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.full_name}</Select.Option>
+                                ))}
+                            </Select>
+                        </Item>
+                    </Col>
+                </Row>
+                <Row justify='space-around'>
+                    <Col xs={24} sm={24} md={11} lg={7} xl={7} >
                         <Item
                             label="Position"
                             name="position_id"
@@ -265,7 +285,7 @@ export default function UserProfileEmployee() {
                             </Select>
                         </Item>
                     </Col>
-                    <Col xs={24} sm={24} md={11} lg={4} xl={4} >
+                    <Col xs={24} sm={24} md={11} lg={7} xl={7} >
                         <Item
                             label="Role"
                             name="role_id"
@@ -282,21 +302,28 @@ export default function UserProfileEmployee() {
                             </Select>
                         </Item>
                     </Col>
-                    <Col xs={24} sm={24} md={11} lg={4} xl={4} >
+                </Row>
+                <Row justify='space-around'>
+                    <Col xs={24} sm={24} md={11} lg={7} xl={7} >
                         <Item
-                            label="Line Manager"
-                            name="manager_id"
+                            label="Date Hired"
+                            name="date_hired"
                         >
-                            <Select
-                                placeholder='Select line manager...'
-                                allowClear
-                                showSearch
-                                optionFilterProp="children"
-                            >
-                                {lists?.lineManagers.map((role) => (
-                                    <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.full_name}</Select.Option>
-                                ))}
-                            </Select>
+                            <DatePicker
+                                style={{ width: '100%' }}
+                                format='YYYY/MM/DD'
+                            />
+                        </Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={11} lg={7} xl={7} >
+                        <Item
+                            label="Date Resigned"
+                            name="resignation_date"
+                        >
+                            <DatePicker
+                                style={{ width: '100%' }}
+                                format='YYYY/MM/DD'
+                            />
                         </Item>
                     </Col>
                 </Row>

@@ -270,6 +270,7 @@ interface IStepOne {
     birthday: string | Dayjs | null
     address: string | null
     mobile_number1: string | null
+    mobile_number2: string | null
     position_id: string | null
     status: string | null
     role_id: string
