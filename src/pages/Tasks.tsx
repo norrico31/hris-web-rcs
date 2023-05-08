@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col } from 'antd'
+import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { useAuthContext } from '../shared/contexts/Auth'
 import { useTasksServices } from '../shared/services/TasksSettings'
-import { Action, TabHeader, Table, Form, MainHeader } from '../components'
+import { Action, TabHeader, Table, Form, MainHeader, } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import axiosClient, { useAxios } from '../shared/lib/axios'
 import { useEndpoints } from '../shared/constants'
@@ -18,15 +18,15 @@ const { GET, POST, PUT, DELETE } = useAxios()
 const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS }, }] = useEndpoints()
 
 export default function Tasks() {
-    renderTitle('Tasks Management')
+    renderTitle('Tasks')
     const { user } = useAuthContext()
     const [data, setData] = useState<ITasks[]>([])
     const [selectedData, setSelectedData] = useState<ITasks | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isModalDownload, setIsModalDownload] = useState(false)
     const [loading, setLoading] = useState(true)
-    const [date, setDate] = useState([])
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -124,47 +124,10 @@ export default function Tasks() {
         setSelectedData(data)
     }
 
-    function handleDownload() {
-        const start_date = dayjs(date[0]).format('YYYY-MM-DD')
-        const end_date = dayjs(date[1]).format('YYYY-MM-DD')
-        // const formData = new FormData()
-        // formData.append('start_date', start_date)
-        // formData.append('end_date', end_date)
-        // formData.append('user_id', user?.id!)
-        fetch(TASKS.DOWNLOAD, {
-            method: 'POST',
-            body: JSON.stringify({
-                start_date,
-                end_date,
-                user_id: user?.id!
-            }),
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                responseType: 'blob'
-            }
-        })
-            .then((res: any) => {
-                console.log('result from download: ', res)
-                const url = window.URL.createObjectURL(new Blob([res.data]))
-                const link = document.createElement('a')
-                link.href = url
-                link.setAttribute('download', res?.fileName) // message must from backend
-                document.body.appendChild(link)
-                link.click()
-            })
-            .catch(err => {
-                console.log('error to: ', err)
-            })
-    }
 
     function handleCloseModal() {
         setSelectedData(undefined)
         setIsModalOpen(false)
-    }
-
-    function handleChange(date: any) {
-        setDate(date)
     }
 
     return (selectedData || isModalOpen) ? (
@@ -179,18 +142,14 @@ export default function Tasks() {
     ) : (
         <>
             <MainHeader>
-                <h1 className='color-white'>Tasks Management</h1>
+                <h1 className='color-white'>Tasks</h1>
             </MainHeader>
             <TabHeader
                 name='tasks management'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={handleDownload}
             >
-                <DatePicker.RangePicker
-                    format='YYYY/MM/DD'
-                    onChange={handleChange}
-                />
+                <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
             </TabHeader>
             <Table
                 loading={loading}
@@ -198,6 +157,11 @@ export default function Tasks() {
                 dataList={data}
                 tableParams={tableParams}
                 onChange={onChange}
+            />
+            <TasksModalDownload
+                userId={user?.id!}
+                isModalDownload={isModalDownload}
+                handleClose={() => setIsModalDownload(false)}
             />
         </>
     )
@@ -254,7 +218,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     }
 
     return <>
-        <Title level={2}>Tasks Management - {title}</Title>
+        <Title level={2}>Tasks - {title}</Title>
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Task Name"
@@ -374,6 +338,79 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             handleCancel={() => setIsModalSprints(false)}
         />
     </>
+}
+
+function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: string; isModalDownload: boolean; handleClose: () => void; }) {
+    const [loading, setLoading] = useState(false)
+    const dateVal = [dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD'), dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD')]
+    const [date, setDate] = useState<any>(dateVal)
+
+    function handleDownload() {
+        setLoading(true)
+        const start_date = dayjs(date[0]).format('YYYY-MM-DD')
+        const end_date = dayjs(date[1]).format('YYYY-MM-DD')
+
+        // const formData = new FormData()
+        // formData.append('start_date', start_date)
+        // formData.append('end_date', end_date)
+        // formData.append('user_id', user?.id!)
+        fetch(TASKS.DOWNLOAD, {
+            method: 'POST',
+            body: JSON.stringify({
+                start_date,
+                end_date,
+                user_id: userId
+            }),
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                responseType: 'blob'
+            }
+        })
+            .then((res: any) => {
+                console.log('result from download: ', res)
+                const url = window.URL.createObjectURL(new Blob([res.data]))
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', res?.fileName) // message must from backend
+                document.body.appendChild(link)
+                link.click()
+                handleClose()
+            })
+            .catch(err => {
+                console.log('error to: ', err)
+            })
+            .finally(() => {
+                setLoading(false)
+                setDate(dateVal)
+            })
+    }
+
+    return (
+        <Modal title='Download - Tasks' open={isModalDownload} onCancel={handleClose} footer={null} forceRender>
+            <Divider />
+            <Row justify='space-between'>
+                <Title level={5}>Select Date: </Title>
+                <DatePicker.RangePicker
+                    format='YYYY/MM/DD'
+                    onChange={setDate}
+                    value={date}
+                />
+
+            </Row>
+            <Divider style={{ border: 'none', margin: 10 }} />
+            <FormItem style={{ textAlign: 'right' }}>
+                <Space>
+                    <Button id='download' type="primary" loading={loading} disabled={loading} onClick={handleDownload}>
+                        Download
+                    </Button>
+                    <Button id='cancel' type="primary" onClick={handleClose} loading={loading} disabled={loading}>
+                        Cancel
+                    </Button>
+                </Space>
+            </FormItem>
+        </Modal>
+    )
 }
 
 const getList = (url: string) => axiosClient.get(url).then((res) => res?.data ?? [])

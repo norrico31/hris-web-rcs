@@ -111,46 +111,7 @@ export default function TimeKeeping() {
         </>
     )
 }
-{/* <Row justify='space-around' wrap gutter={[24, 24]}>
-                <Col1 xs={24} sm={24} md={14} lg={14} xl={14} order={width >= 769 ? 0 : 2}>
-                    <Calendar onSelect={onSelect} />
-                </Col1>
-                <Col2 xs={24} sm={24} md={9} lg={9} xl={8} height={500}>
-                    <h2 style={{ color: '#ABABAB' }}>Time In/Out</h2>
-                    <AntDDivider />
-                    {loading ? <Spin /> : (data.length > 0 && data != undefined) ? (
-                        <Col>
-                            <div>
-                                <Box title='Time In'>
-                                    <Space direction='vertical'>
-                                        <Space>
-                                            <p>Time: </p><b>{data?.[0]?.time_in}</b>
-                                        </Space>
-                                        <Space>
-                                            <p>Date: </p><b>{data?.[0]?.time_keeping_date}</b>
-                                        </Space>
-                                    </Space>
-                                </Box>
-                            </div>
-                            <Divider />
-                            {(data?.[0]?.time_out != null || data?.[0]?.time_out != undefined) && (
-                                <div>
-                                    <Box title='Time Out'>
-                                        <Space direction='vertical'>
-                                            <Space>
-                                                <p>Time: </p><b>{data[0].time_out}</b>
-                                            </Space>
-                                            <Space>
-                                                <p>Date: </p><b>{data[0].time_keeping_date}</b>
-                                            </Space>
-                                        </Space>
-                                    </Box>
-                                </div>
-                            )}
-                        </Col>
-                    ) : <p>No record on {dayjs(selectedDate).format('MMM') + ''} {dayjs(selectedDate).format('D') + ''}, {dayjs(selectedDate).format('YYYY') + ''}.</p>}
-                </Col2>
-            </Row> */}
+
 type ModalProps = {
     isModalOpen: boolean
     fetchData: ({ args, date }: {

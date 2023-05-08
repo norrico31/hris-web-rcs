@@ -164,7 +164,7 @@ const menus = [
         <FaUsersCog />
     ),
     getItemLinks(
-        <Link to='/tasks'>Tasks Management</Link>,
+        <Link to='/tasks'>Tasks</Link>,
         '/tasks',
         <FaTasks />
     ),
