@@ -16,7 +16,8 @@ export interface IUser {
     employee_clients: IEmployeeClients[]
     employee_contracts: IEmployeeContracts[]
     employee_benefits: IEmployeeBenefits[]
-    employee_status: string | null
+    employment_status: { id: string; name: string }
+    employment_status_id: string
     evaluations: IEmployeeEvaluation[]
     ext_name: string | null
     first_name: string
