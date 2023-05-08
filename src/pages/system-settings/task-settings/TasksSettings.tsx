@@ -13,11 +13,11 @@ export default function TasksSettings() {
         return [
             (modules.has('task_activities') && {
                 label: 'Task Activities',
-                key: '/tasksettings/activities',
+                key: '/tasksettings/task_activities',
             }),
             (modules.has('task_types') && {
                 label: 'Task Types',
-                key: '/tasksettings/types',
+                key: '/tasksettings/task_types',
             }),
             (modules.has('sprints') && {
                 label: 'Sprints',

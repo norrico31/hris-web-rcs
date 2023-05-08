@@ -1,6 +1,5 @@
 export * from './employeeEdit'
 export * from './endpoints'
 export * from './expenseSettings'
-export * from './clientSettings'
 export * from './hrSettings'
 export * from './leavePaths'

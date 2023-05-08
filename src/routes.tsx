@@ -134,11 +134,11 @@ export const routes = createBrowserRouter([
                         element: <TasksSettings />,
                         children: [
                             {
-                                path: 'activities',
+                                path: 'task_activities',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskActivities /></Suspense>,
                             },
                             {
-                                path: 'types',
+                                path: 'task_types',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskTypes /></Suspense>
                             },
                             {
@@ -214,15 +214,15 @@ export const routes = createBrowserRouter([
                         element: <ClientSettings />,
                         children: [
                             {
-                                path: 'client',
+                                path: 'clients',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Client /></Suspense>,
                             },
                             {
-                                path: 'clientbranch',
+                                path: 'client_branches',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientBranch /></Suspense>
                             },
                             {
-                                path: 'clientadjustment',
+                                path: 'client_adjustments',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientAdjustment /></Suspense>
                             },
                         ]
@@ -241,14 +241,6 @@ export const routes = createBrowserRouter([
                             },
                         ]
                     },
-                    // {
-                    //     path: 'role',
-                    //     element: <Roles />
-                    // },
-                    // {
-                    //     path: 'salaryrate',
-                    //     element: <SalaryRate />
-                    // },
                 ],
             },
             {

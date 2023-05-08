@@ -1,13 +1,25 @@
 import { useMemo } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Tabs } from '../../../components'
-import { clientSettingsPaths } from '../../../shared/constants'
 
 export default function ClientSettings() {
     const navigate = useNavigate()
     let { pathname } = useLocation()
 
-    const items = useMemo(() => clientSettingsPaths.map(({ label, key }) => ({
+    const items = useMemo(() => [
+        {
+            label: 'Client',
+            key: '/clientsettings/clients',
+        },
+        {
+            label: 'Client Branch',
+            key: '/clientsettings/client_branches',
+        },
+        {
+            label: 'Client Adjustment',
+            key: '/clientsettings/client_adjustments',
+        },
+    ].map(({ label, key }) => ({
         label,
         key,
         children: <Outlet />

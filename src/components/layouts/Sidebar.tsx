@@ -18,21 +18,21 @@ type Props = {
     onSelect: () => void
 }
 
+
 export default function Sidebar({ onSelect }: Props) {
     const location = useLocation()
     const [locationKey, setLocationKey] = useState('')
     const { user } = useAuthContext()
-    const modules = useMemo(() => new Map(user?.modules.map((d) => [d.name, d])) ?? new Map(), [user?.modules])
 
     useEffect(() => {
         if (location?.pathname.includes('/employee/edit')) {
             setLocationKey('/employee')
-        } else if (location?.pathname.includes('/systemsettings/tasksettings')) {
-            setLocationKey('/systemsettings/tasksettings')
+        } else if (location?.pathname.includes('/systemsettings/tasksettings/')) {
+            setLocationKey('/systemsettings/tasksettings/task_activities')
         } else if (location?.pathname.includes('/systemsettings/hrsettings')) {
             setLocationKey('/systemsettings/hrsettings/bankdetails')
         } else if (location?.pathname.includes('/systemsettings/clientsettings')) {
-            setLocationKey('/systemsettings/clientsettings/client')
+            setLocationKey('/systemsettings/clientsettings/clients')
         } else if (location?.pathname.includes('/systemsettings/expensesettings')) {
             setLocationKey('/systemsettings/expensesettings/expense')
         } else if (location?.pathname.includes('/roles')) {
@@ -50,7 +50,7 @@ export default function Sidebar({ onSelect }: Props) {
             selectedKeys={[locationKey]}
             defaultSelectedKeys={[location.pathname]}
             onSelect={onSelect}
-            items={filterMenu(modules)}
+            items={filterMenu(user!)}
         />
     )
 }
@@ -78,21 +78,29 @@ const MenuContainer = styled(AntdMenu)`
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-function filterMenu(modules: Map<string, IPermissions>) {
+const tasksSettings = ['task_activities', 'task_types', 'sprints']
+const clientSettings = ['clients', 'client_branches', 'client_adjustments']
+const bankSettings = ['bank_details', 'benefits', 'holidays', 'holiday_types', 'daily_rates', 'employment_statuses', 'departments', 'teams', 'positions', 'leave_statuses', 'leave_durations', 'leave_types', 'employee_salaries', 'schedules']
+
+function filterMenu(user: IUser) {
+    const modules = new Map(user?.modules.map((d) => [d.name, d])) ?? new Map()
+    console.log(modules.has('bank_details'))
+    const tasksSettingsNames = filterPath(user?.modules, tasksSettings)
+    const clientSettingsNames = filterPath(user?.modules, clientSettings)
     return [
         getItemLinks(
             <Link to='/dashboard' id="dashboard">Dashboard</Link>,
             '/dashboard',
             <AiFillAppstore />,
             undefined,
-            modules.has('dashboard')
+            modules.has('dashboard') || true
         ),
         getItemLinks(
             <Link to='/announcements' id="announcements">Announcements</Link>,
             '/announcements',
             <TfiAnnouncement />,
             undefined,
-            modules.has('announcements')
+            modules.has('announcements') || true
         ),
         getItemLinks(
             <Link to='/timekeeping' id='timekeeping'>Timekeeping</Link>,
@@ -114,8 +122,8 @@ function filterMenu(modules: Map<string, IPermissions>) {
             <AiOutlineSetting />,
             [
                 getItemLinks(
-                    <Link to='/systemsettings/tasksettings'>Tasks</Link>,
-                    '/systemsettings/tasksettings',
+                    <Link to={`/systemsettings/tasksettings/${tasksSettingsNames[tasksSettingsNames.length - 1]}`}>Tasks</Link>,
+                    '/systemsettings/tasksettings/task_activities',
                     <FaTasks />,
                     undefined,
                     modules.has('task_activities') || modules.has('task_types') || modules.has('sprints')
@@ -126,8 +134,8 @@ function filterMenu(modules: Map<string, IPermissions>) {
                     <GiHumanPyramid />,
                 ),
                 getItemLinks(
-                    <Link to='/systemsettings/clientsettings/client'>Client</Link>,
-                    '/systemsettings/clientsettings/client',
+                    <Link to={`/systemsettings/clientsettings/${clientSettingsNames[0]}`}>Client</Link>,
+                    `/systemsettings/clientsettings/clients`,
                     <IoIosPeople />,
                 ),
                 getItemLinks(
@@ -137,7 +145,8 @@ function filterMenu(modules: Map<string, IPermissions>) {
                     undefined,
                     modules.has('expense_types')
                 ),
-            ]
+            ],
+            !!tasksSettingsNames?.length || !!clientSettingsNames || modules.has('expense_types')
         ),
         getItemLinks(
             'Admin Settings',
@@ -158,11 +167,6 @@ function filterMenu(modules: Map<string, IPermissions>) {
                     undefined,
                     modules.has('roles')
                 ),
-                // getItemLinks(
-                //     <Link to='/permissions'>Permissions</Link>,
-                //     '/permissions',
-                //     <MdLockOutline />,
-                // ),
                 getItemLinks(
                     <Link to='/auditlogs'>Audit Logs</Link>,
                     '/auditlogs',
@@ -208,6 +212,17 @@ function filterMenu(modules: Map<string, IPermissions>) {
             modules.has('expenses')
         ),
     ]
+}
+
+function filterPath(modules: IPermissions[], arrNames: string[]): string[] {
+    let newPaths: string[] = []
+    for (let i = 0; i < modules?.length; i++) {
+        const data = modules[i]
+        if (arrNames.some((tasks) => tasks == data.name) && !newPaths.includes(data.name)) {
+            newPaths.push(data.name)
+        }
+    }
+    return newPaths
 }
 
 function getItemLinks(

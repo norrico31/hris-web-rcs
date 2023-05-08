@@ -13,6 +13,7 @@ import { TableParams, ITasks, TasksRes, IArguments } from '../shared/interfaces'
 import { ActivityModal } from './system-settings/task-settings/TaskActivities'
 import { SprintModal } from './system-settings/task-settings/TaskSprint'
 import { TypesModal } from './system-settings/task-settings/TaskTypes'
+import { Alert } from '../shared/lib/alert'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS }, }] = useEndpoints()
@@ -355,17 +356,16 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
             user_id: userId
         }), {
             headers: {
-                "Accept": "application/json",
                 "Content-Type": "application/json",
                 responseType: 'blob'
             }
         })
             .then((res: any) => {
-                console.log('result from download: ', res)
+                Alert.success('Download Success', 'Tasks Download Successfully!')
                 const url = window.URL.createObjectURL(new Blob([res.data]))
                 const link = document.createElement('a')
                 link.href = url
-                link.setAttribute('download', res?.fileName ?? 'Tasks') // message must from backend
+                link.setAttribute('download', `Tasks - ${dayjs().format('YYYY-MM-DD')}.xlsx`) // message must from backend
                 document.body.appendChild(link)
                 link.click()
                 handleClose()
