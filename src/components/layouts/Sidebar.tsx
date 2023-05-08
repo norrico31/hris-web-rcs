@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { MenuProps, Menu as AntdMenu } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
@@ -19,16 +19,16 @@ type Props = {
 }
 
 export default function Sidebar({ onSelect }: Props) {
-    let location = useLocation()
+    const location = useLocation()
     const [locationKey, setLocationKey] = useState('')
     const { user } = useAuthContext()
-    const modules = new Map(user?.modules.map((d) => [d.name, d])) ?? new Map()
+    const modules = useMemo(() => new Map(user?.modules.map((d) => [d.name, d])) ?? new Map(), [user?.modules])
 
     useEffect(() => {
         if (location?.pathname.includes('/employee/edit')) {
             setLocationKey('/employee')
         } else if (location?.pathname.includes('/systemsettings/tasksettings')) {
-            setLocationKey('/systemsettings/tasksettings/activities')
+            setLocationKey('/systemsettings/tasksettings')
         } else if (location?.pathname.includes('/systemsettings/hrsettings')) {
             setLocationKey('/systemsettings/hrsettings/bankdetails')
         } else if (location?.pathname.includes('/systemsettings/clientsettings')) {
@@ -50,7 +50,7 @@ export default function Sidebar({ onSelect }: Props) {
             selectedKeys={[locationKey]}
             defaultSelectedKeys={[location.pathname]}
             onSelect={onSelect}
-            items={filterMenu(menus, modules)}
+            items={filterMenu(modules)}
         />
     )
 }
@@ -78,117 +78,141 @@ const MenuContainer = styled(AntdMenu)`
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-const menus = [
-    getItemLinks(
-        <Link to='/dashboard' id="dashboard">Dashboard</Link>,
-        '/dashboard',
-        <AiFillAppstore />
-    ),
-    getItemLinks(
-        <Link to='/announcements' id="announcements">Announcements</Link>,
-        '/announcements',
-        <TfiAnnouncement />
-    ),
-    getItemLinks(
-        <Link to='/timekeeping' id='timekeeping'>Timekeeping</Link>,
-        '/timekeeping',
-        <BiTimeFive />
-    ),
-    getItemLinks(
-        <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,
-        '/whosinout',
-        <BiTimer />
-    ),
-    getItemLinks(
-        'System Settings',
-        '/systemsettings',
-        <AiOutlineSetting />,
-        [
-            getItemLinks(
-                <Link to='/systemsettings/tasksettings/activities'>Tasks</Link>,
-                '/systemsettings/tasksettings/activities',
-                <FaTasks />,
-            ),
-            getItemLinks(
-                <Link to='/systemsettings/hrsettings/bankdetails'>Human Resources</Link>,
-                '/systemsettings/hrsettings/bankdetails',
-                <GiHumanPyramid />,
-            ),
-            getItemLinks(
-                <Link to='/systemsettings/clientsettings/client'>Client</Link>,
-                '/systemsettings/clientsettings/client',
-                <IoIosPeople />,
-            ),
-            getItemLinks(
-                <Link to='/systemsettings/expensesettings/expensetype'>Expense</Link>,
-                '/systemsettings/expensesettings/expensetype',
-                <SiExpensify />,
-            ),
-        ]
-    ),
-    getItemLinks(
-        'Admin Settings',
-        '/adminsettings',
-        <MdAdminPanelSettings />,
-        [
-            getItemLinks(
-                <Link to='/users'>Users</Link>,
-                '/users',
-                <FaUsers />,
-            ),
-            getItemLinks(
-                <Link to='/roles'>Roles</Link>,
-                '/roles',
-                <FaCriticalRole />,
-            ),
-            // getItemLinks(
-            //     <Link to='/permissions'>Permissions</Link>,
-            //     '/permissions',
-            //     <MdLockOutline />,
-            // ),
-            getItemLinks(
-                <Link to='/auditlogs'>Audit Logs</Link>,
-                '/auditlogs',
-                <AiOutlineAudit />,
-            ),
-            getItemLinks(
-                <Link to='/issuelogs'>System Logs</Link>,
-                '/issuelogs',
-                <AiOutlineSetting />,
-            ),
-        ]
-    ),
-    getItemLinks(
-        <Link to='/employee'>Employee Files</Link>,
-        '/employee',
-        <FaUsersCog />
-    ),
-    getItemLinks(
-        <Link to='/tasks'>Tasks</Link>,
-        '/tasks',
-        <FaTasks />
-    ),
-    getItemLinks(
-        <Link to='/leave'>Leave</Link>,
-        '/leave',
-        <AiOutlineCalendar />
-    ),
-    getItemLinks(
-        <Link to='/salaryadjustments'>Salary Adjustments</Link>,
-        '/salaryadjustments',
-        <AiOutlineDollarCircle />
-    ),
-]
-
-function filterMenu(menus: MenuItem[], modules: Map<string, IPermissions>) {
-    console.log(menus, modules)
-
-    return menus
+function filterMenu(modules: Map<string, IPermissions>) {
+    return [
+        getItemLinks(
+            <Link to='/dashboard' id="dashboard">Dashboard</Link>,
+            '/dashboard',
+            <AiFillAppstore />,
+            undefined,
+            modules.has('dashboard')
+        ),
+        getItemLinks(
+            <Link to='/announcements' id="announcements">Announcements</Link>,
+            '/announcements',
+            <TfiAnnouncement />,
+            undefined,
+            modules.has('announcements')
+        ),
+        getItemLinks(
+            <Link to='/timekeeping' id='timekeeping'>Timekeeping</Link>,
+            '/timekeeping',
+            <BiTimeFive />,
+            undefined,
+            modules.has('time_keepings')
+        ),
+        getItemLinks(
+            <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,
+            '/whosinout',
+            <BiTimer />,
+            undefined,
+            modules.has('whos_in_out') || true
+        ),
+        getItemLinks(
+            'System Settings',
+            '/systemsettings',
+            <AiOutlineSetting />,
+            [
+                getItemLinks(
+                    <Link to='/systemsettings/tasksettings'>Tasks</Link>,
+                    '/systemsettings/tasksettings',
+                    <FaTasks />,
+                    undefined,
+                    modules.has('task_activities') || modules.has('task_types') || modules.has('sprints')
+                ),
+                getItemLinks(
+                    <Link to='/systemsettings/hrsettings/bankdetails'>Human Resources</Link>,
+                    '/systemsettings/hrsettings/bankdetails',
+                    <GiHumanPyramid />,
+                ),
+                getItemLinks(
+                    <Link to='/systemsettings/clientsettings/client'>Client</Link>,
+                    '/systemsettings/clientsettings/client',
+                    <IoIosPeople />,
+                ),
+                getItemLinks(
+                    <Link to='/systemsettings/expensesettings/expensetype'>Expense</Link>,
+                    '/systemsettings/expensesettings/expensetype',
+                    <SiExpensify />,
+                    undefined,
+                    modules.has('expense_types')
+                ),
+            ]
+        ),
+        getItemLinks(
+            'Admin Settings',
+            '/adminsettings',
+            <MdAdminPanelSettings />,
+            [
+                getItemLinks(
+                    <Link to='/users'>Users</Link>,
+                    '/users',
+                    <FaUsers />,
+                    undefined,
+                    modules.has('users')
+                ),
+                getItemLinks(
+                    <Link to='/roles'>Roles</Link>,
+                    '/roles',
+                    <FaCriticalRole />,
+                    undefined,
+                    modules.has('roles')
+                ),
+                // getItemLinks(
+                //     <Link to='/permissions'>Permissions</Link>,
+                //     '/permissions',
+                //     <MdLockOutline />,
+                // ),
+                getItemLinks(
+                    <Link to='/auditlogs'>Audit Logs</Link>,
+                    '/auditlogs',
+                    <AiOutlineAudit />,
+                    undefined,
+                    modules.has('audit_logs')
+                ),
+                getItemLinks(
+                    <Link to='/issuelogs'>System Logs</Link>,
+                    '/issuelogs',
+                    <AiOutlineSetting />,
+                    undefined,
+                    modules.has('laravel_logs')
+                ),
+            ]
+        ),
+        getItemLinks(
+            <Link to='/employee'>Employee Files</Link>,
+            '/employee',
+            <FaUsersCog />,
+            undefined,
+            modules.has('employees')
+        ),
+        getItemLinks(
+            <Link to='/tasks'>Tasks</Link>,
+            '/tasks',
+            <FaTasks />,
+            undefined,
+            modules.has('tasks')
+        ),
+        getItemLinks(
+            <Link to='/leave'>Leave</Link>,
+            '/leave',
+            <AiOutlineCalendar />,
+            undefined,
+            modules.has('leaves')
+        ),
+        getItemLinks(
+            <Link to='/salaryadjustments'>Salary Adjustments</Link>,
+            '/salaryadjustments',
+            <AiOutlineDollarCircle />,
+            undefined,
+            modules.has('expenses')
+        ),
+    ]
 }
 
 function getItemLinks(
     label: React.ReactNode,
-    key: React.Key | any,
+    key: React.Key | string,
     icon?: React.ReactNode,
     children?: MenuItem[],
     isMod: boolean = true

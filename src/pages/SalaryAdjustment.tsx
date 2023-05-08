@@ -179,6 +179,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
     const [form] = useForm<ISalaryAdjustment>()
     const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<{ employee: Array<IEmployee>; expenseTypes: Array<IExpenseType> }>({ employee: [], expenseTypes: [] })
+    const [messageApi, contextHolder] = useMessage()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -209,15 +210,6 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
             controller.abort()
         }
     }, [selectedData])
-
-    const normFile = (e: any) => {
-        if (Array.isArray(e)) {
-            return e;
-        }
-        return e?.fileList;
-    }
-
-    const [messageApi, contextHolder] = useMessage()
 
     function onFinish(values: ISalaryAdjustment) {
         setLoading(true)
@@ -374,4 +366,11 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
             </Row>
         </Form>
     </Modal >
+}
+
+const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+        return e;
+    }
+    return e?.fileList;
 }
