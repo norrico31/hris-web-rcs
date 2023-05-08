@@ -349,18 +349,11 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
         setLoading(true)
         const start_date = dayjs(date[0]).format('YYYY-MM-DD')
         const end_date = dayjs(date[1]).format('YYYY-MM-DD')
-
-        // const formData = new FormData()
-        // formData.append('start_date', start_date)
-        // formData.append('end_date', end_date)
-        // formData.append('user_id', user?.id!)
-        fetch(TASKS.DOWNLOAD, {
-            method: 'POST',
-            body: JSON.stringify({
-                start_date,
-                end_date,
-                user_id: userId
-            }),
+        axios.post(TASKS.DOWNLOAD, JSON.stringify({
+            start_date,
+            end_date,
+            user_id: userId
+        }), {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
@@ -372,7 +365,7 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
                 const url = window.URL.createObjectURL(new Blob([res.data]))
                 const link = document.createElement('a')
                 link.href = url
-                link.setAttribute('download', res?.fileName) // message must from backend
+                link.setAttribute('download', res?.fileName ?? 'Tasks') // message must from backend
                 document.body.appendChild(link)
                 link.click()
                 handleClose()
