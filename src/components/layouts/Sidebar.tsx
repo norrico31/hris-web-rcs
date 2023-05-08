@@ -12,7 +12,7 @@ import { SiExpensify } from 'react-icons/si'
 import { TfiAnnouncement } from 'react-icons/tfi'
 import { GoIssueOpened } from 'react-icons/go'
 import { useAuthContext } from '../../shared/contexts/Auth'
-import { IUser } from '../../shared/interfaces'
+import { IPermissions, IUser } from '../../shared/interfaces'
 
 type Props = {
     onSelect: () => void
@@ -23,8 +23,7 @@ export default function Sidebar({ onSelect }: Props) {
     const [locationKey, setLocationKey] = useState('')
     const { user } = useAuthContext()
     const modules = new Map(user?.modules.map((d) => [d.name, d])) ?? new Map()
-    const firstMod: IUser = modules.values().next().value
-    console.log(firstMod)
+
     useEffect(() => {
         if (location?.pathname.includes('/employee/edit')) {
             setLocationKey('/employee')
@@ -51,7 +50,7 @@ export default function Sidebar({ onSelect }: Props) {
             selectedKeys={[locationKey]}
             defaultSelectedKeys={[location.pathname]}
             onSelect={onSelect}
-            items={menus}
+            items={filterMenu(menus, modules)}
         />
     )
 }
@@ -181,14 +180,20 @@ const menus = [
     ),
 ]
 
+function filterMenu(menus: MenuItem[], modules: Map<string, IPermissions>) {
+    console.log(menus, modules)
+
+    return menus
+}
+
 function getItemLinks(
     label: React.ReactNode,
     key: React.Key | any,
     icon?: React.ReactNode,
     children?: MenuItem[],
-    len: number = 1
+    isMod: boolean = true
 ): MenuItem {
-    return len > 0 ? {
+    return isMod ? {
         key,
         icon,
         children,

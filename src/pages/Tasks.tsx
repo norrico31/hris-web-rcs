@@ -127,23 +127,29 @@ export default function Tasks() {
     function handleDownload() {
         const start_date = dayjs(date[0]).format('YYYY-MM-DD')
         const end_date = dayjs(date[1]).format('YYYY-MM-DD')
-        const formData = new FormData()
-        formData.append('start_date', start_date)
-        formData.append('end_date', end_date)
-        formData.append('user_id', user?.id!)
+        // const formData = new FormData()
+        // formData.append('start_date', start_date)
+        // formData.append('end_date', end_date)
+        // formData.append('user_id', user?.id!)
         fetch(TASKS.DOWNLOAD, {
             method: 'POST',
-            body: JSON.stringify(formData),
+            body: JSON.stringify({
+                start_date,
+                end_date,
+                user_id: user?.id!
+            }),
             headers: {
-                "Accept": "multipart/form-data",
-                "Content-Type": "multipart/form-data",
-            },
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                responseType: 'blob'
+            }
         })
             .then((res: any) => {
+                console.log('result from download: ', res)
                 const url = window.URL.createObjectURL(new Blob([res.data]))
                 const link = document.createElement('a')
                 link.href = url
-                link.setAttribute('download', 'Tasks Management') // message must from backend
+                link.setAttribute('download', res?.fileName) // message must from backend
                 document.body.appendChild(link)
                 link.click()
             })
