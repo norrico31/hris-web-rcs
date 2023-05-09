@@ -80,13 +80,13 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 const tasksSettings = ['task_activities', 'task_types', 'sprints']
 const clientSettings = ['clients', 'client_branches', 'client_adjustments']
-const bankSettings = ['bank_details', 'benefits', 'holidays', 'holiday_types', 'daily_rates', 'employment_statuses', 'departments', 'teams', 'positions', 'leave_statuses', 'leave_durations', 'leave_types', 'employee_salaries', 'schedules']
+const hrSettings = ['bank_details', 'benefits', 'holidays', 'holiday_types', 'daily_rates', 'employment_statuses', 'departments', 'teams', 'positions', 'leave_statuses', 'leave_durations', 'leave_types', 'employee_salaries', 'schedules']
 
 function filterMenu(user: IUser) {
     const modules = new Map(user?.modules.map((d) => [d.name, d])) ?? new Map()
-    console.log(modules.has('bank_details'))
-    const tasksSettingsNames = filterPath(user?.modules, tasksSettings)
-    const clientSettingsNames = filterPath(user?.modules, clientSettings)
+    const tasksSettingsNames: string[] = filterPath(user?.modules, tasksSettings)
+    const clientSettingsNames: string[] = filterPath(user?.modules, clientSettings)
+    const hrSettingsNames: string[] = filterPath(user?.modules, hrSettings)
     return [
         getItemLinks(
             <Link to='/dashboard' id="dashboard">Dashboard</Link>,
@@ -129,14 +129,18 @@ function filterMenu(user: IUser) {
                     modules.has('task_activities') || modules.has('task_types') || modules.has('sprints')
                 ),
                 getItemLinks(
-                    <Link to='/systemsettings/hrsettings/bankdetails'>Human Resources</Link>,
+                    <Link to={`/systemsettings/hrsettings/${hrSettingsNames[hrSettingsNames.length - 1]}`}>Human Resources</Link>,
                     '/systemsettings/hrsettings/bankdetails',
                     <GiHumanPyramid />,
+                    undefined,
+                    modules.has('bank_details') || modules.has('benefits') || modules.has('holidays') || modules.has('holiday_types') || modules.has('daily_rates') || modules.has('employment_statuses') || modules.has('departments') || modules.has('teams') || modules.has('positions') || modules.has('leave_statuses') || modules.has('leave_durations') || modules.has('leave_types') || modules.has('employee_salaries') || modules.has('schedules')
                 ),
                 getItemLinks(
                     <Link to={`/systemsettings/clientsettings/${clientSettingsNames[0]}`}>Client</Link>,
                     `/systemsettings/clientsettings/clients`,
                     <IoIosPeople />,
+                    undefined,
+                    !!clientSettingsNames.length
                 ),
                 getItemLinks(
                     <Link to='/systemsettings/expensesettings/expensetype'>Expense</Link>,
@@ -146,7 +150,7 @@ function filterMenu(user: IUser) {
                     modules.has('expense_types')
                 ),
             ],
-            !!tasksSettingsNames?.length || !!clientSettingsNames || modules.has('expense_types')
+            !!tasksSettingsNames.length || !!clientSettingsNames || modules.has('expense_types') || !!hrSettingsNames.length
         ),
         getItemLinks(
             'Admin Settings',
@@ -217,12 +221,11 @@ function filterMenu(user: IUser) {
 function filterPath(modules: IPermissions[], arrNames: string[]): string[] {
     let newPaths: string[] = []
     for (let i = 0; i < modules?.length; i++) {
-        const data = modules[i]
-        if (arrNames.some((tasks) => tasks == data.name) && !newPaths.includes(data.name)) {
-            newPaths.push(data.name)
+        if (arrNames.some((tasks) => tasks == modules[i].name) && !newPaths.includes(modules[i].name)) {
+            newPaths.push(modules[i].name)
         }
     }
-    return newPaths
+    return newPaths ?? []
 }
 
 function getItemLinks(

@@ -68,17 +68,12 @@ export default function Users() {
             key: 'activation',
             dataIndex: 'activation',
             align: 'center',
-            render: (_: any, record: IUser) => {
-                console.log(record?.is_active)
-                return (
-                    <div>
-                        <Button type={record?.is_active ? 'default' : 'primary'} onClick={() => {
-                            const urlActivate = record?.is_active ? ADMINSETTINGS.USERS.DEACTIVATE : ADMINSETTINGS.USERS.ACTIVATE
-                            userActivation(urlActivate, record?.id)
-                        }}>{record?.is_active ? 'Activate' : 'Deactivate'}</Button>
-                    </div>
-                )
-            }
+            render: (_: any, record: IUser) => <div>
+                <Button type={record?.is_active ? 'default' : 'primary'} onClick={() => {
+                    const urlActivate = record?.is_active ? ADMINSETTINGS.USERS.DEACTIVATE : ADMINSETTINGS.USERS.ACTIVATE
+                    userActivation(urlActivate, record?.id)
+                }}>{record?.is_active ? 'Activate' : 'Deactivate'}</Button>
+            </div>
         },
     ]
 
@@ -156,7 +151,6 @@ export default function Users() {
         </Card>
     )
 }
-
 
 interface ModalProps {
     title: string

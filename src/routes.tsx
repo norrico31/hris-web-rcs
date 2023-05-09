@@ -152,7 +152,7 @@ export const routes = createBrowserRouter([
                         element: <HRSettings />,
                         children: [
                             {
-                                path: 'bankdetails',
+                                path: 'bank_details',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><BankDetails /></Suspense>,
                             },
                             {
@@ -164,39 +164,39 @@ export const routes = createBrowserRouter([
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Holidays /></Suspense>
                             },
                             {
-                                path: 'holidaytype',
+                                path: 'holiday_types',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><HolidayType /></Suspense>
                             },
                             {
-                                path: 'dailyrate',
+                                path: 'daily_rates',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><DailyRate /></Suspense>
                             },
                             {
-                                path: 'employeestatus',
+                                path: 'employment_statuses',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeStatus /></Suspense>
                             },
                             {
-                                path: 'department',
+                                path: 'departments',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Department /></Suspense>
                             },
                             {
-                                path: 'team',
+                                path: 'teams',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Team /></Suspense>
                             },
                             {
-                                path: 'position',
+                                path: 'positions',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Position /></Suspense>
                             },
                             {
-                                path: 'leavestatus',
+                                path: 'leave_statuses',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveStatus /></Suspense>
                             },
                             {
-                                path: 'leaveduration',
+                                path: 'leave_durations',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveDuration /></Suspense>
                             },
                             {
-                                path: 'leavetype',
+                                path: 'leave_types',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveType /></Suspense>
                             },
                             {

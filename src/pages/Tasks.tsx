@@ -365,7 +365,7 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
                 const url = window.URL.createObjectURL(new Blob([res.data]))
                 const link = document.createElement('a')
                 link.href = url
-                link.setAttribute('download', `Tasks - ${dayjs().format('YYYY-MM-DD')}.xlsx`) // message must from backend
+                link.setAttribute('download', `Tasks ${dayjs(start_date).format('YYYY-MM-DD')} - ${dayjs(end_date).format('YYYY-MM-DD')}.xlsx`)
                 document.body.appendChild(link)
                 link.click()
                 handleClose()
