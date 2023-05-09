@@ -26,7 +26,7 @@ export const useEndpoints = () => {
         },
         LEAVES: {
             LISTS: '/options/leaves',
-            GET: '/leaves/status/preview?manager=false',
+            GET: '/leaves/status/preview?manager=',
             POST: '/leaves/',
             PUT: '/leaves/',
             DELETE: '/leaves/',

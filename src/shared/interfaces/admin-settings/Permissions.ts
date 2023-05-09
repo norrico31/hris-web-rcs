@@ -1,12 +1,15 @@
 import { AxiosGetData } from "../utils/Axios";
 
 export interface IPermissions {
+    code: string
+    created_at: string
+    deleted_at: string | null
+    description: string
     id: string
     name: string
-    action: string
-    module: string
-    create_at: string
-    updated_at: any
+    permission_group_id: string
+    route: string
+    updated_at: string
 }
 
 export type PermissionRes = AxiosGetData<IPermissions>

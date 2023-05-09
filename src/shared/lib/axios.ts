@@ -22,7 +22,7 @@ export const useAxios = () => {
     // const POST = <T>(url: string, data: T) => axiosSanctum(axiosClient.post('/api' + url, data))
 
     const GET = async <T extends unknown>(url: string, signal?: AbortSignal, tableParams?: { page: number; search: string; limit: number }) => {
-        let query = tableParams?.page && "?page=" + tableParams?.page
+        let query = tableParams?.page && `${url.includes('?') ? '&' : '?'}page=` + tableParams?.page
         query = (tableParams?.search ? (query + '&search=' + tableParams?.search) : query) ?? ''
         query = tableParams?.limit ? (query + '&limit=' + tableParams?.limit) : query
         try {

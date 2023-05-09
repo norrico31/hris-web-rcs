@@ -3,6 +3,7 @@ import { IAuthContext, IUser } from '../interfaces'
 
 const AuthContext = createContext<IAuthContext>({
     setUser: () => { },
+    setLoading: () => { },
     setToken: () => { },
 })
 
@@ -16,5 +17,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         } else return undefined
     })
     const [user, setUser] = useState<IUser | undefined>(undefined)
-    return <AuthContext.Provider value={{ token, user, setUser, setToken }}>{children}</AuthContext.Provider>
+    const [loading, setLoading] = useState(true)
+    return <AuthContext.Provider value={{ token, user, loading, setLoading, setUser, setToken }}>{children}</AuthContext.Provider>
 }

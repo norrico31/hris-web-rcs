@@ -10,6 +10,7 @@ import axiosClient, { useAxios } from '../shared/lib/axios'
 import { useEndpoints } from '../shared/constants'
 import { IArguments, ILeave, ILeaveDuration, ILeaveType, LeaveRes, TableParams } from '../shared/interfaces'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+import { useAuthContext } from '../shared/contexts/Auth';
 
 
 const { GET, POST, PUT, DELETE } = useAxios()
@@ -19,6 +20,7 @@ dayjs.extend(localizedFormat)
 
 export default function Leave() {
     renderTitle('Leave')
+    const { user } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [leaveType, setLeaveType] = useState('all')
     const [data, setData] = useState<ILeave[]>([])
@@ -92,8 +94,11 @@ export default function Leave() {
 
     const fetchData = ({ type, args }: { args?: IArguments; type?: string }) => {
         setLoading(true)
-        console.log(type)
-        GET<LeaveRes>(LEAVES.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        // TODO
+        let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false'
+        const status = (type !== 'all') ? `&status=${type}` : ''
+        const url = LEAVES.GET + isManager + status
+        GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -138,7 +143,7 @@ export default function Leave() {
                         setLeaveType(str)
                         fetchData({
                             args: {
-                                search: str,
+                                search,
                                 page: tableParams?.pagination?.current ?? 1,
                                 pageSize: tableParams?.pagination?.pageSize
                             },

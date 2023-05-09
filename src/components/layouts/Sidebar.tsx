@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { MenuProps, Menu as AntdMenu } from 'antd'
+import { MenuProps, Menu as AntdMenu, Skeleton } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit } from 'react-icons/ai'
@@ -22,7 +22,7 @@ type Props = {
 export default function Sidebar({ onSelect }: Props) {
     const location = useLocation()
     const [locationKey, setLocationKey] = useState('')
-    const { user } = useAuthContext()
+    const { user, loading } = useAuthContext()
 
     useEffect(() => {
         if (location?.pathname.includes('/employee/edit')) {
@@ -42,7 +42,7 @@ export default function Sidebar({ onSelect }: Props) {
         } else setLocationKey(location?.pathname)
     }, [location.pathname])
 
-    return (
+    return loading ? <Skeleton /> :
         <MenuContainer
             theme="dark"
             mode="inline"
@@ -52,7 +52,7 @@ export default function Sidebar({ onSelect }: Props) {
             onSelect={onSelect}
             items={filterMenu(user!)}
         />
-    )
+
 }
 
 const MenuContainer = styled(AntdMenu)`
