@@ -65,7 +65,7 @@ const IssueLogs = lazy(() => import('./pages/admin-settings/IssueLogs'))
 const ClientHistory = lazy(() => import('./pages/employee-files/ClientHistory'))
 const EmployeeBenefits = lazy(() => import('./pages/employee-files/EmployeeBenefits'))
 const ClientSchedule = lazy(() => import('./pages/employee-files/ClientSchedule'))
-// const EmployeeSchedule = lazy(() => import('./pages/employee-files/Schedule'))
+const EmployeeSchedule = lazy(() => import('./pages/employee-files/Schedule'))
 const Contracts = lazy(() => import('./pages/employee-files/Contracts'))
 const EmployeeDocuments = lazy(() => import('./pages/employee-files/EmployeeDocuments'))
 const Evaluations = lazy(() => import('./pages/employee-files/Evaluations'))
@@ -333,10 +333,10 @@ export const routes = createBrowserRouter([
                         path: 'salaryhistory',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryHistory /></Suspense>
                     },
-                    // {
-                    //     path: 'employeeschedule',
-                    //     element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSchedule /></Suspense>
-                    // },
+                    {
+                        path: 'employeeschedule',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSchedule /></Suspense>
+                    },
                     {
                         path: 'userprofile',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><UserProfile /></Suspense>

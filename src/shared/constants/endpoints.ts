@@ -24,6 +24,13 @@ export const useEndpoints = () => {
             IN: '/time_keepings/whos/in',
             OUT: '/time_keepings/whos/out',
         },
+        LEAVES: {
+            LISTS: '/options/leaves',
+            GET: '/leaves/status/preview?manager=false',
+            POST: '/leaves/',
+            PUT: '/leaves/',
+            DELETE: '/leaves/',
+        },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
                 ACTIVITIES: {
@@ -90,10 +97,11 @@ export const useEndpoints = () => {
                     DELETE: '/positions/',
                 },
                 LEAVEDURATION: {
-                    GET: '/leave_duration',
-                    POST: '/leave_duration/',
-                    PUT: '/leave_duration/',
-                    DELETE: '/leave_duration/',
+                    LISTS: '/options/leave_durations',
+                    GET: '/leave_durations',
+                    POST: '/leave_durations/',
+                    PUT: '/leave_durations/',
+                    DELETE: '/leave_durations/',
                 },
                 LEAVESTATUSES: {
                     GET: '/leave_status',
@@ -102,6 +110,7 @@ export const useEndpoints = () => {
                     DELETE: '/leave_status/',
                 },
                 LEAVETYPE: {
+                    LISTS: '/options/leave_types',
                     GET: '/leave_types',
                     POST: '/leave_types/',
                     PUT: '/leave_types/',
@@ -281,12 +290,6 @@ export const useEndpoints = () => {
             PUT: '/tasks/',
             DELETE: '/tasks/',
             DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/report_service/api/tasks_report'
-        },
-        LEAVE: {
-            GET: '',
-            POST: '',
-            PUT: '',
-            DELETE: ''
         },
     }
     return [ENDPOINTS]

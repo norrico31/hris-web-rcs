@@ -10,6 +10,7 @@ import { renderTitle } from '../shared/utils/utilities'
 import { useEndpoints } from './../shared/constants/endpoints'
 import axiosClient, { useAxios } from './../shared/lib/axios'
 import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates, ILineManager } from '../shared/interfaces'
+import useMessage from 'antd/es/message/useMessage'
 
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
 const { GET, POST, DELETE } = useAxios()
@@ -186,6 +187,7 @@ function EmployeeModal({ title, fetchData, isModalOpen, handleCancel }: ModalPro
         setStepTwoInputs(undefined)
         setStepThreeInputs(undefined)
         setStepFourInputs(undefined)
+        handleCancel()
     }
 
     const renderStep = (current: number) => {
@@ -420,8 +422,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Employee Status"
                     name="employee_status_id"
-                // required
-                // rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select employee status...'
@@ -437,8 +437,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Department"
                     name="department_id"
-                // required
-                // rules={[{ required: true, message: '' }]}
+                    required
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select department...'
@@ -454,8 +454,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Position"
                     name="position_id"
-                // required
-                // rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select position...'
@@ -473,8 +471,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Role"
                     name="role_id"
-                // required
-                // rules={[{ required: true, message: '' }]}
+                    required
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select role...'
@@ -490,8 +488,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Line Manager"
                     name="manager_id"
-                // required
-                // rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select line manager...'
@@ -507,8 +503,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Date Hired"
                     name="date_hired"
-                // required
-                // rules={[{ required: true, message: '' }]}
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -516,21 +510,9 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         placeholder='Select date hired'
                     />
                 </FormItem>
-                {/* <FormItem
-                    label="Date Resigned"
-                    name="resignation_date"
-                >
-                    <DatePicker
-                        format='YYYY/MM/DD'
-                        style={{ width: '100%' }}
-                        placeholder='Select date resigned'
-                    />
-                </FormItem> */}
                 <FormItem
                     label="Current Address"
                     name="address"
-                // required
-                // rules={[{ required: true, message: '' }]}
                 >
                     <Input.TextArea placeholder='Enter current address...' style={{ minHeight: 300 }} />
                 </FormItem>
@@ -719,8 +701,6 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
                 <FormItem
                     name='salary_rate_id'
                     label="Salary Rate"
-                // required 
-                // rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select salary rate...'
@@ -771,6 +751,7 @@ interface IStepFourProps {
 function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fetchData, handleResetSteps }: IStepFourProps) {
     const [form] = useForm<IStepFour>()
     const [loading, setLoading] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
 
     useEffect(() => {
         if (stepFourInputs) {
@@ -796,10 +777,11 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
                 form.resetFields()
                 handleResetSteps()
             })
-            .catch((err) => {
-                // display error in notif
-                return Promise.reject(err?.response?.data?.message)
-            })
+            .catch((err) => messageApi.open({
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 0
+            }))
             .finally(() => {
                 fetchData()
                 setLoading(false)
@@ -807,6 +789,7 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
     }
 
     return <Form form={form} onFinish={onFinish} disabled={loading}>
+        {contextHolder}
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col>
                 <FormItem name='pay_scheme' label="Pay Scheme">

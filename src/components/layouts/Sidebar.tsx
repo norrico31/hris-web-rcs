@@ -206,7 +206,7 @@ function filterMenu(user: IUser) {
             '/leave',
             <AiOutlineCalendar />,
             undefined,
-            modules.has('leaves')
+            modules.has('leaves') || true
         ),
         getItemLinks(
             <Link to='/salaryadjustments'>Salary Adjustments</Link>,

@@ -28,7 +28,6 @@ export default function TimeKeeping() {
     // const [selectedDate, setSelectedDate] = useState<Dayjs | string>(today)
     // const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
-    const { width } = useWindowSize()
 
     useEffect(() => {
         const controller = new AbortController();

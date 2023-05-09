@@ -4,7 +4,7 @@ import { DownloadOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 
 type Props = {
-    name: string
+    name?: string
     handleCreate?: () => void
     handleDownload?: () => void
     handleSearch: (term: string) => void

@@ -341,9 +341,10 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     </>
 }
 
+const dateVal = [dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD'), dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD')]
+
 function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: string; isModalDownload: boolean; handleClose: () => void; }) {
     const [loading, setLoading] = useState(false)
-    const dateVal = [dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD'), dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD')]
     const [date, setDate] = useState<any>(dateVal)
 
     function handleDownload() {
@@ -356,8 +357,9 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
             user_id: userId
         }), {
             headers: {
+                'Content-Disposition': "attachment; filename=task_report.xlsx",
                 "Content-Type": "application/json",
-                responseType: 'blob'
+                responseType: 'arraybuffer'
             }
         })
             .then((res: any) => {
