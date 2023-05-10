@@ -30,6 +30,7 @@ export * from './system-settings/hr-settings/Holidays'
 export * from './system-settings/hr-settings/HolidayType'
 export * from './system-settings/hr-settings/Benefits'
 export * from './system-settings/hr-settings/SalaryRates'
+export * from './system-settings/hr-settings/Schedules'
 
 export * from './system-settings/client-settings/Client'
 export * from './system-settings/client-settings/ClientBranch'

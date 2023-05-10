@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Select, TimePicker, Row } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import axiosClient, { useAxios } from '../../../shared/lib/axios'
+import dayjs from 'dayjs'
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
+import { useAxios } from '../../../shared/lib/axios'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useEndpoints } from '../../../shared/constants'
 import { IArguments, TableParams, ISchedules, SchedulesRes, IDepartment } from '../../../shared/interfaces'
@@ -34,10 +36,14 @@ export default function Schedules() {
             dataIndex: 'name',
         },
         {
-            title: 'Department',
-            key: 'department',
-            dataIndex: 'department',
-            render: (_, record) => record.department?.name
+            title: 'Time In',
+            key: 'time_in',
+            dataIndex: 'time_in',
+        },
+        {
+            title: 'Time Out',
+            key: 'time_out',
+            dataIndex: 'time_out',
         },
         {
             title: 'Description',
@@ -137,6 +143,9 @@ interface ModalProps {
 
 const { Item: FormItem, useForm } = AntDForm
 
+dayjs.extend(LocalizedFormat)
+dayjs().format('L LT')
+
 function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ISchedules>()
     const [departments, setDepartments] = useState<IDepartment[]>([])
@@ -144,22 +153,21 @@ function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCanc
 
     useEffect(() => {
         if (selectedData != undefined) {
-            form.setFieldsValue({ ...selectedData })
+            form.setFieldsValue({
+                ...selectedData,
+                time_in: dayjs(selectedData.time_in, 'HH:mm:ss'),
+                time_out: dayjs(selectedData.time_out, 'HH:mm:ss')
+            })
         } else {
             form.resetFields(undefined)
         }
-        // const controller = new AbortController();
-        // axiosClient(DEPARTMENT.LISTS, { signal: controller.signal })
-        //     .then((res) => setDepartments(res?.data ?? []));
-        // return () => {
-        //     controller.abort()
-        // }
     }, [selectedData])
 
     function onFinish(values: ISchedules) {
         setLoading(true)
         let { description, ...restValues } = values
-        restValues = { ...restValues, ...(description != undefined && { description }) }
+        restValues = { ...restValues, time_in: dayjs(restValues.time_in).format('LTS'), time_out: dayjs(restValues.time_out).format('LTS'), ...(description != undefined && { description }) }
+        console.log(restValues)
         let result = selectedData ? PUT(SCHEDULES.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(SCHEDULES.POST, restValues)
         result.then(() => {
             form.resetFields()
@@ -173,25 +181,31 @@ function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCanc
     return <Modal title={`${title} - Schedules`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
-                label="Schedules Name"
+                label="Schedule Name"
                 name="name"
                 required
                 rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter team name...' />
             </FormItem>
-            <FormItem
-                label="Departments"
-                name="department_id"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <Select placeholder='Select team...' optionFilterProp="children" allowClear showSearch>
-                    {departments.map((dep) => (
-                        <Select.Option value={dep.id} key={dep.id} style={{ color: '#777777' }}>{dep.name}</Select.Option>
-                    ))}
-                </Select>
-            </FormItem>
+            <Row justify='space-around' wrap>
+                <FormItem
+                    label="Time In"
+                    name="time_in"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+                    <TimePicker />
+                </FormItem>
+                <FormItem
+                    label="Time Out"
+                    name="time_out"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+                    <TimePicker />
+                </FormItem>
+            </Row>
             <FormItem name="description" label="Description">
                 <Input placeholder='Enter Description...' />
             </FormItem>

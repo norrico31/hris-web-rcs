@@ -29,7 +29,7 @@ export default function ClientAndSchedule() {
         const controller = new AbortController();
         (async () => {
             try {
-                const schedulePromise = axiosClient(HRSETTINGS.SCHEDULE.LISTS, { signal: controller.signal })
+                const schedulePromise = axiosClient(HRSETTINGS.SCHEDULES.LISTS, { signal: controller.signal })
                 const clientPromise = axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
                 const clientBranchPromise = axiosClient(CLIENTSETTINGS.CLIENTBRANCH.LISTS, { signal: controller.signal })
                 const [scheduleRes, clientRes, clientBranchRes] = await Promise.allSettled([schedulePromise, clientPromise, clientBranchPromise]) as any
