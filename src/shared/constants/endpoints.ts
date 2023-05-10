@@ -143,7 +143,7 @@ export const useEndpoints = () => {
                     PUT: '/salary_rates/',
                     DELETE: '/salary_rates/'
                 },
-                SCHEDULE: {
+                SCHEDULES: {
                     LISTS: '/options/schedules',
                     GET: '/schedules',
                     POST: '/schedules/',

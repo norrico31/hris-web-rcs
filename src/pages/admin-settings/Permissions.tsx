@@ -33,8 +33,8 @@ export default function Permissions() {
         fetchPermissions()
     }, [])
 
-    const fetchPermissions = () => GET<IModules>(ADMINSETTINGS.PERMISSIONS.MODULES).then((res: any) => {
-        const data = res?.data satisfies IModules[] // PENDING: must change
+    const fetchPermissions = () => GET<{ data: IModules[] }>(ADMINSETTINGS.PERMISSIONS.MODULES).then((res) => {
+        const data = res?.data // PENDING: must change
         setModules(data ?? permissionList?.data)
     }).finally(() => setLoading(false))
     const fetchPermissionByRoleId = (roleId: string) => GET<IRole>(ADMINSETTINGS.PERMISSIONS.SHOW + roleId).then(setData).finally(() => setLoading(false))
@@ -95,7 +95,7 @@ function TreeNode({ permission, flattenMapped, updatePermission, loadingPermissi
     return <Col key={permission.name} xs={24} sm={24} md={!hasSubgroups ? 10 : 24} lg={!hasSubgroups ? 10 : 24} xl={!hasSubgroups ? 10 : 24}>
         <Collapse>
             <Collapse.Panel header={firstLetterCapitalize(permission.name)} key={permission.name}>
-                {permission.permissions?.sort((a: any, b: any) => a.route > b.route ? 1 : -1)?.map((permission: any) => <Row key={permission.id} justify='space-between' style={{ marginBottom: 5 }}>
+                {permission.permissions?.sort((a, b) => a.route > b.route ? 1 : -1)?.map((permission) => <Row key={permission.id} justify='space-between' style={{ marginBottom: 5 }}>
                     <p>{firstLetterCapitalize(permission?.route.split('.')[1])}</p>
                     <Switch loading={loadingPermission} disabled={loadingPermission} checked={flattenMapped.has(permission?.id)} onChange={() => updatePermission(permission?.id)} />
                 </Row>)}

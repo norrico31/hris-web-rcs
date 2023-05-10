@@ -225,7 +225,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                 label="Task Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter task name...' />
             </FormItem>
@@ -233,7 +233,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                 label="Date"
                 name="date"
                 required
-                rules={[{ required: true, message: '!' }]}
+                rules={[{ required: true, message: '' }]}
             >
                 <DatePicker
                     format='YYYY/MM/DD'

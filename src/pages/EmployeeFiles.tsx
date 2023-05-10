@@ -54,6 +54,7 @@ export default function EmployeeFiles() {
             key: 'position',
             dataIndex: 'position',
             width: 130,
+            render: (_, record) => record.position?.name
         },
         {
             title: 'Department',
@@ -61,6 +62,7 @@ export default function EmployeeFiles() {
             dataIndex: 'department',
             align: 'center',
             width: 130,
+            render: (_, record) => record.department?.name
         },
         {
             title: 'Date Hired',

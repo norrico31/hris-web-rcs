@@ -152,8 +152,8 @@ export default function Leave() {
                     }} style={{ width: 150 }}>
                         <Select.Option value='all'>All</Select.Option>
                         <Select.Option value='pending'>Pending</Select.Option>
-                        <Select.Option value='approved'>Approved</Select.Option>
-                        <Select.Option value='rejected'>Rejected</Select.Option>
+                        <Select.Option value='approve'>Approved</Select.Option>
+                        <Select.Option value='reject'>Rejected</Select.Option>
                     </Select>
                 </TabHeader>
                 <Card title={`Leave - ${firstLetterCapitalize(leaveType)}`} level={5}>
