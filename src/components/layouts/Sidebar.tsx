@@ -18,7 +18,6 @@ type Props = {
     onSelect: () => void
 }
 
-
 export default function Sidebar({ onSelect }: Props) {
     const location = useLocation()
     const [locationKey, setLocationKey] = useState('')
@@ -78,43 +77,36 @@ const MenuContainer = styled(AntdMenu)`
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-const tasksSettings = ['task_activities', 'task_types', 'sprints']
-const clientSettings = ['clients', 'client_branches', 'client_adjustments']
-const hrSettings = ['bank_details', 'benefits', 'holidays', 'holiday_types', 'daily_rates', 'employment_statuses', 'departments', 'teams', 'positions', 'leave_statuses', 'leave_durations', 'leave_types', 'employee_salaries', 'schedules']
-
 function filterMenu(user: IUser) {
-    const modules = new Map(user?.modules.map((d) => [d.name, d])) ?? new Map()
-    const tasksSettingsNames: string[] = filterPath(user?.modules, tasksSettings)
-    const clientSettingsNames: string[] = filterPath(user?.modules, clientSettings)
-    const hrSettingsNames: string[] = filterPath(user?.modules, hrSettings)
+    const permissionNames = permissionCode(user?.role?.permissions)
     return [
         getItemLinks(
             <Link to='/dashboard' id="dashboard">Dashboard</Link>,
             '/dashboard',
             <AiFillAppstore />,
             undefined,
-            modules.has('dashboard') || true
+            !!permissionNames['a01']
         ),
         getItemLinks(
             <Link to='/announcements' id="announcements">Announcements</Link>,
             '/announcements',
             <TfiAnnouncement />,
             undefined,
-            modules.has('announcements') || true
+            !!permissionNames['b01'] || !!permissionNames['b02'] || !!permissionNames['b03'] || !!permissionNames['b04'] || !!permissionNames['b05'] || !!permissionNames['b06'] || !!permissionNames['b07']
         ),
         getItemLinks(
             <Link to='/timekeeping' id='timekeeping'>Timekeeping</Link>,
             '/timekeeping',
             <BiTimeFive />,
             undefined,
-            modules.has('time_keepings')
+            !!permissionNames['c10'] || !!permissionNames['c11']
         ),
         getItemLinks(
             <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,
             '/whosinout',
             <BiTimer />,
             undefined,
-            modules.has('whos_in_out') || true
+            !!permissionNames['c08'] || !!permissionNames['c09']
         ),
         getItemLinks(
             'System Settings',
@@ -122,35 +114,38 @@ function filterMenu(user: IUser) {
             <AiOutlineSetting />,
             [
                 getItemLinks(
-                    <Link to={`/systemsettings/tasksettings/${tasksSettingsNames[tasksSettingsNames.length - 1]}`}>Tasks</Link>,
+                    // <Link to={`/systemsettings/tasksettings/${tasksSettingsNames[tasksSettingsNames.length - 1]}`}>Tasks</Link>,
+                    <Link to={`/systemsettings/tasksettings/task_activities`}>Tasks</Link>,
                     '/systemsettings/tasksettings/task_activities',
                     <FaTasks />,
                     undefined,
-                    modules.has('task_activities') || modules.has('task_types') || modules.has('sprints')
+                    !!permissionNames['da03'] || !!permissionNames['da04'] || !!permissionNames['da05'] || !!permissionNames['da06'] || !!permissionNames['db03'] || !!permissionNames['db04'] || !!permissionNames['db05'] || !!permissionNames['db06'] || !!permissionNames['dc03'] || !!permissionNames['dc04'] || !!permissionNames['dc05'] || !!permissionNames['dc06']
                 ),
                 getItemLinks(
-                    <Link to={`/systemsettings/hrsettings/${hrSettingsNames[hrSettingsNames.length - 1]}`}>Human Resources</Link>,
+                    // <Link to={`/systemsettings/hrsettings/${hrSettingsNames[hrSettingsNames.length - 1]}`}>Human Resources</Link>,
+                    <Link to={`/systemsettings/hrsettings/bank_details`}>Human Resources</Link>,
                     '/systemsettings/hrsettings/bankdetails',
                     <GiHumanPyramid />,
                     undefined,
-                    modules.has('bank_details') || modules.has('benefits') || modules.has('holidays') || modules.has('holiday_types') || modules.has('daily_rates') || modules.has('employment_statuses') || modules.has('departments') || modules.has('teams') || modules.has('positions') || modules.has('leave_statuses') || modules.has('leave_durations') || modules.has('leave_types') || modules.has('employee_salaries') || modules.has('schedules')
+                    !!permissionNames['ea03'] || !!permissionNames['ea04'] || !!permissionNames['ea05'] || !!permissionNames['ea06'] || !!permissionNames['eb03'] || !!permissionNames['eb04'] || !!permissionNames['eb05'] || !!permissionNames['eb06'] || !!permissionNames['ec03'] || !!permissionNames['ec04'] || !!permissionNames['ec05'] || !!permissionNames['ec06'] || !!permissionNames['ed03'] || !!permissionNames['ed04'] || !!permissionNames['ed05'] || !!permissionNames['ed06'] || !!permissionNames['ee03'] || !!permissionNames['ee04'] || !!permissionNames['ee05'] || !!permissionNames['ee06'] || !!permissionNames['ef03'] || !!permissionNames['ef04'] || !!permissionNames['ef05'] || !!permissionNames['ef06'] || !!permissionNames['eg03'] || !!permissionNames['eg04'] || !!permissionNames['eg05'] || !!permissionNames['eg06'] || !!permissionNames['eh03'] || !!permissionNames['eh04'] || !!permissionNames['eh05'] || !!permissionNames['eh06'] || !!permissionNames['ei03'] || !!permissionNames['ei04'] || !!permissionNames['ei05'] || !!permissionNames['ei06'] || !!permissionNames['ej03'] || !!permissionNames['ej04'] || !!permissionNames['ej05'] || !!permissionNames['ej06'] || !!permissionNames['ek03'] || !!permissionNames['ek04'] || !!permissionNames['ek05'] || !!permissionNames['ek06'] || !!permissionNames['el03'] || !!permissionNames['el04'] || !!permissionNames['el05'] || !!permissionNames['el06'] || !!permissionNames['em03'] || !!permissionNames['em04'] || !!permissionNames['em05'] || !!permissionNames['em06'] || !!permissionNames['en03'] || !!permissionNames['en04'] || !!permissionNames['en05'] || !!permissionNames['en06'] || !!permissionNames['eo03'] || !!permissionNames['eo04'] || !!permissionNames['eo05'] || !!permissionNames['eo06'] || !!permissionNames['ep03'] || !!permissionNames['ep04'] || !!permissionNames['ep05'] || !!permissionNames['ep06']
                 ),
                 getItemLinks(
-                    <Link to={`/systemsettings/clientsettings/${clientSettingsNames[0]}`}>Client</Link>,
+                    // <Link to={`/systemsettings/clientsettings/${clientSettingsNames[0]}`}>Client</Link>,
+                    <Link to={`/systemsettings/clientsettings/clients`}>Client</Link>,
                     `/systemsettings/clientsettings/clients`,
                     <IoIosPeople />,
                     undefined,
-                    !!clientSettingsNames.length
+                    !!permissionNames['fa03'] || !!permissionNames['fa04'] || !!permissionNames['fa05'] || !!permissionNames['fa06'] || !!permissionNames['fb03'] || !!permissionNames['fb04'] || !!permissionNames['fb05'] || !!permissionNames['fb06'] || !!permissionNames['fc03'] || !!permissionNames['fc04'] || !!permissionNames['fc05'] || !!permissionNames['fc06']
                 ),
                 getItemLinks(
                     <Link to='/systemsettings/expensesettings/expensetype'>Expense</Link>,
                     '/systemsettings/expensesettings/expensetype',
                     <SiExpensify />,
                     undefined,
-                    modules.has('expense_types')
+                    !!permissionNames['ep03'] || !!permissionNames['ep04'] || !!permissionNames['ep05'] || !!permissionNames['ep06']
                 ),
             ],
-            !!tasksSettingsNames.length || !!clientSettingsNames || modules.has('expense_types') || !!hrSettingsNames.length
+            !!permissionNames['da03'] || !!permissionNames['da04'] || !!permissionNames['da05'] || !!permissionNames['da06'] || !!permissionNames['db03'] || !!permissionNames['db04'] || !!permissionNames['db05'] || !!permissionNames['db06'] || !!permissionNames['dc03'] || !!permissionNames['dc04'] || !!permissionNames['dc05'] || !!permissionNames['dc06'] || !!permissionNames['ea03'] || !!permissionNames['ea04'] || !!permissionNames['ea05'] || !!permissionNames['ea06'] || !!permissionNames['eb03'] || !!permissionNames['eb04'] || !!permissionNames['eb05'] || !!permissionNames['eb06'] || !!permissionNames['ec03'] || !!permissionNames['ec04'] || !!permissionNames['ec05'] || !!permissionNames['ec06'] || !!permissionNames['ed03'] || !!permissionNames['ed04'] || !!permissionNames['ed05'] || !!permissionNames['ed06'] || !!permissionNames['ee03'] || !!permissionNames['ee04'] || !!permissionNames['ee05'] || !!permissionNames['ee06'] || !!permissionNames['ef03'] || !!permissionNames['ef04'] || !!permissionNames['ef05'] || !!permissionNames['ef06'] || !!permissionNames['eg03'] || !!permissionNames['eg04'] || !!permissionNames['eg05'] || !!permissionNames['eg06'] || !!permissionNames['eh03'] || !!permissionNames['eh04'] || !!permissionNames['eh05'] || !!permissionNames['eh06'] || !!permissionNames['ei03'] || !!permissionNames['ei04'] || !!permissionNames['ei05'] || !!permissionNames['ei06'] || !!permissionNames['ej03'] || !!permissionNames['ej04'] || !!permissionNames['ej05'] || !!permissionNames['ej06'] || !!permissionNames['ek03'] || !!permissionNames['ek04'] || !!permissionNames['ek05'] || !!permissionNames['ek06'] || !!permissionNames['el03'] || !!permissionNames['el04'] || !!permissionNames['el05'] || !!permissionNames['el06'] || !!permissionNames['em03'] || !!permissionNames['em04'] || !!permissionNames['em05'] || !!permissionNames['em06'] || !!permissionNames['en03'] || !!permissionNames['en04'] || !!permissionNames['en05'] || !!permissionNames['en06'] || !!permissionNames['eo03'] || !!permissionNames['eo04'] || !!permissionNames['eo05'] || !!permissionNames['eo06'] || !!permissionNames['ep03'] || !!permissionNames['ep04'] || !!permissionNames['ep05'] || !!permissionNames['ep06'] || !!permissionNames['fa03'] || !!permissionNames['fa04'] || !!permissionNames['fa05'] || !!permissionNames['fa06'] || !!permissionNames['fb03'] || !!permissionNames['fb04'] || !!permissionNames['fb05'] || !!permissionNames['fb06'] || !!permissionNames['fc03'] || !!permissionNames['fc04'] || !!permissionNames['fc05'] || !!permissionNames['fc06'] || !!permissionNames['fa03'] || !!permissionNames['fa04'] || !!permissionNames['fa05'] || !!permissionNames['fa06'] || !!permissionNames['fb03'] || !!permissionNames['fb04'] || !!permissionNames['fb05'] || !!permissionNames['fb06'] || !!permissionNames['fc03'] || !!permissionNames['fc04'] || !!permissionNames['fc05'] || !!permissionNames['fc06']
         ),
         getItemLinks(
             'Admin Settings',
@@ -162,70 +157,61 @@ function filterMenu(user: IUser) {
                     '/users',
                     <FaUsers />,
                     undefined,
-                    modules.has('users')
+                    !!permissionNames['ga03'] || !!permissionNames['ga04'] || !!permissionNames['ga05'] || !!permissionNames['ga06']
                 ),
                 getItemLinks(
                     <Link to='/roles'>Roles</Link>,
                     '/roles',
                     <FaCriticalRole />,
                     undefined,
-                    modules.has('roles')
+                    !!permissionNames['gb03'] || !!permissionNames['gb04'] || !!permissionNames['gb05'] || !!permissionNames['gb06']
                 ),
                 getItemLinks(
                     <Link to='/auditlogs'>Audit Logs</Link>,
                     '/auditlogs',
                     <AiOutlineAudit />,
                     undefined,
-                    modules.has('audit_logs')
+                    !!permissionNames['gc01']
                 ),
                 getItemLinks(
                     <Link to='/issuelogs'>System Logs</Link>,
                     '/issuelogs',
                     <AiOutlineSetting />,
                     undefined,
-                    modules.has('laravel_logs')
+                    !!permissionNames['gd01']
                 ),
-            ]
+            ],
+            !!permissionNames['ga03'] || !!permissionNames['ga04'] || !!permissionNames['ga05'] || !!permissionNames['ga06'] || !!permissionNames['gb03'] || !!permissionNames['gb04'] || !!permissionNames['gb05'] || !!permissionNames['gb06'] || !!permissionNames['gc01'] || !!permissionNames['gd01']
         ),
         getItemLinks(
             <Link to='/employee'>Employee Files</Link>,
             '/employee',
             <FaUsersCog />,
             undefined,
-            modules.has('employees')
+            !!permissionNames['h03'] || !!permissionNames['h04'] || !!permissionNames['h05'] || !!permissionNames['h06']
         ),
         getItemLinks(
             <Link to='/tasks'>Tasks</Link>,
             '/tasks',
             <FaTasks />,
             undefined,
-            modules.has('tasks')
+            !!permissionNames['i03'] || !!permissionNames['i04'] || !!permissionNames['i05'] || !!permissionNames['i06']
         ),
         getItemLinks(
             <Link to='/leave'>Leave</Link>,
             '/leave',
             <AiOutlineCalendar />,
             undefined,
-            modules.has('leaves') || true
+            !!permissionNames['j03'] || !!permissionNames['j04'] || !!permissionNames['j05'] || !!permissionNames['j06']
         ),
         getItemLinks(
             <Link to='/salaryadjustments'>Salary Adjustments</Link>,
             '/salaryadjustments',
             <AiOutlineDollarCircle />,
             undefined,
-            modules.has('expenses')
+            !!permissionNames['k03'] || !!permissionNames['k04'] || !!permissionNames['k05'] || !!permissionNames['k06']
         ),
     ]
-}
-
-function filterPath(modules: IPermissions[], arrNames: string[]): string[] {
-    let newPaths: string[] = []
-    for (let i = 0; i < modules?.length; i++) {
-        if (arrNames.some((tasks) => tasks == modules[i].name) && !newPaths.includes(modules[i].name)) {
-            newPaths.push(modules[i].name)
-        }
-    }
-    return newPaths ?? []
 }
 
 function getItemLinks(
@@ -241,4 +227,15 @@ function getItemLinks(
         children,
         label,
     } as MenuItem : null;
+}
+
+export function permissionCode(permissions: IPermissions[]) {
+    const roleNames: Record<string, IPermissions[]> = {}
+    for (let i = 0; i < permissions?.length; i++) {
+        const permission = permissions[i]
+        const permissionName = permission.code.toLocaleLowerCase()
+        if (!roleNames[permissionName]) roleNames[permissionName] = []
+        roleNames[permissionName].push(permission)
+    }
+    return roleNames
 }

@@ -8,7 +8,6 @@ import { IPermissions, IRole } from "../../shared/interfaces"
 import { RoleInputs } from "./Roles"
 import { firstLetterCapitalize } from "../../shared/utils/utilities"
 import { StyledRow } from "../EmployeeEdit"
-import { permissionList } from "../../shared/constants/permissions"
 
 const { GET, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
@@ -24,7 +23,7 @@ export default function Permissions() {
     const navigate = useNavigate()
     const { width } = useWindowSize()
     const [data, setData] = useState<IRole>()
-    const [modules, setModules] = useState<IModules[]>(permissionList?.data)
+    const [modules, setModules] = useState<IModules[] | undefined>([])
     const [loading, setLoading] = useState(true)
     const [loadingPermission, setLoadingPermission] = useState(false)
 
@@ -33,10 +32,7 @@ export default function Permissions() {
         fetchPermissions()
     }, [])
 
-    const fetchPermissions = () => GET<{ data: IModules[] }>(ADMINSETTINGS.PERMISSIONS.MODULES).then((res) => {
-        const data = res?.data // PENDING: must change
-        setModules(data ?? permissionList?.data)
-    }).finally(() => setLoading(false))
+    const fetchPermissions = () => GET<IModules[]>(ADMINSETTINGS.PERMISSIONS.MODULES).then(setModules).finally(() => setLoading(false))
     const fetchPermissionByRoleId = (roleId: string) => GET<IRole>(ADMINSETTINGS.PERMISSIONS.SHOW + roleId).then(setData).finally(() => setLoading(false))
     function updatePermission(permissionId: string) {
         setLoadingPermission(true)
@@ -46,26 +42,20 @@ export default function Permissions() {
                 fetchPermissionByRoleId(roleId!)
             })
     }
-    const flattenMapped = new Map(data?.modules.map((flat => [flat.id, flat])))
-    return (
-        <> {loading ? <Skeleton /> : (
-            <>
-                <StyledRow justify='space-between' isCenter={width < 579}>
-                    <Col xs={24} sm={12} md={12} lg={12} xl={11}>
-                        <h2 className='color-white'>Role Update - {data?.name ?? 'Unknown'}</h2>
-                    </Col>
-                    <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}>
-                        <Button onClick={() => navigate('/roles')}>Back to Roles</Button>
-                    </Col>
-                </StyledRow>
-                <RoleInputs selectedData={data!} handleCancel={() => navigate('/roles')} />
-                <Collapse defaultActiveKey={['1']}>
-                    <Collapse.Panel header='Update Permission' key='1'>
-                        <Tree loadingPermission={loadingPermission} permissions={modules} flattenMapped={flattenMapped} updatePermission={updatePermission} />
-                    </Collapse.Panel>
-                </Collapse>
-            </>
-        )}</>
+    const flattenMapped = new Map(data?.permissions?.map((flat => [flat.id, flat])))
+    return loading ? <Skeleton /> : (
+        <>
+            <StyledRow justify='space-between' isCenter={width < 579}>
+                <Col xs={24} sm={12} md={12} lg={12} xl={11}>
+                    <h2 className='color-white'>Role Update - {data?.name ?? 'Unknown'}</h2>
+                </Col>
+                <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}>
+                    <Button onClick={() => navigate('/roles')}>Back to Roles</Button>
+                </Col>
+            </StyledRow>
+            <RoleInputs selectedData={data!} handleCancel={() => navigate('/roles')} />
+            <Tree loadingPermission={loadingPermission} permissions={modules!} flattenMapped={flattenMapped} updatePermission={updatePermission} />
+        </>
     )
 }
 
@@ -77,7 +67,7 @@ type TreeProps = {
 }
 
 function Tree({ loadingPermission, permissions, flattenMapped, updatePermission, }: TreeProps) {
-    return <Row justify='space-around' gutter={[4, 24]} wrap>
+    return <Row justify='space-around' gutter={[6, 24]} wrap>
         {permissions.map((permission) => <TreeNode loadingPermission={loadingPermission} permission={permission} key={permission.name} flattenMapped={flattenMapped} updatePermission={updatePermission} />)}
         <FloatButton.BackTop />
     </Row>
@@ -92,9 +82,9 @@ type TreeNodeProps = {
 
 function TreeNode({ permission, flattenMapped, updatePermission, loadingPermission }: TreeNodeProps) {
     const hasSubgroups = permission.subgroups?.length! > 0;
-    return <Col key={permission.name} xs={24} sm={24} md={!hasSubgroups ? 10 : 24} lg={!hasSubgroups ? 10 : 24} xl={!hasSubgroups ? 10 : 24}>
-        <Collapse>
-            <Collapse.Panel header={firstLetterCapitalize(permission.name)} key={permission.name}>
+    return <Col key={permission.name} xs={24} sm={24} md={!hasSubgroups ? 6 : 24} lg={!hasSubgroups ? 6 : 24} xl={!hasSubgroups ? 6 : 24}>
+        <Collapse defaultActiveKey={['1']}>
+            <Collapse.Panel header={firstLetterCapitalize(permission.name)} key='1'>
                 {permission.permissions?.sort((a, b) => a.route > b.route ? 1 : -1)?.map((permission) => <Row key={permission.id} justify='space-between' style={{ marginBottom: 5 }}>
                     <p>{firstLetterCapitalize(permission?.route.split('.')[1])}</p>
                     <Switch loading={loadingPermission} disabled={loadingPermission} checked={flattenMapped.has(permission?.id)} onChange={() => updatePermission(permission?.id)} />

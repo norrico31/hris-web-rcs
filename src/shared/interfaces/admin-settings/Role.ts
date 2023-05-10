@@ -9,7 +9,7 @@ export interface IRole {
     updated_at: string
     deleted_at: string | null
     position_type_id: string | null
-    modules: IPermissions[]
+    permissions: IPermissions[]
 }
 
 export interface ILineManager {

@@ -11,18 +11,30 @@ export default function TasksSettings() {
     const items = useMemo(() => {
         const modules = new Map(user?.modules.map((mod) => [mod.name, mod])) ?? new Map()
         return [
-            (modules.has('task_activities') && {
+            {
                 label: 'Task Activities',
                 key: '/tasksettings/task_activities',
-            }),
-            (modules.has('task_types') && {
+            },
+            {
                 label: 'Task Types',
                 key: '/tasksettings/task_types',
-            }),
-            (modules.has('sprints') && {
+            },
+            {
                 label: 'Sprints',
                 key: '/tasksettings/sprints',
-            }),
+            },
+            // (modules.has('task_activities') && {
+            //     label: 'Task Activities',
+            //     key: '/tasksettings/task_activities',
+            // }),
+            // (modules.has('task_types') && {
+            //     label: 'Task Types',
+            //     key: '/tasksettings/task_types',
+            // }),
+            // (modules.has('sprints') && {
+            //     label: 'Sprints',
+            //     key: '/tasksettings/sprints',
+            // }),
         ].map((mod) => {
             if (mod) {
                 return {

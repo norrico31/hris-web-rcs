@@ -54,7 +54,7 @@ export default function EmployeeFiles() {
             key: 'position',
             dataIndex: 'position',
             width: 130,
-            render: (_, record) => record.position?.name
+            render: (_, record) => record.position?.name ?? '-'
         },
         {
             title: 'Department',
@@ -62,7 +62,7 @@ export default function EmployeeFiles() {
             dataIndex: 'department',
             align: 'center',
             width: 130,
-            render: (_, record) => record.department?.name
+            render: (_, record) => record.department?.name ?? '-'
         },
         {
             title: 'Date Hired',
@@ -73,10 +73,11 @@ export default function EmployeeFiles() {
         },
         {
             title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
+            key: 'is_active',
+            dataIndex: 'is_active',
             align: 'center',
             width: 110,
+            render: (_, record) => record.is_active ?? '-'
         },
         {
             title: 'Action',
@@ -123,11 +124,6 @@ export default function EmployeeFiles() {
     function handleDelete(id: string) {
         DELETE(EMPLOYEE201.DELETE, id)
             .finally(fetchData)
-    }
-
-    function handleEdit(data: IEmployee) {
-        setIsModalOpen(true)
-        setSelectedData(data)
     }
 
     function handleDownload() {
@@ -333,7 +329,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
 
     function onFinish(values: Record<string, any>) {
         setStepOneInputs(formValues(values) as IStepOne)
-        console.log(formValues(values))
         stepOne()
     }
 
