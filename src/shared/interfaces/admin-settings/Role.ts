@@ -21,6 +21,7 @@ export interface ILineManager {
 }
 
 export interface IRolePermission {
+  code: string
   module: string;
   submodule: string;
   description: string;

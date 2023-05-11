@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Tabs } from '../../../components'
 import { useAuthContext } from '../../../shared/contexts/Auth'
-import { permissionCode } from '../../../components/layouts/Sidebar'
+import { IRolePermission } from '../../../shared/interfaces'
 
 export default function TasksSettings() {
     const navigate = useNavigate()
@@ -60,4 +60,15 @@ export default function TasksSettings() {
         onChange={onChange}
         items={items as any}
     />
+}
+
+export function permissionCode(permissions: IRolePermission[]) {
+    const roleNames: Record<string, IRolePermission[]> = {}
+    for (let i = 0; i < permissions?.length; i++) {
+        const permission = permissions[i]
+        const permissionName = permission.code.toLocaleLowerCase()
+        if (!roleNames[permissionName]) roleNames[permissionName] = []
+        roleNames[permissionName].push(permission)
+    }
+    return roleNames
 }
