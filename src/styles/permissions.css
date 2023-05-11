@@ -1,0 +1,17 @@
+.additional-toggles-container {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    margin-right: 0px !important;
+}
+  
+.toggle-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Added property */
+    margin: 5px;
+}
+  
+.toggle-name {
+    margin-right: 5px;
+}

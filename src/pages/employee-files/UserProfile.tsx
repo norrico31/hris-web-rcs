@@ -66,7 +66,13 @@ export default function UserProfileEmployee() {
 
     function onFinish(val: IUser) {
         setLoading(true)
-        PUT(EMPLOYEE201.PUT + employeeId, val)
+        const payload = {
+            ...val,
+            birthday: val?.birthday ? dayjs(val?.birthday).format('YYYY-MM-DD') : null,
+            date_hired: val?.date_hired ? dayjs(val?.date_hired).format('YYYY-MM-DD') : null,
+            resignation_date: val?.resignation_date ? dayjs(val?.resignation_date).format('YYYY-MM-DD') : null,
+        };
+        PUT(EMPLOYEE201.PUT + employeeId, payload)
             .then(() => messageApi.open({
                 type: 'success',
                 content: 'User Profile Update Successfully!',

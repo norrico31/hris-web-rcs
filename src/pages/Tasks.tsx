@@ -359,8 +359,8 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
             headers: {
                 'Content-Disposition': "attachment; filename=task_report.xlsx",
                 "Content-Type": "application/json",
-                responseType: 'arraybuffer'
-            }
+            },
+            responseType: 'arraybuffer'
         })
             .then((res: any) => {
                 Alert.success('Download Success', 'Tasks Download Successfully!')

@@ -220,8 +220,6 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
             <FormItem
                 label="Middle Name"
                 name="middle_name"
-                required
-                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter middle name...' />
             </FormItem>

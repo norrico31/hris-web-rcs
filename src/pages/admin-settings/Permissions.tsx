@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Row, Switch, Collapse, Skeleton, Col, Button, FloatButton, Table, Space } from "antd"
@@ -123,28 +124,191 @@ export default function Permissions() {
             {/* <Tree loadingPermission={loadingPermission} permissions={modules!} flattenMapped={flattenMapped} updatePermission={updatePermission} /> */}
         </>
     )
+=======
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Table, Switch } from "antd";
+import { useAxios } from "../../shared/lib/axios";
+import { useEndpoints } from "../../shared/constants";
+import { IRole, IRolePermission, IPermissionStatus, IPermissionToggle } from "../../shared/interfaces";
+import "../../styles/permissions.css";
+
+export default function Permissions() {
+  const { roleId } = useParams();
+  const navigate = useNavigate();
+  const [{ ADMINSETTINGS }] = useEndpoints();
+  const { GET, PUT } = useAxios();
+  const [data, setData] = useState<IRolePermission[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (roleId !== undefined) {
+      fetchPermissionByRoleId(roleId);
+    }
+  }, [roleId]);
+
+  const fetchPermissionByRoleId = (roleId: string) => {
+    GET<IRole>(`${ADMINSETTINGS.PERMISSIONS.SHOW}${roleId}`)
+      .then((res) => {
+        const role = res;
+        if (role) {
+          setData(role.permissions);
+        }
+      })
+      .finally(() => setLoading(false));
+  };
+  
+  const handleToggleChange = async (permissionId: string, roleId: string) => {
+    try {
+      await PUT(`/api/permissions/${permissionId}`, {
+        id: roleId,
+        // Other updated permission data if needed
+      });
+      await fetchPermissionByRoleId(roleId);
+      console.log('Permission updated successfully');
+    } catch (error) {
+      console.error('Error updating permission:', error);
+    }
+  };
+  
+//   const fetchPermissionByRoleId = (roleId: string) => {
+//     GET<RoleRes>(`${ADMINSETTINGS.PERMISSIONS.SHOW}${roleId}`)
+//       .then((res) => {
+//         const role = res?.data;
+//         if (role) {
+//           setData(role.permissions); // Accessing the permissions property from role
+//         }
+//       })
+//       .finally(() => setLoading(false));
+//   };
+
+interface IToggleSwitchProps {
+  enabled: boolean;
+  name: string;
+  onToggle: () => Promise<void>;
+>>>>>>> afb834a4839c3b622da8d280faebdc0f4835f29c
 }
 
-type TreeProps = {
-    loadingPermission: boolean
-    permissions: IModules[];
-    flattenMapped: Map<string, IPermissions>;
-    updatePermission: (permissionId: string) => void
-}
+const ToggleSwitch: React.FC<IToggleSwitchProps> = ({ enabled, name, onToggle }) => {
+  return <Switch checked={enabled} onChange={onToggle} />;
+};
 
+<<<<<<< HEAD
 function Tree({ loadingPermission, permissions, flattenMapped, updatePermission, }: TreeProps) {
     return <Row justify='space-around' gutter={[6, 24]} wrap>
         {permissions.map((permission) => <TreeNode loadingPermission={loadingPermission} permission={permission} key={permission.name} flattenMapped={flattenMapped} updatePermission={updatePermission} />)}
         <FloatButton.BackTop />
     </Row>
 }
+=======
+  
+const columns = [
+    {
+        title: "Module",
+        dataIndex: "module",
+        key: "module",
+    },
+    {
+        title: "Submodule",
+        dataIndex: "submodule",
+        key: "submodule",
+    },
+    {
+        title: "Description",
+        dataIndex: "description",
+        key: "description",
+    },
+    {
+      title: "Add",
+      dataIndex: "add",
+      key: "add",
+      render: (add: IPermissionStatus) => {
+        return (
+          <ToggleSwitch
+            name="Add"
+            enabled={add.enabled}
+            onToggle={() => handleToggleChange(add.id, roleId as any)}
+          />
+        );
+      },
+    },
+    {
+        title: "Edit",
+        dataIndex: "edit",
+        key: "edit",
+        render: (edit: IPermissionStatus) => {
+          return (
+            <ToggleSwitch
+              name="Edit"
+              enabled={edit.enabled}
+              onToggle={() => handleToggleChange(edit.id, roleId as any)}
+            />
+          );
+        },
+      },
+      {
+        title: "Delete",
+        dataIndex: "delete",
+        key: "delete",
+        render: (del: IPermissionStatus) => {
+          return (
+            <ToggleSwitch
+              name="Add"
+              enabled={del.enabled}
+              onToggle={() => handleToggleChange(del.id, roleId as any)}
+            />
+          );
+        },
+      },
+      {
+        title: "View",
+        dataIndex: "view",
+        key: "view",
+        render: (view: IPermissionStatus) => {
+          return (
+            <ToggleSwitch
+              name="Add"
+              enabled={view.enabled}
+              onToggle={() => handleToggleChange(view.id, roleId as any)}
+            />
+          );
+        },
+      },
+      // Inside the columns definition
+      {
+        title: "Additional Toggles",
+        dataIndex: "additional_toggles",
+        key: "additional_toggles",
+        render: (toggles: IPermissionToggle[] | []) => {
+          if (Array.isArray(toggles) && toggles.length === 0) {
+            return null; // or any desired rendering for an empty array
+          } else {
+            return (
+              <div className="additional-toggles-container">
+                {toggles.map((toggle) => (
+                  <div className="toggle-item" key={toggle.id}>
+                    <span className="toggle-name">{toggle.name}:</span>
+                    <ToggleSwitch
+                      enabled={toggle.enabled}
+                      name={toggle.name}
+                      onToggle={() => handleToggleChange(toggle.id, roleId as string)}
+                    />
+                  </div>
+                ))}
+            </div>
+            );
+          }
+        },
+      }
+  ];
+  
+>>>>>>> afb834a4839c3b622da8d280faebdc0f4835f29c
 
-type TreeNodeProps = {
-    loadingPermission: boolean
-    permission: IModules;
-    flattenMapped: Map<string, IPermissions>;
-    updatePermission: (permissionId: string) => void
+  return (
+    <Table dataSource={data} columns={columns} loading={loading} rowKey="id" />
+  );
 }
+<<<<<<< HEAD
 
 function TreeNode({ permission, flattenMapped, updatePermission, loadingPermission }: TreeNodeProps) {
     const hasSubgroups = permission.subgroups?.length! > 0;
@@ -160,3 +324,5 @@ function TreeNode({ permission, flattenMapped, updatePermission, loadingPermissi
         </Collapse>
     </Col>
 }
+=======
+>>>>>>> afb834a4839c3b622da8d280faebdc0f4835f29c

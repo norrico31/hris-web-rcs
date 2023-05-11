@@ -104,10 +104,10 @@ export const useEndpoints = () => {
                     DELETE: '/leave_durations/',
                 },
                 LEAVESTATUSES: {
-                    GET: '/leave_status',
-                    POST: '/leave_status/',
-                    PUT: '/leave_status/',
-                    DELETE: '/leave_status/',
+                    GET: '/leave_statuses',
+                    POST: '/leave_statuses/',
+                    PUT: '/leave_statuses/',
+                    DELETE: '/leave_statuses/',
                 },
                 LEAVETYPE: {
                     LISTS: '/options/leave_types',
@@ -225,7 +225,7 @@ export const useEndpoints = () => {
             LISTS: '/options/employees',
             GET: '/employees',
             POST: '/employees',
-            PUT: '/employee/update/',
+            PUT: '/employees/',
             DELETE: '/employee/',
             BENEFITS: {
                 GET: '/employee_benefits',

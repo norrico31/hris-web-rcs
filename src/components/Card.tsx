@@ -4,7 +4,14 @@ import styled from 'styled-components'
 
 const { Title } = Typography
 
-export default function Card({ level = 3, title, style, children }: { level?: 5 | 1 | 2 | 3 | 4; title: string | ReactNode; children: ReactNode; style?: React.CSSProperties }) {
+type Props = {
+    level?: 5 | 1 | 2 | 3 | 4;
+    title: string | ReactNode;
+    children: ReactNode;
+    style?: React.CSSProperties
+}
+
+export default function Card({ level = 3, title, style, children }: Props) {
     return (
         <Container style={style}>
             <Title level={level}>{title}</Title>

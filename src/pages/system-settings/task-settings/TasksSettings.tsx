@@ -15,18 +15,30 @@ export default function TasksSettings() {
         const taskTypesCodes = [permissions['db03'], permissions['db04'], permissions['db05'], permissions['db06']].flat().length > 0
         const taskSprintsCodes = [permissions['dc03'], permissions['dc04'], permissions['dc05'], permissions['dc06']].flat().length > 0
         return [
-            (taskActivityCodes && {
+            {
                 label: 'Task Activities',
-                key: '/tasksettings/task_activities',
-            }),
-            (taskTypesCodes && {
+                key: '/tasksettings/activities',
+            },
+            {
                 label: 'Task Types',
-                key: '/tasksettings/task_types',
-            }),
-            (taskSprintsCodes && {
+                key: '/tasksettings/types',
+            },
+            {
                 label: 'Sprints',
                 key: '/tasksettings/sprints',
-            }),
+            },
+            // (taskActivityCodes && {
+            //     label: 'Task Activities',
+            //     key: '/tasksettings/task_activities',
+            // }),
+            // (taskTypesCodes && {
+            //     label: 'Task Types',
+            //     key: '/tasksettings/task_types',
+            // }),
+            // (taskSprintsCodes && {
+            //     label: 'Sprints',
+            //     key: '/tasksettings/sprints',
+            // }),
         ].map((mod) => {
             if (mod) {
                 return {

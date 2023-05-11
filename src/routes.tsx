@@ -19,6 +19,7 @@ const EmployeeFiles = lazy(() => import('./pages/EmployeeFiles'))
 const SalaryAdjustment = lazy(() => import('./pages/SalaryAdjustment'))
 const WhosInOut = lazy(() => import('./pages/WhosInOut'))
 const Announcements = lazy(() => import('./pages/Announcements'))
+const Profile = lazy(() => import('./pages/Profile'))
 
 // Leaves
 const MyLeaves = lazy(() => import('./pages/leaves/MyLeave'))
@@ -126,6 +127,10 @@ export const routes = createBrowserRouter([
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><IssueLogs /></Suspense>
             },
             {
+                path: 'profile',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Profile /></Suspense>
+            },
+            {
                 path: 'systemsettings',
                 element: <Outlet />,
                 children: [
@@ -134,15 +139,15 @@ export const routes = createBrowserRouter([
                         element: <TasksSettings />,
                         children: [
                             {
-                                path: 'activity',
+                                path: 'activities',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskActivities /></Suspense>,
                             },
                             {
-                                path: 'type',
+                                path: 'types',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskTypes /></Suspense>
                             },
                             {
-                                path: 'sprint',
+                                path: 'sprints',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskSprint /></Suspense>
                             },
                         ]
