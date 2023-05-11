@@ -134,15 +134,15 @@ export const routes = createBrowserRouter([
                         element: <TasksSettings />,
                         children: [
                             {
-                                path: 'task_activities',
+                                path: 'activity',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskActivities /></Suspense>,
                             },
                             {
-                                path: 'task_types',
+                                path: 'type',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskTypes /></Suspense>
                             },
                             {
-                                path: 'sprints',
+                                path: 'sprint',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TaskSprint /></Suspense>
                             },
                         ]

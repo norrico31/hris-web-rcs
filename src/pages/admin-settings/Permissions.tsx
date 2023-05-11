@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { Row, Switch, Collapse, Skeleton, Col, Button, FloatButton } from "antd"
+import { Row, Switch, Collapse, Skeleton, Col, Button, FloatButton, Table, Space } from "antd"
 import useWindowSize from "../../shared/hooks/useWindowSize"
 import { useAxios } from "../../shared/lib/axios"
 import { useEndpoints } from "../../shared/constants"
@@ -8,6 +8,7 @@ import { IPermissions, IRole } from "../../shared/interfaces"
 import { RoleInputs } from "./Roles"
 import { firstLetterCapitalize } from "../../shared/utils/utilities"
 import { StyledRow } from "../EmployeeEdit"
+import { ColumnsType } from "antd/es/table"
 
 const { GET, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
@@ -42,10 +43,74 @@ export default function Permissions() {
                 fetchPermissionByRoleId(roleId!)
             })
     }
+    const columns: ColumnsType<any> = [
+        {
+            title: 'Module',
+            key: 'name',
+            dataIndex: 'name',
+        },
+        {
+            title: 'Permissions',
+            key: 'permissions',
+            dataIndex: 'permissions',
+            render: (_, record) => record?.permissions.length > 0 ? record?.permissions.map((permission: any) => {
+                return <Col key={permission?.id}>{permission.name}</Col>
+            }) : '-'
+        },
+        {
+            title: 'Sub Module',
+            key: 'subgroups',
+            dataIndex: 'subgroups',
+            render: (_, record) => {
+                // record?.subgroups?.map((subgroup: any) => console.log('aha: ', subgroup?.subgroups))
+                return record?.subgroups?.map((outerSubgroup: any) => {
+                    if (outerSubgroup?.subgroups) return outerSubgroup?.subgroups?.map((innerSubgroup: any) => {
+                        if (innerSubgroup?.permissions) return innerSubgroup?.permissions?.map((innerPermission: any) => <Col key={innerPermission?.name}>{innerPermission?.name}</Col>)
+                        return <Col key={innerSubgroup?.name}>{innerSubgroup?.name}</Col>
+                    })
+                    return outerSubgroup?.permissions?.map((permission: any) => {
+                        return <Col key={permission?.id}>{permission.name}</Col>
+                    })
+                }) ?? '-'
+            }
+        }
+        // {
+        //     title: 'Action',
+        //     key: 'action',
+        //     dataIndex: 'action',
+        //     align: 'center',
+        //     render: (_: any, record: IRole) => <Space>
+        //         <Button
+        //             id='edit'
+        //             type='default'
+        //             size='middle'
+        //             onClick={() => navigate('/roles/' + record.id + '/permissions')}
+        //             className='btn-edit'
+        //         >
+        //             <Row align='middle' style={{ gap: 5 }}>
+        //                 <p style={{ color: '#fff' }}>View</p>
+        //                 <BsEye color='white' />
+        //             </Row>
+        //         </Button>
+        //         <Popconfirm
+        //             title={`Delete the ${record?.name}`}
+        //             description={`Are you sure you want to delete ${name}?`}
+        //             onConfirm={() => handleDelete(record?.id)}
+        //             okText="Delete"
+        //             cancelText="Cancel"
+        //         >
+        //             <Button id='delete' type='primary' size='middle'>
+        //                 <BsFillTrashFill />
+        //             </Button>
+        //         </Popconfirm>
+        //     </Space>
+        // },
+    ]
+
     const flattenMapped = new Map(data?.permissions?.map((flat => [flat.id, flat])))
     return loading ? <Skeleton /> : (
         <>
-            <StyledRow justify='space-between' isCenter={width < 579}>
+            <StyledRow justify='space-between'>
                 <Col xs={24} sm={12} md={12} lg={12} xl={11}>
                     <h2 className='color-white'>Role Update - {data?.name ?? 'Unknown'}</h2>
                 </Col>
@@ -54,7 +119,8 @@ export default function Permissions() {
                 </Col>
             </StyledRow>
             <RoleInputs selectedData={data!} handleCancel={() => navigate('/roles')} />
-            <Tree loadingPermission={loadingPermission} permissions={modules!} flattenMapped={flattenMapped} updatePermission={updatePermission} />
+            <Table dataSource={modules} columns={columns} rowKey={(data: any) => data?.name} />
+            {/* <Tree loadingPermission={loadingPermission} permissions={modules!} flattenMapped={flattenMapped} updatePermission={updatePermission} /> */}
         </>
     )
 }

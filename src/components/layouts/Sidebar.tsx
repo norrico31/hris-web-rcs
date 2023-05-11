@@ -79,6 +79,10 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 function filterMenu(user: IUser) {
     const permissionNames = permissionCode(user?.role?.permissions)
+    const tasksSettings = [...permissionNames['da03'], ...permissionNames['da04'], ...permissionNames['da05'], ...permissionNames['da06'], ...permissionNames['db03'], ...permissionNames['db04'], ...permissionNames['db05'], ...permissionNames['db06'], ...permissionNames['dc03'], ...permissionNames['dc04'], ...permissionNames['dc05'], ...permissionNames['dc06']].map((d) => {
+        const name = d.name.split(' ')
+        return name[name.length - 1].toLocaleLowerCase()
+    }) ?? []
     return [
         getItemLinks(
             <Link to='/dashboard' id="dashboard">Dashboard</Link>,
@@ -114,8 +118,8 @@ function filterMenu(user: IUser) {
             <AiOutlineSetting />,
             [
                 getItemLinks(
-                    // <Link to={`/systemsettings/tasksettings/${tasksSettingsNames[tasksSettingsNames.length - 1]}`}>Tasks</Link>,
-                    <Link to={`/systemsettings/tasksettings/task_activities`}>Tasks</Link>,
+                    <Link to={`/systemsettings/tasksettings/${tasksSettings[0]}`}>Tasks</Link>,
+                    // <Link to={`/systemsettings/tasksettings/task_activities`}>Tasks</Link>,
                     '/systemsettings/tasksettings/task_activities',
                     <FaTasks />,
                     undefined,

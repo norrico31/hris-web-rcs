@@ -2,39 +2,31 @@ import { useMemo } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Tabs } from '../../../components'
 import { useAuthContext } from '../../../shared/contexts/Auth'
+import { permissionCode } from '../../../components/layouts/Sidebar'
 
 export default function TasksSettings() {
     const navigate = useNavigate()
     let { pathname } = useLocation()
-    const { user } = useAuthContext()
+    const { user, loading } = useAuthContext()
 
     const items = useMemo(() => {
-        const modules = new Map(user?.modules.map((mod) => [mod.name, mod])) ?? new Map()
+        const permissions = permissionCode(user?.role?.permissions!)
+        const taskActivityCodes = [permissions['da03'], permissions['da04'], permissions['da05'], permissions['da06']].flat().length > 0
+        const taskTypesCodes = [permissions['db03'], permissions['db04'], permissions['db05'], permissions['db06']].flat().length > 0
+        const taskSprintsCodes = [permissions['dc03'], permissions['dc04'], permissions['dc05'], permissions['dc06']].flat().length > 0
         return [
-            {
+            (taskActivityCodes && {
                 label: 'Task Activities',
                 key: '/tasksettings/task_activities',
-            },
-            {
+            }),
+            (taskTypesCodes && {
                 label: 'Task Types',
                 key: '/tasksettings/task_types',
-            },
-            {
+            }),
+            (taskSprintsCodes && {
                 label: 'Sprints',
                 key: '/tasksettings/sprints',
-            },
-            // (modules.has('task_activities') && {
-            //     label: 'Task Activities',
-            //     key: '/tasksettings/task_activities',
-            // }),
-            // (modules.has('task_types') && {
-            //     label: 'Task Types',
-            //     key: '/tasksettings/task_types',
-            // }),
-            // (modules.has('sprints') && {
-            //     label: 'Sprints',
-            //     key: '/tasksettings/sprints',
-            // }),
+            }),
         ].map((mod) => {
             if (mod) {
                 return {
