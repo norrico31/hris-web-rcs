@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom"
-import { Table, Switch, Skeleton, Col, Button } from "antd";
+import { Table, Switch, Skeleton, Col, Button, FloatButton } from "antd";
 import { useAxios } from "../../shared/lib/axios"
 import { useEndpoints } from "../../shared/constants"
 import { IRole, IRolePermission, IPermissionStatus, IPermissionToggle } from "../../shared/interfaces"
 import { StyledRow } from "../EmployeeEdit"
 import { RoleInputs } from "./Roles"
+import { firstLetterCapitalize } from "../../shared/utils/utilities";
 
 export default function Permissions() {
 	const { roleId } = useParams()
@@ -18,9 +19,7 @@ export default function Permissions() {
 	if (!roleId) return <Navigate to='/roles' />
 
 	useEffect(() => {
-		if (roleId !== undefined) {
-			fetchPermissionByRoleId(roleId)
-		}
+		if (roleId !== undefined) fetchPermissionByRoleId(roleId)
 	}, [roleId])
 
 	const fetchPermissionByRoleId = (roleId: string) => {
@@ -48,23 +47,26 @@ export default function Permissions() {
 			title: "Module",
 			dataIndex: "module",
 			key: "module",
+			width: 150,
 		},
 		{
 			title: "Submodule",
 			dataIndex: "submodule",
 			key: "submodule",
+			width: 150,
 		},
 		{
 			title: "Description",
 			dataIndex: "description",
 			key: "description",
+			width: 150,
 		},
 		{
 			title: "Add",
 			dataIndex: "add",
 			key: "add",
 			render: (add: IPermissionStatus) => {
-				if (add) return (
+				if (add?.enabled) return (
 					<ToggleSwitch
 						name="Add"
 						enabled={add.enabled}
@@ -72,61 +74,61 @@ export default function Permissions() {
 					/>
 				)
 				return '-'
-			}
+			},
+			width: 150
 		},
 		{
 			title: "Edit",
 			dataIndex: "edit",
 			key: "edit",
-			render: (edit: IPermissionStatus) => edit ? (
+			render: (edit: IPermissionStatus) => edit?.enabled ? (
 				<ToggleSwitch
 					name="Edit"
 					enabled={edit.enabled}
 					onToggle={() => handleToggleChange(edit.id)}
 				/>
-			) : '-'
+			) : '-',
+			width: 150
 		},
 		{
 			title: "Delete",
 			dataIndex: "delete",
 			key: "delete",
-			render: (del: IPermissionStatus) => del ? <ToggleSwitch
+			render: (del: IPermissionStatus) => del?.enabled ? <ToggleSwitch
 				name="Add"
 				enabled={del.enabled}
 				onToggle={() => handleToggleChange(del.id)}
-			/> : '-'
+			/> : '-',
+			width: 150
 		},
 		{
 			title: "View",
 			dataIndex: "view",
 			key: "view",
-			render: (view: IPermissionStatus) => view ? (
+			render: (view: IPermissionStatus) => view?.enabled ? (
 				<ToggleSwitch
 					name="Add"
 					enabled={view.enabled}
 					onToggle={() => handleToggleChange(view.id)}
 				/>
-			) : '-'
+			) : '-',
+			width: 150
 		},
 		{
 			title: "Additional Toggles",
 			dataIndex: "additional_toggles",
 			key: "additional_toggles",
-			render: (record: IPermissionToggle[] | []) => {
-				if (Array.isArray(record) && record.length === 0) return null
-				return record.map((toggle) => (
-					<div className="additional-toggles-container" key={toggle.id}>
-						<div className="toggle-item">
-							<span className="toggle-name">{toggle.name}:</span>
-							<ToggleSwitch
-								enabled={toggle.enabled}
-								name={toggle.name}
-								onToggle={() => handleToggleChange(toggle.id)}
-							/>
-						</div>
-					</div>
-				))
-			},
+			render: (record: IPermissionToggle[] | []) => !record.length ? null : record.map((toggle) => <div className="additional-toggles-container" key={toggle.id}>
+				<div className="toggle-item">
+					<span className="toggle-name">{firstLetterCapitalize(toggle.name.split('_').join(' '))}:</span>
+					<ToggleSwitch
+						enabled={toggle.enabled}
+						name={toggle.name}
+						onToggle={() => handleToggleChange(toggle.id)}
+					/>
+				</div>
+			</div>),
+			width: 150
 		}
 	]
 
@@ -141,7 +143,8 @@ export default function Permissions() {
 				</Col>
 			</StyledRow>
 			<RoleInputs selectedData={data!} handleCancel={() => navigate('/roles')} />
-			<Table dataSource={data?.permissions ?? []} columns={columns} loading={loading} rowKey={(data: any) => data?.id} />
+			<Table dataSource={data?.permissions ?? []} columns={columns} loading={loading} rowKey={(data: any) => data?.id} pagination={{ pageSize: 1000 }} />
+			<FloatButton.BackTop />
 		</>
 	)
 }
