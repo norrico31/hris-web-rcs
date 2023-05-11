@@ -3,9 +3,12 @@ import { Col, Row, Input, Form as AntDForm, Button } from 'antd'
 import { Card, Form } from '../components'
 import { IUser } from '../shared/interfaces'
 import { useAuthContext } from '../shared/contexts/Auth'
+import { useEndpoints } from "../shared/constants"
+import axiosClient, { useAxios } from "../shared/lib/axios"
 
 const { useForm, Item } = AntDForm
-
+const { GET, DELETE, POST, PUT } = useAxios()
+const [{ AUTH: { UPDATEPROFILE } }] = useEndpoints()
 
 // TODO
 
@@ -20,8 +23,14 @@ export default function Profile() {
     }, [])
 
     const onFinish = (val: IUser) => {
-        alert('aha')
-        console.log(val)
+        setLoading(true)
+        POST(UPDATEPROFILE, val)
+            .then((res) => {
+                console.log(res)
+            }).finally(() => {
+                console.log('nice')
+                setLoading(false)
+            })
     }
     return (
         <Card title='Profile'>
@@ -83,15 +92,27 @@ export default function Profile() {
                             <Input disabled />
                         </Item>
                     </Col>
-                    <Col xs={24} sm={24} md={11} lg={10} xl={10} >
-                        <Item
-                            label="Password"
-                            name="password" // to be change
-                        >
-                            <Input type='password' placeholder='Change password' />
+                </Row>
+
+                
+                <Row justify="space-between">
+                    <Col xs={24} sm={24} md={7} lg={7} xl={7}>
+                        <Item label="Current Password" name="current_password">
+                        <Input type="password" placeholder="Current password" />
+                        </Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={7} lg={7} xl={7}>
+                        <Item label="New Password" name="password">
+                        <Input type="password" placeholder="New password" />
+                        </Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={7} lg={7} xl={7}>
+                        <Item label="Confirm Password" name="password_confirmation">
+                        <Input type="password" placeholder="Confirm password" />
                         </Item>
                     </Col>
                 </Row>
+
                 <Row justify='end'>
                     <Button type='primary' htmlType='submit'>Update</Button>
                 </Row>

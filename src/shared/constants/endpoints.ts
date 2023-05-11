@@ -4,6 +4,7 @@ export const useEndpoints = () => {
             USER: '/auth-user',
             LOGIN: '/login',
             LOGOUT: '/logout',
+            UPDATEPROFILE: '/update_password'
         },
         DASHBOARD: {
             GET: '',

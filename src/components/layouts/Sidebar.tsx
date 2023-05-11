@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { MenuProps, Menu as AntdMenu, Skeleton } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit } from 'react-icons/ai'
+import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit, AiOutlineUser } from 'react-icons/ai'
 import { MdAdminPanelSettings, MdLockOutline } from 'react-icons/md'
 import { FaTasks, FaCriticalRole, FaUsersCog, FaUsers } from 'react-icons/fa'
 import { GiHumanPyramid } from 'react-icons/gi'
@@ -127,7 +127,7 @@ function filterMenu(user: IUser) {
                     '/systemsettings/tasksettings/activities',
                     <FaTasks />,
                     undefined,
-                    modules.some(module => module.code === 'J01') || modules.some(module => module.code === 'J02') || modules.some(module => module.code === 'J03')
+                    modules.some(module => module.code === 'JA01') || modules.some(module => module.code === 'JB01') || modules.some(module => module.code === 'JC01')
                 ),
                 getItemLinks(
                     // <Link to={`/systemsettings/hrsettings/${hrSettingsNames[hrSettingsNames.length - 1]}`}>Human Resources</Link>,
@@ -135,6 +135,7 @@ function filterMenu(user: IUser) {
                     '/systemsettings/hrsettings/bankdetails',
                     <GiHumanPyramid />,
                     undefined,
+                    modules.some(module => module.code === 'KA01') || modules.some(module => module.code === 'KB01') || modules.some(module => module.code === 'KC01')  || modules.some(module => module.code === 'KD01') || modules.some(module => module.code === 'KE01') || modules.some(module => module.code === 'KF01') || modules.some(module => module.code === 'KG01') || modules.some(module => module.code === 'KH01') || modules.some(module => module.code === 'KI01') || modules.some(module => module.code === 'KJ01') || modules.some(module => module.code === 'KK01') || modules.some(module => module.code === 'KL01') || modules.some(module => module.code === 'KM01') || modules.some(module => module.code === 'KN01') 
                 ),
                 getItemLinks(
                     // <Link to={`/systemsettings/clientsettings/${clientSettingsNames[0]}`}>Client</Link>,
@@ -142,12 +143,14 @@ function filterMenu(user: IUser) {
                     `/systemsettings/clientsettings/clients`,
                     <IoIosPeople />,
                     undefined,
+                    modules.some(module => module.code === 'LA01') || modules.some(module => module.code === 'LB01') || modules.some(module => module.code === 'LC01')
                 ),
                 getItemLinks(
                     <Link to='/systemsettings/expensesettings/expensetype'>Expense</Link>,
                     '/systemsettings/expensesettings/expensetype',
                     <SiExpensify />,
                     undefined,
+                    modules.some(module => module.code === 'KO01')
                 ),
             ],
         ),
@@ -185,7 +188,9 @@ function filterMenu(user: IUser) {
                     modules.some(module => module.code === 'ID01')
                 ),
             ],
-            isModuleAdminSettings.every((admin) => admin)
+            modules.some(module => module.code === 'IA01') || modules.some(module => module.code === 'IB01') || modules.some(module => module.code === 'IC01') || modules.some(module => module.code === 'ID01')
+            // !!permissionNames['ga03'] || !!permissionNames['ga04'] || !!permissionNames['ga05'] || !!permissionNames['ga06'] || !!permissionNames['gb03'] || !!permissionNames['gb04'] || !!permissionNames['gb05'] || !!permissionNames['gb06'] || !!permissionNames['gc01'] || !!permissionNames['gd01']
+            // isModuleAdminSettings.every((admin) => admin)
         ),
         getItemLinks(
             <Link to='/employee'>Employee Files</Link>,
