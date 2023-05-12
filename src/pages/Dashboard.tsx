@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Col, Row, Card as AntDCard, Typography, Calendar } from 'antd'
 import { renderTitle } from "../shared/utils/utilities"
 import { Card, Divider } from '../components'
+import { useAuthContext } from '../shared/contexts/Auth'
 
 const infos = [
     {
@@ -25,11 +26,12 @@ const { Paragraph, Title } = Typography
 
 export default function Dashboard() {
     renderTitle('Dashboard')
+    const { user } = useAuthContext()
     const [dataList, setDataList] = useState(infos)
     const [selectedId, setSelectedId] = useState('')
     const [name, setName] = useState('')
     const selectedUser: { [k: string]: string } = dataList.reduce((users, user) => ({ ...users, [user.id]: user }), {})
-
+    console.log(user?.role?.permissions)
     return (
         <Card title='Dashboard'>
             <Divider />

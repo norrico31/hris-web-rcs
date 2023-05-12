@@ -1,60 +1,45 @@
 import { useMemo } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { Skeleton } from 'antd'
 import { Tabs } from '../../../components'
 import { useAuthContext } from '../../../shared/contexts/Auth'
 import { IRolePermission } from '../../../shared/interfaces'
+import { filterPaths } from '../../../components/layouts/Sidebar'
+import { taskSettingsPaths } from '../../../shared/constants'
 
 export default function TasksSettings() {
+    const { user, loading } = useAuthContext()
     const navigate = useNavigate()
     let { pathname } = useLocation()
-    const { user, loading } = useAuthContext()
 
     const items = useMemo(() => {
-        const permissions = permissionCode(user?.role?.permissions!)
-        const taskActivityCodes = [permissions['da03'], permissions['da04'], permissions['da05'], permissions['da06']].flat().length > 0
-        const taskTypesCodes = [permissions['db03'], permissions['db04'], permissions['db05'], permissions['db06']].flat().length > 0
-        const taskSprintsCodes = [permissions['dc03'], permissions['dc04'], permissions['dc05'], permissions['dc06']].flat().length > 0
+        const taskPaths = useMemo(() => filterPaths(user?.role?.permissions!, taskSettingsPaths), [user?.role?.permissions])
         return [
-            {
+            (taskPaths.includes('activities') && {
                 label: 'Task Activities',
                 key: '/tasksettings/activities',
-            },
-            {
+            }),
+            (taskPaths.includes('types') && {
                 label: 'Task Types',
                 key: '/tasksettings/types',
-            },
-            {
+            }),
+            (taskPaths.includes('sprints') && {
                 label: 'Sprints',
                 key: '/tasksettings/sprints',
-            },
-            // (taskActivityCodes && {
-            //     label: 'Task Activities',
-            //     key: '/tasksettings/task_activities',
-            // }),
-            // (taskTypesCodes && {
-            //     label: 'Task Types',
-            //     key: '/tasksettings/task_types',
-            // }),
-            // (taskSprintsCodes && {
-            //     label: 'Sprints',
-            //     key: '/tasksettings/sprints',
-            // }),
+            }),
         ].map((mod) => {
-            if (mod) {
-                return {
-                    label: mod?.label,
-                    key: mod?.key,
-                    children: <Outlet />
-                }
+            if (mod) return {
+                label: mod?.label,
+                key: mod?.key,
+                children: <Outlet />
             }
         }) ?? []
-    }, [user?.modules])
+    }, [user, loading])
 
     const activeKey = pathname.slice(15, pathname.length)
-
     const onChange = (key: string) => navigate('/systemsettings' + key)
 
-    return <Tabs
+    return loading ? <Skeleton /> : <Tabs
         title='Tasks Settings'
         activeKey={activeKey}
         onChange={onChange}

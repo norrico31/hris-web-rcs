@@ -15,6 +15,7 @@ export default function Permissions() {
 	const { GET, PUT } = useAxios()
 	const [data, setData] = useState<IRole>()
 	const [loading, setLoading] = useState(true)
+	const [loadingPermission, setLoadingPermission] = useState(false)
 
 	if (!roleId) return <Navigate to='/roles' />
 
@@ -28,8 +29,8 @@ export default function Permissions() {
 			.finally(() => setLoading(false))
 	}
 
-	const handleToggleChange = async (permissionId: string) => {
-		console.log(permissionId)
+	const toggleChange = async (permissionId: string) => {
+		setLoadingPermission(true)
 		try {
 			await PUT(ADMINSETTINGS.PERMISSIONS.PUT + roleId, {
 				id: permissionId,
@@ -39,6 +40,7 @@ export default function Permissions() {
 			console.error('Error updating permission:', error)
 		} finally {
 			fetchPermissionByRoleId(roleId!)
+			setLoadingPermission(false)
 		}
 	}
 
@@ -65,27 +67,24 @@ export default function Permissions() {
 			title: "Add",
 			dataIndex: "add",
 			key: "add",
-			render: (add: IPermissionStatus) => {
-				if (add?.enabled) return (
-					<ToggleSwitch
-						name="Add"
-						enabled={add.enabled}
-						onToggle={() => handleToggleChange(add.id)}
-					/>
-				)
-				return '-'
-			},
+			render: (add: IPermissionStatus) => add?.enabled != undefined ? (
+				<ToggleSwitch
+					loading={loadingPermission}
+					enabled={add.enabled}
+					onToggle={() => toggleChange(add.id)}
+				/>
+			) : '-',
 			width: 150
 		},
 		{
 			title: "Edit",
 			dataIndex: "edit",
 			key: "edit",
-			render: (edit: IPermissionStatus) => edit?.enabled ? (
+			render: (edit: IPermissionStatus) => edit?.enabled != undefined ? (
 				<ToggleSwitch
-					name="Edit"
+					loading={loadingPermission}
 					enabled={edit.enabled}
-					onToggle={() => handleToggleChange(edit.id)}
+					onToggle={() => toggleChange(edit.id)}
 				/>
 			) : '-',
 			width: 150
@@ -94,10 +93,10 @@ export default function Permissions() {
 			title: "Delete",
 			dataIndex: "delete",
 			key: "delete",
-			render: (del: IPermissionStatus) => del?.enabled ? <ToggleSwitch
-				name="Add"
+			render: (del: IPermissionStatus) => del?.enabled != undefined ? <ToggleSwitch
+				loading={loadingPermission}
 				enabled={del.enabled}
-				onToggle={() => handleToggleChange(del.id)}
+				onToggle={() => toggleChange(del.id)}
 			/> : '-',
 			width: 150
 		},
@@ -105,11 +104,11 @@ export default function Permissions() {
 			title: "View",
 			dataIndex: "view",
 			key: "view",
-			render: (view: IPermissionStatus) => view?.enabled ? (
+			render: (view: IPermissionStatus) => view?.enabled != undefined ? (
 				<ToggleSwitch
-					name="Add"
+					loading={loadingPermission}
 					enabled={view.enabled}
-					onToggle={() => handleToggleChange(view.id)}
+					onToggle={() => toggleChange(view.id)}
 				/>
 			) : '-',
 			width: 150
@@ -122,9 +121,9 @@ export default function Permissions() {
 				<div className="toggle-item">
 					<span className="toggle-name">{firstLetterCapitalize(toggle.name.split('_').join(' '))}:</span>
 					<ToggleSwitch
+						loading={loadingPermission}
 						enabled={toggle.enabled}
-						name={toggle.name}
-						onToggle={() => handleToggleChange(toggle.id)}
+						onToggle={() => toggleChange(toggle.id)}
 					/>
 				</div>
 			</div>),
@@ -150,9 +149,9 @@ export default function Permissions() {
 }
 
 interface IToggleSwitchProps {
+	loading: boolean
 	enabled: boolean;
-	name: string;
 	onToggle: () => Promise<void>
 }
 
-const ToggleSwitch: React.FC<IToggleSwitchProps> = ({ enabled, name, onToggle }) => <Switch checked={enabled} onChange={onToggle} />
+const ToggleSwitch: React.FC<IToggleSwitchProps> = ({ loading, enabled, onToggle }) => <Switch disabled={loading} loading={loading} checked={enabled} onChange={onToggle} />

@@ -157,7 +157,7 @@ export const routes = createBrowserRouter([
                         element: <HRSettings />,
                         children: [
                             {
-                                path: 'bank_details',
+                                path: 'bankdetails',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><BankDetails /></Suspense>,
                             },
                             {
@@ -169,15 +169,15 @@ export const routes = createBrowserRouter([
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Holidays /></Suspense>
                             },
                             {
-                                path: 'holiday_types',
+                                path: 'holidaytypes',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><HolidayType /></Suspense>
                             },
                             {
-                                path: 'daily_rates',
+                                path: 'dailyrates',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><DailyRate /></Suspense>
                             },
                             {
-                                path: 'employment_statuses',
+                                path: 'employmentstatuses',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeStatus /></Suspense>
                             },
                             {
@@ -193,15 +193,15 @@ export const routes = createBrowserRouter([
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Position /></Suspense>
                             },
                             {
-                                path: 'leave_statuses',
+                                path: 'leavestatuses',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveStatus /></Suspense>
                             },
                             {
-                                path: 'leave_durations',
+                                path: 'leavedurations',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveDuration /></Suspense>
                             },
                             {
-                                path: 'leave_types',
+                                path: 'leavetypes',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveType /></Suspense>
                             },
                             {
@@ -223,11 +223,11 @@ export const routes = createBrowserRouter([
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Client /></Suspense>,
                             },
                             {
-                                path: 'client_branches',
+                                path: 'clientbranches',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientBranch /></Suspense>
                             },
                             {
-                                path: 'client_adjustments',
+                                path: 'clientadjustments',
                                 element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientAdjustment /></Suspense>
                             },
                         ]
