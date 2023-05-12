@@ -85,6 +85,7 @@ export const useEndpoints = () => {
                     DELETE: '/employment_statuses/',
                 },
                 BENEFITS: {
+                    LISTS: '/options/benefits',
                     GET: '/benefits',
                     POST: '/benefits/',
                     PUT: '/benefits/',

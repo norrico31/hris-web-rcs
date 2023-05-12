@@ -1,38 +1,41 @@
-import { useState, useRef, useEffect } from "react";
-import { Button, Calendar, Col, Row, Divider as AntDDivider, Modal, Space, Popconfirm, message, Spin, TablePaginationConfig, Typography, DatePicker, DatePickerProps } from "antd"
+import { useState, useRef, useEffect, useMemo } from "react";
+import { Navigate } from "react-router-dom"
+import { Button, Col, Row, Modal, Space, Popconfirm, message, TablePaginationConfig, DatePicker, DatePickerProps, Skeleton } from "antd"
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
 import { RxEnter, RxExit } from 'react-icons/rx'
-import { MainHeader, Divider, Box, TabHeader, Table, Card } from "../components"
+import { ColumnsType } from "antd/es/table"
+import { Divider, Table, Card } from "../components"
 import AvatarPng from '../shared/assets/default_avatar.png'
 import { renderTitle } from "../shared/utils/utilities"
 import { MessageInstance } from "antd/es/message/interface"
 import { useAxios } from './../shared/lib/axios'
-import { useEndpoints } from "../shared/constants"
-import { useAuthContext } from "../shared/contexts/Auth";
-import { IArguments, ITimeKeeping, TableParams, TimeKeepingRes } from "../shared/interfaces";
-import useWindowSize from "../shared/hooks/useWindowSize";
-import { ColumnsType } from "antd/es/table";
+import { rootPaths, useEndpoints } from "../shared/constants"
+import { useAuthContext } from "../shared/contexts/Auth"
+import { IArguments, ITimeKeeping, TimeKeepingRes } from "../shared/interfaces"
+import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 
 const [{ TIMEKEEPING }] = useEndpoints()
 const { GET, POST } = useAxios()
 
 export default function TimeKeeping() {
     renderTitle('Timekeeping')
-    const { user } = useAuthContext()
+    const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<Array<ITimeKeeping>>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [today] = useState(dayjs().format('YYYY-MM-DD'))
     const [selectedDate, setSelectedDate] = useState(today)
-    // const [selectedDate, setSelectedDate] = useState<Dayjs | string>(today)
-    // const [tableParams, setTableParams] = useState<TableParams | undefined>()
-    const [search, setSearch] = useState('')
 
     useEffect(() => {
         const controller = new AbortController();
         if (user) fetchData({ date: today, args: { signal: controller.signal } })
     }, [user, today])
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['b01']) return <Navigate to={'/' + paths[0]} />
 
     const fetchData = ({ args, date = dayjs().format('YYYY-MM-DD') }: { args?: IArguments; date?: Dayjs | string }) => {
         setLoading(true)
@@ -74,7 +77,7 @@ export default function TimeKeeping() {
         },
     ]
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, date: today })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, pageSize: pagination?.pageSize! }, date: today })
 
     const handleDatePickerChange: DatePickerProps['onChange'] = (date, dateString) => {
         fetchData({ date: dayjs(date).format('YYYY-MM-DD') })

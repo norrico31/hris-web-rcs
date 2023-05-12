@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react"
-import { Button, Col, DatePicker, Form as AntDForm, Input, Modal, Select, Space, Switch, Upload, Row, Radio } from "antd"
+import { useState, useEffect, useMemo } from "react"
+import { Navigate } from "react-router-dom"
+import { useAuthContext } from "../shared/contexts/Auth"
+import { Button, Col, DatePicker, Form as AntDForm, Input, Modal, Select, Space, Upload, Row, Radio, Skeleton } from "antd"
+import dayjs from "dayjs"
 import { PlusOutlined } from '@ant-design/icons'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { AiOutlineCalendar } from 'react-icons/ai'
+import useMessage from "antd/es/message/useMessage"
 import { Action, MainHeader, Table, Form, TabHeader } from "../components"
 import { renderTitle } from "../shared/utils/utilities"
-import dayjs from "dayjs"
 import axiosClient, { useAxios } from "../shared/lib/axios"
-import { useEndpoints } from "../shared/constants"
+import { rootPaths, useEndpoints } from "../shared/constants"
 import { IArguments, IEmployee, IExpenseType, TableParams } from "../shared/interfaces"
-import useMessage from "antd/es/message/useMessage"
+import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 
 interface ISalaryAdjustment extends Partial<{ id: string }> {
     task_activity: string[]
@@ -26,6 +29,7 @@ const [{ EMPLOYEE201, SYSTEMSETTINGS: { EXPENSESETTINGS: { EXPENSE, EXPENSETYPE 
 
 export default function SalaryAdjustment() {
     renderTitle('Salary Adjustment')
+    const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<ISalaryAdjustment[]>([])
     const [selectedData, setSelectedData] = useState<ISalaryAdjustment | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -40,6 +44,11 @@ export default function SalaryAdjustment() {
             controller.abort()
         }
     }, [])
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && ['h01', 'h02', 'h03', 'h04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<ISalaryAdjustment> = [
         {

@@ -4,11 +4,11 @@ import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs'
 import { Action, Card, Form, TabHeader, Table } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
-import { IEmployeeBenefits } from '../../shared/interfaces'
-import { useAxios } from '../../shared/lib/axios'
+import { IBenefits, IEmployeeBenefits } from '../../shared/interfaces'
+import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
 
-const [{ EMPLOYEE201 }] = useEndpoints()
+const [{ EMPLOYEE201, SYSTEMSETTINGS }] = useEndpoints()
 const { PUT, DELETE, POST } = useAxios()
 // TODO
 export default function EmployeeBenefits() {
@@ -111,27 +111,31 @@ const { Item: Item, useForm } = AntDForm
 function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
     const { employeeId, fetchData } = useEmployeeCtx()
     const [form] = useForm<Record<string, any>>()
+    const [lists, setLists] = useState<IBenefits[]>([])
 
-    // useEffect(() => {
-    //     if (selectedData != undefined) {
-    //         let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
+    useEffect(() => {
+        if (selectedData != undefined) {
+            form.setFieldsValue({
+                ...selectedData,
+            })
+        } else {
+            form.resetFields(undefined)
+        }
+        const controller = new AbortController();
+        axiosClient(SYSTEMSETTINGS.HRSETTINGS.BENEFITS.LISTS, { signal: controller.signal })
+            .then((res) => {
+                setLists(res?.data ?? [])
+            })
 
-    //         form.setFieldsValue({
-    //             ...selectedData,
-    //             date: date
-    //         })
-    //     } else {
-    //         form.resetFields(undefined)
-    //     }
-    // }, [selectedData])
+        return () => {
+            controller.abort()
+        }
+    }, [selectedData])
 
     function onFinish(values: Record<string, string>) {
         let { date, description, ...restValues } = values
-        // let [start_date, end_date] = date
-        // start_date = dayjs(start_date).format('YYYY/MM/DD')
-        // end_date = dayjs(end_date).format('YYYY/MM/DD')
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(EMPLOYEE201.BENEFITS.PUT + employeeId, { ...restValues, id: selectedData.id }) : POST(EMPLOYEE201.BENEFITS.POST, restValues)
+        let result = selectedData ? PUT(EMPLOYEE201.BENEFITS.PUT + employeeId, { ...restValues, id: selectedData.id }) : POST(EMPLOYEE201.BENEFITS.POST, { ...restValues, user_id: employeeId })
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -142,11 +146,19 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
         <Form form={form} onFinish={onFinish} >
             <Item
                 label="Benefit"
-                name="benefit"
+                name="benefit_id"
                 required
                 rules={[{ required: true, message: '' }]}
+            ><Select
+                placeholder='Select Benefit'
+                allowClear
+                showSearch
+                optionFilterProp="children"
             >
-                <Input placeholder='Enter benefit...' />
+                    {lists.map((benefit) => (
+                        <Select.Option value={benefit.id} key={benefit.id}>{benefit.name}</Select.Option>
+                    ))}
+                </Select>
             </Item>
             <Item
                 label="Amount"
@@ -156,17 +168,6 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
             >
                 <Input type='number' placeholder='Enter amount...' />
             </Item>
-            {/* <Item
-                label="Start and End Date"
-                name="date"
-                required
-                rules={[{ required: true, message: 'Please select date!' }]}
-            >
-                <DatePicker
-                    style={{ width: '100%' }}
-                    format='YYYY/MM/DD'
-                />
-            </Item> */}
             <Item
                 label="Status"
                 name="status"

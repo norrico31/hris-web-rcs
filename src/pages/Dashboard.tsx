@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton } from 'antd'
 import { renderTitle } from "../shared/utils/utilities"
@@ -13,9 +13,11 @@ export default function Dashboard() {
     renderTitle('Dashboard')
     const { user, loading } = useAuthContext()
     const codes = filterCodes(user?.role?.permissions)
+
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
     if (loading) return <Skeleton />
-    if (!loading && !codes['a01']) return <Navigate to={'/' + paths[0]} />
+    if (!loading && !codes['a01']) return <Navigate to={'/' + !paths.length ? '/profile' : paths[0]} />
+
     return (
         <Card title='Dashboard'>
             <Divider />

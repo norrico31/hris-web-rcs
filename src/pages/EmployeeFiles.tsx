@@ -1,6 +1,6 @@
-import { useState, useEffect, ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Steps, Row, Col, Divider } from 'antd'
+import { useState, useEffect, ReactNode, useMemo } from 'react'
+import { useNavigate, Navigate } from 'react-router-dom'
+import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Steps, Row, Col, Divider, Skeleton } from 'antd'
 import { LoadingOutlined, UserOutlined, CreditCardOutlined, UsergroupAddOutlined } from '@ant-design/icons'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
@@ -9,8 +9,11 @@ import { Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useEndpoints } from './../shared/constants/endpoints'
 import axiosClient, { useAxios } from './../shared/lib/axios'
-import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates, ILineManager } from '../shared/interfaces'
+import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates, ILineManager, ITeam } from '../shared/interfaces'
 import useMessage from 'antd/es/message/useMessage'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
+import { rootPaths } from '../shared/constants'
+import { useAuthContext } from '../shared/contexts/Auth'
 
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
 const { GET, POST, DELETE } = useAxios()
@@ -18,7 +21,7 @@ const { GET, POST, DELETE } = useAxios()
 export default function EmployeeFiles() {
     renderTitle('Employee')
     const navigate = useNavigate()
-
+    const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<IEmployee[]>([])
     const [selectedData, setSelectedData] = useState<IEmployee | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -33,6 +36,11 @@ export default function EmployeeFiles() {
             controller.abort()
         }
     }, [])
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && ['g01', 'g02', 'g03', 'g04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<IEmployee> = [
         {
@@ -278,6 +286,7 @@ interface IStepOne {
     manager_id: string | null
     date_hired: string | Dayjs | null
     resignation_date: string | Dayjs | null
+    team_id: string
 }
 
 interface IStepOneProps {
@@ -288,18 +297,21 @@ interface IStepOneProps {
 
 function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     const [form] = useForm<IStepOne>()
-
-    useEffect(() => {
-        if (stepOneInputs) form.setFieldsValue({ ...stepOneInputs })
-    }, [stepOneInputs])
-
     const [lists, setLists] = useState<{ employeeStatus: IEmployeeStatus[]; positions: IPosition[]; roles: IRole[]; lineManagers: ILineManager[]; departments: IDepartment[] }>({
         employeeStatus: [],
         positions: [],
         roles: [],
         lineManagers: [],
-        departments: []
+        departments: [],
+        // teams: []
     })
+    const [departmentId, setDepartmentId] = useState('')
+    const [teams, setTeams] = useState<ITeam[]>([])
+
+    useEffect(() => {
+        if (stepOneInputs) form.setFieldsValue({ ...stepOneInputs })
+    }, [stepOneInputs])
+
 
     useEffect(() => {
         const controller = new AbortController();
@@ -310,13 +322,15 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 const rolesPromise = axiosClient(ADMINSETTINGS.ROLES.LISTS, { signal: controller.signal })
                 const lineManagerPromise = axiosClient(ADMINSETTINGS.ROLES.LINEMANAGERS, { signal: controller.signal })
                 const departmentPromise = axiosClient(HRSETTINGS.DEPARTMENT.LISTS, { signal: controller.signal })
-                const [employeeStatusRes, positionsRes, rolesRes, lineManagerRes, departmentRes] = await Promise.allSettled([employeeStatusPromise, positionsPromise, rolesPromise, lineManagerPromise, departmentPromise]) as any
+                const teamPromise = axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
+                const [employeeStatusRes, positionsRes, rolesRes, lineManagerRes, departmentRes, teamRes] = await Promise.allSettled([employeeStatusPromise, positionsPromise, rolesPromise, lineManagerPromise, departmentPromise, teamPromise]) as any
                 setLists({
                     employeeStatus: employeeStatusRes?.value?.data ?? [],
                     positions: positionsRes?.value?.data ?? [],
                     roles: rolesRes?.value?.data ?? [],
                     lineManagers: lineManagerRes?.value?.data ?? [],
                     departments: departmentRes?.value?.data ?? [],
+                    // teams: teamRes?.value?.data ?? [],
                 })
             } catch (error) {
                 console.error('error fetching clients: ', error)
@@ -326,6 +340,18 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
             controller.abort()
         }
     }, [])
+
+    async function onChange(id: string) {
+        setDepartmentId(id)
+        try {
+            if (id == null || id == undefined || id == '') return
+            const res = await axiosClient.get(HRSETTINGS.TEAMS.LISTS + '?department_id=' + id)
+            setTeams(res?.data ?? [])
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    }
+
 
     function onFinish(values: Record<string, any>) {
         setStepOneInputs(formValues(values) as IStepOne)
@@ -432,23 +458,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     </Select>
                 </FormItem>
                 <FormItem
-                    label="Department"
-                    name="department_id"
-                    required
-                    rules={[{ required: true, message: '' }]}
-                >
-                    <Select
-                        placeholder='Select department...'
-                        allowClear
-                        showSearch
-                        optionFilterProp="children"
-                    >
-                        {lists?.departments.map((dep) => (
-                            <Select.Option value={dep.id} key={dep.id} style={{ color: '#777777' }}>{dep.name}</Select.Option>
-                        ))}
-                    </Select>
-                </FormItem>
-                <FormItem
                     label="Position"
                     name="position_id"
                 >
@@ -460,6 +469,43 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     >
                         {lists?.positions.map((pos) => (
                             <Select.Option value={pos.id} key={pos.id} style={{ color: '#777777' }}>{pos.name}</Select.Option>
+                        ))}
+                    </Select>
+                </FormItem>
+                <FormItem
+                    label="Department"
+                    name="department_id"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+                    <Select
+                        placeholder='Select department...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
+                        value={departmentId}
+                        onChange={onChange}
+                    >
+                        {lists?.departments.map((dep) => (
+                            <Select.Option value={dep.id} key={dep.id} style={{ color: '#777777' }}>{dep.name}</Select.Option>
+                        ))}
+                    </Select>
+                </FormItem>
+                <FormItem
+                    label="Team"
+                    name="team_id"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+                    <Select
+                        placeholder='Select team...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
+                        disabled={!teams.length}
+                    >
+                        {teams.map((team) => (
+                            <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
                         ))}
                     </Select>
                 </FormItem>
@@ -485,6 +531,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 <FormItem
                     label="Line Manager"
                     name="manager_id"
+                    required
+                    rules={[{ required: true, message: '' }]}
                 >
                     <Select
                         placeholder='Select line manager...'

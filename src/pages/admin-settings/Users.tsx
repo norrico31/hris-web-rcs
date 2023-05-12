@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../components"
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
-import { IArguments, IUser, UserRes, TableParams, IRole, IDepartment } from '../../shared/interfaces'
+import { IArguments, IUser, UserRes, TableParams, IRole, IDepartment, ILineManager } from '../../shared/interfaces'
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
@@ -165,7 +165,15 @@ const { Item: FormItem, useForm } = AntDForm
 function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(false)
-    const [lists, setLists] = useState<{ roles: IRole[]; departments: IDepartment[] }>({ roles: [], departments: [] })
+    const [roleId, setRoleId] = useState('')
+    const [lists, setLists] = useState<{ roles: IRole[]; departments: IDepartment[]; manager: ILineManager[] }>({ roles: [], departments: [], manager: [] })
+
+    const isManagerRole = useMemo(() => {
+        const managers: Record<string, IRole> = lists?.roles.reduce((roles, role) => ({ ...roles, [role.id]: role }), {})
+        return managers[roleId]?.name.toLocaleLowerCase()
+    }, [roleId])
+
+    console.log(isManagerRole)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -174,20 +182,17 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
             form.resetFields(undefined)
         }
         const controller = new AbortController();
-        (() => {
-            const rolePromise = axiosClient(ADMINSETTINGS.ROLES.LISTS, { signal: controller.signal })
-            const departmentPromise = axiosClient(HRSETTINGS.DEPARTMENT.LISTS, { signal: controller.signal })
-            Promise.allSettled([rolePromise, departmentPromise])
-                .then(([roleRes, departRes]) => {
-                    setLists({
-                        roles: roleRes?.status == 'fulfilled' ? roleRes?.value?.data : [],
-                        departments: departRes?.status == 'fulfilled' ? departRes?.value?.data : [],
-                    })
+        const rolePromise = axiosClient(ADMINSETTINGS.ROLES.LISTS, { signal: controller.signal })
+        const departmentPromise = axiosClient(HRSETTINGS.DEPARTMENT.LISTS, { signal: controller.signal })
+        const lineManagerPromise = axiosClient(ADMINSETTINGS.ROLES.LINEMANAGERS, { signal: controller.signal })
+        Promise.allSettled([rolePromise, departmentPromise, lineManagerPromise])
+            .then(([roleRes, departRes, managerRes]) => {
+                setLists({
+                    roles: roleRes?.status == 'fulfilled' ? roleRes?.value?.data : [],
+                    departments: departRes?.status == 'fulfilled' ? departRes?.value?.data : [],
+                    manager: managerRes?.status == 'fulfilled' ? managerRes?.value?.data : [],
                 })
-        })()
-        // .then((res) => {
-        //     setRoles(res?.data ?? [])
-        // });
+            })
         return () => {
             controller.abort()
         }
@@ -250,12 +255,33 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                     allowClear
                     showSearch
                     placeholder='Select a Role'
+                    value={roleId}
+                    onChange={setRoleId}
                 >
                     {lists.roles.map((role) => (
                         <Select.Option key={role?.id} value={role?.id}>{role?.name}</Select.Option>
                     ))}
                 </Select>
             </FormItem>
+            {isManagerRole == 'line manager' && (
+                <FormItem
+                    label="Manager"
+                    name="manager_id"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+                    <Select
+                        placeholder='Select line manager...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
+                    >
+                        {lists?.manager.map((manager) => (
+                            <Select.Option value={manager.id} key={manager.id} style={{ color: '#777777' }}>{manager.full_name}</Select.Option>
+                        ))}
+                    </Select>
+                </FormItem>
+            )}
             <FormItem
                 label="Department"
                 name="department_id"

@@ -1,16 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Button, Col, Form as AntDForm, Modal, Space, Input, DatePicker, Tabs as AntDTabs, Card as AntDCard, Typography, Select } from 'antd'
-import { Form, Card, TabHeader, Table } from '../components'
-import { AiOutlineCalendar } from 'react-icons/ai'
+import { useState, useEffect, useMemo } from 'react'
+import { Navigate } from 'react-router-dom'
+import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Card as AntDCard, Typography, Select, Skeleton, Row, Col, TimePicker } from 'antd'
 import dayjs from 'dayjs'
+import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
+import { AiOutlineCalendar } from 'react-icons/ai'
+import { Form, Card, TabHeader, Table } from '../components'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import styled from 'styled-components'
 import { firstLetterCapitalize, renderTitle } from '../shared/utils/utilities'
 import axiosClient, { useAxios } from '../shared/lib/axios'
-import { useEndpoints } from '../shared/constants'
+import { rootPaths, useEndpoints } from '../shared/constants'
 import { IArguments, ILeave, ILeaveDuration, ILeaveType, LeaveRes, TableParams } from '../shared/interfaces'
-import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { useAuthContext } from '../shared/contexts/Auth';
+import { useAuthContext } from '../shared/contexts/Auth'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 
 
 const { GET, POST, PUT, DELETE } = useAxios()
@@ -20,10 +21,11 @@ dayjs.extend(localizedFormat)
 
 export default function Leave() {
     renderTitle('Leave')
-    const { user } = useAuthContext()
+    const { user, loading: loadingUser } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [leaveType, setLeaveType] = useState('all')
     const [data, setData] = useState<ILeave[]>([])
+    const [selectedData, setSelectedData] = useState<ILeave | undefined>(undefined)
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -35,6 +37,11 @@ export default function Leave() {
             controller.abort()
         }
     }, [])
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<ILeave> = [
         {
@@ -48,7 +55,8 @@ export default function Leave() {
             key: 'leave_type',
             dataIndex: 'leave_type',
             width: 120,
-            render: (_, record) => record.leave_type?.name
+            render: (_, record) => record.leave_type?.name ?? '-',
+            align: 'center'
         },
         {
             title: 'Date Start',
@@ -92,12 +100,14 @@ export default function Leave() {
         width: 150
     })
 
-    const fetchData = ({ type, args }: { args?: IArguments; type?: string }) => {
+    function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
         // TODO
-        let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false'
+        // let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false'
+        let isManager: 'false'
         const status = (type !== 'all') ? `&status=${type}` : ''
-        const url = LEAVES.GET + isManager + status
+        // const url = LEAVES.GET + isManager + status
+        const url = LEAVES.GET + 'false' + status
         GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -167,6 +177,8 @@ export default function Leave() {
                 </Card>
             </AntDCard>
             <LeaveModal
+                leaveType={leaveType}
+                fetchData={fetchData}
                 isModalOpen={isModalOpen}
                 handleCancel={() => setIsModalOpen(false)}
             />
@@ -176,16 +188,27 @@ export default function Leave() {
 
 
 type ModalProps = {
+    leaveType: string
+    fetchData({ type, args }: {
+        args?: IArguments | undefined;
+        type?: string | undefined;
+    }): void
+    selectedData?: ILeave
     isModalOpen: boolean
     handleCancel: () => void
 }
 const { Item: FormItem, useForm } = AntDForm
 
-function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
+function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<ILeave>()
+    const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<{ leaveTypes: ILeaveType[]; leaveDurations: ILeaveDuration[] }>({ leaveTypes: [], leaveDurations: [] })
 
     useEffect(() => {
+        if (selectedData) {
+            form.setFieldsValue({ ...selectedData })
+        } else form.resetFields()
+
         const controller = new AbortController();
         (async () => {
             try {
@@ -203,23 +226,33 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [selectedData])
 
-    function onFinish(values: ILeave) {
-        // payload (name: loginUser.name, leave_status: 'PENDING')
-
-        // if success
-        alert('create not yet done')
+    function onFinish({ date_end, date_start, ...restProps }: ILeave) {
         // let { date, description, ...restProps } = values
-        // date = dayjs(date, 'YYYY/MM/DD') as any
-        // restProps = { ...restProps, date, ...(description != undefined && { description }) } as any
-        // console.log(restProps)
-        // form.resetFields()
-        // handleCancel()
+        date_start = dayjs(date_start).format('YYYY/MM/DD') as any
+        date_end = dayjs(date_end).format('YYYY/MM/DD') as any
+        restProps = { ...restProps, date_start, date_end } as any
+        let result = selectedData ? PUT(LEAVES.PUT + selectedData?.id, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(() => {
+            fetchData({ type: leaveType })
+            setLoading(false)
+        })
     }
 
     return <Modal title='Request a Leave' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
+            {/* <FormItem
+                label="Leave Name"
+                name="name"
+                required
+                rules={[{ required: true, message: '' }]}
+            >
+                <Input type='text' placeholder='Enter Leave Name' />
+            </FormItem> */}
             <FormItem
                 label="Leave Type"
                 name="leave_type_id"
@@ -228,7 +261,7 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
             >
                 <Select placeholder='Select leave type...' optionFilterProp="children" allowClear showSearch>
                     {lists.leaveTypes.map((leave) => (
-                        <Select.Option value={leave.id} key={leave.id} style={{ color: '#777777' }}>{leave.name}</Select.Option>
+                        <Select.Option value={leave.id} key={leave.id} style={{ color: '#777777' }}>{leave?.type}</Select.Option>
                     ))}
                 </Select>
             </FormItem>
@@ -244,28 +277,50 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
                     ))}
                 </Select>
             </FormItem>
-            <FormItem
-                label="Start Date"
-                name="start_date"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <DatePicker
-                    format='YYYY/MM/DD'
-                    style={{ width: '100%' }}
-                />
-            </FormItem>
-            <FormItem
-                label="End Date"
-                name="end_date"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <DatePicker
-                    format='YYYY/MM/DD'
-                    style={{ width: '100%' }}
-                />
-            </FormItem>
+            <Row justify='space-around'>
+                <FormItem
+                    label="Start Date"
+                    name="start_date"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+                    <DatePicker
+                        format='YYYY/MM/DD'
+                        style={{ width: '100%' }}
+                    />
+                </FormItem>
+                <FormItem
+                    label="End Date"
+                    name="end_date"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+                    <DatePicker
+                        format='YYYY/MM/DD'
+                        style={{ width: '100%' }}
+                    />
+                </FormItem>
+            </Row>
+            <Row justify='space-around'>
+                <FormItem
+                    label="Start Time"
+                    name="time_start"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+
+                    <TimePicker defaultOpenValue={dayjs('00:00:00', 'HH:mm:ss')} />
+                </FormItem>
+                <FormItem
+                    label="End Time"
+                    name="time_end"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+
+                    <TimePicker defaultOpenValue={dayjs('00:00:00', 'HH:mm:ss')} />
+                </FormItem>
+            </Row>
             <FormItem
                 label="Reason"
                 name="reason"
@@ -274,12 +329,20 @@ function LeaveModal({ isModalOpen, handleCancel }: ModalProps) {
             >
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>
+            {/* <FormItem
+                label="Description"
+                name="description"
+                required
+                rules={[{ required: true, message: '' }]}
+            >
+                <Input.TextArea placeholder='Enter description...' />
+            </FormItem> */}
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         Submit Request
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

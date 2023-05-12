@@ -16,7 +16,6 @@ export default function Profile() {
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(false)
     const { user } = useAuthContext()
-    console.log(user)
 
     useEffect(() => {
         form.setFieldsValue({ ...user })
