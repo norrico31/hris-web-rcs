@@ -131,13 +131,13 @@ export const salaryAdjustmentsPaths = {
 
 export const rootPaths = {
     'a01': 'dashboard',
-    'b01': 'timekeeping',
     'd01': 'announcements',
     'd02': 'announcements',
     'd03': 'announcements',
     'd04': 'announcements',
-    ...employeeFilesPaths,
     ...tasksPaths,
+    'b01': 'timekeeping',
+    ...employeeFilesPaths,
     ...leavesPaths,
     ...salaryAdjustmentsPaths,
 }

@@ -41,7 +41,7 @@ export default function Profile() {
                             label="First Name"
                             name="first_name"
                         >
-                            <Input placeholder='Enter first name...' />
+                            <Input placeholder='Enter first name...' disabled />
                         </Item>
                     </Col>
                     <Col xs={24} sm={24} md={11} lg={10} xl={10} >
@@ -49,7 +49,7 @@ export default function Profile() {
                             label="Last Name"
                             name="last_name"
                         >
-                            <Input placeholder='Enter last name...' />
+                            <Input placeholder='Enter last name...' disabled />
                         </Item>
                     </Col>
                     <Col xs={24} sm={24} md={11} lg={10} xl={10} >
@@ -57,7 +57,7 @@ export default function Profile() {
                             label="Middle Name"
                             name="middle_name"
                         >
-                            <Input placeholder='Enter middle name...' />
+                            <Input placeholder='Enter middle name...' disabled />
                         </Item>
                     </Col>
                     <Col xs={24} sm={24} md={11} lg={10} xl={10} >
@@ -65,7 +65,7 @@ export default function Profile() {
                             label="Email"
                             name="email"
                         >
-                            <Input type='email' placeholder='Enter email...' />
+                            <Input type='email' placeholder='Enter email...' disabled />
                         </Item>
                     </Col>
                     <Col xs={24} sm={24} md={11} lg={10} xl={10} >
@@ -73,7 +73,7 @@ export default function Profile() {
                             label="Department"
                             name="department_name" // to be change
                         >
-                            <Input placeholder='Enter department...' />
+                            <Input placeholder='Enter department...' disabled />
                         </Item>
                     </Col>
                     <Col xs={24} sm={24} md={11} lg={10} xl={10} >
@@ -81,34 +81,27 @@ export default function Profile() {
                             label="Position"
                             name="position_name" // to be change
                         >
-                            <Input placeholder='Enter position...' />
+                            <Input placeholder='Enter position...' disabled />
                         </Item>
                     </Col>
-                    <Col xs={24} sm={24} md={11} lg={10} xl={10} >
-                        <Item
-                            label="Username"
-                            name="username" // to be change
-                        >
-                            <Input disabled />
-                        </Item>
-                    </Col>
+
                 </Row>
 
-                
+
                 <Row justify="space-between">
                     <Col xs={24} sm={24} md={7} lg={7} xl={7}>
                         <Item label="Current Password" name="current_password">
-                        <Input type="password" placeholder="Current password" />
+                            <Input type="password" placeholder="Current password" />
                         </Item>
                     </Col>
                     <Col xs={24} sm={24} md={7} lg={7} xl={7}>
                         <Item label="New Password" name="password">
-                        <Input type="password" placeholder="New password" />
+                            <Input type="password" placeholder="New password" />
                         </Item>
                     </Col>
                     <Col xs={24} sm={24} md={7} lg={7} xl={7}>
                         <Item label="Confirm Password" name="password_confirmation">
-                        <Input type="password" placeholder="Confirm password" />
+                            <Input type="password" placeholder="Confirm password" />
                         </Item>
                     </Col>
                 </Row>
