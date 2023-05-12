@@ -55,9 +55,7 @@ export default function Layout() {
         setBreakpoint(!breakpoint)
     }
 
-    function handleSelect() {
-        return breakpoint && setCollapsed(true)
-    }
+    const handleSelect = () => breakpoint && setCollapsed(true)
 
     return (
         <StyledLayout style={{ minHeight: '95vh' }}>

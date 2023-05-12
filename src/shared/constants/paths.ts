@@ -100,3 +100,55 @@ export const adminSettingsPaths = {
     'id03': 'systemlogs',
     'id04': 'systemlogs',
 }
+
+export const employeeFilesPaths = {
+    'g01': 'employee',
+    'g02': 'employee',
+    'g03': 'employee',
+    'g04': 'employee',
+}
+
+export const tasksPaths = {
+    'e01': 'tasks',
+    'e02': 'tasks',
+    'e03': 'tasks',
+    'e04': 'tasks',
+}
+
+export const leavesPaths = {
+    'c01': 'leave',
+    'c02': 'leave',
+    'c03': 'leave',
+    'c04': 'leave',
+}
+
+export const salaryAdjustmentsPaths = {
+    'h01': 'salaryadjustments',
+    'h02': 'salaryadjustments',
+    'h03': 'salaryadjustments',
+    'h04': 'salaryadjustments',
+}
+
+export const rootPaths = {
+    'a01': 'dashboard',
+    'b01': 'timekeeping',
+    'd01': 'announcements',
+    'd02': 'announcements',
+    'd03': 'announcements',
+    'd04': 'announcements',
+    ...employeeFilesPaths,
+    ...tasksPaths,
+    ...leavesPaths,
+    ...salaryAdjustmentsPaths,
+}
+
+export const allPaths = {
+    ...taskSettingsPaths,
+    ...hrSettingsPaths,
+    ...clientSettingsPaths,
+    ...adminSettingsPaths,
+    ...employeeFilesPaths,
+    ...tasksPaths,
+    ...leavesPaths,
+    ...salaryAdjustmentsPaths,
+}

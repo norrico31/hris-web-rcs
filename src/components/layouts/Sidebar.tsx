@@ -1,19 +1,18 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { MenuProps, Menu as AntdMenu, Skeleton } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit, AiOutlineUser } from 'react-icons/ai'
-import { MdAdminPanelSettings, MdLockOutline } from 'react-icons/md'
+import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit } from 'react-icons/ai'
+import { MdAdminPanelSettings } from 'react-icons/md'
 import { FaTasks, FaCriticalRole, FaUsersCog, FaUsers } from 'react-icons/fa'
 import { GiHumanPyramid } from 'react-icons/gi'
 import { BiTimeFive, BiTimer } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
 import { TfiAnnouncement } from 'react-icons/tfi'
-import { GoIssueOpened } from 'react-icons/go'
 import { useAuthContext } from '../../shared/contexts/Auth'
-import { IPermissions, IRolePermission, IUser } from '../../shared/interfaces'
-import { adminSettingsPaths, clientSettingsPaths, hrSettingsPaths, taskSettingsPaths } from '../../shared/constants'
+import { IRolePermission, IUser } from '../../shared/interfaces'
+import { adminSettingsPaths, clientSettingsPaths, hrSettingsPaths, rootPaths, taskSettingsPaths } from '../../shared/constants'
 
 type Props = {
     onSelect: () => void
@@ -80,44 +79,47 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 function filterMenu(user: IUser) {
     const modules = user?.role?.permissions ?? []
-    const modulesName: Record<string, IRolePermission[]> = {}
-    for (let i = 0; i < modules?.length; i++) {
-        if (!modulesName[modules[i].code]) modulesName[modules[i].code] = []
-        modulesName[modules[i].code].push(modules[i])
-    }
-    const taskPaths = filterPaths(user?.role?.permissions!, taskSettingsPaths)
+    const moduleCodes = filterCodes(modules)
+    const rootPath = filterPaths(user?.role?.permissions!, rootPaths)
+    const taskSystemSettingsPaths = filterPaths(user?.role?.permissions!, taskSettingsPaths)
     const hrPaths = filterPaths(user?.role?.permissions!, hrSettingsPaths)
     const clientPaths = filterPaths(user?.role?.permissions!, clientSettingsPaths)
     const adminPaths = filterPaths(user?.role?.permissions!, adminSettingsPaths)
-
     return [
         getItemLinks(
             <Link to='/dashboard' id="dashboard">Dashboard</Link>,
             '/dashboard',
             <AiFillAppstore />,
             undefined,
-            !!modulesName['A01']
+            rootPath.includes('dashboard')
         ),
         getItemLinks(
             <Link to='/announcements' id="announcements">Announcements</Link>,
             '/announcements',
             <TfiAnnouncement />,
             undefined,
-            !!modulesName['D01']
+            rootPath.includes('announcements')
         ),
         getItemLinks(
             <Link to='/timekeeping' id='timekeeping'>Timekeeping</Link>,
             '/timekeeping',
             <BiTimeFive />,
             undefined,
-            !!modulesName['B01']
+            rootPath.includes('timekeeping')
         ),
         getItemLinks(
             <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,
             '/whosinout',
             <BiTimer />,
             undefined,
-            !!modulesName['B01']
+            rootPath.includes('timekeeping')
+        ),
+        getItemLinks(
+            <Link to='/tasks'>Tasks</Link>,
+            '/tasks',
+            <FaTasks />,
+            undefined,
+            rootPath.includes('tasks')
         ),
         getItemLinks(
             'System Settings',
@@ -125,11 +127,11 @@ function filterMenu(user: IUser) {
             <AiOutlineSetting />,
             [
                 getItemLinks(
-                    <Link to={`/systemsettings/tasksettings/${taskPaths[0]}`}>Tasks</Link>,
+                    <Link to={`/systemsettings/tasksettings/${taskSystemSettingsPaths[0]}`}>Task Management</Link>,
                     '/systemsettings/tasksettings/activities',
                     <FaTasks />,
                     undefined,
-                    taskPaths.includes('activities') || taskPaths.includes('types') || taskPaths.includes('sprints')
+                    taskSystemSettingsPaths.includes('activities') || taskSystemSettingsPaths.includes('types') || taskSystemSettingsPaths.includes('sprints')
                 ),
                 getItemLinks(
                     <Link to={`/systemsettings/hrsettings/${hrPaths[0]}`}>Human Resources</Link>,
@@ -150,10 +152,10 @@ function filterMenu(user: IUser) {
                     '/systemsettings/expensesettings/expensetype',
                     <SiExpensify />,
                     undefined,
-                    !!modulesName['KO01']
+                    !!moduleCodes['KO01']
                 ),
             ],
-            taskPaths.includes('activities') || taskPaths.includes('types') || taskPaths.includes('sprints') || hrPaths.includes('bankdetails') || hrPaths.includes('benefits') || hrPaths.includes('holidays') || hrPaths.includes('holidaytypes') || hrPaths.includes('dailyrates') || hrPaths.includes('employmentstatuses') || hrPaths.includes('departments') || hrPaths.includes('team') || hrPaths.includes('positions') || hrPaths.includes('leavestatuses') || hrPaths.includes('leavedurations') || hrPaths.includes('leavetypes') || hrPaths.includes('salaries') || hrPaths.includes('schedules') || clientPaths.includes('clients') || clientPaths.includes('clientbranches') || clientPaths.includes('clientadjustments') || !!modulesName['KO01'],
+            taskSystemSettingsPaths.includes('activities') || taskSystemSettingsPaths.includes('types') || taskSystemSettingsPaths.includes('sprints') || hrPaths.includes('bankdetails') || hrPaths.includes('benefits') || hrPaths.includes('holidays') || hrPaths.includes('holidaytypes') || hrPaths.includes('dailyrates') || hrPaths.includes('employmentstatuses') || hrPaths.includes('departments') || hrPaths.includes('team') || hrPaths.includes('positions') || hrPaths.includes('leavestatuses') || hrPaths.includes('leavedurations') || hrPaths.includes('leavetypes') || hrPaths.includes('salaries') || hrPaths.includes('schedules') || clientPaths.includes('clients') || clientPaths.includes('clientbranches') || clientPaths.includes('clientadjustments') || !!moduleCodes['KO01'],
         ),
         getItemLinks(
             'Admin Settings',
@@ -196,28 +198,22 @@ function filterMenu(user: IUser) {
             '/employee',
             <FaUsersCog />,
             undefined,
-            !!modulesName['G01'] || !!modulesName['G02'] || !!modulesName['G03'] || !!modulesName['G04']
+            rootPath.includes('employee')
         ),
-        getItemLinks(
-            <Link to='/tasks'>Tasks</Link>,
-            '/tasks',
-            <FaTasks />,
-            undefined,
-            !!modulesName['E01'] || !!modulesName['E02'] || !!modulesName['E03'] || !!modulesName['E04']
-        ),
+
         getItemLinks(
             <Link to='/leave'>Leave</Link>,
             '/leave',
             <AiOutlineCalendar />,
             undefined,
-            !!modulesName['C01'] || !!modulesName['C02'] || !!modulesName['C03'] || !!modulesName['C04']
+            rootPath.includes('leave')
         ),
         getItemLinks(
             <Link to='/salaryadjustments'>Salary Adjustments</Link>,
             '/salaryadjustments',
             <AiOutlineDollarCircle />,
             undefined,
-            !!modulesName['H01'] || !!modulesName['H02'] || !!modulesName['H03'] || !!modulesName['H04']
+            rootPath.includes('salaryadjustments')
         ),
         getItemLinks(
             <Link to='/profile'>Profile</Link>,
@@ -252,4 +248,13 @@ export function filterPaths(permissions: IRolePermission[], paths: Record<string
         if (paths[code]) filteredPaths[paths[code]] = paths[code]
     })
     return Object.values(filteredPaths)
+}
+
+export function filterCodes(modules: IRolePermission[] = []) {
+    const moduleCodes: Record<string, IRolePermission[]> = {}
+    for (let i = 0; i < modules?.length; i++) {
+        if (!moduleCodes[modules[i].code.toLocaleLowerCase()]) moduleCodes[modules[i].code.toLocaleLowerCase()] = []
+        moduleCodes[modules[i].code.toLocaleLowerCase()].push(modules[i])
+    }
+    return moduleCodes
 }

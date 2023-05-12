@@ -11,36 +11,34 @@ export default function TasksSettings() {
     const { user, loading } = useAuthContext()
     const navigate = useNavigate()
     let { pathname } = useLocation()
+    const taskPaths = useMemo(() => filterPaths(user?.role?.permissions!, taskSettingsPaths), [user?.role?.permissions])
 
-    const items = useMemo(() => {
-        const taskPaths = useMemo(() => filterPaths(user?.role?.permissions!, taskSettingsPaths), [user?.role?.permissions])
-        return [
-            (taskPaths.includes('activities') && {
-                label: 'Task Activities',
-                key: '/tasksettings/activities',
-            }),
-            (taskPaths.includes('types') && {
-                label: 'Task Types',
-                key: '/tasksettings/types',
-            }),
-            (taskPaths.includes('sprints') && {
-                label: 'Sprints',
-                key: '/tasksettings/sprints',
-            }),
-        ].map((mod) => {
-            if (mod) return {
-                label: mod?.label,
-                key: mod?.key,
-                children: <Outlet />
-            }
-        }) ?? []
-    }, [user, loading])
+    const items = [
+        (taskPaths.includes('activities') && {
+            label: 'Task Activities',
+            key: '/tasksettings/activities',
+        }),
+        (taskPaths.includes('types') && {
+            label: 'Task Types',
+            key: '/tasksettings/types',
+        }),
+        (taskPaths.includes('sprints') && {
+            label: 'Sprints',
+            key: '/tasksettings/sprints',
+        }),
+    ].map((mod) => {
+        if (mod) return {
+            label: mod?.label,
+            key: mod?.key,
+            children: <Outlet />
+        }
+    })
 
     const activeKey = pathname.slice(15, pathname.length)
     const onChange = (key: string) => navigate('/systemsettings' + key)
 
     return loading ? <Skeleton /> : <Tabs
-        title='Tasks Settings'
+        title='Task Management'
         activeKey={activeKey}
         onChange={onChange}
         items={items as any}

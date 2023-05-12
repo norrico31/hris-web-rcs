@@ -1,37 +1,21 @@
-import { useState } from 'react'
-import { Col, Row, Card as AntDCard, Typography, Calendar } from 'antd'
+import { useState, useMemo } from 'react'
+import { Navigate } from 'react-router-dom'
+import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton } from 'antd'
 import { renderTitle } from "../shared/utils/utilities"
 import { Card, Divider } from '../components'
 import { useAuthContext } from '../shared/contexts/Auth'
-
-const infos = [
-    {
-        id: '1',
-        name: 'norrico',
-        surname: 'biason'
-    },
-    {
-        id: '2',
-        name: 'gerald',
-        surname: 'mendones'
-    },
-    {
-        id: '3',
-        name: 'jasper',
-        surname: 'mendones'
-    },
-]
+import { rootPaths } from '../shared/constants'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 
 const { Paragraph, Title } = Typography
 
 export default function Dashboard() {
     renderTitle('Dashboard')
-    const { user } = useAuthContext()
-    const [dataList, setDataList] = useState(infos)
-    const [selectedId, setSelectedId] = useState('')
-    const [name, setName] = useState('')
-    const selectedUser: { [k: string]: string } = dataList.reduce((users, user) => ({ ...users, [user.id]: user }), {})
-    console.log(user?.role?.permissions)
+    const { user, loading } = useAuthContext()
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    if (loading) return <Skeleton />
+    if (!loading && !codes['a01']) return <Navigate to={'/' + paths[0]} />
     return (
         <Card title='Dashboard'>
             <Divider />
@@ -41,7 +25,6 @@ export default function Dashboard() {
                         hoverable
                         style={{ width: 400 }}
                     // cover={}
-
                     >
                         <Title level={3}>Bailon, Christian</Title>
                         <Paragraph>Operations Department</Paragraph>

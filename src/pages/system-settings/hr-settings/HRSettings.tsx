@@ -15,72 +15,70 @@ export default function HRSettings() {
     // TODO
     // if (!loading && !hrPaths.length) return <Navigate  to=''/>
 
-    const items = useMemo(() => {
-        return [
-            !loading && hrPaths.includes('bankdetails') && {
-                label: 'Bank Details',
-                key: '/hrsettings/bankdetails',
-            },
-            !loading && hrPaths.includes('benefits') && {
-                label: 'Benefits',
-                key: '/hrsettings/benefits',
-            },
-            !loading && hrPaths.includes('holidays') && {
-                label: 'Holidays',
-                key: '/hrsettings/holidays',
-            },
-            !loading && hrPaths.includes('holidaytypes') && {
-                label: 'Holiday Types',
-                key: '/hrsettings/holidaytypes',
-            },
-            !loading && hrPaths.includes('dailyrates') && {
-                label: 'Daily Rates',
-                key: '/hrsettings/dailyrates',
-            },
-            !loading && hrPaths.includes('employmentstatuses') && {
-                label: 'Employee Statuses',
-                key: '/hrsettings/employmentstatuses',
-            },
-            !loading && hrPaths.includes('departments') && {
-                label: 'Departments',
-                key: '/hrsettings/departments',
-            },
-            !loading && hrPaths.includes('teams') && {
-                label: 'Teams',
-                key: '/hrsettings/teams',
-            },
-            !loading && hrPaths.includes('positions') && {
-                label: 'Positions',
-                key: '/hrsettings/positions',
-            },
-            !loading && hrPaths.includes('leavestatuses') && {
-                label: 'Leave Statuses',
-                key: '/hrsettings/leavestatuses',
-            },
-            !loading && hrPaths.includes('leavedurations') && {
-                label: 'Leave Durations',
-                key: '/hrsettings/leavedurations',
-            },
-            !loading && hrPaths.includes('leavetypes') && {
-                label: 'Leave Types',
-                key: '/hrsettings/leavetypes',
-            },
-            !loading && hrPaths.includes('salaries') && {
-                label: 'Salaries',
-                key: '/hrsettings/salaries',
-            },
-            !loading && hrPaths.includes('schedules') && {
-                label: 'Schedules',
-                key: '/hrsettings/schedules',
-            },
-        ].map((paths) => {
-            if (paths) return {
-                label: paths.label,
-                key: paths.key,
-                children: <Outlet />
-            }
-        })
-    }, [user, loading])
+    const items = [
+        !loading && hrPaths.includes('bankdetails') && {
+            label: 'Bank Details',
+            key: '/hrsettings/bankdetails',
+        },
+        !loading && hrPaths.includes('benefits') && {
+            label: 'Benefits',
+            key: '/hrsettings/benefits',
+        },
+        !loading && hrPaths.includes('holidays') && {
+            label: 'Holidays',
+            key: '/hrsettings/holidays',
+        },
+        !loading && hrPaths.includes('holidaytypes') && {
+            label: 'Holiday Types',
+            key: '/hrsettings/holidaytypes',
+        },
+        !loading && hrPaths.includes('dailyrates') && {
+            label: 'Daily Rates',
+            key: '/hrsettings/dailyrates',
+        },
+        !loading && hrPaths.includes('employmentstatuses') && {
+            label: 'Employee Statuses',
+            key: '/hrsettings/employmentstatuses',
+        },
+        !loading && hrPaths.includes('departments') && {
+            label: 'Departments',
+            key: '/hrsettings/departments',
+        },
+        !loading && hrPaths.includes('teams') && {
+            label: 'Teams',
+            key: '/hrsettings/teams',
+        },
+        !loading && hrPaths.includes('positions') && {
+            label: 'Positions',
+            key: '/hrsettings/positions',
+        },
+        !loading && hrPaths.includes('leavestatuses') && {
+            label: 'Leave Statuses',
+            key: '/hrsettings/leavestatuses',
+        },
+        !loading && hrPaths.includes('leavedurations') && {
+            label: 'Leave Durations',
+            key: '/hrsettings/leavedurations',
+        },
+        !loading && hrPaths.includes('leavetypes') && {
+            label: 'Leave Types',
+            key: '/hrsettings/leavetypes',
+        },
+        !loading && hrPaths.includes('salaries') && {
+            label: 'Salaries',
+            key: '/hrsettings/salaries',
+        },
+        !loading && hrPaths.includes('schedules') && {
+            label: 'Schedules',
+            key: '/hrsettings/schedules',
+        },
+    ].map((paths) => {
+        if (paths) return {
+            label: paths.label,
+            key: paths.key,
+            children: <Outlet />
+        }
+    })
 
     const activeKey = pathname.slice(15, pathname.length)
     const onChange = (key: string) => navigate('/systemsettings' + key)
