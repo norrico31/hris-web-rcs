@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Card as AntDCard, Typography, Select, Skeleton, Row, Col, TimePicker } from 'antd'
+import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Card as AntDCard, Typography, Select, Skeleton, Row, Col, TimePicker, Popconfirm } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { AiOutlineCalendar } from 'react-icons/ai'
+import { FcApproval } from 'react-icons/fc'
+import { RxCross2 } from 'react-icons/rx'
 import { Form, Card, TabHeader, Table } from '../components'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { firstLetterCapitalize, renderTitle } from '../shared/utils/utilities'
@@ -98,13 +100,50 @@ export default function Leave() {
         dataIndex: 'approved_by',
         render: (_: any, record: ILeave) => record.actioned_by?.full_name,
         width: 150
+    });
+    (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') && columns.push({
+        title: 'Action',
+        key: 'approver',
+        dataIndex: 'approver',
+        align: 'center',
+        render: (_: any, record: ILeave) => {
+            return <Space>
+                <Popconfirm
+                    title={`Leave request by - ${record?.user?.full_name}`}
+                    description={`Are you sure you want to approve ${record?.reason}?`}
+                    // onConfirm={onConfirm}
+                    okText="Approve"
+                    cancelText="Cancel"
+                    disabled={record?.status == 'APPROVED'}
+                >
+                    <Button id='approve' size='middle' disabled={record?.status == 'APPROVED'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                        <FcApproval />
+                        Approve
+                    </Button>
+                </Popconfirm>
+                <Popconfirm
+                    title={`Leave request by - ${record?.user?.full_name}`}
+                    description={`Are you sure you want to reject ${record?.reason}?`}
+                    // onConfirm={onConfirm}
+                    okText="Reject"
+                    cancelText="Cancel"
+                    disabled={record?.status == 'APPROVED'}
+                >
+                    <Button id='reject' size='middle' disabled={record?.status == 'APPROVED'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                        <RxCross2 />
+                        Reject
+                    </Button>
+                </Popconfirm>
+            </Space>
+        },
+        width: 250
     })
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
         // TODO
-        // let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false'
-        let isManager: 'false'
+        let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false'
+        // let isManager: 'false'
         const status = (type !== 'all') ? `&status=${type}` : ''
         // const url = LEAVES.GET + isManager + status
         const url = LEAVES.GET + 'false' + status
