@@ -1,4 +1,4 @@
-import { createElement } from 'react'
+import { useState, createElement } from 'react'
 import { Layout, Dropdown, Typography, Space, MenuProps } from 'antd'
 import { MenuUnfoldOutlined, MenuFoldOutlined, DownOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
@@ -19,6 +19,7 @@ const [{ AUTH: { LOGOUT, LOGIN } }] = useEndpoints()
 
 export default function Header({ collapsed, setCollapsed }: Props) {
     const { user, setUser, setToken } = useAuthContext()
+    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString())
 
     const toggle = () => {
         collapsed = !collapsed
@@ -42,6 +43,13 @@ export default function Header({ collapsed, setCollapsed }: Props) {
         },
     ]
 
+    function updateTime() {
+        let time = new Date().toLocaleTimeString()
+        setCurrentTime(time)
+    }
+
+    setInterval(updateTime, 1000);
+
     function logout(evt: React.MouseEvent) {
         evt.stopPropagation()
         evt.preventDefault()
@@ -50,7 +58,6 @@ export default function Header({ collapsed, setCollapsed }: Props) {
                 localStorage.clear()
                 setUser(undefined)
                 setToken(undefined)
-                // window.location.reload()
             })
     }
 
@@ -61,14 +68,17 @@ export default function Header({ collapsed, setCollapsed }: Props) {
                 <Text>HR Portal</Text>
             </div>
             <div className='header-wrapper'>
-                <Dropdown menu={{ items }}>
-                    <a onClick={e => e.preventDefault()}>
-                        <Space>
-                            <UserName>{user?.full_name ?? 'Unknown'}</UserName>
-                            <DownOutlined className='dropdown-icon' />
-                        </Space>
-                    </a>
-                </Dropdown>
+                <Space align='center' size={20}>
+                    <h3>{currentTime}</h3>
+                    <Dropdown menu={{ items }}>
+                        <a onClick={e => e.preventDefault()}>
+                            <Space>
+                                <UserName>{user?.full_name ?? 'Unknown'}</UserName>
+                                <DownOutlined className='dropdown-icon' />
+                            </Space>
+                        </a>
+                    </Dropdown>
+                </Space>
             </div>
         </Container>
     )
