@@ -101,14 +101,14 @@ export default function Leave() {
         },
     ];
     (leaveType == 'all' || leaveType == 'approved' || leaveType == 'reject') && columns.push({
-        title: 'Approved By',
+        title: 'Approver',
         key: 'approved_by',
         dataIndex: 'approved_by',
         render: (_: any, record: ILeave) => record.actioned_by?.full_name,
         width: 150
     });
     (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') && columns.push({
-        title: 'Approval',
+        title: 'For Approval',
         key: 'approver',
         dataIndex: 'approver',
         align: 'center',
