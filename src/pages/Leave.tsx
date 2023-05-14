@@ -15,8 +15,7 @@ import { IArguments, ILeave, ILeaveDuration, ILeaveType, LeaveRes, TableParams }
 import { useAuthContext } from '../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 
-
-const { GET, POST, PUT, DELETE } = useAxios()
+const { GET, POST, PUT } = useAxios()
 const [{ LEAVES, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 dayjs.extend(localizedFormat)
@@ -34,11 +33,18 @@ export default function Leave() {
 
     useEffect(function fetch() {
         const controller = new AbortController();
-        fetchData({ args: { signal: controller.signal }, type: leaveType })
+        if (user != undefined) fetchData({
+            args: {
+                signal: controller.signal, search,
+                page: tableParams?.pagination?.current,
+                pageSize: tableParams?.pagination?.pageSize,
+            },
+            type: leaveType
+        })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user, search])
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
@@ -102,7 +108,7 @@ export default function Leave() {
         width: 150
     });
     (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') && columns.push({
-        title: 'Action',
+        title: 'Approval',
         key: 'approver',
         dataIndex: 'approver',
         align: 'center',
@@ -111,12 +117,12 @@ export default function Leave() {
                 <Popconfirm
                     title={`Leave request by - ${record?.user?.full_name}`}
                     description={`Are you sure you want to approve ${record?.reason}?`}
-                    // onConfirm={onConfirm}
+                    onConfirm={() => leaveApproval(`approve/${record?.id}`)}
                     okText="Approve"
                     cancelText="Cancel"
-                    disabled={record?.status == 'APPROVED'}
+                    disabled={record?.status.toLowerCase() == 'approved'}
                 >
-                    <Button id='approve' size='middle' disabled={record?.status == 'APPROVED'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                    <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
                         <FcApproval />
                         Approve
                     </Button>
@@ -124,12 +130,12 @@ export default function Leave() {
                 <Popconfirm
                     title={`Leave request by - ${record?.user?.full_name}`}
                     description={`Are you sure you want to reject ${record?.reason}?`}
-                    // onConfirm={onConfirm}
+                    onConfirm={() => leaveApproval(`reject/${record?.id}`)}
                     okText="Reject"
                     cancelText="Cancel"
-                    disabled={record?.status == 'APPROVED'}
+                    disabled={record?.status.toLowerCase() == 'approved'}
                 >
-                    <Button id='reject' size='middle' disabled={record?.status == 'APPROVED'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                    <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
                         <RxCross2 />
                         Reject
                     </Button>
@@ -141,12 +147,11 @@ export default function Leave() {
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        // TODO
-        let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false'
-        // let isManager: 'false'
-        const status = (type !== 'all') ? `&status=${type}` : ''
-        // const url = LEAVES.GET + isManager + status
-        const url = LEAVES.GET + 'false' + status
+        const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
+        let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false';
+        const url = LEAVES.GET + isManager + status
+        console.log('type: ', type)
+        console.log('leaveType: ', leaveType)
         GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -162,15 +167,18 @@ export default function Leave() {
             }).finally(() => setLoading(false))
     }
 
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            args: {
-                search: str,
-                page: tableParams?.pagination?.current ?? 1,
-                pageSize: tableParams?.pagination?.pageSize
-            }, type: leaveType
-        })
+    function leaveApproval(url: string) {
+        setLoading(true)
+        POST(LEAVES.POST + url, {})
+            .then((res) => {
+                console.log(res)
+                alert('')
+            })
+            .catch((err) => console.log('error ng pag approval: ', err))
+            .catch(() => {
+                setLoading(false)
+                fetchData({})
+            })
     }
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: leaveType })
@@ -187,21 +195,21 @@ export default function Leave() {
                     </Space>
                 </Button>}
             >
-                <TabHeader handleSearch={handleSearch}>
-                    <Select value={leaveType} onChange={(str) => {
-                        setLeaveType(str)
+                <TabHeader handleSearch={setSearch}>
+                    <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
+                        setLeaveType((str == undefined || str == '') ? 'all' : str)
                         fetchData({
                             args: {
                                 search,
                                 page: tableParams?.pagination?.current ?? 1,
                                 pageSize: tableParams?.pagination?.pageSize
                             },
-                            type: str
+                            type: (str == undefined || str == '') ? 'all' : str
                         })
                     }} style={{ width: 150 }}>
                         <Select.Option value='all'>All</Select.Option>
                         <Select.Option value='pending'>Pending</Select.Option>
-                        <Select.Option value='approve'>Approved</Select.Option>
+                        <Select.Option value='approved'>Approved</Select.Option>
                         <Select.Option value='reject'>Rejected</Select.Option>
                     </Select>
                 </TabHeader>
@@ -284,14 +292,6 @@ function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchD
 
     return <Modal title='Request a Leave' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} disabled={loading}>
-            {/* <FormItem
-                label="Leave Name"
-                name="name"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <Input type='text' placeholder='Enter Leave Name' />
-            </FormItem> */}
             <FormItem
                 label="Leave Type"
                 name="leave_type_id"
@@ -348,7 +348,7 @@ function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchD
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker defaultOpenValue={dayjs('00:00:00', 'HH:mm:ss')} />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm:ss')} />
                 </FormItem>
                 <FormItem
                     label="End Time"
@@ -357,7 +357,7 @@ function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchD
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker defaultOpenValue={dayjs('00:00:00', 'HH:mm:ss')} />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm:ss')} />
                 </FormItem>
             </Row>
             <FormItem
@@ -368,14 +368,6 @@ function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchD
             >
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>
-            {/* <FormItem
-                label="Description"
-                name="description"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <Input.TextArea placeholder='Enter description...' />
-            </FormItem> */}
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
@@ -389,6 +381,3 @@ function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchD
         </Form>
     </Modal>
 }
-
-function LeaveAdmin() { }
-function LeaveEmployee() { }
