@@ -126,6 +126,7 @@ export default function TaskActivities() {
 }
 
 interface ModalProps {
+    teamId?: string
     title: string
     isModalOpen: boolean
     selectedData?: ITaskActivities
@@ -135,7 +136,7 @@ interface ModalProps {
 
 const { Item: FormItem, useForm } = AntDForm
 
-export function ActivityModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+export function ActivityModal({ title, teamId, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITaskActivities>()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
@@ -148,12 +149,13 @@ export function ActivityModal({ title, selectedData, isModalOpen, fetchData, han
         }
 
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
+        const URL = teamId ? (HRSETTINGS.TEAMS.LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
+        axiosClient(URL, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
         }
-    }, [selectedData])
+    }, [selectedData, teamId])
 
     function onFinish(values: ITaskActivities) {
         setLoading(true)

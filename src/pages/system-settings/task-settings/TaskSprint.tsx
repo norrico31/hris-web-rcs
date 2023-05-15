@@ -139,6 +139,7 @@ export default function TaskSprint() {
 
 type ModalProps = {
     title: string
+    teamId?: string
     isModalOpen: boolean
     selectedData?: ITaskSprint
     fetchData(args?: IArguments): void
@@ -147,11 +148,11 @@ type ModalProps = {
 
 const { Item: FormItem, useForm } = AntDForm
 
-export function SprintModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+export function SprintModal({ title, teamId, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
-
+    console.log(teamId)
     useEffect(() => {
         if (selectedData != undefined) {
             let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
@@ -159,15 +160,16 @@ export function SprintModal({ title, selectedData, isModalOpen, fetchData, handl
                 ...selectedData,
                 date: date
             })
-        } else form.resetFields(undefined)
-
+        }
+        form.resetFields(undefined)
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
+        const URL = teamId ? (HRSETTINGS.TEAMS.LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
+        axiosClient(URL, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
         }
-    }, [selectedData])
+    }, [selectedData, teamId])
 
     function onFinish(values: Record<string, string>) {
         setLoading(true)

@@ -286,7 +286,7 @@ interface IStepOne {
     manager_id: string | null
     date_hired: string | Dayjs | null
     resignation_date: string | Dayjs | null
-    team_id: string
+    team_id: string[]
 }
 
 interface IStepOneProps {
@@ -303,7 +303,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
         roles: [],
         lineManagers: [],
         departments: [],
-        // teams: []
     })
     const [departmentId, setDepartmentId] = useState('')
     const [teams, setTeams] = useState<ITeam[]>([])
@@ -342,13 +341,18 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     }, [])
 
     async function onChange(id: string) {
-        setDepartmentId(id)
-        try {
-            if (id == null || id == undefined || id == '') return
-            const res = await axiosClient.get(HRSETTINGS.TEAMS.LISTS + '?department_id=' + id)
-            setTeams(res?.data ?? [])
-        } catch (error) {
-            return Promise.reject(error)
+        if (id == '' || id == undefined) {
+            setDepartmentId('')
+            setTeams([])
+        } else {
+            setDepartmentId(id)
+            try {
+                if (id == null || id == undefined || id == '') return
+                const res = await axiosClient.get(HRSETTINGS.TEAMS.LISTS + '?department_id=' + id)
+                setTeams(res?.data ?? [])
+            } catch (error) {
+                return Promise.reject(error)
+            }
         }
     }
 
@@ -502,6 +506,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         allowClear
                         showSearch
                         optionFilterProp="children"
+                        mode="multiple"
                         disabled={!teams.length}
                     >
                         {teams.map((team) => (

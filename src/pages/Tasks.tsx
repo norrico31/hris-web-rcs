@@ -9,14 +9,14 @@ import { Action, TabHeader, Table, Form, MainHeader, } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import axiosClient, { useAxios } from '../shared/lib/axios'
 import { useEndpoints } from '../shared/constants'
-import { TableParams, ITasks, TasksRes, IArguments } from '../shared/interfaces'
+import { TableParams, ITasks, TasksRes, IArguments, ITeam } from '../shared/interfaces'
 import { ActivityModal } from './system-settings/task-settings/TaskActivities'
 import { SprintModal } from './system-settings/task-settings/TaskSprint'
 import { TypesModal } from './system-settings/task-settings/TaskTypes'
 import { Alert } from '../shared/lib/alert'
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS }, }] = useEndpoints()
+const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS }, }] = useEndpoints()
 
 // TODO: PERMISSIONS
 
@@ -44,36 +44,56 @@ export default function Tasks() {
             title: 'Task Activity',
             key: 'task_activity',
             dataIndex: 'task_activity',
-            render: (_, record) => record.task_activity?.name
+            render: (_, record) => record.task_activity?.name,
+            width: 130
         },
         {
             title: 'Task Type',
             key: 'task_type',
             dataIndex: 'task_type',
-            render: (_, record) => record.task_type?.name
+            render: (_, record) => record.task_type?.name,
+            width: 130
         },
         {
             title: 'Sprint',
             key: 'sprint_name',
             dataIndex: 'sprint_name',
-            render: (_, record) => record.sprint?.name
+            render: (_, record) => record.sprint?.name,
+            width: 130
+        },
+        {
+            title: 'Department',
+            key: 'department_id',
+            dataIndex: 'department_id',
+            render: (_, record) => record.department?.name,
+            width: 130
+        },
+        {
+            title: 'Team',
+            key: 'team_id',
+            dataIndex: 'team_id',
+            render: (_, record) => record.team?.name,
+            width: 130
         },
         {
             title: 'Manhours',
             key: 'manhours',
             dataIndex: 'manhours',
             align: 'center',
+            width: 120
         },
         {
             title: 'Date',
             key: 'date',
             dataIndex: 'date',
             align: 'center',
+            width: 120
         },
         {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
+            width: 250
         },
         {
             title: 'Action',
@@ -85,7 +105,8 @@ export default function Tasks() {
                 name={record.task_activity?.name + ' ' + record.sprint?.name}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => handleEdit(record)}
-            />
+            />,
+            width: 150
         },
     ]
 
@@ -187,7 +208,9 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     const [isModalTypes, setIsModalTypes] = useState(false)
     const [isModalSprints, setIsModalSprints] = useState(false)
     const [tasks, setTasks] = useTasksServices()
+    const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
+    const [teamId, setTeamId] = useState('')
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -197,6 +220,12 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             })
         } else {
             form.resetFields(undefined)
+        }
+        const controller = new AbortController();
+        axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
+            .then((res) => setTeams(res?.data ?? []));
+        return () => {
+            controller.abort()
         }
     }, [selectedData])
 
@@ -214,6 +243,9 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         result.then(() => {
             form.resetFields()
             handleCancel()
+        }).catch((err) => {
+            // display error
+            console.log(err)
         }).finally(() => {
             fetchData()
             setLoading(false)
@@ -242,6 +274,20 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     style={{ width: '100%' }}
                 />
             </FormItem>
+            <FormItem name='team_id' label="Team" required rules={[{ required: true, message: '' }]}>
+                <Select
+                    placeholder='Select team'
+                    allowClear
+                    showSearch
+                    optionFilterProp="children"
+                    value={teamId}
+                    onChange={setTeamId}
+                >
+                    {teams.map((team) => (
+                        <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
+                    ))}
+                </Select>
+            </FormItem>
             <Row gutter={[24, 24]} align='middle'>
                 <Col span={18}>
                     <FormItem name='task_activity_id' label="Task Activity" required rules={[{ required: true, message: '' }]}>
@@ -250,6 +296,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             allowClear
                             showSearch
                             optionFilterProp="children"
+                            disabled={!teamId}
                         >
                             {tasks.activities?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -258,7 +305,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     </FormItem>
                 </Col>
                 <Col>
-                    <Button className='btn-secondary' onClick={() => setIsModalActivity(true)}>
+                    <Button className='btn-secondary' onClick={() => setIsModalActivity(true)} disabled={!teamId}>
                         Add Activity
                     </Button>
                 </Col>
@@ -271,6 +318,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             allowClear
                             showSearch
                             optionFilterProp="children"
+                            disabled={!teamId}
                         >
                             {tasks.types?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -279,7 +327,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     </FormItem>
                 </Col>
                 <Col>
-                    <Button className='btn-secondary' onClick={() => setIsModalTypes(true)}>
+                    <Button className='btn-secondary' onClick={() => setIsModalTypes(true)} disabled={!teamId}>
                         Add Type
                     </Button>
                 </Col>
@@ -292,6 +340,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             allowClear
                             showSearch
                             optionFilterProp="children"
+                            disabled={!teamId}
                         >
                             {tasks.sprints?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -300,7 +349,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     </FormItem>
                 </Col>
                 <Col>
-                    <Button className='btn-secondary' onClick={() => setIsModalSprints(true)}>
+                    <Button className='btn-secondary' onClick={() => setIsModalSprints(true)} disabled={!teamId}>
                         Add Sprint
                     </Button>
                 </Col>
@@ -324,18 +373,21 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         </Form>
         <ActivityModal
             title='Create'
+            teamId={teamId}
             fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS, 'activities')}
             isModalOpen={isModalActivity}
             handleCancel={() => setIsModalActivity(false)}
         />
         <TypesModal
             title='Create'
+            teamId={teamId}
             fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS, 'types')}
             isModalOpen={isModalTypes}
             handleCancel={() => setIsModalTypes(false)}
         />
         <SprintModal
             title='Create'
+            teamId={teamId}
             fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS, 'sprints')}
             isModalOpen={isModalSprints}
             handleCancel={() => setIsModalSprints(false)}

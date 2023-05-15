@@ -1,4 +1,4 @@
-import { IUser, AxiosGetData } from "."
+import { IUser, AxiosGetData, ITeam } from "."
 
 interface IRelations {
     id: string
@@ -17,6 +17,7 @@ export interface ITasks extends IUser {
     task_activity: IRelations
     task_activity_id: string
     task_type: IRelations
+    team: ITeam
     task_type_id: string
     updated_at: string
     user_id: string

@@ -51,6 +51,7 @@ export default function Leave() {
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
+    // TODO: add actions for edit delete
     const columns: ColumnsType<ILeave> = [
         {
             title: 'Status',

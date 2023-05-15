@@ -128,6 +128,7 @@ export default function TaskTypes() {
 
 type ModalProps = {
     title: string
+    teamId?: string
     isModalOpen: boolean
     selectedData?: ITaskTypes
     fetchData(args?: IArguments): void
@@ -136,7 +137,7 @@ type ModalProps = {
 
 const { Item: FormItem, useForm } = AntDForm
 
-export function TypesModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+export function TypesModal({ title, teamId, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITaskTypes>()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
@@ -149,7 +150,8 @@ export function TypesModal({ title, selectedData, isModalOpen, fetchData, handle
         }
 
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
+        const URL = teamId ? (HRSETTINGS.TEAMS.LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
+        axiosClient(URL, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
