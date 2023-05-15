@@ -152,7 +152,7 @@ export function SprintModal({ title, teamId, selectedData, isModalOpen, fetchDat
     const [form] = useForm<Record<string, any>>()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
-    console.log(teamId)
+    console.log('sprint modal: ', teamId)
     useEffect(() => {
         if (selectedData != undefined) {
             let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
@@ -163,7 +163,7 @@ export function SprintModal({ title, teamId, selectedData, isModalOpen, fetchDat
         }
         form.resetFields(undefined)
         const controller = new AbortController();
-        const URL = teamId ? (HRSETTINGS.TEAMS.LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
+        const URL = teamId ? (HRSETTINGS.TEAMS.USERS_LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
         axiosClient(URL, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {

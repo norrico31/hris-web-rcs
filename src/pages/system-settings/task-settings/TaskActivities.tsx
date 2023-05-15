@@ -140,7 +140,7 @@ export function ActivityModal({ title, teamId, selectedData, isModalOpen, fetchD
     const [form] = useForm<ITaskActivities>()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
-
+    console.log('activity modal: ', teamId)
     useEffect(() => {
         if (selectedData != undefined) {
             form.setFieldsValue({ ...selectedData! })
@@ -149,7 +149,7 @@ export function ActivityModal({ title, teamId, selectedData, isModalOpen, fetchD
         }
 
         const controller = new AbortController();
-        const URL = teamId ? (HRSETTINGS.TEAMS.LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
+        const URL = teamId ? (HRSETTINGS.TEAMS.USERS_LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
         axiosClient(URL, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {

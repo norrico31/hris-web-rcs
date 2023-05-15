@@ -141,6 +141,7 @@ export function TypesModal({ title, teamId, selectedData, isModalOpen, fetchData
     const [form] = useForm<ITaskTypes>()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
+    console.log('types modal: ', teamId)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -150,13 +151,13 @@ export function TypesModal({ title, teamId, selectedData, isModalOpen, fetchData
         }
 
         const controller = new AbortController();
-        const URL = teamId ? (HRSETTINGS.TEAMS.LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
+        const URL = teamId ? (HRSETTINGS.TEAMS.USERS_LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
         axiosClient(URL, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
         }
-    }, [selectedData])
+    }, [selectedData, teamId])
 
 
     function onFinish(values: ITaskTypes) {

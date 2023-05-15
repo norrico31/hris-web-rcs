@@ -218,8 +218,10 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                 ...selectedData,
                 date: dayjs(selectedData.date, 'YYYY/MM/DD') as any
             })
+            setTeamId(selectedData?.team_id ?? selectedData.team?.id)
         } else {
             form.resetFields(undefined)
+            setTeamId('')
         }
         const controller = new AbortController();
         axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
@@ -229,7 +231,18 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         }
     }, [selectedData])
 
-    async function fetchList(url: string, key: string) {
+    useEffect(() => {
+        if (teamId != undefined || teamId != '') {
+            const acitivityUrl = teamId ? TASKSSETTINGS.ACTIVITIES.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.ACTIVITIES.LISTS;
+            const typesUrl = teamId ? TASKSSETTINGS.TYPES.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.TYPES.LISTS;
+            const sprintsUrl = teamId ? TASKSSETTINGS.SPRINT.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.SPRINT.LISTS;
+            fetchList(acitivityUrl, 'activities');
+            fetchList(typesUrl, 'types');
+            fetchList(sprintsUrl, 'sprints');
+        }
+    }, [teamId])
+
+    async function fetchList(url: string, key: 'activities' | 'types' | 'sprints') {
         const data = await getList(url)
         setTasks((prevTasks) => ({ ...prevTasks, [key]: data }))
     }
@@ -374,21 +387,21 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         <ActivityModal
             title='Create'
             teamId={teamId}
-            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS, 'activities')}
+            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + teamId ? ('?team_id=' + teamId) : '', 'activities')}
             isModalOpen={isModalActivity}
             handleCancel={() => setIsModalActivity(false)}
         />
         <TypesModal
             title='Create'
             teamId={teamId}
-            fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS, 'types')}
+            fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS + teamId ? ('?team_id=' + teamId) : '', 'types')}
             isModalOpen={isModalTypes}
             handleCancel={() => setIsModalTypes(false)}
         />
         <SprintModal
             title='Create'
             teamId={teamId}
-            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS, 'sprints')}
+            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS + teamId ? ('?team_id=' + teamId) : '', 'sprints')}
             isModalOpen={isModalSprints}
             handleCancel={() => setIsModalSprints(false)}
         />

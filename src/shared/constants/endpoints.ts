@@ -133,6 +133,7 @@ export const useEndpoints = () => {
                 },
                 TEAMS: {
                     LISTS: '/options/teams',
+                    USERS_LISTS: '/options/user_teams',
                     GET: '/teams',
                     POST: '/teams/',
                     PUT: '/teams/',

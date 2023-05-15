@@ -181,7 +181,7 @@ function EmployeeModal({ title, fetchData, isModalOpen, handleCancel }: ModalPro
     const [stepThreeInputs, setStepThreeInputs] = useState<IStepThree | undefined>(undefined)
     const [stepFourInputs, setStepFourInputs] = useState<IStepFour | undefined>(undefined)
 
-    const payload = {
+    const PAYLOAD = {
         ...stepOneInputs!,
         ...stepTwoInputs!,
         ...stepThreeInputs!,
@@ -230,7 +230,7 @@ function EmployeeModal({ title, fetchData, isModalOpen, handleCancel }: ModalPro
                 }}
                 fetchData={fetchData}
                 handleResetSteps={handleResetSteps}
-                payload={payload}
+                PAYLOAD={PAYLOAD}
             />
         }
         return stepsComponent[current]
@@ -355,7 +355,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
             }
         }
     }
-
 
     function onFinish(values: Record<string, any>) {
         setStepOneInputs(formValues(values) as IStepOne)
@@ -794,11 +793,11 @@ interface IStepFourProps {
     stepFourInputs: IStepFour | undefined
     previousStep: (val: IStepFour) => void
     handleResetSteps(): void
-    payload: Payload
+    PAYLOAD: Payload
     fetchData(args?: IArguments): void
 }
 
-function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fetchData, handleResetSteps }: IStepFourProps) {
+function StepFour({ setStepFourInputs, stepFourInputs, PAYLOAD, previousStep, fetchData, handleResetSteps }: IStepFourProps) {
     const [form] = useForm<IStepFour>()
     const [loading, setLoading] = useState(false)
     const [messageApi, contextHolder] = useMessage()
@@ -811,18 +810,18 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
 
     function onFinish(values: Record<string, any>) {
         setLoading(true)
-        let stepFourPayload = formValues(values) as IStepFour
-        setStepFourInputs(stepFourPayload)
-        const newPayload = {
-            ...payload,
-            ...stepFourPayload,
-            birthday: payload?.birthday ? dayjs(payload?.birthday).format('YYYY-MM-DD') : null,
-            date_hired: payload?.date_hired ? dayjs(payload?.date_hired).format('YYYY-MM-DD') : null,
-            resignation_date: payload?.resignation_date ? dayjs(payload?.resignation_date).format('YYYY-MM-DD') : null,
-            start_date: payload?.start_date ? dayjs(payload?.start_date).format('YYYY-MM-DD') : null,
-            end_date: payload?.end_date ? dayjs(payload?.end_date).format('YYYY-MM-DD') : null,
+        let stepFourPAYLOAD = formValues(values) as IStepFour
+        setStepFourInputs(stepFourPAYLOAD)
+        const NEWPAYLOAD = {
+            ...PAYLOAD,
+            ...stepFourPAYLOAD,
+            birthday: PAYLOAD?.birthday ? dayjs(PAYLOAD?.birthday).format('YYYY-MM-DD') : null,
+            date_hired: PAYLOAD?.date_hired ? dayjs(PAYLOAD?.date_hired).format('YYYY-MM-DD') : null,
+            resignation_date: PAYLOAD?.resignation_date ? dayjs(PAYLOAD?.resignation_date).format('YYYY-MM-DD') : null,
+            start_date: PAYLOAD?.start_date ? dayjs(PAYLOAD?.start_date).format('YYYY-MM-DD') : null,
+            end_date: PAYLOAD?.end_date ? dayjs(PAYLOAD?.end_date).format('YYYY-MM-DD') : null,
         }
-        POST(EMPLOYEE201.POST, newPayload)
+        POST(EMPLOYEE201.POST, NEWPAYLOAD)
             .then(() => {
                 form.resetFields()
                 handleResetSteps()
@@ -830,7 +829,7 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
             .catch((err) => messageApi.open({
                 type: 'error',
                 content: err?.response?.data?.message,
-                duration: 0
+                duration: 5
             }))
             .finally(() => {
                 fetchData()
@@ -872,11 +871,11 @@ function StepFour({ setStepFourInputs, stepFourInputs, payload, previousStep, fe
 }
 
 function formValues(values: Record<string, unknown>) {
-    const payload: { [k: string]: unknown } = {}
+    const PAYLOAD: { [k: string]: unknown } = {}
     for (const val in values) {
-        payload[val] = values[val] != undefined ? values[val] : null
+        PAYLOAD[val] = values[val] != undefined ? values[val] : null
     }
-    return payload as unknown
+    return PAYLOAD as unknown
     // let newValues = {}
     // for (const val in values) {
     //     newValues = { ...newValues, ...(values[val] == undefined ? { [val]: null } : { [val]: values[val] }) }
