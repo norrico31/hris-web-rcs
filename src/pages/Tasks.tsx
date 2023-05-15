@@ -148,7 +148,6 @@ export default function Tasks() {
         setSelectedData(data)
     }
 
-
     function handleCloseModal() {
         setSelectedData(undefined)
         setIsModalOpen(false)
@@ -224,7 +223,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             setTeamId('')
         }
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
+        axiosClient(HRSETTINGS.TEAMS.USERS_LISTS, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
@@ -387,21 +386,21 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         <ActivityModal
             title='Create'
             teamId={teamId}
-            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + teamId ? ('?team_id=' + teamId) : '', 'activities')}
+            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + teamId ? (TASKSSETTINGS.ACTIVITIES.LISTS + '?team_id=' + teamId) : '', 'activities')}
             isModalOpen={isModalActivity}
             handleCancel={() => setIsModalActivity(false)}
         />
         <TypesModal
             title='Create'
             teamId={teamId}
-            fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS + teamId ? ('?team_id=' + teamId) : '', 'types')}
+            fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS + teamId ? (TASKSSETTINGS.TYPES.LISTS + '?team_id=' + teamId) : '', 'types')}
             isModalOpen={isModalTypes}
             handleCancel={() => setIsModalTypes(false)}
         />
         <SprintModal
             title='Create'
             teamId={teamId}
-            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS + teamId ? ('?team_id=' + teamId) : '', 'sprints')}
+            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS + teamId ? (TASKSSETTINGS.SPRINT.LISTS + '?team_id=' + teamId) : '', 'sprints')}
             isModalOpen={isModalSprints}
             handleCancel={() => setIsModalSprints(false)}
         />
