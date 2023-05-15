@@ -10,7 +10,7 @@ import AvatarPng from '../shared/assets/default_avatar.png'
 import { renderTitle } from "../shared/utils/utilities"
 import { MessageInstance } from "antd/es/message/interface"
 import { useAxios } from './../shared/lib/axios'
-import { rootPaths, useEndpoints } from "../shared/constants"
+import { ROOTPATHS, useEndpoints } from "../shared/constants"
 import { useAuthContext } from "../shared/contexts/Auth"
 import { IArguments, ITimeKeeping, TimeKeepingRes } from "../shared/interfaces"
 import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
@@ -33,7 +33,7 @@ export default function TimeKeeping() {
     }, [user, today])
 
     const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && !codes['b01']) return <Navigate to={'/' + paths[0]} />
 

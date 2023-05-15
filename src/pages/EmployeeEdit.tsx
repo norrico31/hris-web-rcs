@@ -4,7 +4,7 @@ import { Tabs as AntDTabs, Button, Col, Row } from 'antd'
 import styled from "styled-components"
 import useWindowSize from '../shared/hooks/useWindowSize'
 import { MainHeader } from './../components'
-import { employeeEditPaths, useEndpoints } from "../shared/constants"
+import { EMPLOYEEPATHS, useEndpoints } from "../shared/constants"
 import { renderTitle } from "../shared/utils/utilities"
 import { IArguments, IUser } from '../shared/interfaces'
 import { useAxios } from '../shared/lib/axios'
@@ -55,7 +55,7 @@ export default function EmployeeEdit() {
             renderTabBar={(props, TabNavList) => (
                 <TabNavList {...props} mobile={false} />
             )}
-            items={employeeEditPaths.map((el) => ({
+            items={EMPLOYEEPATHS.map((el) => ({
                 label: el.label,
                 key: el.key,
                 children: <Outlet context={{ employeeId, employeeInfo: data, fetchData }} />,

@@ -4,7 +4,7 @@ import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton } from 'antd
 import { renderTitle } from "../shared/utils/utilities"
 import { Card, Divider } from '../components'
 import { useAuthContext } from '../shared/contexts/Auth'
-import { rootPaths } from '../shared/constants'
+import { ROOTPATHS } from '../shared/constants'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 
 const { Paragraph, Title } = Typography
@@ -14,7 +14,7 @@ export default function Dashboard() {
     const { user, loading } = useAuthContext()
     const codes = filterCodes(user?.role?.permissions)
 
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loading) return <Skeleton />
     if (!loading && !codes['a01']) return <Navigate to={'/' + !paths.length ? '/profile' : paths[0]} />
 

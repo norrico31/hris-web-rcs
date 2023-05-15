@@ -11,6 +11,8 @@ import { IArguments, ITimeKeeping, TableParams, TimeKeepingRes } from '../shared
 const [{ WHOSINOUT }] = useEndpoints()
 const { GET } = useAxios()
 
+// TODO: PERMISSIONS
+
 export default function WhosInOut() {
     renderTitle("Who's In and Out")
     const [data, setData] = useState<Array<ITimeKeeping>>([])

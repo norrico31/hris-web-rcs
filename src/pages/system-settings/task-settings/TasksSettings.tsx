@@ -5,13 +5,13 @@ import { Tabs } from '../../../components'
 import { useAuthContext } from '../../../shared/contexts/Auth'
 import { IRolePermission } from '../../../shared/interfaces'
 import { filterPaths } from '../../../components/layouts/Sidebar'
-import { taskSettingsPaths } from '../../../shared/constants'
+import { TASKSETTINGSPATHS } from '../../../shared/constants'
 
 export default function TasksSettings() {
     const { user, loading } = useAuthContext()
     const navigate = useNavigate()
     let { pathname } = useLocation()
-    const taskPaths = useMemo(() => filterPaths(user?.role?.permissions!, taskSettingsPaths), [user?.role?.permissions])
+    const taskPaths = useMemo(() => filterPaths(user?.role?.permissions!, TASKSETTINGSPATHS), [user?.role?.permissions])
 
     const items = [
         (taskPaths.includes('activities') && {

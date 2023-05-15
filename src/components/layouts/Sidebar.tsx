@@ -12,7 +12,7 @@ import { SiExpensify } from 'react-icons/si'
 import { TfiAnnouncement } from 'react-icons/tfi'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { IRolePermission, IUser } from '../../shared/interfaces'
-import { adminSettingsPaths, clientSettingsPaths, hrSettingsPaths, rootPaths, taskSettingsPaths } from '../../shared/constants'
+import { ADMINSETTINGSPATHS, CLIENTSETTINGSPATHS, HRSETTINGSPATHS, ROOTPATHS, TASKSETTINGSPATHS } from '../../shared/constants'
 
 type Props = {
     onSelect: () => void
@@ -80,11 +80,11 @@ type MenuItem = Required<MenuProps>['items'][number]
 function filterMenu(user: IUser) {
     const modules = user?.role?.permissions ?? []
     const moduleCodes = filterCodes(modules)
-    const rootPath = filterPaths(user?.role?.permissions!, rootPaths)
-    const taskSystemSettingsPaths = filterPaths(user?.role?.permissions!, taskSettingsPaths)
-    const hrPaths = filterPaths(user?.role?.permissions!, hrSettingsPaths)
-    const clientPaths = filterPaths(user?.role?.permissions!, clientSettingsPaths)
-    const adminPaths = filterPaths(user?.role?.permissions!, adminSettingsPaths)
+    const rootPath = filterPaths(user?.role?.permissions!, ROOTPATHS)
+    const taskSystemSettingsPaths = filterPaths(user?.role?.permissions!, TASKSETTINGSPATHS)
+    const hrPaths = filterPaths(user?.role?.permissions!, HRSETTINGSPATHS)
+    const clientPaths = filterPaths(user?.role?.permissions!, CLIENTSETTINGSPATHS)
+    const adminPaths = filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS)
     return [
         getItemLinks(
             <Link to='/dashboard' id="dashboard">Dashboard</Link>,

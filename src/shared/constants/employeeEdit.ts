@@ -1,4 +1,4 @@
-export const employeeEditPaths = [
+export const EMPLOYEEPATHS = [
     {
         label: 'User Profile',
         key: '/userprofile',

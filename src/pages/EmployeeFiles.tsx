@@ -12,7 +12,7 @@ import axiosClient, { useAxios } from './../shared/lib/axios'
 import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates, ILineManager, ITeam } from '../shared/interfaces'
 import useMessage from 'antd/es/message/useMessage'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
-import { rootPaths } from '../shared/constants'
+import { ROOTPATHS } from '../shared/constants'
 import { useAuthContext } from '../shared/contexts/Auth'
 
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
@@ -38,7 +38,7 @@ export default function EmployeeFiles() {
     }, [])
 
     const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['g01', 'g02', 'g03', 'g04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 

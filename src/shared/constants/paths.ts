@@ -1,5 +1,5 @@
 
-export const taskSettingsPaths: Record<string, string> = {
+export const TASKSETTINGSPATHS: Record<string, string> = {
     'ja01': 'activities',
     'ja02': 'activities',
     'ja03': 'activities',
@@ -14,7 +14,7 @@ export const taskSettingsPaths: Record<string, string> = {
     'jc04': 'sprints',
 }
 
-export const hrSettingsPaths: Record<string, string> = {
+export const HRSETTINGSPATHS: Record<string, string> = {
     'ka01': 'bankdetails',
     'ka02': 'bankdetails',
     'ka03': 'bankdetails',
@@ -67,7 +67,7 @@ export const hrSettingsPaths: Record<string, string> = {
     'kn01': 'schedules'
 }
 
-export const clientSettingsPaths = {
+export const CLIENTSETTINGSPATHS = {
     'la01': 'clients',
     'la02': 'clients',
     'la03': 'clients',
@@ -82,7 +82,7 @@ export const clientSettingsPaths = {
     'lc04': 'clientadjustments',
 }
 
-export const adminSettingsPaths = {
+export const ADMINSETTINGSPATHS = {
     'ia01': 'users',
     'ia02': 'users',
     'ia03': 'users',
@@ -101,54 +101,54 @@ export const adminSettingsPaths = {
     'id04': 'systemlogs',
 }
 
-export const employeeFilesPaths = {
+export const EMPLOYEEFILESPATHS = {
     'g01': 'employee',
     'g02': 'employee',
     'g03': 'employee',
     'g04': 'employee',
 }
 
-export const tasksPaths = {
+export const TASKSPATHS = {
     'e01': 'tasks',
     'e02': 'tasks',
     'e03': 'tasks',
     'e04': 'tasks',
 }
 
-export const leavesPaths = {
+export const LEAVESPATHS = {
     'c01': 'leave',
     'c02': 'leave',
     'c03': 'leave',
     'c04': 'leave',
 }
 
-export const salaryAdjustmentsPaths = {
+export const SALARYADJUSTMENTSPATHS = {
     'h01': 'salaryadjustments',
     'h02': 'salaryadjustments',
     'h03': 'salaryadjustments',
     'h04': 'salaryadjustments',
 }
 
-export const rootPaths = {
+export const ROOTPATHS = {
     'a01': 'dashboard',
     'd01': 'announcements',
     'd02': 'announcements',
     'd03': 'announcements',
     'd04': 'announcements',
     'b01': 'timekeeping',
-    ...tasksPaths,
-    ...employeeFilesPaths,
-    ...leavesPaths,
-    ...salaryAdjustmentsPaths,
+    ...TASKSPATHS,
+    ...EMPLOYEEFILESPATHS,
+    ...LEAVESPATHS,
+    ...SALARYADJUSTMENTSPATHS,
 }
 
-export const allPaths = {
-    ...taskSettingsPaths,
-    ...hrSettingsPaths,
-    ...clientSettingsPaths,
-    ...adminSettingsPaths,
-    ...employeeFilesPaths,
-    ...tasksPaths,
-    ...leavesPaths,
-    ...salaryAdjustmentsPaths,
+export const ALLPATHS = {
+    ...TASKSETTINGSPATHS,
+    ...HRSETTINGSPATHS,
+    ...CLIENTSETTINGSPATHS,
+    ...ADMINSETTINGSPATHS,
+    ...EMPLOYEEFILESPATHS,
+    ...TASKSPATHS,
+    ...EMPLOYEEFILESPATHS,
+    ...SALARYADJUSTMENTSPATHS,
 }

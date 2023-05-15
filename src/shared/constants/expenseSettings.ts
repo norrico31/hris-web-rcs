@@ -1,4 +1,4 @@
-export const expenseSettingsPaths = [
+export const EXPENSESETTINGSPATHS = [
     // {
     //     label: 'Expense',
     //     key: '/expensesettings/expense',

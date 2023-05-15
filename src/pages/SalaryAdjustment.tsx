@@ -10,7 +10,7 @@ import useMessage from "antd/es/message/useMessage"
 import { Action, MainHeader, Table, Form, TabHeader } from "../components"
 import { renderTitle } from "../shared/utils/utilities"
 import axiosClient, { useAxios } from "../shared/lib/axios"
-import { rootPaths, useEndpoints } from "../shared/constants"
+import { ROOTPATHS, useEndpoints } from "../shared/constants"
 import { IArguments, IEmployee, IExpenseType, TableParams } from "../shared/interfaces"
 import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 
@@ -46,7 +46,7 @@ export default function SalaryAdjustment() {
     }, [])
 
     const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['h01', 'h02', 'h03', 'h04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 

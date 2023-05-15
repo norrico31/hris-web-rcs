@@ -10,7 +10,7 @@ import { Form, Card, TabHeader, Table } from '../components'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { firstLetterCapitalize, renderTitle } from '../shared/utils/utilities'
 import axiosClient, { useAxios } from '../shared/lib/axios'
-import { rootPaths, useEndpoints } from '../shared/constants'
+import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { IArguments, ILeave, ILeaveDuration, ILeaveType, LeaveRes, TableParams } from '../shared/interfaces'
 import { useAuthContext } from '../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
@@ -47,7 +47,7 @@ export default function Leave() {
     }, [user, search])
 
     const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, rootPaths), [user])
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 

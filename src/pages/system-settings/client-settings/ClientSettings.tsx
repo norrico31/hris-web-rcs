@@ -4,13 +4,13 @@ import { Skeleton } from 'antd'
 import { Tabs } from '../../../components'
 import { filterPaths } from '../../../components/layouts/Sidebar'
 import { useAuthContext } from '../../../shared/contexts/Auth'
-import { clientSettingsPaths } from '../../../shared/constants'
+import { CLIENTSETTINGSPATHS } from '../../../shared/constants'
 
 export default function ClientSettings() {
     const { user, loading } = useAuthContext()
     const navigate = useNavigate()
     let { pathname } = useLocation()
-    const clientPaths = useMemo(() => filterPaths(user?.role?.permissions!, clientSettingsPaths), [user?.role?.permissions])
+    const clientPaths = useMemo(() => filterPaths(user?.role?.permissions!, CLIENTSETTINGSPATHS), [user?.role?.permissions])
 
     const items = useMemo(() => {
         return [

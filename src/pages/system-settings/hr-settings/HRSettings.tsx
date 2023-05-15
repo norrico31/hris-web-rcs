@@ -3,14 +3,14 @@ import { Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthContext } from '../../../shared/contexts/Auth'
 import { Tabs } from '../../../components'
 import { filterPaths } from '../../../components/layouts/Sidebar'
-import { hrSettingsPaths } from '../../../shared/constants'
+import { HRSETTINGSPATHS } from '../../../shared/constants'
 import { Skeleton } from 'antd'
 
 export default function HRSettings() {
     const { user, loading } = useAuthContext()
     const navigate = useNavigate()
     let { pathname } = useLocation()
-    const hrPaths = useMemo(() => filterPaths(user?.role?.permissions!, hrSettingsPaths), [user?.role?.permissions])
+    const hrPaths = useMemo(() => filterPaths(user?.role?.permissions!, HRSETTINGSPATHS), [user?.role?.permissions])
 
     // TODO
     // if (!loading && !hrPaths.length) return <Navigate  to=''/>
