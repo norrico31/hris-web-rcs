@@ -170,7 +170,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
             </Item>
             <Item
                 label="Status"
-                name="status"
+                name="is_active"
                 required
                 rules={[{ required: true, message: '' }]}
             >
