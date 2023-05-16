@@ -6,7 +6,7 @@ import { useEmployeeCtx } from '../EmployeeEdit'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
-import { IDepartment, IEmployeeStatus, ILineManager, IPosition, IRole, IUser } from '../../shared/interfaces'
+import { IDepartment, IEmployeeStatus, ILineManager, IPosition, IRole, ITeam, IUser } from '../../shared/interfaces'
 import useMessage from 'antd/es/message/useMessage'
 
 const { useForm, Item } = AntDForm
@@ -17,12 +17,13 @@ export default function UserProfileEmployee() {
     const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(false)
-    const [lists, setLists] = useState<{ employeeStatus: IEmployeeStatus[]; positions: IPosition[]; roles: IRole[]; lineManagers: ILineManager[]; departments: IDepartment[] }>({
+    const [lists, setLists] = useState<{ teams: ITeam[]; employeeStatus: IEmployeeStatus[]; positions: IPosition[]; roles: IRole[]; lineManagers: ILineManager[]; departments: IDepartment[] }>({
         employeeStatus: [],
         positions: [],
         roles: [],
         lineManagers: [],
-        departments: []
+        departments: [],
+        teams: []
     })
     const [messageApi, contextHolder] = useMessage()
 
@@ -35,13 +36,15 @@ export default function UserProfileEmployee() {
                 const rolesPromise = axiosClient(ADMINSETTINGS.ROLES.LISTS, { signal: controller.signal })
                 const lineManagerPromise = axiosClient(ADMINSETTINGS.ROLES.LINEMANAGERS, { signal: controller.signal })
                 const departmentPromise = axiosClient(HRSETTINGS.DEPARTMENT.LISTS, { signal: controller.signal })
-                const [employeeStatusRes, positionsRes, rolesRes, lineManagerRes, departmentRes] = await Promise.allSettled([employeeStatusPromise, positionsPromise, rolesPromise, lineManagerPromise, departmentPromise]) as any
+                const teamPromise = axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
+                const [employeeStatusRes, positionsRes, rolesRes, lineManagerRes, departmentRes, teamRes] = await Promise.allSettled([employeeStatusPromise, positionsPromise, rolesPromise, lineManagerPromise, departmentPromise, teamPromise]) as any
                 setLists({
                     employeeStatus: employeeStatusRes?.value?.data ?? [],
                     positions: positionsRes?.value?.data ?? [],
                     roles: rolesRes?.value?.data ?? [],
                     lineManagers: lineManagerRes?.value?.data ?? [],
                     departments: departmentRes?.value?.data ?? [],
+                    teams: teamRes?.value?.data ?? [],
                 })
             } catch (error) {
                 console.error('error fetching clients: ', error)
@@ -272,6 +275,26 @@ export default function UserProfileEmployee() {
                             </Select>
                         </Item>
                     </Col>
+                </Row>
+                <Row justify='center'>
+
+                    <Item
+                        label="Team"
+                        name="team_id"
+                    >
+                        <Select
+                            placeholder='Select line manager...'
+                            allowClear
+                            showSearch
+                            optionFilterProp="children"
+                            mode='multiple'
+                            style={{ width: 200 }}
+                        >
+                            {lists?.teams.map((role) => (
+                                <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.name}</Select.Option>
+                            ))}
+                        </Select>
+                    </Item>
                 </Row>
                 <Row justify='space-around'>
                     <Col xs={24} sm={24} md={11} lg={7} xl={7} >

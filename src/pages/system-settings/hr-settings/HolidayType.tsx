@@ -152,7 +152,7 @@ function HolidayTypeModal({ title, selectedData, isModalOpen, fetchData, handleC
         setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.PUT, { ...restValues, id: selectedData.id }) : POST(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.POST, restValues)
+        let result = selectedData ? PUT(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.POST, restValues)
         result.then(() => {
             form.resetFields()
             handleCancel()

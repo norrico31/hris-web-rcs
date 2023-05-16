@@ -54,6 +54,7 @@ export interface IUser {
     updated_at: string
     tin: ITin
     description: string | null
+    team_id: string[]
 }
 
 export type UserRes = AxiosGetData<IUser>
