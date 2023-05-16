@@ -6,7 +6,6 @@ export interface IEmployee extends IUser {
     employee_name: string
     date_hired: string
     status: string
-    team_id: string
 }
 
 export type Employee201Res = AxiosGetData<IEmployee>

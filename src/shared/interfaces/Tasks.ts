@@ -18,7 +18,6 @@ export interface ITasks extends IUser {
     task_activity_id: string
     task_type: IRelations
     team: ITeam
-    team_id: string | null
     task_type_id: string
     updated_at: string
     user_id: string

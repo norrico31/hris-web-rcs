@@ -217,7 +217,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                 ...selectedData,
                 date: dayjs(selectedData.date, 'YYYY/MM/DD') as any
             })
-            setTeamId(selectedData?.team_id ?? selectedData.team?.id)
+            setTeamId(selectedData.team?.id)
         } else {
             form.resetFields(undefined)
             setTeamId('')
