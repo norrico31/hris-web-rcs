@@ -13,12 +13,12 @@ export interface ITasks extends IUser {
     id: string
     manhours: string
     sprint: IRelations
-    sprint_id: string
+    sprint_id: string | null
     task_activity: IRelations
-    task_activity_id: string
+    task_activity_id: string | null
     task_type: IRelations
     team: ITeam
-    task_type_id: string
+    task_type_id: string | null
     updated_at: string
     user_id: string
 }

@@ -293,7 +293,15 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     showSearch
                     optionFilterProp="children"
                     value={teamId}
-                    onChange={setTeamId}
+                    onChange={(id) => {
+                        setTeamId(id)
+                        form.setFieldsValue({
+                            ...form.getFieldsValue(),
+                            task_activity_id: null,
+                            task_type_id: null,
+                            sprint_id: null,
+                        })
+                    }}
                 >
                     {teams.map((team) => (
                         <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
