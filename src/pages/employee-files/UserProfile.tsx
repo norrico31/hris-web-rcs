@@ -63,7 +63,8 @@ export default function UserProfileEmployee() {
             resignation_date: employeeInfo?.resignation_date ? dayjs(employeeInfo?.resignation_date, 'YYYY/MM/DD') : null,
             manager_id: employeeInfo?.managers?.id,
             employment_status_id: employeeInfo?.employment_status?.id,
-            position_id: employeeInfo?.position?.id
+            position_id: employeeInfo?.position?.id,
+            team_id: employeeInfo?.teams?.map((team) => team.id)
         })
     }, [employeeInfo])
 
@@ -76,11 +77,6 @@ export default function UserProfileEmployee() {
             resignation_date: val?.resignation_date ? dayjs(val?.resignation_date).format('YYYY-MM-DD') : null,
         };
         PUT(EMPLOYEE201.PUT + employeeId, payload)
-            .then(() => messageApi.open({
-                type: 'success',
-                content: 'User Profile Update Successfully!',
-                duration: 5
-            }))
             .catch((err) => messageApi.open({
                 type: 'error',
                 content: err.response.data.message ?? err.response.data.error,
@@ -225,9 +221,7 @@ export default function UserProfileEmployee() {
                 </Row>
                 <Row justify='space-between'>
                     <Col xs={24} sm={24} md={11} lg={7} xl={7} >
-                        <Item
-                            label="Employee Status"
-                            name="employment_status_id"
+                        <Item label="Employee Status" name="employee_status_id"
                         >
                             <Select
                                 placeholder='Select employee status...'
@@ -277,10 +271,11 @@ export default function UserProfileEmployee() {
                     </Col>
                 </Row>
                 <Row justify='center'>
-
                     <Item
                         label="Team"
                         name="team_id"
+                        required
+                        rules={[{ required: true, message: '' }]}
                     >
                         <Select
                             placeholder='Select line manager...'

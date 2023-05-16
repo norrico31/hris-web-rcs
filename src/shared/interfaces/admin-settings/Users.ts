@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs"
-import { IPayScheme, IPermissions, IRole, IEmployeeBenefits, IEmployeeClients, IEmployeeContracts, IEmployeeEvaluation, ILeaveCredits, IMemorandum, IPagibig, IPhilhealth, ITin, ISss, IEmployeeSalary, AxiosGetData, IDepartment, IPosition, ILineManager } from ".."
+import { IPayScheme, IPermissions, IRole, IEmployeeBenefits, IEmployeeClients, IEmployeeContracts, IEmployeeEvaluation, ILeaveCredits, IMemorandum, IPagibig, IPhilhealth, ITin, ISss, IEmployeeSalary, AxiosGetData, IDepartment, IPosition, ILineManager, ITeam } from ".."
 
 export interface IUser {
     address: string | null
@@ -55,6 +55,7 @@ export interface IUser {
     tin: ITin
     description: string | null
     team_id: string[]
+    teams: ITeam[]
 }
 
 export type UserRes = AxiosGetData<IUser>
