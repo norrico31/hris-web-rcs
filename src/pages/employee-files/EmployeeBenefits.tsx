@@ -25,8 +25,8 @@ export default function EmployeeBenefits() {
         },
         {
             title: 'Amount',
-            key: 'benefit_amount',
-            dataIndex: 'benefit_amount',
+            key: 'amount',
+            dataIndex: 'amount',
         },
         {
             title: 'Schedule',
@@ -35,8 +35,8 @@ export default function EmployeeBenefits() {
         },
         {
             title: 'Status',
-            key: 'benefit_status',
-            dataIndex: 'benefit_status',
+            key: 'is_active',
+            dataIndex: 'is_active',
         },
         {
             title: 'Description',
@@ -177,7 +177,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
                 <Select
                     placeholder='Select status...'
                 >
-                    <Select.Option value="active">Active</Select.Option>
+                    <Select.Option value="activate">Active</Select.Option>
                     <Select.Option value="inactive">Inactive</Select.Option>
                 </Select>
             </Item>

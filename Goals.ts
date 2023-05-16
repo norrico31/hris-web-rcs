@@ -4,4 +4,11 @@
 
 // TODO: Employee Files (Page PUT method)
 
+// ARCHIVE TABLE
+// DASHBOARD
+// OVERTIME
+// ANNOUNCEMENTS
+// HR REPORTS
+// CLIENT BILLING
+
 // lt --subdomain staging-hrportal.redcoresolutions --port 8000

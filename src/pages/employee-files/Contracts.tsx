@@ -162,13 +162,12 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
                 <Input placeholder='Enter type...' />
             </Item>
             <Item label="Attachments">
-                <Item name="attachments" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-                    <Upload.Dragger name="files" multiple beforeUpload={() => false}>
+                <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+                    <Upload.Dragger name="files" beforeUpload={() => false}>
                         <p className="ant-upload-drag-icon">
                             <InboxOutlined />
                         </p>
                         <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        <p className="ant-upload-hint">Support for a single or bulk upload.</p>
                     </Upload.Dragger>
                 </Item>
             </Item>

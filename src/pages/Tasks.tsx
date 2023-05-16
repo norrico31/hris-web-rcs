@@ -18,8 +18,6 @@ import { Alert } from '../shared/lib/alert'
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS }, }] = useEndpoints()
 
-// TODO: PERMISSIONS
-
 export default function Tasks() {
     renderTitle('Tasks')
     const { user } = useAuthContext()
@@ -61,13 +59,13 @@ export default function Tasks() {
             render: (_, record) => record.sprint?.name,
             width: 130
         },
-        {
-            title: 'Department',
-            key: 'department_id',
-            dataIndex: 'department_id',
-            render: (_, record) => record.department?.name,
-            width: 130
-        },
+        // {
+        //     title: 'Department',
+        //     key: 'department_id',
+        //     dataIndex: 'department_id',
+        //     render: (_, record) => record.department?.name,
+        //     width: 130
+        // },
         {
             title: 'Team',
             key: 'team_id',
