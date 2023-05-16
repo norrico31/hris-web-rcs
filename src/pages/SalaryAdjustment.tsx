@@ -11,7 +11,7 @@ import { Action, MainHeader, Table, Form, TabHeader } from "../components"
 import { renderTitle } from "../shared/utils/utilities"
 import axiosClient, { useAxios } from "../shared/lib/axios"
 import { ROOTPATHS, useEndpoints } from "../shared/constants"
-import { IArguments, IEmployee, IExpenseType, TableParams } from "../shared/interfaces"
+import { IArguments, IEmployee, IExpenseType, IUser, TableParams } from "../shared/interfaces"
 import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 
 interface ISalaryAdjustment extends Partial<{ id: string }> {
@@ -20,8 +20,10 @@ interface ISalaryAdjustment extends Partial<{ id: string }> {
     sprint_name: string[]
     manhours: string
     expense_date: string
+    expense_type: IExpenseType
     receipt_attachment: any
     description: string;
+    user: IUser
 }
 
 const { GET, POST, PUT, DELETE } = useAxios()
@@ -37,34 +39,36 @@ export default function SalaryAdjustment() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    useEffect(function fetch() {
+    useEffect(function getData() {
         const controller = new AbortController();
         fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
     }, [])
-
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['h01', 'h02', 'h03', 'h04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
+
 
     const columns: ColumnsType<ISalaryAdjustment> = [
         {
             title: 'Employee Name',
             key: 'employee_name',
             dataIndex: 'employee_name',
+            render: (_, record) => record?.user?.full_name
         },
         {
             title: 'Adjustment Type',
             key: 'adjustment_type_id',
             dataIndex: 'adjustment_type_id',
+            render: (_, record) => record?.expense_type?.name
         },
         {
             title: 'Adjustment Date',
-            key: 'adjustment_date',
-            dataIndex: 'adjustment_date',
+            key: 'expense_date',
+            dataIndex: 'expense_date',
         },
         {
             title: 'Amount',
@@ -79,25 +83,20 @@ export default function SalaryAdjustment() {
             align: 'center',
         },
         {
-            title: 'Description',
-            key: 'description',
-            dataIndex: 'description',
-        },
-        {
             title: 'Action',
             key: 'action',
             dataIndex: 'action',
             align: 'center',
             render: (_, record: ISalaryAdjustment) => <Action
                 title='Tasks'
-                name={record.task_activity[0]}
+                name={record?.user?.full_name}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => handleEdit(record)}
             />
         },
     ]
 
-    const fetchData = (args?: IArguments) => {
+    function fetchData(args?: IArguments) {
         setLoading(true)
         GET<any>(EXPENSE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
