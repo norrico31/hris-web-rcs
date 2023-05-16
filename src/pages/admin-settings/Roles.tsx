@@ -172,7 +172,7 @@ function RoleModal({ title, isModalOpen, handleCancel, fetchData, navigate }: Ro
         restValues = { ...restValues, ...(description != undefined && { description }) }
         POST(ADMINSETTINGS.ROLES.POST, restValues)
             .then((res) => {
-                navigate(`/roles/${res?.data?.data?.id}/permissions`)
+                navigate(`/roles/${res?.data?.data?.id ?? res?.data?.id}/permissions`)
                 form.resetFields()
                 handleCancel()
             }).finally(() => {

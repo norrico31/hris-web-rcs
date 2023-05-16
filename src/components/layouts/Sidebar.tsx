@@ -11,7 +11,7 @@ import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
 import { TfiAnnouncement } from 'react-icons/tfi'
 import { useAuthContext } from '../../shared/contexts/Auth'
-import { IRolePermission, IUser } from '../../shared/interfaces'
+import { IPermissionStatus, IPermissions, IRolePermission, IUser } from '../../shared/interfaces'
 import { ADMINSETTINGSPATHS, CLIENTSETTINGSPATHS, HRSETTINGSPATHS, ROOTPATHS, TASKSETTINGSPATHS } from '../../shared/constants'
 
 type Props = {
@@ -152,7 +152,7 @@ function filterMenu(user: IUser) {
                     '/systemsettings/expensesettings/expensetype',
                     <SiExpensify />,
                     undefined,
-                    !!moduleCodes['KO01']
+                    !!moduleCodes['ko01'] || !!moduleCodes['ko02'] || !!moduleCodes['ko03']
                 ),
             ],
             taskSystemSettingsPaths.includes('activities') || taskSystemSettingsPaths.includes('types') || taskSystemSettingsPaths.includes('sprints') || hrPaths.includes('bankdetails') || hrPaths.includes('benefits') || hrPaths.includes('holidays') || hrPaths.includes('holidaytypes') || hrPaths.includes('dailyrates') || hrPaths.includes('employmentstatuses') || hrPaths.includes('departments') || hrPaths.includes('team') || hrPaths.includes('positions') || hrPaths.includes('leavestatuses') || hrPaths.includes('leavedurations') || hrPaths.includes('leavetypes') || hrPaths.includes('salaries') || hrPaths.includes('schedules') || clientPaths.includes('clients') || clientPaths.includes('clientbranches') || clientPaths.includes('clientadjustments') || !!moduleCodes['KO01'],
