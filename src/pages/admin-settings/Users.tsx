@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Space, Button, Input, Form as AntDForm, Select } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Select, Popconfirm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../components"
@@ -68,12 +68,18 @@ export default function Users() {
             key: 'activation',
             dataIndex: 'activation',
             align: 'center',
-            render: (_: any, record: IUser) => <div>
-                <Button type={record?.is_active ? 'default' : 'primary'} onClick={() => {
+            render: (_: any, record: IUser) => <Popconfirm
+                title={`${!record?.is_active ? 'Activate' : 'Deactivate'} User`}
+                description={`Are you sure you want to ${!record?.is_active ? 'activate' : 'deactivate'} ${record?.full_name}?`}
+                onConfirm={() => {
                     const urlActivate = record?.is_active ? ADMINSETTINGS.USERS.DEACTIVATE : ADMINSETTINGS.USERS.ACTIVATE
                     userActivation(urlActivate, record?.id)
-                }}>{record?.is_active ? 'Activate' : 'Deactivate'}</Button>
-            </div>
+                }}
+                okText={!record?.is_active ? 'Activate' : 'Deactivate'}
+                cancelText="Cancel"
+            >
+                <Button type={record?.is_active ? 'default' : 'primary'}>{!record?.is_active ? 'Activate' : 'Deactivate'}</Button>
+            </Popconfirm>
         },
     ]
 
