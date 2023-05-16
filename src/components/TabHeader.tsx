@@ -8,10 +8,11 @@ type Props = {
     handleCreate?: () => void
     handleDownload?: () => void
     handleSearch: (term: string) => void
+    handleModalArchive?: () => void
     children?: ReactNode
 }
 
-export default function TabHeader({ name, handleSearch, handleCreate, handleDownload, children }: Props) {
+export default function TabHeader({ name, handleSearch, handleCreate, handleDownload, handleModalArchive, children }: Props) {
     const [searchTerm, setSearchTerm] = useState('')
 
     const debouncedSearch = useCallback(debounce((handleSearch), 500), [])
@@ -26,18 +27,10 @@ export default function TabHeader({ name, handleSearch, handleCreate, handleDown
             <Row justify={children ? 'space-between' : 'end'} align='middle'>
                 {children}
                 <Space>
-                    {handleDownload != undefined && (
-                        <Popconfirm
-                            title={`Download`}
-                            description={`Are you sure you want to download ${name} template?`}
-                            icon={<DownloadOutlined />}
-                            onConfirm={handleDownload}
-                            okText='Download'
-                        >
-                            <Button type='primary'>Download module</Button>
-                        </Popconfirm>
-                    )}
                     <Input.Search placeholder='Search...' value={searchTerm} onChange={onChange} />
+                    {handleModalArchive && (
+                        <Button type='primary' onClick={handleModalArchive}>View Archives</Button>
+                    )}
                     {handleCreate && (<Button className='btn-secondary' onClick={handleCreate}>Create</Button>)}
                 </Space>
             </Row>

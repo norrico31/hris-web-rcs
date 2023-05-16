@@ -288,6 +288,7 @@ export const useEndpoints = () => {
             }
         },
         TASKS: {
+            ARCHIVES: '/tasks',
             GET: '/tasks',
             POST: '/tasks/',
             PUT: '/tasks/',

@@ -1,4 +1,4 @@
-import { useState, createElement } from 'react'
+import { useState, useEffect, createElement } from 'react'
 import { Layout, Dropdown, Typography, Space, MenuProps } from 'antd'
 import { MenuUnfoldOutlined, MenuFoldOutlined, DownOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
@@ -19,7 +19,6 @@ const [{ AUTH: { LOGOUT, LOGIN } }] = useEndpoints()
 
 export default function Header({ collapsed, setCollapsed }: Props) {
     const { user, setUser, setToken } = useAuthContext()
-    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString())
 
     const toggle = () => {
         collapsed = !collapsed
@@ -43,13 +42,6 @@ export default function Header({ collapsed, setCollapsed }: Props) {
         },
     ]
 
-    function updateTime() {
-        let time = new Date().toLocaleTimeString()
-        setCurrentTime(time)
-    }
-
-    setInterval(updateTime, 1000);
-
     function logout(evt: React.MouseEvent) {
         evt.stopPropagation()
         evt.preventDefault()
@@ -69,7 +61,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
             </div>
             <div className='header-wrapper'>
                 <Space align='center' size={20}>
-                    <h3>{currentTime}</h3>
+                    <CurrentTime />
                     <Dropdown menu={{ items }}>
                         <a onClick={e => e.preventDefault()}>
                             <Space>
@@ -82,6 +74,18 @@ export default function Header({ collapsed, setCollapsed }: Props) {
             </div>
         </Container>
     )
+}
+
+function CurrentTime() {
+    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString())
+    useEffect(() => {
+        const timer = setInterval(() => {
+            let time = new Date().toLocaleTimeString()
+            setCurrentTime(time)
+        }, 1000)
+        return () => clearInterval(timer)
+    }, [])
+    return <h3>{currentTime}</h3>
 }
 
 const UserName = styled.span`
