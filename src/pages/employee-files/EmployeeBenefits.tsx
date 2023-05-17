@@ -29,20 +29,15 @@ export default function EmployeeBenefits() {
             dataIndex: 'amount',
         },
         {
-            title: 'Schedule',
-            key: 'benefit_schedule',
-            dataIndex: 'benefit_schedule',
-        },
-        {
             title: 'Status',
             key: 'is_active',
             dataIndex: 'is_active',
         },
-        {
-            title: 'Description',
-            key: 'description',
-            dataIndex: 'description',
-        },
+        // {
+        //     title: 'Description',
+        //     key: 'description',
+        //     dataIndex: 'description',
+        // },
         {
             title: 'Action',
             key: 'action',
@@ -134,8 +129,8 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
 
     function onFinish(values: Record<string, string>) {
         let { date, description, ...restValues } = values
-        restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(EMPLOYEE201.BENEFITS.PUT + employeeId, { ...restValues, id: selectedData.id }) : POST(EMPLOYEE201.BENEFITS.POST, { ...restValues, user_id: employeeId })
+        // restValues = { ...restValues, ...(description != undefined && { description }) }
+        let result = selectedData ? PUT(EMPLOYEE201.BENEFITS.PUT + employeeId, { ...restValues, id: selectedData.id, user_id: employeeId }) : POST(EMPLOYEE201.BENEFITS.POST, { ...restValues, user_id: employeeId })
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -180,12 +175,6 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
                     <Select.Option value="activate">Active</Select.Option>
                     <Select.Option value="inactive">Inactive</Select.Option>
                 </Select>
-            </Item>
-            <Item
-                name="description"
-                label="Description"
-            >
-                <Input placeholder='Enter description...' />
             </Item>
             <Item style={{ textAlign: 'right' }}>
                 <Space>

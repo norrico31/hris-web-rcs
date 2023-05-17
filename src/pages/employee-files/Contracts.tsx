@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Modal, Form as AntDForm, Input, Select, Space, Button, Upload } from 'antd'
 import { InboxOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table'
-import dayjs from 'dayjs'
 import { Action, Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
@@ -12,8 +11,6 @@ import { useEndpoints } from '../../shared/constants'
 
 const [{ EMPLOYEE201 }] = useEndpoints()
 const { PUT, DELETE, POST } = useAxios()
-
-// TODO
 
 export default function EmployeeContracts() {
     const { employeeInfo, fetchData } = useEmployeeCtx()
@@ -41,6 +38,7 @@ export default function EmployeeContracts() {
             key: 'description',
             dataIndex: 'description',
         },
+        // TODO (EDIT, DELETE)
         {
             title: 'Action',
             key: 'action',
@@ -82,6 +80,7 @@ export default function EmployeeContracts() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleDownload={handleDownload}
             />
+
             <Table
                 columns={columns}
                 dataList={employeeInfo?.contracts}
@@ -138,12 +137,11 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
     function onFinish(values: Record<string, any>) {
         setLoading(true)
         const formData = new FormData()
-        formData.append('id', '')
         formData.append('user_id', employeeId)
         formData.append('type', values?.type)
-        formData.append('file', values?.file[0].originFileObj!)
+        formData.append('file', values?.file[0].originFileObj)
         formData.append('is_active', values?.is_active)
-        formData.append('description', values?.description != undefined ? values?.description : null)
+        formData.append('description', (values?.description != undefined || values?.description !== '') ? values?.description : null)
         let result = selectedData ? PUT(EMPLOYEE201.CONTRACTS.PUT + employeeId, formData) : POST(EMPLOYEE201.CONTRACTS.POST, formData)
         result.then(() => {
             form.resetFields()

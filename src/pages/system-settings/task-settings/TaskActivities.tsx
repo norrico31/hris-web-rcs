@@ -43,18 +43,18 @@ export default function TaskActivities() {
             key: 'description',
             dataIndex: 'description',
         },
-        {
-            title: 'Action',
-            key: 'action',
-            dataIndex: 'action',
-            align: 'center',
-            render: (_: any, record: ITaskActivities) => <Action
-                title='Activity'
-                name={record.name}
-                onConfirm={() => handleDelete(record.id)}
-                onClick={() => handleEdit(record)}
-            />
-        },
+        // {
+        //     title: 'Action',
+        //     key: 'action',
+        //     dataIndex: 'action',
+        //     align: 'center',
+        //     render: (_: any, record: ITaskActivities) => <Action
+        //         title='Activity'
+        //         name={record.name}
+        //         onConfirm={() => handleDelete(record.id)}
+        //         onClick={() => handleEdit(record)}
+        //     />
+        // },
     ]
 
     const fetchData = (args?: IArguments) => {
@@ -105,7 +105,7 @@ export default function TaskActivities() {
             <TabHeader
                 name='task activities'
                 handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
+            // handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 loading={loading}

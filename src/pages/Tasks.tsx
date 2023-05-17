@@ -171,7 +171,7 @@ export default function Tasks() {
                 name='tasks management'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
-                handleModalArchive={() => setIsModalArchive(true)}
+            // handleModalArchive={() => setIsModalArchive(true)}
             >
                 <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
             </TabHeader>

@@ -55,18 +55,18 @@ export default function TaskSprint() {
             key: 'description',
             dataIndex: 'description',
         },
-        {
-            title: 'Action',
-            key: 'action',
-            dataIndex: 'action',
-            align: 'center',
-            render: (_: any, record: ITaskSprint) => <Action
-                title='Sprint'
-                name={record.name}
-                onConfirm={() => handleDelete(record.id)}
-                onClick={() => handleEdit(record)}
-            />
-        },
+        // {
+        //     title: 'Action',
+        //     key: 'action',
+        //     dataIndex: 'action',
+        //     align: 'center',
+        //     render: (_: any, record: ITaskSprint) => <Action
+        //         title='Sprint'
+        //         name={record.name}
+        //         onConfirm={() => handleDelete(record.id)}
+        //         onClick={() => handleEdit(record)}
+        //     />
+        // },
     ]
 
     function fetchData(args?: IArguments) {
@@ -117,7 +117,7 @@ export default function TaskSprint() {
             <TabHeader
                 name='sprint'
                 handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
+            // handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 loading={loading}
@@ -152,7 +152,7 @@ export function SprintModal({ title, teamId, selectedData, isModalOpen, fetchDat
     const [form] = useForm<Record<string, any>>()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
-    console.log('sprint modal: ', teamId)
+
     useEffect(() => {
         if (selectedData != undefined) {
             let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]

@@ -343,10 +343,10 @@ export const routes = createBrowserRouter([
                         path: 'salaryhistory',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryHistory /></Suspense>
                     },
-                    {
-                        path: 'employeeschedule',
-                        element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSchedule /></Suspense>
-                    },
+                    // {
+                    //     path: 'employeeschedule',
+                    //     element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSchedule /></Suspense>
+                    // },
                     {
                         path: 'userprofile',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><UserProfile /></Suspense>

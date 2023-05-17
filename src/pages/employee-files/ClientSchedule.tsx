@@ -5,23 +5,23 @@ import { useEmployeeCtx } from '../EmployeeEdit'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
-import { IArguments, TableParams, IEmployeeClients, ClientScheduleRes, IClient, IClientBranch } from '../../shared/interfaces'
+import { IArguments, TableParams, IEmployeeClients, ClientScheduleRes, IClient, IClientBranch, ISchedules } from '../../shared/interfaces'
 import dayjs from 'dayjs';
 import useWindowSize from '../../shared/hooks/useWindowSize'
 
 const { useForm, Item } = AntDForm
-const { useBreakpoint } = Grid
 
 const [{ SYSTEMSETTINGS: { HRSETTINGS, CLIENTSETTINGS }, }] = useEndpoints()
 const { GET } = useAxios()
 // TODO
+
 export default function ClientAndSchedule() {
     const { employeeInfo, fetchData } = useEmployeeCtx()
     const [form] = useForm()
     const [selectedData, setSelectedData] = useState<IEmployeeClients | undefined>(undefined)
-    const [list, setList] = useState<{ clients: Array<IClient>; clientBranches: Array<IClientBranch>; schedules: Array<any> }>({ clients: [], clientBranches: [], schedules: [] })
+    const [list, setList] = useState<{ clients: Array<IClient>; clientBranches: Array<IClientBranch>; schedules: Array<ISchedules> }>({ clients: [], clientBranches: [], schedules: [] })
     const { width } = useWindowSize()
-    console.log(list)
+
     useEffect(function fetchUserInfo() {
         form.setFieldsValue({
             ...employeeInfo,
@@ -132,7 +132,7 @@ export default function ClientAndSchedule() {
                                 optionFilterProp="children"
                             >
                                 {list.schedules.map((sched) => (
-                                    <Select.Option value={sched.id} key={sched.id}>{sched.full_name}</Select.Option>
+                                    <Select.Option value={sched.id} key={sched.id}>{sched.name}</Select.Option>
                                 ))}
                             </Select>
                         </Item>

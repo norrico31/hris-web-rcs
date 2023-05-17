@@ -44,18 +44,18 @@ export default function TaskTypes() {
             key: 'description',
             dataIndex: 'description',
         },
-        {
-            title: 'Action',
-            key: 'action',
-            dataIndex: 'action',
-            align: 'center',
-            render: (_: any, record: ITaskTypes) => <Action
-                title='Types'
-                name={record.name}
-                onConfirm={() => handleDelete(record.id)}
-                onClick={() => handleEdit(record)}
-            />
-        },
+        // {
+        //     title: 'Action',
+        //     key: 'action',
+        //     dataIndex: 'action',
+        //     align: 'center',
+        //     render: (_: any, record: ITaskTypes) => <Action
+        //         title='Types'
+        //         name={record.name}
+        //         onConfirm={() => handleDelete(record.id)}
+        //         onClick={() => handleEdit(record)}
+        //     />
+        // },
     ]
 
     function fetchData(args?: IArguments) {
@@ -106,7 +106,7 @@ export default function TaskTypes() {
             <TabHeader
                 name='task types'
                 handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
+            // handleCreate={() => setIsModalOpen(true)}
             />
             <Table
                 columns={columns}
@@ -141,7 +141,6 @@ export function TypesModal({ title, teamId, selectedData, isModalOpen, fetchData
     const [form] = useForm<ITaskTypes>()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
-    console.log('types modal: ', teamId)
 
     useEffect(() => {
         if (selectedData != undefined) {

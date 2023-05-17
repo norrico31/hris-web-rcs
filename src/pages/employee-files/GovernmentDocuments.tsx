@@ -1,15 +1,12 @@
 import { Form as AntDForm, Row, Col, Button, Modal, Input, Space, Upload } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { InboxOutlined } from '@ant-design/icons';
 import { Card, Form } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { ReactNode, useState } from 'react'
 import { IArguments } from '../../shared/interfaces'
-import axiosClient, { useAxios } from '../../shared/lib/axios'
+import axiosClient from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
 
-// TODO
-
-const { GET, DELETE, POST, PUT } = useAxios()
 const [{ EMPLOYEE201: { GOVERNMENTDOCS } }] = useEndpoints()
 
 export default function GovernmentDocs() {
@@ -22,7 +19,7 @@ export default function GovernmentDocs() {
     const pagIbig = employeeInfo?.pagibig.pagibig_number
     const philHealth = employeeInfo?.philhealth.philhealth_number
     const sss = employeeInfo?.sss.sss_number
-    const tin = employeeInfo?.tin.tin_number;
+    const tin = employeeInfo?.tin.tin_number
 
     return (
         <Card title='Government Docs'>
@@ -101,14 +98,14 @@ type CardItemProps = {
 
 function CardItem({ heading, gov, onClick, children }: CardItemProps) {
     return (
-        <Col xs={8} sm={24} md={12} lg={8} xl={8}>
+        <Col xs={24} sm={24} md={12} lg={8} xl={8}>
             <Card title={heading}>
                 {gov != undefined ? (
                     <Row justify='space-between'>
                         <p>Number: <b>{gov}</b></p>
                         <Button type='primary' onClick={onClick}>Update</Button>
                     </Row>
-                ) : <Button type='primary' onClick={onClick}>Add - {heading}</Button>}
+                ) : <Button type='primary' onClick={onClick}>Add</Button>}
             </Card>
             {children}
         </Col>
@@ -144,9 +141,8 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
         const formData = new FormData()
         formData.append('user_id', userId)
         formData.append(keyProp, values[keyProp])
-        formData.append('file', values.file[0])
-
-        axiosClient.put(url + userId, formData, { method: '_PUT' })
+        formData.append('file', values.file[0]?.originFileObj)
+        axiosClient.put(url + userId, formData)
             .then(() => {
                 form.resetFields()
                 handleCancel()
@@ -166,20 +162,15 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
             >
                 <Input type='number' placeholder='Enter pagibig number...' />
             </FormItem>
-            <FormItem
-                label='Upload File'
-                name='file'
-                required
-                rules={[{ required: true, message: '' }]}
-                valuePropName="fileList"
-                getValueFromEvent={normFile}
-            >
-                <Upload listType="picture-card" beforeUpload={() => false}>
-                    <div>
-                        <PlusOutlined />
-                        <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                </Upload>
+            <FormItem label="File">
+                <FormItem name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+                    <Upload.Dragger name="files" beforeUpload={() => false}>
+                        <p className="ant-upload-drag-icon">
+                            <InboxOutlined />
+                        </p>
+                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                    </Upload.Dragger>
+                </FormItem>
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>

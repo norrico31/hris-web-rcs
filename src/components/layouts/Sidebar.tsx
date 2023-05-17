@@ -112,7 +112,7 @@ function filterMenu(user: IUser) {
             '/overtime',
             <AiOutlineFieldTime />,
             undefined,
-            // rootPath.includes('overtime')
+            false // rootPath.includes('overtime')
         ),
         getItemLinks(
             <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,
