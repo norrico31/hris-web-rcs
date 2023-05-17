@@ -164,7 +164,7 @@ export function TypesModal({ title, teamId, selectedData, isModalOpen, fetchData
         setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(TASKSSETTINGS.TYPES.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.TYPES.POST, restValues)
+        let result = selectedData ? PUT(TASKSSETTINGS.TYPES.PUT + selectedData.id!, { ...restValues, id: selectedData.id, team_id: teamId ? teamId : null }) : POST(TASKSSETTINGS.TYPES.POST, { ...restValues, team_id: teamId ? teamId : null })
         result.then(() => {
             form.resetFields()
             handleCancel()

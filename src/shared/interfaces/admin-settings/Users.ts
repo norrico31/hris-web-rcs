@@ -14,7 +14,7 @@ export interface IUser {
     email: string
     employee_code: string | null
     employee_clients: IEmployeeClients[]
-    employee_contracts: IEmployeeContracts[]
+    contracts: IEmployeeContracts[]
     employee_benefits: IEmployeeBenefits[]
     employment_status: { id: string; name: string }
     employment_status_id: string

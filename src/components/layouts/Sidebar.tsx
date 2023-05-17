@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { MenuProps, Menu as AntdMenu, Skeleton } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit } from 'react-icons/ai'
+import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit, AiOutlineFieldTime } from 'react-icons/ai'
 import { MdAdminPanelSettings } from 'react-icons/md'
 import { FaTasks, FaCriticalRole, FaUsersCog, FaUsers } from 'react-icons/fa'
 import { GiHumanPyramid } from 'react-icons/gi'
@@ -106,6 +106,13 @@ function filterMenu(user: IUser) {
             <BiTimeFive />,
             undefined,
             rootPath.includes('timekeeping')
+        ),
+        getItemLinks(
+            <Link to='/overtime' id='overtime'>Overtime</Link>,
+            '/overtime',
+            <AiOutlineFieldTime />,
+            undefined,
+            // rootPath.includes('overtime')
         ),
         getItemLinks(
             <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,

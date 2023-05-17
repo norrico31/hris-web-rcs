@@ -179,7 +179,7 @@ export function SprintModal({ title, teamId, selectedData, isModalOpen, fetchDat
         end_date = dayjs(end_date).format('YYYY/MM/DD')
         restValues = { ...restValues, start_date, end_date, ...(description != undefined && { description }) }
 
-        let result = selectedData ? PUT(TASKSSETTINGS.SPRINT.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(TASKSSETTINGS.SPRINT.POST, restValues)
+        let result = selectedData ? PUT(TASKSSETTINGS.SPRINT.PUT + selectedData.id!, { ...restValues, id: selectedData.id, team_id: teamId ? teamId : null }) : POST(TASKSSETTINGS.SPRINT.POST, { ...restValues, team_id: teamId ? teamId : null })
         result.then(() => {
             form.resetFields()
             handleCancel()

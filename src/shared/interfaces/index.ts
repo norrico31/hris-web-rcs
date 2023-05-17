@@ -6,6 +6,7 @@ export * from './auth/User'
 export * from './Tasks'
 export * from './TimeKeeping'
 export * from './Leave'
+export * from './Overtime'
 
 export * from './admin-settings/Role'
 export * from './admin-settings/Users'

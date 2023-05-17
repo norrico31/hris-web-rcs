@@ -21,6 +21,12 @@ export const useEndpoints = () => {
             TIMEOUT: '/time_keepings/time_out',
             GET: '/time_keepings'
         },
+        OVERTIME: {
+            GET: '/overtimes',
+            POST: '/overtimes/',
+            PUT: '/overtimes/',
+            DELETE: '/overtimes/',
+        },
         WHOSINOUT: {
             IN: '/time_keepings/whos/in',
             OUT: '/time_keepings/whos/out',

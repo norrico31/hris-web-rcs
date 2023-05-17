@@ -12,9 +12,11 @@ import { useEndpoints } from '../../shared/constants'
 
 const [{ EMPLOYEE201 }] = useEndpoints()
 const { PUT, DELETE, POST } = useAxios()
+
 // TODO
+
 export default function EmployeeContracts() {
-    const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
+    const { employeeInfo, fetchData } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployeeContracts | undefined>(undefined)
 
@@ -25,14 +27,14 @@ export default function EmployeeContracts() {
             dataIndex: 'type',
         },
         {
-            title: 'Attachments',
-            key: 'attachments',
-            dataIndex: 'attachments',
+            title: 'File',
+            key: 'file',
+            dataIndex: 'file',
         },
         {
             title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
+            key: 'is_active',
+            dataIndex: 'is_active',
         },
         {
             title: 'Description',
@@ -82,7 +84,7 @@ export default function EmployeeContracts() {
             />
             <Table
                 columns={columns}
-                dataList={employeeInfo?.employee_contracts}
+                dataList={employeeInfo?.contracts}
                 onChange={(evt) => console.log(evt)}
             />
             <ContractsModal
@@ -107,14 +109,12 @@ const { Item: Item, useForm } = AntDForm
 function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
     const { employeeId, fetchData } = useEmployeeCtx()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
-            // let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
-
             form.setFieldsValue({
                 ...selectedData,
-                // date: date
             })
         } else {
             form.resetFields(undefined)
@@ -135,24 +135,27 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
         return newFiles
     }
 
-    function onFinish(values: Record<string, string>) {
-        // let { date, description, ...restProps } = values
-        // let [start_date, end_date] = date
-        // start_date = dayjs(start_date).format('YYYY/MM/DD')
-        // end_date = dayjs(end_date).format('YYYY/MM/DD')
-        // restProps = { ...restProps, start_date, end_date, ...(description != undefined && { description }) }
-        // console.log(restProps)
-        let { date, description, ...restValues } = values
-        restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(EMPLOYEE201.CONTRACTS.PUT + employeeId, { ...restValues, id: selectedData.id }) : POST(EMPLOYEE201.CONTRACTS.POST, restValues)
+    function onFinish(values: Record<string, any>) {
+        setLoading(true)
+        const formData = new FormData()
+        formData.append('id', '')
+        formData.append('user_id', employeeId)
+        formData.append('type', values?.type)
+        formData.append('file', values?.file[0].originFileObj!)
+        formData.append('is_active', values?.is_active)
+        formData.append('description', values?.description != undefined ? values?.description : null)
+        let result = selectedData ? PUT(EMPLOYEE201.CONTRACTS.PUT + employeeId, formData) : POST(EMPLOYEE201.CONTRACTS.POST, formData)
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Contract`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish} >
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <Item
                 label="Type"
                 name="type"
@@ -173,7 +176,7 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
             </Item>
             <Item
                 label="Status"
-                name="status"
+                name="is_active"
                 required
                 rules={[{ required: true, message: '' }]}
             >
@@ -192,10 +195,10 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
             </Item>
             <Item style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" disabled={loading}>
                         {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

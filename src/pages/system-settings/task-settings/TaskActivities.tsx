@@ -159,7 +159,7 @@ export function ActivityModal({ title, teamId, selectedData, isModalOpen, fetchD
 
     function onFinish(values: ITaskActivities) {
         setLoading(true)
-        const result = selectedData != undefined ? PUT(TASKSSETTINGS.ACTIVITIES.PUT + selectedData.id!, { ...formValues(values), id: selectedData.id! }) : POST(TASKSSETTINGS.ACTIVITIES.POST, formValues(values))
+        const result = selectedData != undefined ? PUT(TASKSSETTINGS.ACTIVITIES.PUT + selectedData.id!, { ...formValues(values), id: selectedData.id!, team_id: teamId ? teamId : null }) : POST(TASKSSETTINGS.ACTIVITIES.POST, { ...formValues(values), team_id: teamId ? teamId : null })
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -178,18 +178,6 @@ export function ActivityModal({ title, teamId, selectedData, isModalOpen, fetchD
                 rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter activity name...' />
-            </FormItem>
-            <FormItem
-                label="Team"
-                name="team_id"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <Select placeholder='Select team...' optionFilterProp="children" allowClear showSearch>
-                    {teams.map((team) => (
-                        <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
-                    ))}
-                </Select>
             </FormItem>
             <FormItem name="description" label="Description">
                 <Input placeholder='Enter Description...' />

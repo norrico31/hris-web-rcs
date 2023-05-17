@@ -215,7 +215,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     const [tasks, setTasks] = useTasksServices()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
-    // const [teamId, setTeamId] = useState('')
+    const [teamId, setTeamId] = useState('')
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -223,10 +223,10 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                 ...selectedData,
                 date: dayjs(selectedData.date, 'YYYY/MM/DD') as any
             })
-            // setTeamId(selectedData.team?.id)
+            setTeamId(selectedData.team?.id)
         } else {
             form.resetFields(undefined)
-            // setTeamId('')
+            setTeamId('')
         }
         const controller = new AbortController();
         axiosClient(HRSETTINGS.TEAMS.USERS_LISTS, { signal: controller.signal })
@@ -236,16 +236,16 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         }
     }, [selectedData])
 
-    // useEffect(() => {
-    //     if (teamId != undefined || teamId != '') {
-    //         const acitivityUrl = teamId ? TASKSSETTINGS.ACTIVITIES.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.ACTIVITIES.LISTS;
-    //         const typesUrl = teamId ? TASKSSETTINGS.TYPES.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.TYPES.LISTS;
-    //         const sprintsUrl = teamId ? TASKSSETTINGS.SPRINT.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.SPRINT.LISTS;
-    //         fetchList(acitivityUrl, 'activities');
-    //         fetchList(typesUrl, 'types');
-    //         fetchList(sprintsUrl, 'sprints');
-    //     }
-    // }, [teamId])
+    useEffect(() => {
+        if (teamId != undefined || teamId != '') {
+            const acitivityUrl = teamId ? TASKSSETTINGS.ACTIVITIES.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.ACTIVITIES.LISTS;
+            const typesUrl = teamId ? TASKSSETTINGS.TYPES.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.TYPES.LISTS;
+            const sprintsUrl = teamId ? TASKSSETTINGS.SPRINT.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.SPRINT.LISTS;
+            fetchList(acitivityUrl, 'activities');
+            fetchList(typesUrl, 'types');
+            fetchList(sprintsUrl, 'sprints');
+        }
+    }, [teamId])
 
     async function fetchList(url: string, key: 'activities' | 'types' | 'sprints') {
         const data = await getList(url)
@@ -292,28 +292,28 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     style={{ width: '100%' }}
                 />
             </FormItem>
-            {/* <FormItem name='team_id' label="Team" required rules={[{ required: true, message: '' }]}>
+            <FormItem name='team_id' label="Team" required rules={[{ required: true, message: '' }]}>
                 <Select
                     placeholder='Select team'
                     allowClear
                     showSearch
                     optionFilterProp="children"
-                value={teamId}
-                onChange={(id) => {
-                    setTeamId(id)
-                    form.setFieldsValue({
-                        ...form.getFieldsValue(),
-                        task_activity_id: null,
-                        task_type_id: null,
-                        sprint_id: null,
-                    })
-                }}
+                    value={teamId}
+                    onChange={(id) => {
+                        setTeamId(id)
+                        form.setFieldsValue({
+                            ...form.getFieldsValue(),
+                            task_activity_id: null,
+                            task_type_id: null,
+                            sprint_id: null,
+                        })
+                    }}
                 >
                     {teams.map((team) => (
                         <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
                     ))}
                 </Select>
-            </FormItem> */}
+            </FormItem>
             <Row gutter={[24, 24]} align='middle'>
                 <Col span={18}>
                     <FormItem name='task_activity_id' label="Task Activity" required rules={[{ required: true, message: '' }]}>
@@ -322,7 +322,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             allowClear
                             showSearch
                             optionFilterProp="children"
-
+                            disabled={!teamId}
                         >
                             {tasks.activities?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -331,7 +331,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     </FormItem>
                 </Col>
                 <Col>
-                    <Button className='btn-secondary' onClick={() => setIsModalActivity(true)}>
+                    <Button className='btn-secondary' onClick={() => setIsModalActivity(true)} disabled={!teamId}>
                         Add Activity
                     </Button>
                 </Col>
@@ -344,7 +344,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             allowClear
                             showSearch
                             optionFilterProp="children"
-
+                            disabled={!teamId}
                         >
                             {tasks.types?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -353,7 +353,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     </FormItem>
                 </Col>
                 <Col>
-                    <Button className='btn-secondary' onClick={() => setIsModalTypes(true)}>
+                    <Button className='btn-secondary' onClick={() => setIsModalTypes(true)} disabled={!teamId}>
                         Add Type
                     </Button>
                 </Col>
@@ -366,7 +366,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                             allowClear
                             showSearch
                             optionFilterProp="children"
-
+                            disabled={!teamId}
                         >
                             {tasks.sprints?.map((act) => (
                                 <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
@@ -375,7 +375,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     </FormItem>
                 </Col>
                 <Col>
-                    <Button className='btn-secondary' onClick={() => setIsModalSprints(true)}>
+                    <Button className='btn-secondary' onClick={() => setIsModalSprints(true)} disabled={!teamId}>
                         Add Sprint
                     </Button>
                 </Col>
@@ -399,25 +399,22 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         </Form>
         <ActivityModal
             title='Create'
-            // teamId={teamId}
-            // fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + teamId ? (TASKSSETTINGS.ACTIVITIES.LISTS + '?team_id=' + teamId) : '', 'activities')}
-            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS, 'activities')}
+            teamId={teamId}
+            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + teamId ? (TASKSSETTINGS.ACTIVITIES.LISTS + '?team_id=' + teamId) : '', 'activities')}
             isModalOpen={isModalActivity}
             handleCancel={() => setIsModalActivity(false)}
         />
         <TypesModal
             title='Create'
-            // teamId={teamId}
-            // fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS + teamId ? (TASKSSETTINGS.TYPES.LISTS + '?team_id=' + teamId) : '', 'types')}
-            fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS, 'types')}
+            teamId={teamId}
+            fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS + teamId ? (TASKSSETTINGS.TYPES.LISTS + '?team_id=' + teamId) : '', 'types')}
             isModalOpen={isModalTypes}
             handleCancel={() => setIsModalTypes(false)}
         />
         <SprintModal
             title='Create'
-            // teamId={teamId}
-            // fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS + teamId ? (TASKSSETTINGS.SPRINT.LISTS + '?team_id=' + teamId) : '', 'sprints')}
-            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS, 'sprints')}
+            teamId={teamId}
+            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS + teamId ? (TASKSSETTINGS.SPRINT.LISTS + '?team_id=' + teamId) : '', 'sprints')}
             isModalOpen={isModalSprints}
             handleCancel={() => setIsModalSprints(false)}
         />

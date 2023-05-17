@@ -13,6 +13,7 @@ import EmployeeEdit from './pages/EmployeeEdit'
 // Root
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const TimeKeeping = lazy(() => import('./pages/TimeKeeping'))
+const Overtime = lazy(() => import('./pages/Overtime'))
 const Leave = lazy(() => import('./pages/Leave'))
 const Tasks = lazy(() => import('./pages/Tasks'))
 const EmployeeFiles = lazy(() => import('./pages/EmployeeFiles'))
@@ -105,6 +106,10 @@ export const routes = createBrowserRouter([
             {
                 path: 'timekeeping',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TimeKeeping /></Suspense>
+            },
+            {
+                path: 'overtime',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Overtime /></Suspense>
             },
             {
                 path: 'users',
