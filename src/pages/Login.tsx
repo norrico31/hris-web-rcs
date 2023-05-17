@@ -14,19 +14,18 @@ const [{ AUTH: { LOGIN } }] = useEndpoints()
 
 export default function Login() {
     renderTitle('Login')
-    const { token, setToken } = useAuthContext()
+    const { token, setToken, setUser, setLoading } = useAuthContext()
     const [messageApi, contextHolder] = useMessage()
 
     if (token != undefined) return <Navigate to='/dashboard' />
 
     const onFinish = async (values: Record<string, string>) => {
-        //! GUARD CLAUSE (onSubmit || onFinish)
-        //! DISPLAY ERRORS IN FORMS NOT IN NOTIFICATION
         try {
             const res = await POST(LOGIN, values)
-            if (res?.data?.data?.token == undefined) return <Navigate to='/login' />
-            localStorage.setItem('t', JSON.stringify(res?.data?.data?.token))
+            setUser(res?.data?.data?.user)
             setToken(res?.data?.data?.token)
+            setLoading(false)
+            localStorage.setItem('t', JSON.stringify(res?.data?.data?.token))
         } catch (error: any) {
             messageApi.open({
                 type: 'error',

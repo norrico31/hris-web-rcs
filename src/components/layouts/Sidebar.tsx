@@ -224,13 +224,13 @@ function filterMenu(user: IUser) {
             undefined,
             rootPath.includes('salaryadjustments')
         ),
-        getItemLinks(
-            <Link to='/profile'>Profile</Link>,
-            '/profile',
-            <AiOutlineDollarCircle />,
-            undefined,
-            true
-        ),
+        // getItemLinks(
+        //     <Link to='/profile'>Profile</Link>,
+        //     '/profile',
+        //     <AiOutlineDollarCircle />,
+        //     undefined,
+        //     true
+        // ),
     ]
 }
 

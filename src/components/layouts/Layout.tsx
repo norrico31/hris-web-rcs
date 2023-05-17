@@ -15,9 +15,9 @@ const { Sider, Content: AntDContent } = AntdLayout
 const [{ AUTH: { USER, LOGIN } }] = useEndpoints()
 
 export default function Layout() {
-    const { token, setToken, setUser, setLoading } = useAuthContext()
+    const { user, token, setToken, setUser, setLoading } = useAuthContext()
     if (token == undefined) return <Navigate to={LOGIN} />
-
+    console.log(user)
     const [collapsed, setCollapsed] = useState(() => {
         let isCollapsed = localStorage.getItem('collapsed')
         if (isCollapsed != null) {
@@ -30,16 +30,18 @@ export default function Layout() {
 
     useEffect(() => {
         let cleanUp = false;
-        setLoading(true)
-        axiosClient.get<AuthUserRes>(USER)
-            .then((res) => !cleanUp && setUser(res?.data?.data))
-            .catch((err: any) => {
-                if (err.response && err.response.status === 401) {
-                    setToken(undefined)
-                    setUser(undefined)
-                    return <Navigate to={LOGIN} />
-                }
-            }).finally(() => setLoading(false))
+        if (!user) {
+            setLoading(true)
+            axiosClient.get<AuthUserRes>(USER)
+                .then((res) => !cleanUp && setUser(res?.data?.data))
+                .catch((err: any) => {
+                    if (err.response && err.response.status === 401) {
+                        setToken(undefined)
+                        setUser(undefined)
+                        return <Navigate to={LOGIN} />
+                    }
+                }).finally(() => setLoading(false))
+        }
         return function () {
             cleanUp = true
         }

@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { useAxios } from '../../shared/lib/axios'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { useEndpoints } from '../../shared/constants'
+import { Link } from 'react-router-dom'
 
 const { Header: AntDHeader } = Layout
 const { Text: AntText } = Typography
@@ -33,6 +34,11 @@ export default function Header({ collapsed, setCollapsed }: Props) {
     const items: MenuProps['items'] = [
         {
             key: '1',
+            danger: true,
+            label: <Link to='/profile'>Profile</Link>,
+        },
+        {
+            key: '2',
             danger: true,
             label: (
                 <div onClick={logout}>
