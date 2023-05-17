@@ -124,10 +124,8 @@ export default function Schedule() {
                 <h1 className='color-white'>Schedules</h1>
             </MainHeader>
             <TabHeader
-                name='Schedule'
                 handleSearch={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={() => handleDownload()}
             />
             <Table columns={columns} dataList={data} />
             <ScheduleModal

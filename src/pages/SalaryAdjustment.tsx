@@ -153,7 +153,6 @@ export default function SalaryAdjustment() {
                 </Col>
             </MainHeader>
             <TabHeader
-                name="salary adjustments"
                 handleSearch={handleSearch}
             />
             <Table

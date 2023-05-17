@@ -64,9 +64,7 @@ export default function ClientHistory() {
     return (
         <Card title='Client and Schedule'>
             <TabHeader
-                name='client and schedule'
                 handleSearch={handleSearch}
-                handleDownload={handleDownload}
             />
             <Table
                 columns={columns}

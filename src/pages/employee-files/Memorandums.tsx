@@ -83,10 +83,8 @@ export default function Memorandums() {
     return (
         <Card title='Memorandums'>
             <TabHeader
-                name='memorandums'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={handleDownload}
             />
             <Table
                 columns={columns}

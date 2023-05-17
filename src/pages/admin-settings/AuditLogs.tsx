@@ -120,7 +120,6 @@ export default function AuditLogs() {
     return (
         <Card title='Audit Logs'>
             <TabHeader
-                name='audit logs'
                 handleSearch={handleSearch}
             />
             <Table

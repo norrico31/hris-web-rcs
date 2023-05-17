@@ -149,10 +149,8 @@ export default function EmployeeFiles() {
                 <h1 className='color-white'>Employees</h1>
             </MainHeader>
             <TabHeader
-                name='Employee'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={() => handleDownload()}
             />
             <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} onChange={onChange} />
             <EmployeeModal

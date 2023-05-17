@@ -104,7 +104,6 @@ export default function TaskTypes() {
     return (
         <Card title='Task Types'>
             <TabHeader
-                name='task types'
                 handleSearch={handleSearch}
             // handleCreate={() => setIsModalOpen(true)}
             />

@@ -84,10 +84,8 @@ export default function EmployeeDocuments() {
     return (
         <Card title='Documents'>
             <TabHeader
-                name='employee documents'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={handleDownload}
             />
             <Table
                 columns={columns}

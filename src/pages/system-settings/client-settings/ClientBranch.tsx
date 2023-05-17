@@ -108,7 +108,6 @@ export default function ClientBranch() {
     return (
         <Card title='Client Branches'>
             <TabHeader
-                name='client branch'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

@@ -1,31 +1,28 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Space, Skeleton, Popconfirm } from 'antd'
+import { Button, Select, Skeleton, Popconfirm, Space } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
-import { FcApproval } from 'react-icons/fc'
-import { RxCross2 } from 'react-icons/rx'
 import { Card, TabHeader, Table } from '../../components'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import { renderTitle } from '../../shared/utils/utilities'
-import axiosClient, { useAxios } from '../../shared/lib/axios'
+import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
+import { useAxios } from '../../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, ILeave, LeaveRes, TableParams } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
+import { BiRefresh } from 'react-icons/bi'
 
-const { GET, POST, PUT } = useAxios()
-const [{ LEAVES, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
+const { GET } = useAxios()
+const [{ LEAVES }] = useEndpoints()
 
 dayjs.extend(localizedFormat)
 
-export default function ForApproval() {
-    renderTitle('Leave - Approval')
+export default function LeaveArchives() {
+    renderTitle('Leave')
     const { user, loading: loadingUser } = useAuthContext()
-    const [isModalOpen, setIsModalOpen] = useState(false)
     const [leaveType, setLeaveType] = useState('all')
     const [data, setData] = useState<ILeave[]>([])
-    const [selectedData, setSelectedData] = useState<ILeave | undefined>(undefined)
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -33,10 +30,12 @@ export default function ForApproval() {
     useEffect(function fetch() {
         const controller = new AbortController();
         if (user != undefined) fetchData({
-            signal: controller.signal,
-            page: tableParams?.pagination?.current,
-            pageSize: tableParams?.pagination?.pageSize,
-            search,
+            args: {
+                signal: controller.signal, search,
+                page: tableParams?.pagination?.current,
+                pageSize: tableParams?.pagination?.pageSize,
+            },
+            type: leaveType
         })
         return () => {
             controller.abort()
@@ -47,7 +46,6 @@ export default function ForApproval() {
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
-    if (user?.role.name.toLowerCase() !== 'manager' && user?.role.name.toLowerCase() !== 'admin') return <Navigate to={'/leave/leaves'} />
 
     const columns: ColumnsType<ILeave> = [
         {
@@ -98,47 +96,48 @@ export default function ForApproval() {
             align: 'center'
         },
         {
-            title: 'For Approval',
-            key: 'approver',
-            dataIndex: 'approver',
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: ILeave) => {
-                return <Space>
-                    <Popconfirm
-                        title={`Leave request by - ${record?.user?.full_name}`}
-                        description={`Are you sure you want to approve ${record?.reason}?`}
-                        onConfirm={() => leaveApproval(`approve/${record?.id}`)}
-                        okText="Approve"
-                        cancelText="Cancel"
-                        disabled={record?.status.toLowerCase() == 'approved'}
-                    >
-                        <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
-                            <FcApproval />
-                            Approve
-                        </Button>
-                    </Popconfirm>
-                    <Popconfirm
-                        title={`Leave request by - ${record?.user?.full_name}`}
-                        description={`Are you sure you want to reject ${record?.reason}?`}
-                        onConfirm={() => leaveApproval(`reject/${record?.id}`)}
-                        okText="Reject"
-                        cancelText="Cancel"
-                        disabled={record?.status.toLowerCase() == 'approved'}
-                    >
-                        <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
-                            <RxCross2 />
-                            Reject
-                        </Button>
-                    </Popconfirm>
-                </Space>
-            },
-            width: 250
+            render: (_, record: ILeave) => <Popconfirm
+                title={`Restore Leave`}
+                description={`Are you sure you want to restore?`}
+                onConfirm={() => {
+                    GET(LEAVES.RESTORE + record?.id)
+                        .then((res) => {
+                            console.log(res)
+                        })
+                        .finally(() => {
+                            fetchData({ type: leaveType })
+                        })
+                }}
+                okText="Restore"
+                cancelText="Cancel"
+            >
+                <Button id='restore' type='primary' size='middle' onClick={() => null}>
+                    <Space>
+                        <BiRefresh />
+                        Restore
+                    </Space>
+                </Button>
+            </Popconfirm>,
+            width: 150
         }
     ];
+    // (leaveType == 'all' || leaveType == 'approved' || leaveType == 'reject') && columns.push({
+    //     title: 'Approver',
+    //     key: 'approved_by',
+    //     dataIndex: 'approved_by',
+    //     render: (_: any, record: ILeave) => record.actioned_by?.full_name,
+    //     width: 150
+    // });
 
-    function fetchData(args: IArguments) {
+    function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        GET<LeaveRes>(LEAVES.GET + 'true&status=PENDING', args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        const status = (type !== 'all') ? `?status=${type?.toUpperCase()}` : ''
+        const url = LEAVES.ARCHIVES + status
+        GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -153,26 +152,29 @@ export default function ForApproval() {
             }).finally(() => setLoading(false))
     }
 
-    function leaveApproval(url: string) {
-        setLoading(true)
-        POST(LEAVES.POST + url, {})
-            .then((res) => {
-                console.log(res)
-                alert('')
-            })
-            .catch((err) => console.log('error ng pag approval: ', err))
-            .catch(() => {
-                setLoading(false)
-                fetchData({})
-            })
-    }
-
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: leaveType })
 
     return (
         <>
-            <TabHeader handleSearch={setSearch} />
-            <Card title='Leave - Approval' level={5}>
+            <TabHeader handleSearch={setSearch}>
+                <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
+                    setLeaveType((str == undefined || str == '') ? 'all' : str)
+                    fetchData({
+                        args: {
+                            search,
+                            page: tableParams?.pagination?.current ?? 1,
+                            pageSize: tableParams?.pagination?.pageSize
+                        },
+                        type: (str == undefined || str == '') ? 'all' : str
+                    })
+                }} style={{ width: 150 }}>
+                    <Select.Option value='all'>All</Select.Option>
+                    <Select.Option value='pending'>Pending</Select.Option>
+                    <Select.Option value='approved'>Approved</Select.Option>
+                    <Select.Option value='reject'>Rejected</Select.Option>
+                </Select>
+            </TabHeader>
+            <Card title={`Archives - ${firstLetterCapitalize(leaveType)}`} level={5}>
                 <Table
                     loading={loading}
                     columns={columns}
@@ -181,7 +183,6 @@ export default function ForApproval() {
                     onChange={onChange}
                 />
             </Card>
-
         </>
     )
 }

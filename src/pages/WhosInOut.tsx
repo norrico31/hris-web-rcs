@@ -97,7 +97,6 @@ export default function WhosInOut() {
                 <Typography.Title level={4}>{dayjs(today).format('MMMM') + ''} {dayjs(today).format('D') + ''}, {dayjs(today).format('YYYY') + ''} - {dayjs(today).format('dddd')}</Typography.Title>
             </Row>
             <TabHeader
-                name="who's in and out"
                 handleSearch={handleSearch}
             />
             <Table

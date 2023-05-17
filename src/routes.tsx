@@ -25,6 +25,7 @@ const Profile = lazy(() => import('./pages/Profile'))
 
 // Leaves
 const MyLeaves = lazy(() => import('./pages/leaves/MyLeave'))
+const LeaveArchives = lazy(() => import('./pages/leaves/LeaveArchives'))
 const ForApproval = lazy(() => import('./pages/leaves/ForApproval'))
 
 // System Settings
@@ -151,6 +152,10 @@ export const routes = createBrowserRouter([
                     {
                         path: 'leaves',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><MyLeaves /></Suspense>,
+                    },
+                    {
+                        path: 'archives',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveArchives /></Suspense>,
                     },
                     {
                         path: 'approval',

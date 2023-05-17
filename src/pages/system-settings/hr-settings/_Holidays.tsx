@@ -67,7 +67,6 @@ export default function Holidays() {
     return (
         <Card title='Holidays'>
             <TabHeader
-                name='holiday type'
                 handleSearch={() => { }}
                 handleCreate={() => setIsModalOpen(true)}
             />

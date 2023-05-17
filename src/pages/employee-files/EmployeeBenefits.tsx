@@ -74,10 +74,8 @@ export default function EmployeeBenefits() {
     return (
         <Card title='Benefits'>
             <TabHeader
-                name='benefits'
                 handleSearch={() => null}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={handleDownload}
             />
             <Table
                 columns={columns}

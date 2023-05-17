@@ -97,7 +97,6 @@ export default function SalaryRates() {
     return (
         <Card title='Salary Rates'>
             <TabHeader
-                name='salary rate'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

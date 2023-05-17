@@ -111,7 +111,6 @@ export default function Schedules() {
     return (
         <Card title='Schedules'>
             <TabHeader
-                name='schedule'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

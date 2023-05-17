@@ -117,7 +117,6 @@ export default function Client() {
     return (
         <Card title='Clients'>
             <TabHeader
-                name='client'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

@@ -103,7 +103,6 @@ export default function TaskActivities() {
     return (
         <Card title='Task Activities'>
             <TabHeader
-                name='task activities'
                 handleSearch={handleSearch}
             // handleCreate={() => setIsModalOpen(true)}
             />

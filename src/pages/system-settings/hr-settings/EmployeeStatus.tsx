@@ -97,7 +97,6 @@ export default function EmployeeStatus() {
     return (
         <Card title='Employee Status'>
             <TabHeader
-                name='employee status'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

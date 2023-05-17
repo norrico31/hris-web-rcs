@@ -42,9 +42,7 @@ export default function EmployeeSalaryHistory() {
     return (
         <Card title='Salary History'>
             <TabHeader
-                name='salary history'
                 handleSearch={fetchData}
-                handleDownload={handleDownload}
             />
             <Table
                 columns={columns}

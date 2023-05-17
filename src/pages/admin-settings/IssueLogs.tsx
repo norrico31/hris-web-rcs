@@ -76,7 +76,6 @@ export default function IssueLogs() {
     return (
         <Card title='Issue Logs'>
             <TabHeader
-                name='audit logs'
                 handleSearch={handleSearch}
             />
             <Table

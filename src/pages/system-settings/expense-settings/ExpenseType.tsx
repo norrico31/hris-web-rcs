@@ -117,7 +117,6 @@ export default function ExpenseType() {
     return (
         <Card title='Expense Types'>
             <TabHeader
-                name='expense types'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

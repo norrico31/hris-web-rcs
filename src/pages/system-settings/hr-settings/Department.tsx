@@ -97,7 +97,6 @@ export default function Department() {
     return (
         <Card title='Departments'>
             <TabHeader
-                name='department'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

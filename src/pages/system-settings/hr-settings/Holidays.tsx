@@ -123,7 +123,6 @@ export default function Holidays() {
     return (
         <Card title='Holidays'>
             <TabHeader
-                name='bank details'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

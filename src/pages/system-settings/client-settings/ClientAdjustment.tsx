@@ -109,7 +109,6 @@ export default function ClientAdjustment() {
     return (
         <Card title='Client Adjustment'>
             <TabHeader
-                name='client adjustment'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

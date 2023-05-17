@@ -115,7 +115,6 @@ export default function TaskSprint() {
     return (
         <Card title='Sprints'>
             <TabHeader
-                name='sprint'
                 handleSearch={handleSearch}
             // handleCreate={() => setIsModalOpen(true)}
             />

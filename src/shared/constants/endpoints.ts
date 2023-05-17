@@ -33,6 +33,8 @@ export const useEndpoints = () => {
         },
         LEAVES: {
             LISTS: '/options/leaves',
+            ARCHIVES: '/leaves/archives',
+            RESTORE: '/leaves/restore/',
             GET: '/leaves/status/preview?manager=',
             POST: '/leaves/',
             PUT: '/leaves/',

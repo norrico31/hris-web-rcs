@@ -4,15 +4,13 @@ import { DownloadOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 
 type Props = {
-    name?: string
     handleCreate?: () => void
-    handleDownload?: () => void
     handleSearch: (term: string) => void
     handleModalArchive?: () => void
     children?: ReactNode
 }
 
-export default function TabHeader({ name, handleSearch, handleCreate, handleDownload, handleModalArchive, children }: Props) {
+export default function TabHeader({ handleSearch, handleCreate, handleModalArchive, children }: Props) {
     const [searchTerm, setSearchTerm] = useState('')
 
     const debouncedSearch = useCallback(debounce((handleSearch), 500), [])

@@ -56,10 +56,8 @@ export default function SalaryAdjustmentType() {
     return (
         <Card title='Salary Adjustment Type'>
             <TabHeader
-                name='salary adjustments'
                 handleSearch={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={handleDownload}
             />
             <Table
 

@@ -137,7 +137,6 @@ export default function DailyRate() {
     return (
         <Card title='Daily Rates'>
             <TabHeader
-                name='daily rate'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

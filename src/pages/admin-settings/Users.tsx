@@ -136,7 +136,6 @@ export default function Users() {
     return (
         <Card title='User Management'>
             <TabHeader
-                name='user'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

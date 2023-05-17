@@ -105,7 +105,6 @@ export default function Team() {
     return (
         <Card title='Teams'>
             <TabHeader
-                name='team'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

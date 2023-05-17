@@ -141,10 +141,8 @@ export default function Employee() {
                 <h1 className='color-white'>Employee</h1>
             </MainHeader>
             <TabHeader
-                name='Employee'
                 handleSearch={fetchData}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={() => handleDownload()}
             />
             <Table columns={columns} dataList={data} />
             <EmployeeModal

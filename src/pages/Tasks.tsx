@@ -170,7 +170,6 @@ export default function Tasks() {
                 <h1 className='color-white'>Tasks</h1>
             </MainHeader>
             <TabHeader
-                name='tasks management'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
                 handleModalArchive={() => navigate('/tasks/archives')}

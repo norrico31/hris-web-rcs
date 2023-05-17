@@ -122,7 +122,6 @@ export default function Roles() {
                 </Col>
             </MainHeader>
             <TabHeader
-                name='roles'
                 handleSearch={handleSearch}
             >
                 <Button type='primary'>View Archives</Button>

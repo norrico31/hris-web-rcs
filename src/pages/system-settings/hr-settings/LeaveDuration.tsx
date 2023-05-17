@@ -97,7 +97,6 @@ export default function LeaveDuration() {
     return (
         <Card title='Leave Duration'>
             <TabHeader
-                name='position'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />

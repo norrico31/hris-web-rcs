@@ -80,10 +80,8 @@ export default function EmployeeContracts() {
     return (
         <Card title='Contracts'>
             <TabHeader
-                name='contracts'
                 handleSearch={() => null}
                 handleCreate={() => setIsModalOpen(true)}
-                handleDownload={handleDownload}
             />
 
             <Table
