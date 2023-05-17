@@ -37,7 +37,10 @@ export default function EmployeeEdit() {
 
     const pathKey = pathname.split('/').pop()
     return <>
-        <StyledRow justify='space-between' wrap align='middle' isCenter={width < 579}>
+        <StyledRow justify='space-between' wrap align='middle' style={{
+            gap: width < 579 ? '.5rem' : 'initial',
+            textAlign: width < 579 ? 'center' : 'initial'
+        }}>
             <Col xs={24} sm={12} md={12} lg={12} xl={11}>
                 <h2 className='color-white'>Employee Update - {data?.full_name}</h2>
             </Col>
@@ -64,15 +67,13 @@ export default function EmployeeEdit() {
     </>
 }
 
-export const StyledRow = styled(Row) <{ isCenter?: boolean }>`
+export const StyledRow = styled(Row)`
     width: 100%;
     background: rgb(155, 52, 35);
     border-radius: 8px;
     display: flex;
     padding: 1rem 2rem;
     margin-bottom: 2rem;
-    gap: ${({ isCenter }) => isCenter ? '.5rem' : 'initial'};
-    text-align: ${({ isCenter }) => isCenter ? 'center' : 'initial'};
 `
 
 interface EmployeeOutletContext {

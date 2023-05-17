@@ -190,7 +190,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
         <Divider />
         <Row justify='center'>
             <Space direction="vertical" align="center">
-                <img src={imageSrc ?? AvatarPng} alt='avatar' style={{ maxWidth: 400 }} />
+                <img src={imageSrc ?? AvatarPng} alt='avatar' style={{ maxWidth: '100%' }} />
                 <CapturePhotoModal
                     setImageSrc={setImageSrc}
                     setMediaError={setMediaError}
@@ -312,7 +312,7 @@ function CapturePhotoModal({ isModalVideoOpen, setImageSrc, handleCloseCaptureMo
     }
 
     return <Modal open={isModalVideoOpen} onCancel={handleCloseCaptureModal} footer={null} forceRender>
-        <video ref={videoRef} style={{ width: 470, height: 350, marginTop: 25 }} />
+        <video ref={videoRef} style={{ width: '100%', height: '100%', marginTop: 25 }} />
         <Row justify='center'>
             <Button type='primary' onClick={handleCapture}>Capture</Button>
         </Row>
