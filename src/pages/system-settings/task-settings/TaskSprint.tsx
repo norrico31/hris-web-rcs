@@ -199,7 +199,7 @@ export function SprintModal({ title, teamId, selectedData, isModalOpen, fetchDat
             >
                 <Input placeholder='Enter type name...' />
             </FormItem>
-            <FormItem
+            {/* <FormItem
                 label="Team"
                 name="team_id"
                 required
@@ -210,7 +210,7 @@ export function SprintModal({ title, teamId, selectedData, isModalOpen, fetchDat
                         <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
                     ))}
                 </Select>
-            </FormItem>
+            </FormItem> */}
             <FormItem
                 label="Start and End Date"
                 name="date"

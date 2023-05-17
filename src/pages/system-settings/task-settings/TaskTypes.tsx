@@ -183,7 +183,7 @@ export function TypesModal({ title, teamId, selectedData, isModalOpen, fetchData
             >
                 <Input placeholder='Enter type name...' />
             </FormItem>
-            <FormItem
+            {/* <FormItem
                 label="Team"
                 name="team_id"
                 required
@@ -194,7 +194,7 @@ export function TypesModal({ title, teamId, selectedData, isModalOpen, fetchData
                         <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
                     ))}
                 </Select>
-            </FormItem>
+            </FormItem> */}
             <FormItem name="description" label="Description">
                 <Input.TextArea placeholder='Enter description...' />
             </FormItem>

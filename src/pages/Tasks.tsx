@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider, Popconfirm } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import axios from 'axios'
@@ -22,6 +23,7 @@ const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS }, }] = useEndpoints
 export default function Tasks() {
     renderTitle('Tasks')
     const { user } = useAuthContext()
+    const navigate = useNavigate()
     const [data, setData] = useState<ITasks[]>([])
     const [selectedData, setSelectedData] = useState<ITasks | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -171,7 +173,7 @@ export default function Tasks() {
                 name='tasks management'
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
-            // handleModalArchive={() => setIsModalArchive(true)}
+                handleModalArchive={() => navigate('/tasks/archives')}
             >
                 <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
             </TabHeader>
@@ -188,6 +190,7 @@ export default function Tasks() {
                 handleClose={() => setIsModalDownload(false)}
             />
             <ArchiveModal
+                fetchMainData={fetchData}
                 isModalOpen={isModalArchive}
                 handleClose={() => setIsModalArchive(false)}
                 columns={columns.slice(0, -1)}
@@ -491,10 +494,11 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
 interface ArchiveModalProps {
     isModalOpen: boolean
     handleClose: () => void
+    fetchMainData(args?: IArguments | undefined): void
     columns: ColumnsType<ITasks>
 }
 
-function ArchiveModal({ isModalOpen, handleClose, columns }: ArchiveModalProps) {
+function ArchiveModal({ isModalOpen, handleClose, columns, fetchMainData }: ArchiveModalProps) {
     const [data, setData] = useState<ITasks[]>([])
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -532,7 +536,16 @@ function ArchiveModal({ isModalOpen, handleClose, columns }: ArchiveModalProps) 
         render: (_, record: ITasks) => <Popconfirm
             title={`Restore Task`}
             description={`Are you sure you want to restore ${record?.full_name}?`}
-            onConfirm={() => alert('endpoint please')}
+            onConfirm={() => {
+                GET(TASKS.RESTORE + record?.id)
+                    .then((res) => {
+                        console.log(res)
+                    })
+                    .finally(() => {
+                        fetchData()
+                        fetchMainData()
+                    })
+            }}
             okText="Restore"
             cancelText="Cancel"
         >

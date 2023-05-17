@@ -35,9 +35,9 @@ export const useAxios = () => {
         }
     }
 
-    const POST = async <T>(url: string, data: T) => {
+    const POST = async <T>(url: string, data: T, headers?: any) => {
         try {
-            const res = await axiosClient.post(url, data)
+            const res = await axiosClient.post(url, data, { headers })
             if (res?.data?.message == 'Login Successful') return Promise.resolve(res)
             Alert.success('Create Success', res.data.message)
             return Promise.resolve(res)

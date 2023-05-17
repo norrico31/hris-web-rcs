@@ -26,6 +26,8 @@ export default function Sidebar({ onSelect }: Props) {
     useEffect(() => {
         if (location?.pathname.includes('/employee/edit')) {
             setLocationKey('/employee')
+        } else if (location?.pathname.includes('/tasks/')) {
+            setLocationKey('/tasks')
         } else if (location?.pathname.includes('/systemsettings/tasksettings/')) {
             setLocationKey('/systemsettings/tasksettings/activities')
         } else if (location?.pathname.includes('/systemsettings/hrsettings')) {
@@ -85,6 +87,7 @@ function filterMenu(user: IUser) {
     const hrPaths = filterPaths(user?.role?.permissions!, HRSETTINGSPATHS)
     const clientPaths = filterPaths(user?.role?.permissions!, CLIENTSETTINGSPATHS)
     const adminPaths = filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS)
+
     return [
         getItemLinks(
             <Link to='/dashboard' id="dashboard">Dashboard</Link>,

@@ -1,11 +1,12 @@
+import { ReactNode, useState, useEffect } from 'react'
 import { Form as AntDForm, Row, Col, Button, Modal, Input, Space, Upload } from 'antd'
 import { InboxOutlined } from '@ant-design/icons';
 import { Card, Form } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
-import { ReactNode, useState } from 'react'
-import { IArguments } from '../../shared/interfaces'
+import { IArguments, IPagibig, IPhilhealth, ISss, ITin } from '../../shared/interfaces'
 import axiosClient from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
+import useMessage from 'antd/es/message/useMessage';
 
 const [{ EMPLOYEE201: { GOVERNMENTDOCS } }] = useEndpoints()
 
@@ -37,6 +38,7 @@ export default function GovernmentDocs() {
                         fetchData={fetchData}
                         isModalOpen={isModalPagibig}
                         handleCancel={() => setIsModalPagibig(false)}
+                        selectedData={employeeInfo?.pagibig}
                     />
                 </CardItem>
                 <CardItem
@@ -52,6 +54,7 @@ export default function GovernmentDocs() {
                         fetchData={fetchData}
                         isModalOpen={isModalPhilHealth}
                         handleCancel={() => setIsModalPhilHealth(false)}
+                        selectedData={employeeInfo?.philhealth}
                     />
                 </CardItem>
                 <CardItem
@@ -67,6 +70,7 @@ export default function GovernmentDocs() {
                         fetchData={fetchData}
                         isModalOpen={isModalSss}
                         handleCancel={() => setIsModalSss(false)}
+                        selectedData={employeeInfo?.sss}
                     />
                 </CardItem>
                 <CardItem
@@ -82,6 +86,7 @@ export default function GovernmentDocs() {
                         fetchData={fetchData}
                         isModalOpen={isModalTin}
                         handleCancel={() => setIsModalTin(false)}
+                        selectedData={employeeInfo?.tin}
                     />
                 </CardItem>
             </Row>
@@ -128,6 +133,15 @@ interface PagibigUpdateModalProps {
 function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModalOpen, fetchData, handleCancel }: PagibigUpdateModalProps) {
     const [form] = useForm<any>()
     const [loading, setLoading] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
+
+    useEffect(() => {
+        form.setFieldsValue({
+            ...selectedData,
+            [keyProp]: selectedData?.[keyProp],
+            // file: selectedData?.file_name ?? []
+        })
+    }, [keyProp, selectedData, isModalOpen])
 
     const normFile = (e: any) => {
         if (Array.isArray(e)) {
@@ -139,20 +153,31 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
     function onFinish(values: any) {
         setLoading(true)
         const formData = new FormData()
+        if (selectedData?.id) formData.append('_method', 'PUT')
         formData.append('user_id', userId)
         formData.append(keyProp, values[keyProp])
         formData.append('file', values.file[0]?.originFileObj)
-        axiosClient.put(url + userId, formData)
+        axiosClient.post(url + userId, formData)
             .then(() => {
                 form.resetFields()
                 handleCancel()
-            }).finally(() => {
+            })
+            .catch((err) => {
+                // TODO: HANDLE ERROR
+                messageApi.open({
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 5
+                })
+            })
+            .finally(() => {
                 fetchData()
                 setLoading(false)
             })
     }
 
     return <Modal title={`${title} - ${selectedData != undefined ? 'Update' : 'Add'}`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+        {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label={title + ' Number'}

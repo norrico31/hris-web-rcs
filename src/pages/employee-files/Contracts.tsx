@@ -27,6 +27,11 @@ export default function EmployeeContracts() {
             title: 'File',
             key: 'file',
             dataIndex: 'file',
+            render: (_, record) => {
+                // TODO DISPLAY FILE IN MODAL AND DOWNLAD
+                console.log(record?.file_name)
+                return <Button type='link'>Download File</Button>
+            }
         },
         {
             title: 'Status',
@@ -137,12 +142,14 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
     function onFinish(values: Record<string, any>) {
         setLoading(true)
         const formData = new FormData()
+        if (selectedData?.id) formData.append('_method', 'PUT')
         formData.append('user_id', employeeId)
         formData.append('type', values?.type)
-        formData.append('file', values?.file[0].originFileObj)
+        formData.append('file', values?.file ? values?.file[0].originFileObj : '')
         formData.append('is_active', values?.is_active)
-        formData.append('description', (values?.description != undefined || values?.description !== '') ? values?.description : null)
-        let result = selectedData ? PUT(EMPLOYEE201.CONTRACTS.PUT + employeeId, formData) : POST(EMPLOYEE201.CONTRACTS.POST, formData)
+        formData.append('description', (values?.description == undefined || values?.description === null) ? '' : values?.description)
+        const editUrl = selectedData != undefined ? EMPLOYEE201.CONTRACTS.PUT + selectedData?.id : EMPLOYEE201.CONTRACTS.PUT + employeeId
+        let result = selectedData ? POST(editUrl, formData) : POST(EMPLOYEE201.CONTRACTS.POST, formData)
         result.then(() => {
             form.resetFields()
             handleCancel()

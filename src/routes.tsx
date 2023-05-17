@@ -16,6 +16,7 @@ const TimeKeeping = lazy(() => import('./pages/TimeKeeping'))
 const Overtime = lazy(() => import('./pages/Overtime'))
 const Leave = lazy(() => import('./pages/Leave'))
 const Tasks = lazy(() => import('./pages/Tasks'))
+const TasksArchives = lazy(() => import('./pages/TasksArchives'))
 const EmployeeFiles = lazy(() => import('./pages/EmployeeFiles'))
 const SalaryAdjustment = lazy(() => import('./pages/SalaryAdjustment'))
 const WhosInOut = lazy(() => import('./pages/WhosInOut'))
@@ -136,6 +137,28 @@ export const routes = createBrowserRouter([
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Profile /></Suspense>
             },
             {
+                path: 'tasks',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Tasks /></Suspense>
+            },
+            {
+                path: 'tasks/archives',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><TasksArchives /></Suspense>
+            },
+            {
+                path: 'leave',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Leave /></Suspense>,
+                children: [
+                    {
+                        path: 'leaves',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><MyLeaves /></Suspense>,
+                    },
+                    {
+                        path: 'approval',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ForApproval /></Suspense>,
+                    },
+                ]
+            },
+            {
                 path: 'systemsettings',
                 element: <Outlet />,
                 children: [
@@ -252,24 +275,6 @@ export const routes = createBrowserRouter([
                         ]
                     },
                 ],
-            },
-            {
-                path: 'tasks',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><Tasks /></Suspense>
-            },
-            {
-                path: 'leave',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><Leave /></Suspense>,
-                children: [
-                    {
-                        path: 'leaves',
-                        element: <Suspense fallback={<Content><Skeleton /></Content>}><MyLeaves /></Suspense>,
-                    },
-                    {
-                        path: 'approval',
-                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ForApproval /></Suspense>,
-                    },
-                ]
             },
             {
                 path: 'employee',
