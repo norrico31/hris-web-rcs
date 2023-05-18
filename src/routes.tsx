@@ -13,7 +13,6 @@ import EmployeeEdit from './pages/EmployeeEdit'
 // Root
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const TimeKeeping = lazy(() => import('./pages/TimeKeeping'))
-const Overtime = lazy(() => import('./pages/Overtime'))
 const Leave = lazy(() => import('./pages/Leave'))
 const Tasks = lazy(() => import('./pages/Tasks'))
 const TasksArchives = lazy(() => import('./pages/TasksArchives'))
@@ -29,6 +28,10 @@ const LeaveArchives = lazy(() => import('./pages/leaves/LeaveArchives'))
 const LeaveApproval = lazy(() => import('./pages/leaves/LeaveApproval'))
 
 // Overtime
+const Overtime = lazy(() => import('./pages/Overtime'))
+const MyOvertime = lazy(() => import('./pages/overtime/MyOvertime'))
+const OvertimeArchives = lazy(() => import('./pages/overtime/OvertimeArchives'))
+const OvertimeApproval = lazy(() => import('./pages/overtime/OvertimeApproval'))
 
 // System Settings
 const TaskActivities = lazy(() => import('./pages/system-settings/task-settings/TaskActivities'))
@@ -110,10 +113,7 @@ export const routes = createBrowserRouter([
                 path: 'timekeeping',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TimeKeeping /></Suspense>
             },
-            {
-                path: 'overtime',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><Overtime /></Suspense>
-            },
+
             {
                 path: 'users',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Users /></Suspense>
@@ -151,7 +151,7 @@ export const routes = createBrowserRouter([
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Leave /></Suspense>,
                 children: [
                     {
-                        path: 'leaves',
+                        path: 'myleaves',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><MyLeaves /></Suspense>,
                     },
                     {
@@ -161,6 +161,24 @@ export const routes = createBrowserRouter([
                     {
                         path: 'approval',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveApproval /></Suspense>,
+                    },
+                ]
+            },
+            {
+                path: 'overtime',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Overtime /></Suspense>,
+                children: [
+                    {
+                        path: 'myovertime',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><MyOvertime /></Suspense>,
+                    },
+                    {
+                        path: 'archives',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><OvertimeArchives /></Suspense>,
+                    },
+                    {
+                        path: 'approval',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><OvertimeApproval /></Suspense>,
                     },
                 ]
             },
@@ -350,10 +368,6 @@ export const routes = createBrowserRouter([
                         path: 'salaryhistory',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryHistory /></Suspense>
                     },
-                    // {
-                    //     path: 'employeeschedule',
-                    //     element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSchedule /></Suspense>
-                    // },
                     {
                         path: 'userprofile',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><UserProfile /></Suspense>

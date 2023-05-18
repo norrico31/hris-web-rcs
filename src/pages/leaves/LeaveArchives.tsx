@@ -110,15 +110,7 @@ export default function LeaveArchives() {
             render: (_, record: ILeave) => <Popconfirm
                 title={`Restore Leave`}
                 description={`Are you sure you want to restore?`}
-                onConfirm={() => {
-                    GET(LEAVES.RESTORE + record?.id)
-                        .then((res) => {
-                            console.log(res)
-                        })
-                        .finally(() => {
-                            fetchData({ type: leaveType })
-                        })
-                }}
+                onConfirm={() => restoreArchive(record?.id)}
                 okText="Restore"
                 cancelText="Cancel"
             >
@@ -139,6 +131,12 @@ export default function LeaveArchives() {
     //     render: (_: any, record: ILeave) => record.actioned_by?.full_name,
     //     width: 150
     // });
+
+    function restoreArchive(id: string) {
+        GET(LEAVES.RESTORE + id)
+            .then((res) => console.log(res))
+            .finally(() => fetchData({ type: leaveType }))
+    }
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)

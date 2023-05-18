@@ -158,7 +158,7 @@ export default function MyLeave() {
 
     return (
         <>
-            <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)}>
+            <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)} isRequest>
                 <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
                     setLeaveType((str == undefined || str == '') ? 'all' : str)
                     fetchData({

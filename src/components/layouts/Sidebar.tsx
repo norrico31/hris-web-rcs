@@ -111,11 +111,11 @@ function filterMenu(user: IUser) {
             rootPath.includes('timekeeping')
         ),
         getItemLinks(
-            <Link to='/overtime' id='overtime'>Overtime</Link>,
+            <Link to='/overtime/myovertime' id='overtime'>Overtime</Link>,
             '/overtime',
             <AiOutlineFieldTime />,
             undefined,
-            false // rootPath.includes('overtime')
+            true // rootPath.includes('overtime')
         ),
         getItemLinks(
             <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,
@@ -211,7 +211,7 @@ function filterMenu(user: IUser) {
             rootPath.includes('employee')
         ),
         getItemLinks(
-            <Link to='/leave/leaves'>Leave</Link>,
+            <Link to='/leave/myleaves'>Leave</Link>,
             '/leave',
             <AiOutlineCalendar />,
             undefined,

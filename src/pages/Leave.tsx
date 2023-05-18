@@ -17,7 +17,7 @@ export default function Leave() {
     const items = [
         {
             label: 'My Leaves',
-            key: '/leaves',
+            key: '/myleaves',
         },
         {
             label: 'Archives',
@@ -29,34 +29,32 @@ export default function Leave() {
         key: '/approval',
     },)
 
-    return (
-        <>
-            <StyledRow justify='space-between' wrap align='middle' style={{
-                gap: width < 579 ? '.5rem' : 'initial',
-                textAlign: width < 579 ? 'center' : 'initial'
-            }}>
-                <Col xs={24} sm={12} md={12} lg={12} xl={11}>
-                    <h2 className='color-white'>Leaves</h2>
-                </Col>
-            </StyledRow>
-            <Tabs
-                destroyInactiveTabPane
-                activeKey={'/' + pathKey}
-                type="card"
-                tabPosition="top"
-                size='small'
-                onChange={(key) => navigate(`/leave` + key)}
-                renderTabBar={(props, TabNavList) => (
-                    <TabNavList {...props} mobile={false} />
-                )}
-                items={items.map((el) => ({
-                    label: el.label,
-                    key: el.key,
-                    children: <Outlet />,
-                }))}
-            />
-        </>
-    )
+    return <>
+        <StyledRow justify='space-between' wrap align='middle' style={{
+            gap: width < 579 ? '.5rem' : 'initial',
+            textAlign: width < 579 ? 'center' : 'initial'
+        }}>
+            <Col xs={24} sm={12} md={12} lg={12} xl={11}>
+                <h1 className='color-white'>Leaves</h1>
+            </Col>
+        </StyledRow>
+        <Tabs
+            destroyInactiveTabPane
+            activeKey={'/' + pathKey}
+            type="card"
+            tabPosition="top"
+            size='small'
+            onChange={(key) => navigate(`/leave` + key)}
+            renderTabBar={(props, TabNavList) => (
+                <TabNavList {...props} mobile={false} />
+            )}
+            items={items.map((el) => ({
+                label: el.label,
+                key: el.key,
+                children: <Outlet />,
+            }))}
+        />
+    </>
 }
 
 const Tabs = styled(AntDTabs)`
