@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Tabs as AntDTabs, Card as AntDCard, Typography, Select, Skeleton, Row, Col, TimePicker, Popconfirm } from 'antd'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Tabs as AntDTabs, Col } from 'antd'
 import { renderTitle } from '../shared/utils/utilities'
 import styled from 'styled-components'
 import { StyledRow } from './EmployeeEdit'

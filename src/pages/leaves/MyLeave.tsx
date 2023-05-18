@@ -117,20 +117,18 @@ export default function MyLeave() {
             width: 150
         },
     ];
-    (leaveType == 'all' || leaveType == 'approved' || leaveType == 'reject') && columns.push({
-        title: 'Approver',
-        key: 'approved_by',
-        dataIndex: 'approved_by',
-        render: (_: any, record: ILeave) => record.actioned_by?.full_name,
-        width: 150
-    });
+    // (leaveType == 'all' || leaveType == 'approved' || leaveType == 'reject') && columns.push({
+    //     title: 'Approver',
+    //     key: 'approved_by',
+    //     dataIndex: 'approved_by',
+    //     render: (_: any, record: ILeave) => record.actioned_by?.full_name,
+    //     width: 150
+    // });
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
         const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
         const url = LEAVES.GET + 'false' + status
-        console.log('type: ', type)
-        console.log('leaveType: ', leaveType)
         GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -228,10 +226,12 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         }
     }, [selectedData])
 
-    function onFinish({ date_end, date_start, ...restProps }: ILeave) {
+    function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: ILeave) {
         date_start = dayjs(date_start).format('YYYY/MM/DD') as any
         date_end = dayjs(date_end).format('YYYY/MM/DD') as any
-        restProps = { ...restProps, date_start, date_end } as any
+        time_start = dayjs(time_start).format('HH:MM')
+        time_end = dayjs(time_end).format('HH:MM')
+        restProps = { ...restProps, date_start, date_end, time_start, time_end } as any
         let result = selectedData ? PUT(LEAVES.PUT + selectedData?.id, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
         result.then(() => {
             form.resetFields()

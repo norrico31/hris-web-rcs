@@ -101,6 +101,7 @@ export default function ForApproval() {
             title: 'Status',
             key: 'status',
             dataIndex: 'status',
+            filters: arrStatus,
             width: 120,
         },
         {
@@ -225,3 +226,22 @@ export default function ForApproval() {
         </>
     )
 }
+
+const arrStatus = [
+    {
+        value: 'all',
+        text: 'All'
+    },
+    {
+        value: 'pending',
+        text: 'Pending'
+    },
+    {
+        value: 'approved',
+        text: 'Approved'
+    },
+    {
+        value: 'reject',
+        text: 'Reject'
+    },
+]

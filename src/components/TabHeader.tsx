@@ -4,13 +4,14 @@ import { DownloadOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 
 type Props = {
+    isRequest?: boolean
     handleCreate?: () => void
     handleSearch: (term: string) => void
     handleModalArchive?: () => void
     children?: ReactNode
 }
 
-export default function TabHeader({ handleSearch, handleCreate, handleModalArchive, children }: Props) {
+export default function TabHeader({ isRequest, handleSearch, handleCreate, handleModalArchive, children }: Props) {
     const [searchTerm, setSearchTerm] = useState('')
 
     const debouncedSearch = useCallback(debounce((handleSearch), 500), [])
@@ -29,7 +30,7 @@ export default function TabHeader({ handleSearch, handleCreate, handleModalArchi
                     {handleModalArchive && (
                         <Button type='primary' onClick={handleModalArchive}>View Archives</Button>
                     )}
-                    {handleCreate && (<Button className='btn-secondary' onClick={handleCreate}>Create</Button>)}
+                    {handleCreate && (<Button className='btn-secondary' onClick={handleCreate}>{isRequest ? 'Request' : 'Create'}</Button>)}
                 </Space>
             </Row>
             <Divider dashed={false} />

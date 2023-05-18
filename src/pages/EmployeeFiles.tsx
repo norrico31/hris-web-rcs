@@ -9,7 +9,7 @@ import { Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useEndpoints } from './../shared/constants/endpoints'
 import axiosClient, { useAxios } from './../shared/lib/axios'
-import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates, ILineManager, ITeam } from '../shared/interfaces'
+import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates, ILineManager, ITeam, IBankDetails } from '../shared/interfaces'
 import useMessage from 'antd/es/message/useMessage'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { ROOTPATHS } from '../shared/constants'
@@ -799,10 +799,23 @@ function StepFour({ setStepFourInputs, stepFourInputs, PAYLOAD, previousStep, fe
     const [form] = useForm<IStepFour>()
     const [loading, setLoading] = useState(false)
     const [messageApi, contextHolder] = useMessage()
+    const [bankDetails, setBankDetails] = useState<IBankDetails[]>([])
 
     useEffect(() => {
         if (stepFourInputs) {
             form.setFieldsValue({ ...stepFourInputs })
+        }
+        const controller = new AbortController();
+        (async () => {
+            try {
+                const bankDetailsRes = await axiosClient(HRSETTINGS.BANKDETAILS.LISTS, { signal: controller.signal })
+                setBankDetails(bankDetailsRes?.data ?? [])
+            } catch (error: any) {
+                throw new Error(error)
+            }
+        })()
+        return () => {
+            controller.abort()
         }
     }, [stepFourInputs])
 
@@ -848,7 +861,16 @@ function StepFour({ setStepFourInputs, stepFourInputs, PAYLOAD, previousStep, fe
                     </Select>
                 </FormItem>
                 <FormItem name='bank_name' label="Bank Name">
-                    <Input type='text' placeholder='Enter bank name...' />
+                    <Select
+                        placeholder='Select bank name...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
+                    >
+                        {bankDetails.map((bank) => (
+                            <Select.Option value={bank.id} key={bank.id} style={{ color: '#777777' }}>{bank.name}</Select.Option>
+                        ))}
+                    </Select>
                 </FormItem>
                 <FormItem name='bank_account_number' label="Bank Account Number">
                     <Input type='number' placeholder='Enter bank account number...' />

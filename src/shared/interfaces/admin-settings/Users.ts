@@ -47,6 +47,7 @@ export interface IUser {
     salary: IEmployeeSalary
     salary_history: IEmployeeSalary[]
     managers: ILineManager
+    line_manager: ILineManager
     manager_id: string | null
     sss: ISss
     status: string | null

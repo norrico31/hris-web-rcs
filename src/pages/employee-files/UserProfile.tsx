@@ -61,7 +61,7 @@ export default function UserProfileEmployee() {
             birthday: employeeInfo?.birthday ? dayjs(employeeInfo?.birthday, 'YYYY/MM/DD') : null,
             date_hired: employeeInfo?.date_hired ? dayjs(employeeInfo?.date_hired, 'YYYY/MM/DD') : null,
             resignation_date: employeeInfo?.resignation_date ? dayjs(employeeInfo?.resignation_date, 'YYYY/MM/DD') : null,
-            manager_id: employeeInfo?.managers?.id,
+            manager_id: employeeInfo?.line_manager?.id,
             employment_status_id: employeeInfo?.employment_status?.id,
             position_id: employeeInfo?.position?.id,
             team_id: employeeInfo?.teams?.map((team) => team.id)

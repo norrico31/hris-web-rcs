@@ -24,7 +24,7 @@ export default function PayScheme() {
 
     function onFinish(values: Record<string, any>) {
         setLoading(true)
-        PUT(PAYSCHEME.PUT + employeeInfo?.bank_detail?.id, { ...values, user_id: employeeId })
+        PUT(PAYSCHEME.PUT + employeeInfo?.bank_detail?.id, { ...values, user_id: employeeInfo?.id })
             .catch(() => {
                 fetchData()
             })

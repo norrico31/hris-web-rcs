@@ -95,7 +95,7 @@ export default function Tasks() {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
-            width: 250
+            width: 200
         },
         {
             title: 'Action',
@@ -221,14 +221,13 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
 
     useEffect(() => {
         if (selectedData != undefined) {
+            setTeamId(selectedData.team?.id)
             form.setFieldsValue({
                 ...selectedData,
                 date: dayjs(selectedData.date, 'YYYY/MM/DD') as any
             })
-            setTeamId(selectedData.team?.id)
         } else {
             form.resetFields(undefined)
-            setTeamId('')
         }
         const controller = new AbortController();
         axiosClient(HRSETTINGS.TEAMS.USERS_LISTS, { signal: controller.signal })
@@ -240,12 +239,9 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
 
     useEffect(() => {
         if (teamId != undefined || teamId != '') {
-            const acitivityUrl = teamId ? TASKSSETTINGS.ACTIVITIES.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.ACTIVITIES.LISTS;
-            const typesUrl = teamId ? TASKSSETTINGS.TYPES.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.TYPES.LISTS;
-            const sprintsUrl = teamId ? TASKSSETTINGS.SPRINT.LISTS + ('?team_id=' + teamId) : TASKSSETTINGS.SPRINT.LISTS;
-            fetchList(acitivityUrl, 'activities');
-            fetchList(typesUrl, 'types');
-            fetchList(sprintsUrl, 'sprints');
+            fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + ('?team_id=' + teamId), 'activities');
+            fetchList(TASKSSETTINGS.TYPES.LISTS + ('?team_id=' + teamId), 'types');
+            fetchList(TASKSSETTINGS.SPRINT.LISTS + ('?team_id=' + teamId), 'sprints');
         }
     }, [teamId])
 
@@ -253,7 +249,6 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         const data = await getList(url)
         setTasks((prevTasks) => ({ ...prevTasks, [key]: data }))
     }
-
     function onFinish(values: ITasks) {
         setLoading(true)
         let { date, description, ...restValues } = values

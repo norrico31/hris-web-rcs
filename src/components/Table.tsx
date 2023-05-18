@@ -15,7 +15,6 @@ type TableListProps<T> = {
 }
 
 function Table({ loading, isSizeChanger = true, columns, dataList, tableParams, onChange }: TableListProps<any>) {
-    const { width } = useWindowSize()
     return (
         <div>
             <AntDTable
@@ -29,7 +28,7 @@ function Table({ loading, isSizeChanger = true, columns, dataList, tableParams, 
                     itemRender: ItemRender,
                 }}
                 columns={columns}
-                // scroll={{ y: 600, x: undefined }}
+                scroll={{ x: 100, }}
                 rowKey={(data: any) => data?.id}
                 onChange={onChange}
             />
