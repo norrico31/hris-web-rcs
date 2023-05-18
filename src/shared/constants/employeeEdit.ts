@@ -20,10 +20,6 @@ export const EMPLOYEEPATHS = [
         key: '/clientschedule',
     },
     {
-        label: 'Client History',
-        key: '/clienthistory',
-    },
-    {
         label: 'Documents',
         key: '/employeedocuments',
     },

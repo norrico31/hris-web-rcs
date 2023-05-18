@@ -145,8 +145,7 @@ export default function ForApproval() {
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
         const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
-        let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false';
-        const url = LEAVES.GET + isManager + status
+        const url = LEAVES.GET + 'true' + status
         console.log('type: ', type)
         console.log('leaveType: ', leaveType)
         GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })

@@ -9,7 +9,6 @@ import { useEndpoints } from '../../shared/constants'
 import useMessage from 'antd/es/message/useMessage';
 
 const [{ EMPLOYEE201: { GOVERNMENTDOCS } }] = useEndpoints()
-
 const { POST } = useAxios()
 
 export default function GovernmentDocs() {

@@ -1,3 +1,4 @@
+import { Dayjs } from "dayjs"
 import { IUser } from "."
 import { AxiosGetData } from "./utils/Axios"
 
@@ -34,11 +35,14 @@ export interface IOvertime {
     time_end: string
     time_start: string
     unpaid_leaves: number
+    date: string | Dayjs
     updated_at: string
     used_sl: number
     used_vl: number
     user: IUser
     user_id: string
+    planned_ot_start: string
+    planned_ot_end: string
 }
 
 export type OvertimeRes = AxiosGetData<IOvertime>

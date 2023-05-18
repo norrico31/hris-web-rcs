@@ -128,8 +128,7 @@ export default function MyLeave() {
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
         const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
-        let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false';
-        const url = LEAVES.GET + isManager + status
+        const url = LEAVES.GET + 'false' + status
         console.log('type: ', type)
         console.log('leaveType: ', leaveType)
         GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
@@ -214,7 +213,7 @@ const { Item: FormItem, useForm } = AntDForm
 export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<ILeave>()
     const [loading, setLoading] = useState(false)
-    const [lists, setLists] = useState<{ leaveTypes: ILeaveType[]; leaveDurations: ILeaveDuration[] }>({ leaveTypes: [], leaveDurations: [] })
+    const [lists, setLists] = useState<ILeaveType[]>([])
 
     useEffect(() => {
         if (selectedData) {
@@ -222,19 +221,8 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         } else form.resetFields()
 
         const controller = new AbortController();
-        (async () => {
-            try {
-                const leaveTypePromise = axiosClient(HRSETTINGS.LEAVETYPE.LISTS, { signal: controller.signal })
-                const leaveDurationPromise = axiosClient(HRSETTINGS.LEAVEDURATION.LISTS, { signal: controller.signal })
-                const [leaveTypeRes, leaveDurationRes,] = await Promise.allSettled([leaveTypePromise, leaveDurationPromise]) as any
-                setLists({
-                    leaveTypes: leaveTypeRes?.value?.data ?? [],
-                    leaveDurations: leaveDurationRes?.value?.data ?? [],
-                })
-            } catch (error) {
-                console.error('error fetching clients: ', error)
-            }
-        })()
+        axiosClient(HRSETTINGS.LEAVETYPE.LISTS, { signal: controller.signal })
+            .then((res) => setLists(res?.data ?? []))
         return () => {
             controller.abort()
         }
@@ -263,20 +251,8 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                 rules={[{ required: true, message: '' }]}
             >
                 <Select placeholder='Select leave type...' optionFilterProp="children" allowClear showSearch>
-                    {lists.leaveTypes.map((leave) => (
+                    {lists.map((leave) => (
                         <Select.Option value={leave.id} key={leave.id} style={{ color: '#777777' }}>{leave?.type}</Select.Option>
-                    ))}
-                </Select>
-            </FormItem>
-            <FormItem
-                label="Leave Duration"
-                name="leave_duration_id"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <Select placeholder='Select leave duration...' optionFilterProp="children" allowClear showSearch>
-                    {lists.leaveDurations.map((leave) => (
-                        <Select.Option value={leave.id} key={leave.id} style={{ color: '#777777' }}>{leave.name}</Select.Option>
                     ))}
                 </Select>
             </FormItem>
@@ -320,7 +296,6 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     required
                     rules={[{ required: true, message: '' }]}
                 >
-
                     <TimePicker value={dayjs('00:00:00', 'HH:mm:ss')} />
                 </FormItem>
             </Row>

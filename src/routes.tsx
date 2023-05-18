@@ -66,7 +66,6 @@ const Permissions = lazy(() => import('./pages/admin-settings/Permissions'))
 const IssueLogs = lazy(() => import('./pages/admin-settings/IssueLogs'))
 
 // Employee Files (201)
-const ClientHistory = lazy(() => import('./pages/employee-files/ClientHistory'))
 const EmployeeBenefits = lazy(() => import('./pages/employee-files/EmployeeBenefits'))
 const ClientSchedule = lazy(() => import('./pages/employee-files/ClientSchedule'))
 const EmployeeSchedule = lazy(() => import('./pages/employee-files/Schedule'))
@@ -300,10 +299,6 @@ export const routes = createBrowserRouter([
                     {
                         path: 'employeebenefits',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeBenefits /></Suspense>
-                    },
-                    {
-                        path: 'clienthistory',
-                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientHistory /></Suspense>
                     },
                     {
                         path: 'clientschedule',

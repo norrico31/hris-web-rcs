@@ -52,14 +52,6 @@ export default function Overtime() {
             dataIndex: 'status',
             width: 120,
         },
-        // {
-        //     title: 'Overtime Type',
-        //     key: 'Overtime_type',
-        //     dataIndex: 'Overtime_type',
-        //     width: 120,
-        //     render: (_, record) => record.Overtime_type?.name ?? '-',
-        //     align: 'center'
-        // },
         {
             title: 'Date Start',
             key: 'date_start',
@@ -143,7 +135,6 @@ export default function Overtime() {
         setLoading(true)
         GET<OvertimeRes>(OVERTIME.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
-                console.log(res)
                 setData(res?.data ?? [])
                 setTableParams({
                     ...tableParams,
@@ -216,7 +207,6 @@ const { Item: FormItem, useForm } = AntDForm
 function OvertimeModal({ OvertimeType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IOvertime>()
     const [loading, setLoading] = useState(false)
-    // const [lists, setLists] = useState<{ OvertimeTypes: IOvertimeType[]; OvertimeDurations: IOvertimeDuration[] }>({ OvertimeTypes: [], OvertimeDurations: [] })
 
     // useEffect(() => {
     //     if (selectedData) {
@@ -242,11 +232,13 @@ function OvertimeModal({ OvertimeType, selectedData, isModalOpen, handleCancel, 
     //     }
     // }, [selectedData])
 
-    function onFinish({ date_end, date_start, ...restProps }: IOvertime) {
-        date_start = dayjs(date_start).format('YYYY/MM/DD') as any
-        date_end = dayjs(date_end).format('YYYY/MM/DD') as any
-        restProps = { ...restProps, date_start, date_end } as any
-        let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, id: selectedData.id }) : POST(OVERTIME.POST, restProps)
+    function onFinish({ date, planned_ot_start,
+        planned_ot_end, ...restProps }: IOvertime) {
+        date = dayjs(date).format('YYYY-MM-DD')
+        planned_ot_start = dayjs(planned_ot_start).format('HH:MM')
+        planned_ot_end = dayjs(planned_ot_end).format('HH:MM')
+        restProps = { ...restProps } as any
+        let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, date, id: selectedData.id, planned_ot_start, planned_ot_end }) : POST(OVERTIME.POST, { ...restProps, date, planned_ot_start, planned_ot_end })
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -258,43 +250,17 @@ function OvertimeModal({ OvertimeType, selectedData, isModalOpen, handleCancel, 
 
     return <Modal title='Request a Overtime' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} disabled={loading}>
-            {/* <FormItem
-                label="Overtime Type"
-                name="Overtime_type_id"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <Select placeholder='Select Overtime type...' optionFilterProp="children" allowClear showSearch>
-                    {lists.OvertimeTypes.map((Overtime) => (
-                        <Select.Option value={Overtime.id} key={Overtime.id} style={{ color: '#777777' }}>{Overtime?.type}</Select.Option>
-                    ))}
-                </Select>
-            </FormItem>
             <FormItem
-                label="Overtime Duration"
-                name="Overtime_duration_id"
+                label="Start Date"
+                name="date"
                 required
                 rules={[{ required: true, message: '' }]}
             >
-                <Select placeholder='Select Overtime duration...' optionFilterProp="children" allowClear showSearch>
-                    {lists.OvertimeDurations.map((Overtime) => (
-                        <Select.Option value={Overtime.id} key={Overtime.id} style={{ color: '#777777' }}>{Overtime.name}</Select.Option>
-                    ))}
-                </Select>
-            </FormItem> */}
-            <Row justify='space-around'>
-                <FormItem
-                    label="Start Date"
-                    name="date"
-                    required
-                    rules={[{ required: true, message: '' }]}
-                >
-                    <DatePicker
-                        format='YYYY/MM/DD'
-                        style={{ width: '100%' }}
-                    />
-                </FormItem>
-            </Row>
+                <DatePicker
+                    format='YYYY/MM/DD'
+                    style={{ width: '100%' }}
+                />
+            </FormItem>
             <Row justify='space-around'>
                 <FormItem
                     label="Start Time"
