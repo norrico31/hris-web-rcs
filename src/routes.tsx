@@ -26,7 +26,9 @@ const Profile = lazy(() => import('./pages/Profile'))
 // Leaves
 const MyLeaves = lazy(() => import('./pages/leaves/MyLeave'))
 const LeaveArchives = lazy(() => import('./pages/leaves/LeaveArchives'))
-const ForApproval = lazy(() => import('./pages/leaves/ForApproval'))
+const LeaveApproval = lazy(() => import('./pages/leaves/LeaveApproval'))
+
+// Overtime
 
 // System Settings
 const TaskActivities = lazy(() => import('./pages/system-settings/task-settings/TaskActivities'))
@@ -158,7 +160,7 @@ export const routes = createBrowserRouter([
                     },
                     {
                         path: 'approval',
-                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ForApproval /></Suspense>,
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveApproval /></Suspense>,
                     },
                 ]
             },

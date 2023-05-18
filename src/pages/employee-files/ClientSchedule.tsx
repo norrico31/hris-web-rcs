@@ -6,7 +6,7 @@ import { useEmployeeCtx } from '../EmployeeEdit'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
-import { IArguments, TableParams, IEmployeeClients, IClient, IClientBranch, ISchedules } from '../../shared/interfaces'
+import { IArguments, TableParams, IEmployeeClients, IClient, IClientBranch, ISchedules, EmployeeClientsRes } from '../../shared/interfaces'
 import dayjs from 'dayjs';
 import useWindowSize from '../../shared/hooks/useWindowSize'
 
@@ -16,12 +16,21 @@ const [{ SYSTEMSETTINGS: { HRSETTINGS, CLIENTSETTINGS }, EMPLOYEE201 }] = useEnd
 const { GET, PUT, POST, DELETE } = useAxios()
 
 export default function ClientAndSchedule() {
-    const { employeeInfo, fetchData } = useEmployeeCtx()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [selectedData, setSelectedData] = useState<IEmployeeClients | undefined>(undefined)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [data, setData] = useState<IEmployeeClients[]>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(false)
+
+    useEffect(function fetch() {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IEmployeeClients> = [
         {
@@ -65,6 +74,23 @@ export default function ClientAndSchedule() {
         },
     ]
 
+    function fetchData(args?: IArguments) {
+        setLoading(true)
+        GET<EmployeeClientsRes>(EMPLOYEE201.CLIENTSCHEDULE.GET + '?user_id=' + employeeId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                        pageSize: res?.per_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
+    }
+
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     const handleSearch = (str: string) => {
@@ -100,7 +126,7 @@ export default function ClientAndSchedule() {
             <Table
                 loading={loading}
                 columns={columns}
-                dataList={employeeInfo?.employee_clients ?? []}
+                dataList={data}
                 tableParams={tableParams}
                 onChange={onChange}
             />
@@ -179,7 +205,6 @@ function ClientScheduleModal(props: ModalProps) {
     }, [clientId])
 
     function onFinish({ client_start_date, client_end_date, ...restValues }: IEmployeeClients) {
-        // do put route
         client_start_date = dayjs(client_start_date).format("YYYY-MM-DD")
         client_end_date = dayjs(client_end_date).format("YYYY-MM-DD")
         let result = selectedData ? PUT(EMPLOYEE201.CLIENTSCHEDULE.PUT + employeeId, { ...restValues, client_start_date, client_end_date, user_id: employeeId }) : POST(EMPLOYEE201.CLIENTSCHEDULE.POST, { ...restValues, client_start_date, client_end_date, user_id: employeeId })

@@ -1,4 +1,4 @@
-import { IBenefits } from ".."
+import { AxiosGetData, IBenefits } from ".."
 
 export interface IEmployeeBenefits {
     benefit: IBenefits
@@ -10,3 +10,5 @@ export interface IEmployeeBenefits {
     is_active: string
     description: string | null
 }
+
+export type EmployeeBenefitsRes = AxiosGetData<IEmployeeBenefits>

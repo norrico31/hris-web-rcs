@@ -249,6 +249,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         const data = await getList(url)
         setTasks((prevTasks) => ({ ...prevTasks, [key]: data }))
     }
+
     function onFinish(values: ITasks) {
         setLoading(true)
         let { date, description, ...restValues } = values

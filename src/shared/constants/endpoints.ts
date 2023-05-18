@@ -235,7 +235,7 @@ export const useEndpoints = () => {
             GET: '/employees',
             POST: '/employees',
             PUT: '/employees/',
-            DELETE: '/employee/',
+            DELETE: '/employees/',
             BENEFITS: {
                 GET: '/employee_benefits',
                 POST: '/employee_benefits/',
@@ -255,7 +255,7 @@ export const useEndpoints = () => {
                 DELETE: '/employees/'
             },
             CLIENTSCHEDULE: {
-                GET: '/employee_clients/',
+                GET: '/employee_clients',
                 POST: '/employee_clients/',
                 PUT: '/employee_clients/',
                 DELETE: '/employee_clients/'
@@ -267,10 +267,10 @@ export const useEndpoints = () => {
                 DELETE: '/employee_evaluations/'
             },
             EMPLOYEEDOCUMENT: {
-                GET: '/employee/document/show/',
-                POST: '/employee/document/show/',
-                PUT: '/employee/document/show/',
-                DELETE: '/employee/document/show/'
+                GET: '/employee_documents',
+                POST: '/employee_documents/',
+                PUT: '/employee_documents/',
+                DELETE: '/employee_documents/'
             },
             MEMORANDUM: {
                 GET: '/memo/show/',

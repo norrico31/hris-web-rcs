@@ -1,3 +1,5 @@
+import { AxiosGetData } from "../utils/Axios"
+
 export interface IEmployeeContracts {
     description: string
     file_name: string | null
@@ -6,3 +8,5 @@ export interface IEmployeeContracts {
     type: string
     user_id: string
 }
+
+export type EmployeeContractsRes = AxiosGetData<IEmployeeContracts>

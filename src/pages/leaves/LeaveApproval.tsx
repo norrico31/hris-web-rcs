@@ -20,7 +20,7 @@ const [{ LEAVES, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 
 dayjs.extend(localizedFormat)
 
-export default function ForApproval() {
+export default function LeaveApproval() {
     renderTitle('Leave - Approval')
     const { user, loading: loadingUser } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)

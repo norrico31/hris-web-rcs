@@ -20,14 +20,12 @@ export default function PayScheme() {
         form.setFieldsValue({
             ...employeeInfo?.bank_detail
         })
-    }, [employeeInfo, fetchData])
+    }, [employeeInfo])
 
     function onFinish(values: Record<string, any>) {
         setLoading(true)
         PUT(PAYSCHEME.PUT + employeeInfo?.bank_detail?.id, { ...values, user_id: employeeInfo?.id })
-            .catch(() => {
-                fetchData()
-            })
+            .then(() => fetchData())
         setLoading(false)
     }
 

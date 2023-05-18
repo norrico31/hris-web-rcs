@@ -15,4 +15,4 @@ export interface IEmployeeClients {
     schedule_id: string | null
 }
 
-export type ClientScheduleRes = AxiosGetData<IEmployeeClients>
+export type EmployeeClientsRes = AxiosGetData<IEmployeeClients>

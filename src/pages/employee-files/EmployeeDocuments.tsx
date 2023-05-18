@@ -10,16 +10,16 @@ import { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, IEmployeeDocument, EmployeeDocumentRes } from '../../shared/interfaces'
 
 const [{ EMPLOYEE201: { EMPLOYEEDOCUMENT } }] = useEndpoints()
-const { GET } = useAxios()
+const { GET, POST, PUT } = useAxios()
 // TODO
 export default function EmployeeDocuments() {
-    const { employeeId } = useEmployeeCtx()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployeeDocument | undefined>(undefined)
-
     const [data, setData] = useState<IEmployeeDocument[]>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         const controller = new AbortController();
@@ -53,7 +53,8 @@ export default function EmployeeDocuments() {
     ]
 
     function fetchData(args?: IArguments) {
-        GET<EmployeeDocumentRes>(EMPLOYEEDOCUMENT.GET + `/${employeeId}`, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        setLoading(true)
+        GET<EmployeeDocumentRes>(EMPLOYEEDOCUMENT.GET + `?user_id=${employeeInfo?.id}`, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -64,16 +65,12 @@ export default function EmployeeDocuments() {
                         current: res?.current_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
     }
 
     const handleSearch = (str: string) => {
         setSearch(str)
         fetchData({ search: str, page: 1 })
-    }
-
-    function handleDownload() {
-        alert('download')
     }
 
     function handleCloseModal() {
@@ -97,9 +94,11 @@ export default function EmployeeDocuments() {
             />
             <DocumentsModal
                 title={selectedData != undefined ? 'Update' : 'Create'}
+                employeeId={employeeId}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -107,16 +106,18 @@ export default function EmployeeDocuments() {
 
 type ModalProps = {
     title: string
+    employeeId: string
     isModalOpen: boolean
     selectedData?: IEmployeeDocument
+    fetchData(args?: IArguments): void
     handleCancel: () => void
 }
 
 const { Item: Item, useForm } = AntDForm
 
-function DocumentsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
-
+    const [loading, setLoading] = useState(false)
     // useEffect(() => {
     //     if (selectedData != undefined) {
     //         let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
@@ -144,18 +145,23 @@ function DocumentsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
         return newFiles
     }
 
-    function onFinish(values: Record<string, string>) {
-        console.log(values)
-        // let { date, description, ...restProps } = values
-        // let [start_date, end_date] = date
-        // start_date = dayjs(start_date).format('YYYY/MM/DD')
-        // end_date = dayjs(end_date).format('YYYY/MM/DD')
-        // restProps = { ...restProps, start_date, end_date, ...(description != undefined && { description }) }
-        // console.log(restProps)
-
-        // if success
-        form.resetFields()
-        handleCancel()
+    // TODO
+    function onFinish(values: Record<string, any>) {
+        const formData = new FormData()
+        if (selectedData?.id) formData.append('_method', 'PUT')
+        formData.append('user_id', employeeId)
+        formData.append('document_type', values?.document_type)
+        formData.append('is_active', values?.is_active)
+        formData.append('file', values?.file ? values?.file[0].originFileObj : null)
+        formData.append('description', (values?.description == undefined || values?.description === null) ? '' : values?.description)
+        let result = selectedData ? POST(EMPLOYEEDOCUMENT.PUT + employeeId, formData) : POST(EMPLOYEEDOCUMENT.POST, formData)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Documents`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
@@ -168,20 +174,19 @@ function DocumentsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
             >
                 <Input placeholder='Enter document type...' />
             </Item>
-            <Item label="Attachments">
-                <Item name="attachments" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-                    <Upload.Dragger name="files" multiple beforeUpload={() => false}>
+            <Item label="File">
+                <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+                    <Upload.Dragger name="files" beforeUpload={() => false}>
                         <p className="ant-upload-drag-icon">
                             <InboxOutlined />
                         </p>
                         <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        <p className="ant-upload-hint">Support for a single or bulk upload.</p>
                     </Upload.Dragger>
                 </Item>
             </Item>
             <Item
                 label="Status"
-                name="status"
+                name="is_active"
                 required
                 rules={[{ required: true, message: '' }]}
             >

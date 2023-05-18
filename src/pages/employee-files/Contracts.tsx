@@ -1,21 +1,33 @@
 import { useState, useEffect } from 'react'
 import { Modal, Form as AntDForm, Input, Select, Space, Button, Upload } from 'antd'
 import { InboxOutlined } from '@ant-design/icons';
-import { ColumnsType } from 'antd/es/table'
+import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { Action, Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
-import { IEmployeeContracts } from '../../shared/interfaces'
+import { EmployeeContractsRes, IArguments, IEmployeeContracts, TableParams } from '../../shared/interfaces'
 import { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
 
 const [{ EMPLOYEE201 }] = useEndpoints()
-const { PUT, DELETE, POST } = useAxios()
+const { PUT, DELETE, POST, GET } = useAxios()
 
 export default function EmployeeContracts() {
-    const { employeeInfo, fetchData } = useEmployeeCtx()
+    const { employeeId, employeeInfo } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedData, setSelectedData] = useState<IEmployeeContracts | undefined>(undefined)
+    const [data, setData] = useState<IEmployeeContracts[]>([])
+    const [loading, setLoading] = useState(true)
+    const [search, setSearch] = useState('')
+    const [tableParams, setTableParams] = useState<TableParams | undefined>()
+
+    useEffect(function fetch() {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IEmployeeContracts> = [
         {
@@ -29,7 +41,6 @@ export default function EmployeeContracts() {
             dataIndex: 'file',
             render: (_, record) => {
                 // TODO DISPLAY FILE IN MODAL AND DOWNLAD
-                console.log(record?.file_name)
                 return <Button type='link'>Download File</Button>
             }
         },
@@ -58,6 +69,34 @@ export default function EmployeeContracts() {
         },
     ]
 
+    function fetchData(args?: IArguments) {
+        setLoading(true)
+        GET<EmployeeContractsRes>(EMPLOYEE201.CONTRACTS.GET + '?user_id=' + employeeId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                        pageSize: res?.per_page,
+                    },
+                })
+            }).finally(() => setLoading(false))
+    }
+
+    const handleSearch = (str: string) => {
+        setSearch(str)
+        fetchData({
+            search: str,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+
     function handleDelete(id: string) {
         DELETE(EMPLOYEE201.CONTRACTS.DELETE, id)
             .finally(fetchData)
@@ -68,10 +107,6 @@ export default function EmployeeContracts() {
         setSelectedData(data)
     }
 
-    function handleDownload() {
-        alert('download')
-    }
-
     function handleCloseModal() {
         setSelectedData(undefined)
         setIsModalOpen(false)
@@ -80,14 +115,16 @@ export default function EmployeeContracts() {
     return (
         <Card title='Contracts'>
             <TabHeader
-                handleSearch={() => null}
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
 
             <Table
+                loading={loading}
+                tableParams={tableParams}
                 columns={columns}
-                dataList={employeeInfo?.contracts}
-                onChange={(evt) => console.log(evt)}
+                dataList={data}
+                onChange={onChange}
             />
             <ContractsModal
                 title={selectedData != undefined ? 'Update' : 'Create'}
@@ -167,7 +204,7 @@ function ContractsModal({ title, selectedData, isModalOpen, handleCancel }: Moda
             >
                 <Input placeholder='Enter type...' />
             </Item>
-            <Item label="Attachments">
+            <Item label="File">
                 <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
                     <Upload.Dragger name="files" beforeUpload={() => false}>
                         <p className="ant-upload-drag-icon">
