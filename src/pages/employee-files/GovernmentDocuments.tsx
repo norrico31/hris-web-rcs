@@ -139,7 +139,6 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
         form.setFieldsValue({
             ...selectedData,
             [keyProp]: selectedData?.[keyProp],
-            // file: selectedData?.file_name ?? []
         })
     }, [keyProp, selectedData, isModalOpen])
 
@@ -156,7 +155,7 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
         if (selectedData?.id) formData.append('_method', 'PUT')
         formData.append('user_id', userId)
         formData.append(keyProp, values[keyProp])
-        formData.append('file', values.file[0]?.originFileObj)
+        formData.append('file', values.file ? values.file[0]?.originFileObj : null)
         axiosClient.post(url + userId, formData)
             .then(() => {
                 form.resetFields()
@@ -187,8 +186,15 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
             >
                 <Input type='number' placeholder='Enter pagibig number...' />
             </FormItem>
-            <FormItem label="File">
-                <FormItem name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+            <FormItem
+                label="File"
+                required
+                rules={[{ required: true, message: '' }]}
+            >
+                <FormItem name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
                     <Upload.Dragger name="files" beforeUpload={() => false}>
                         <p className="ant-upload-drag-icon">
                             <InboxOutlined />

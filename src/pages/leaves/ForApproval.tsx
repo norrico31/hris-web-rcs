@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Space, Skeleton, Popconfirm } from 'antd'
+import { Button, Space, Skeleton, Popconfirm, Select } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { FcApproval } from 'react-icons/fc'
@@ -13,6 +13,7 @@ import { ROOTPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, ILeave, LeaveRes, TableParams } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
+import { LeaveModal } from './MyLeave'
 
 const { GET, POST, PUT } = useAxios()
 const [{ LEAVES, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
@@ -33,10 +34,12 @@ export default function ForApproval() {
     useEffect(function fetch() {
         const controller = new AbortController();
         if (user != undefined) fetchData({
-            signal: controller.signal,
-            page: tableParams?.pagination?.current,
-            pageSize: tableParams?.pagination?.pageSize,
-            search,
+            args: {
+                signal: controller.signal, search,
+                page: tableParams?.pagination?.current,
+                pageSize: tableParams?.pagination?.pageSize,
+            },
+            type: leaveType
         })
         return () => {
             controller.abort()
@@ -50,6 +53,13 @@ export default function ForApproval() {
     if (user?.role.name.toLowerCase() !== 'manager' && user?.role.name.toLowerCase() !== 'admin') return <Navigate to={'/leave/leaves'} />
 
     const columns: ColumnsType<ILeave> = [
+        {
+            title: 'Name',
+            key: 'full_nam,e',
+            dataIndex: 'full_nam,e',
+            render: (_, record) => record?.user?.full_name ?? '-',
+            width: 150,
+        },
         {
             title: 'Status',
             key: 'status',
@@ -98,7 +108,7 @@ export default function ForApproval() {
             align: 'center'
         },
         {
-            title: 'For Approval',
+            title: 'Actions',
             key: 'approver',
             dataIndex: 'approver',
             align: 'center',
@@ -136,9 +146,14 @@ export default function ForApproval() {
         }
     ];
 
-    function fetchData(args: IArguments) {
+    function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        GET<LeaveRes>(LEAVES.GET + 'true&status=PENDING', args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
+        let isManager: 'false' | 'true' = (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') ? 'true' : 'false';
+        const url = LEAVES.GET + isManager + status
+        console.log('type: ', type)
+        console.log('leaveType: ', leaveType)
+        GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -167,11 +182,28 @@ export default function ForApproval() {
             })
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: leaveType })
 
     return (
         <>
-            <TabHeader handleSearch={setSearch} />
+            <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)}>
+                <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
+                    setLeaveType((str == undefined || str == '') ? 'all' : str)
+                    fetchData({
+                        args: {
+                            search,
+                            page: tableParams?.pagination?.current ?? 1,
+                            pageSize: tableParams?.pagination?.pageSize
+                        },
+                        type: (str == undefined || str == '') ? 'all' : str
+                    })
+                }} style={{ width: 150 }}>
+                    <Select.Option value='all'>All</Select.Option>
+                    <Select.Option value='pending'>Pending</Select.Option>
+                    <Select.Option value='approved'>Approved</Select.Option>
+                    <Select.Option value='reject'>Rejected</Select.Option>
+                </Select>
+            </TabHeader>
             <Card title='Leave - Approval' level={5}>
                 <Table
                     loading={loading}
@@ -180,8 +212,14 @@ export default function ForApproval() {
                     tableParams={tableParams}
                     onChange={onChange}
                 />
+                <LeaveModal
+                    leaveType={leaveType}
+                    fetchData={fetchData}
+                    isModalOpen={isModalOpen}
+                    selectedData={selectedData}
+                    handleCancel={() => setIsModalOpen(false)}
+                />
             </Card>
-
         </>
     )
 }

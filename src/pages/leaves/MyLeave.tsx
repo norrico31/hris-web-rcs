@@ -50,6 +50,13 @@ export default function MyLeave() {
 
     const columns: ColumnsType<ILeave> = [
         {
+            title: 'Name',
+            key: 'full_nam,e',
+            dataIndex: 'full_nam,e',
+            render: (_, record) => record?.user?.full_name ?? '-',
+            width: 150,
+        },
+        {
             title: 'Status',
             key: 'status',
             dataIndex: 'status',
@@ -154,7 +161,7 @@ export default function MyLeave() {
 
     return (
         <>
-            <TabHeader handleSearch={setSearch}>
+            <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)}>
                 <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
                     setLeaveType((str == undefined || str == '') ? 'all' : str)
                     fetchData({
@@ -172,7 +179,7 @@ export default function MyLeave() {
                     <Select.Option value='reject'>Rejected</Select.Option>
                 </Select>
             </TabHeader>
-            <Card title={`Leave - ${firstLetterCapitalize(leaveType)}`} level={5}>
+            <Card title={`My Leaves - ${firstLetterCapitalize(leaveType)}`} level={5}>
                 <Table
                     loading={loading}
                     columns={columns}
@@ -204,7 +211,7 @@ type ModalProps = {
 }
 const { Item: FormItem, useForm } = AntDForm
 
-function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
+export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<ILeave>()
     const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<{ leaveTypes: ILeaveType[]; leaveDurations: ILeaveDuration[] }>({ leaveTypes: [], leaveDurations: [] })

@@ -17,7 +17,7 @@ export default function Leave() {
 
     const items = [
         {
-            label: 'Leave',
+            label: 'My Leaves',
             key: '/leaves',
         },
         {

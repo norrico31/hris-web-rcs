@@ -17,7 +17,7 @@ const [{ AUTH: { USER, LOGIN } }] = useEndpoints()
 export default function Layout() {
     const { user, token, setToken, setUser, setLoading } = useAuthContext()
     if (token == undefined) return <Navigate to={LOGIN} />
-    console.log(user)
+
     const [collapsed, setCollapsed] = useState(() => {
         let isCollapsed = localStorage.getItem('collapsed')
         if (isCollapsed != null) {

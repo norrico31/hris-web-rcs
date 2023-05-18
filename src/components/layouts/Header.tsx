@@ -16,7 +16,7 @@ type Props = {
 }
 
 const { GET } = useAxios()
-const [{ AUTH: { LOGOUT, LOGIN } }] = useEndpoints()
+const [{ AUTH: { LOGOUT } }] = useEndpoints()
 
 export default function Header({ collapsed, setCollapsed }: Props) {
     const { user, setUser, setToken } = useAuthContext()

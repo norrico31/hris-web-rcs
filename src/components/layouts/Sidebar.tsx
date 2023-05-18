@@ -11,7 +11,7 @@ import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
 import { TfiAnnouncement } from 'react-icons/tfi'
 import { useAuthContext } from '../../shared/contexts/Auth'
-import { IPermissionStatus, IPermissions, IRolePermission, IUser } from '../../shared/interfaces'
+import { IRolePermission, IUser } from '../../shared/interfaces'
 import { ADMINSETTINGSPATHS, CLIENTSETTINGSPATHS, HRSETTINGSPATHS, ROOTPATHS, TASKSETTINGSPATHS } from '../../shared/constants'
 
 type Props = {
@@ -224,13 +224,6 @@ function filterMenu(user: IUser) {
             undefined,
             rootPath.includes('salaryadjustments')
         ),
-        // getItemLinks(
-        //     <Link to='/profile'>Profile</Link>,
-        //     '/profile',
-        //     <AiOutlineDollarCircle />,
-        //     undefined,
-        //     true
-        // ),
     ]
 }
 

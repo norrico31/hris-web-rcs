@@ -49,6 +49,13 @@ export default function LeaveArchives() {
 
     const columns: ColumnsType<ILeave> = [
         {
+            title: 'Name',
+            key: 'full_nam,e',
+            dataIndex: 'full_nam,e',
+            render: (_, record) => record?.user?.full_name ?? '-',
+            width: 150,
+        },
+        {
             title: 'Status',
             key: 'status',
             dataIndex: 'status',
