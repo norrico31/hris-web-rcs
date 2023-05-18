@@ -6,9 +6,6 @@ export const useEndpoints = () => {
             LOGOUT: '/logout',
             UPDATEPROFILE: '/update_password'
         },
-        DASHBOARD: {
-            GET: '',
-        },
         ANNOUNCEMENT: {
             LISTS: '/options/announcements',
             GET: '/announcements',
@@ -293,6 +290,9 @@ export const useEndpoints = () => {
                 SSS: {
                     PUT: '/employee_sss/'
                 },
+            },
+            PAYSCHEME: {
+                PUT: '/employee_bank_details/'
             }
         },
         TASKS: {

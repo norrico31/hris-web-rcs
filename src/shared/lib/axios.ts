@@ -39,7 +39,11 @@ export const useAxios = () => {
         try {
             const res = await axiosClient.post(url, data, { headers })
             if (res?.data?.message == 'Login Successful') return Promise.resolve(res)
-            Alert.success('Create Success', res.data.message)
+            if (data instanceof FormData) {
+                Alert.information('Update Success', res.data.message)
+            } else {
+                Alert.success('Create Success', res.data.message)
+            }
             return Promise.resolve(res)
         } catch (error) {
             const err = error as AxiosError

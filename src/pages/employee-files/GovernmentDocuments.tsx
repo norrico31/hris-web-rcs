@@ -4,11 +4,13 @@ import { InboxOutlined } from '@ant-design/icons';
 import { Card, Form } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { IArguments, IPagibig, IPhilhealth, ISss, ITin } from '../../shared/interfaces'
-import axiosClient from '../../shared/lib/axios'
+import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
 import useMessage from 'antd/es/message/useMessage';
 
 const [{ EMPLOYEE201: { GOVERNMENTDOCS } }] = useEndpoints()
+
+const { POST } = useAxios()
 
 export default function GovernmentDocs() {
     const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
@@ -21,7 +23,7 @@ export default function GovernmentDocs() {
     const philHealth = employeeInfo?.philhealth.philhealth_number
     const sss = employeeInfo?.sss.sss_number
     const tin = employeeInfo?.tin.tin_number
-
+    // DOWNLOAD FUNC
     return (
         <Card title='Government Docs'>
             <Row gutter={[24, 24]} wrap>
@@ -139,6 +141,7 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
         form.setFieldsValue({
             ...selectedData,
             [keyProp]: selectedData?.[keyProp],
+            // file: selectedData?.file_name
         })
     }, [keyProp, selectedData, isModalOpen])
 
@@ -150,25 +153,24 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
     }
 
     function onFinish(values: any) {
+        // TODO
         setLoading(true)
         const formData = new FormData()
         if (selectedData?.id) formData.append('_method', 'PUT')
         formData.append('user_id', userId)
         formData.append(keyProp, values[keyProp])
         formData.append('file', values.file ? values.file[0]?.originFileObj : null)
-        axiosClient.post(url + userId, formData)
+        const URL = selectedData?.id ? (url + selectedData?.id) : url
+        POST(URL, formData)
             .then(() => {
                 form.resetFields()
                 handleCancel()
             })
-            .catch((err) => {
-                // TODO: HANDLE ERROR
-                messageApi.open({
-                    type: 'error',
-                    content: err?.response?.data?.message,
-                    duration: 5
-                })
-            })
+            .catch((err) => messageApi.open({
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 5
+            }))
             .finally(() => {
                 fetchData()
                 setLoading(false)
@@ -186,15 +188,8 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
             >
                 <Input type='number' placeholder='Enter pagibig number...' />
             </FormItem>
-            <FormItem
-                label="File"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <FormItem name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle
-                    required
-                    rules={[{ required: true, message: '' }]}
-                >
+            <FormItem label="File">
+                <FormItem name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
                     <Upload.Dragger name="files" beforeUpload={() => false}>
                         <p className="ant-upload-drag-icon">
                             <InboxOutlined />

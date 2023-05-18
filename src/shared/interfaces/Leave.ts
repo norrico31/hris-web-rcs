@@ -1,4 +1,4 @@
-import { IUser, ILeaveType } from "."
+import { IUser, ILeaveType, ILeaveDuration } from "."
 import { AxiosGetData } from "./utils/Axios"
 
 export interface ILeave {
@@ -31,6 +31,7 @@ export interface ILeave {
     reason: string
     remarks: string | null
     reviewed_by: string | null
+    leave_durations: ILeaveDuration
     status: string
     time_end: string
     time_start: string

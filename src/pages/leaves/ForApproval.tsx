@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Space, Skeleton, Popconfirm, Select } from 'antd'
+import { Button, Space, Skeleton, Popconfirm, Select, Row, Col, DatePicker, Input } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { FcApproval } from 'react-icons/fc'
 import { RxCross2 } from 'react-icons/rx'
-import { Card, TabHeader, Table } from '../../components'
+import { Card, Divider, TabHeader, Table } from '../../components'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { renderTitle } from '../../shared/utils/utilities'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
@@ -54,58 +54,54 @@ export default function ForApproval() {
 
     const columns: ColumnsType<ILeave> = [
         {
-            title: 'Name',
-            key: 'full_nam,e',
-            dataIndex: 'full_nam,e',
+            title: 'Submitted by',
+            key: 'full_name',
+            dataIndex: 'full_name',
             render: (_, record) => record?.user?.full_name ?? '-',
-            width: 150,
+            width: 170,
         },
         {
-            title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
-            width: 120,
+            title: 'Submitted on',
+            key: 'date',
+            dataIndex: 'date',
+            width: 160,
         },
         {
-            title: 'Leave Type',
+            title: 'Leave type',
             key: 'leave_type',
             dataIndex: 'leave_type',
             width: 120,
+            filters: [],
             render: (_, record) => record.leave_type?.name ?? '-',
             align: 'center'
         },
         {
-            title: 'Date Start',
+            title: 'Leave start',
             key: 'date_start',
             dataIndex: 'date_start',
             width: 120,
             render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
         },
         {
-            title: 'Date End',
+            title: 'Leave end',
             key: 'date_end',
             dataIndex: 'date_end',
             width: 120,
             render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
         },
         {
-            title: 'Time Start',
-            key: 'time_start',
-            dataIndex: 'time_start',
-            width: 120
-        },
-        {
-            title: 'Time End',
-            key: 'time_end',
-            dataIndex: 'time_end',
-            width: 120
-        },
-        {
-            title: 'Reason',
-            key: 'reason',
-            dataIndex: 'reason',
+            title: 'Leave duration',
+            key: 'leave_duration',
+            dataIndex: 'leave_duration',
+            render: (_, record) => record?.leave_durations?.name,
             width: 250,
             align: 'center'
+        },
+        {
+            title: 'Status',
+            key: 'status',
+            dataIndex: 'status',
+            width: 120,
         },
         {
             title: 'Actions',
@@ -186,24 +182,31 @@ export default function ForApproval() {
 
     return (
         <>
-            <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)}>
-                <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
-                    setLeaveType((str == undefined || str == '') ? 'all' : str)
-                    fetchData({
-                        args: {
-                            search,
-                            page: tableParams?.pagination?.current ?? 1,
-                            pageSize: tableParams?.pagination?.pageSize
-                        },
-                        type: (str == undefined || str == '') ? 'all' : str
-                    })
-                }} style={{ width: 150 }}>
-                    <Select.Option value='all'>All</Select.Option>
-                    <Select.Option value='pending'>Pending</Select.Option>
-                    <Select.Option value='approved'>Approved</Select.Option>
-                    <Select.Option value='reject'>Rejected</Select.Option>
-                </Select>
-            </TabHeader>
+            <Row justify='space-between' wrap>
+                {/* <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
+                        setLeaveType((str == undefined || str == '') ? 'all' : str)
+                        fetchData({
+                            args: {
+                                search,
+                                page: tableParams?.pagination?.current ?? 1,
+                                pageSize: tableParams?.pagination?.pageSize
+                            },
+                            type: (str == undefined || str == '') ? 'all' : str
+                        })
+                    }} style={{ width: 150 }}>
+                        <Select.Option value='all'>All</Select.Option>
+                        <Select.Option value='pending'>Pending</Select.Option>
+                        <Select.Option value='approved'>Approved</Select.Option>
+                        <Select.Option value='reject'>Rejected</Select.Option>
+                    </Select> */}
+                <Col>
+                    <DatePicker.RangePicker />
+                </Col>
+                <Col>
+                    <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
+                </Col>
+            </Row>
+            <Divider />
             <Card title='Leave - Approval' level={5}>
                 <Table
                     loading={loading}

@@ -3,6 +3,7 @@ import { Table as AntDTable } from 'antd'
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { FilterValue, TableCurrentDataSource } from 'antd/es/table/interface'
 import { TableParams } from '../shared/interfaces'
+import useWindowSize from '../shared/hooks/useWindowSize'
 
 type TableListProps<T> = {
     loading?: boolean
@@ -14,6 +15,7 @@ type TableListProps<T> = {
 }
 
 function Table({ loading, isSizeChanger = true, columns, dataList, tableParams, onChange }: TableListProps<any>) {
+    const { width } = useWindowSize()
     return (
         <div>
             <AntDTable
@@ -27,7 +29,7 @@ function Table({ loading, isSizeChanger = true, columns, dataList, tableParams, 
                     itemRender: ItemRender,
                 }}
                 columns={columns}
-                scroll={scroll}
+                // scroll={{ y: 600, x: undefined }}
                 rowKey={(data: any) => data?.id}
                 onChange={onChange}
             />

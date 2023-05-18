@@ -49,13 +49,13 @@ export default function MyLeave() {
     if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<ILeave> = [
-        {
-            title: 'Name',
-            key: 'full_nam,e',
-            dataIndex: 'full_nam,e',
-            render: (_, record) => record?.user?.full_name ?? '-',
-            width: 150,
-        },
+        // {
+        //     title: 'Name',
+        //     key: 'full_nam,e',
+        //     dataIndex: 'full_nam,e',
+        //     render: (_, record) => record?.user?.full_name ?? '-',
+        //     width: 150,
+        // },
         {
             title: 'Status',
             key: 'status',

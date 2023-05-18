@@ -1,18 +1,34 @@
-import { useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton } from 'antd'
 import { renderTitle } from "../shared/utils/utilities"
 import { Card, Divider } from '../components'
 import { useAuthContext } from '../shared/contexts/Auth'
-import { ROOTPATHS } from '../shared/constants'
+import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
+import axiosClient, { useAxios } from '../shared/lib/axios'
 
 const { Paragraph, Title } = Typography
+
+const [{ ANNOUNCEMENT }] = useEndpoints()
+const { GET, } = useAxios()
+
+// Whos in/out (COUNT)
+// Holidays
+// Leaves
+
 
 export default function Dashboard() {
     renderTitle('Dashboard')
     const { user, loading } = useAuthContext()
     const codes = filterCodes(user?.role?.permissions)
+
+    useEffect(() => {
+        GET(ANNOUNCEMENT.GET)
+            .then((res) => {
+
+            })
+    }, [])
 
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loading) return <Skeleton />
@@ -37,7 +53,8 @@ export default function Dashboard() {
                 </Col>
                 <Col xs={24} sm={24} md={22} lg={12} xl={11} >
                     <div>
-                        <Calendar fullscreen={false} />
+                        <h2>Holidays</h2>
+                        {/* <Calendar fullscreen={false} /> */}
                     </div>
                 </Col>
                 <Col xs={24} sm={24} md={22} lg={12} xl={11} >
