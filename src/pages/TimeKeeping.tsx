@@ -104,7 +104,7 @@ export default function TimeKeeping() {
 
                 />
                 <TimeKeepingModal
-                    data={data[0]}
+                    data={data}
                     fetchData={fetchData}
                     isModalOpen={isModalOpen}
                     handleClose={() => setIsModalOpen(false)}
@@ -121,7 +121,7 @@ type ModalProps = {
         date?: string | dayjs.Dayjs | undefined;
     }) => void
     handleClose: () => void
-    data: ITimeKeeping
+    data: ITimeKeeping[]
 }
 
 function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalProps) {
@@ -132,7 +132,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
     const [error, setError] = useState<string | null>(null)
     const [messageApi, contextHolder] = message.useMessage()
     const [loading, setLoading] = useState(false)
-
+    console.log(data)
     useEffect(() => {
         const handleSuccess = (position: GeolocationPosition) => {
             setError(null)
@@ -200,7 +200,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
                 />
                 {mediaError}
                 {error}
-                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={(!!mediaError || !!error || loading || data?.time_out != null) && error != 'Please take a selfie photo'}>TAKE A SELFIE</Button>
+                <Button type='primary' onClick={() => setIsModalVideoOpen(true)} disabled={(!!mediaError || !!error || loading) && error != 'Please take a selfie photo'}>TAKE A SELFIE</Button>
             </Space>
         </Row>
         <Divider style={{ margin: 10 }} />
@@ -211,11 +211,11 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
                 icon={<RxEnter />}
                 onConfirm={() => postTimeInOut('timein')}
                 okText='Time In'
-                disabled={(data?.time_in != null && data?.time_out != null) || data?.time_in != null}
+                disabled={!!mediaError || !!error || loading || !imageSrc || (data?.length > 0 && data?.length < 3) || data?.length > 0}
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error || loading || !imageSrc || (data?.time_in != null && data?.time_out != null) || data?.time_in != null}
+                    disabled={!!mediaError || !!error || loading || !imageSrc || (data?.length > 0 && data?.length < 3) || data?.length > 0}
                     loading={loading}
                 >
                     Time In
@@ -227,11 +227,11 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
                 icon={<RxExit />}
                 onConfirm={() => postTimeInOut('timeout')}
                 okText='Time Out'
-                disabled={data?.time_out != null}
+                disabled={!!mediaError || !!error || loading || !imageSrc || data.length == 2}
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error || loading || !imageSrc || data?.time_out != null}
+                    disabled={!!mediaError || !!error || loading || !imageSrc || data.length == 2}
                     loading={loading}
                 >
                     Time Out

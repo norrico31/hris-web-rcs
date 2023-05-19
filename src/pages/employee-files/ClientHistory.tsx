@@ -6,7 +6,7 @@ import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
-import { IArguments, TableParams, IEmployeeClients, ClientScheduleRes } from '../../shared/interfaces'
+import { IArguments, TableParams, IEmployeeClients } from '../../shared/interfaces'
 
 const { useForm, Item } = AntDForm
 
