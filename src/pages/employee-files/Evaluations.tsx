@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button, Form as AntDForm, Input, Modal, Select, Space, Upload } from 'antd'
 import { InboxOutlined, PlusOutlined } from '@ant-design/icons';
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { Card } from '../../components'
+import { Action, Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
 import { IArguments, TableParams, IEmployeeEvaluation, EmployeeEvaluationRes } from '../../shared/interfaces'
@@ -11,7 +11,7 @@ import { useAxios } from '../../shared/lib/axios'
 import useMessage from 'antd/es/message/useMessage';
 
 const [{ EMPLOYEE201: { EVALUATION } }] = useEndpoints()
-const { GET, POST } = useAxios()
+const { GET, POST, DELETE } = useAxios()
 
 export default function Evaluations() {
     const { employeeId } = useEmployeeCtx()
@@ -20,6 +20,7 @@ export default function Evaluations() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         const controller = new AbortController();
@@ -41,23 +42,37 @@ export default function Evaluations() {
             dataIndex: 'type',
         },
         {
-            title: 'Attachments',
-            key: 'attachments',
-            dataIndex: 'attachments',
+            title: 'File',
+            key: 'file',
+            dataIndex: 'file',
         },
         {
             title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
+            key: 'is_active',
+            dataIndex: 'is_active',
         },
         {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
         },
+        {
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_, record: IEmployeeEvaluation) => <Action
+                title='Tasks'
+                name={record?.type}
+                onConfirm={() => handleDelete(record?.id!)}
+                onClick={() => handleEdit(record)}
+            />,
+            width: 150
+        },
     ]
 
     function fetchData(args?: IArguments) {
+        setLoading(true)
         GET<EmployeeEvaluationRes>(EVALUATION.GET + '?user_id=' + employeeId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -69,7 +84,17 @@ export default function Evaluations() {
                         current: res?.current_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
+    }
+
+    function handleDelete(id: string) {
+        DELETE(EVALUATION.DELETE, id)
+            .finally(fetchData)
+    }
+
+    function handleEdit(data: IEmployeeEvaluation) {
+        setIsModalOpen(true)
+        setSelectedData(data)
     }
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
@@ -77,10 +102,6 @@ export default function Evaluations() {
     const handleSearch = (str: string) => {
         setSearch(str)
         fetchData({ search: str, page: 1 })
-    }
-
-    function handleDownload() {
-        alert('download')
     }
 
     function handleCloseModal() {
@@ -95,6 +116,7 @@ export default function Evaluations() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
@@ -165,6 +187,7 @@ function EvaluationsModal({ title, employeeId, selectedData, isModalOpen, handle
         if (selectedData?.id) formData.append('_method', 'PUT')
         formData.append('user_id', employeeId)
         formData.append('copy', values?.copy)
+        formData.append('type', values?.type)
         formData.append('file', values?.file ? values?.file[0].originFileObj : '')
         formData.append('is_active', values?.is_active)
         formData.append('description', (values?.description == undefined || values?.description === null) ? '' : values?.description)
@@ -189,6 +212,14 @@ function EvaluationsModal({ title, employeeId, selectedData, isModalOpen, handle
                 rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter copy...' />
+            </Item>
+            <Item
+                label="Type"
+                name="type"
+                required
+                rules={[{ required: true, message: '' }]}
+            >
+                <Input placeholder='Enter type...' />
             </Item>
             <Item label="File">
                 <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>

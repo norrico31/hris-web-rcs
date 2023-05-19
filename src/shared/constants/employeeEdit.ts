@@ -39,10 +39,10 @@ export const EMPLOYEEPATHS = [
         label: 'Salary',
         key: '/salary',
     },
-    {
-        label: 'Salary History',
-        key: '/salaryhistory',
-    },
+    // {
+    //     label: 'Salary History',
+    //     key: '/salaryhistory',
+    // },
     {
         label: 'Salary Adjustment Type',
         key: '/salaryadjustmenttype',

@@ -82,11 +82,11 @@ const LeaveCredits = lazy(() => import('./pages/employee-files/LeaveCredits'))
 const Memorandums = lazy(() => import('./pages/employee-files/Memorandums'))
 const PayScheme = lazy(() => import('./pages/employee-files/PayScheme'))
 const EmployeeSalary = lazy(() => import('./pages/employee-files/EmployeeSalary'))
-const EmployeeSalaryHistory = lazy(() => import('./pages/employee-files/EmployeeSalaryHistory'))
-const EmployeeSalaryAdjustments = lazy(() => import('./pages/employee-files/EmployeeSalaryAdjustments'))
+// const EmployeeSalaryHistory = lazy(() => import('./pages/employee-files/EmployeeSalaryHistory'))
+// const EmployeeSalaryAdjustments = lazy(() => import('./pages/employee-files/EmployeeSalaryAdjustments'))
 const SalaryAdjustmentType = lazy(() => import('./pages/employee-files/SalaryAdjustmentType'))
 const UserProfile = lazy(() => import('./pages/employee-files/UserProfile'))
-const EmployeeSalaryRate = lazy(() => import('./pages/employee-files/EmployeeSalaryRate'))
+// const EmployeeSalaryRate = lazy(() => import('./pages/employee-files/EmployeeSalaryRate'))
 
 function Content({ children }: { children: any }) {
     return (
@@ -360,18 +360,18 @@ export const routes = createBrowserRouter([
                         path: 'salary',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalary /></Suspense>
                     },
-                    {
-                        path: 'salaryadjustments',
-                        element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryAdjustments /></Suspense>
-                    },
+                    // {
+                    //     path: 'salaryadjustments',
+                    //     element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryAdjustments /></Suspense>
+                    // },
                     {
                         path: 'salaryadjustmenttype',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><SalaryAdjustmentType /></Suspense>
                     },
-                    {
-                        path: 'salaryhistory',
-                        element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryHistory /></Suspense>
-                    },
+                    // {
+                    //     path: 'salaryhistory',
+                    //     element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryHistory /></Suspense>
+                    // },
                     {
                         path: 'userprofile',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><UserProfile /></Suspense>

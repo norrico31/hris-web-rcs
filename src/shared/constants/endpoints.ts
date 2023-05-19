@@ -294,6 +294,12 @@ export const useEndpoints = () => {
                     PUT: '/employee_sss/'
                 },
             },
+            EMPLOYEESALARY: {
+                GET: '/employee_salaries',
+                POST: '/employee_salaries/',
+                PUT: '/employee_salaries/',
+                DELETE: '/employee_salaries/'
+            },
             PAYSCHEME: {
                 PUT: '/employee_bank_details/'
             }

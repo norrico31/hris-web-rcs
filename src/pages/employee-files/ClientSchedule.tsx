@@ -133,7 +133,8 @@ export default function ClientAndSchedule() {
             <ClientScheduleModal
                 title={selectedData ? 'Update' : 'Submit'}
                 isModalOpen={isModalOpen}
-                employeeId={employeeInfo?.id}
+                userId={employeeInfo?.id}
+                employeeId={employeeId}
                 selectedData={selectedData}
                 fetchData={fetchData}
                 handleClose={handleCloseModal}
@@ -159,6 +160,7 @@ function ClientScheduleModal(props: ModalProps) {
     const [list, setList] = useState<{ clients: Array<IClient>; schedules: Array<ISchedules> }>({ clients: [], schedules: [] })
     const [clientId, setClientId] = useState('')
     const [clientBranches, setClientBranches] = useState<Array<IClientBranch>>([])
+    console.log(selectedData?.client_id)
 
     useEffect(function fetchUserInfo() {
         if (selectedData) {
@@ -180,7 +182,6 @@ function ClientScheduleModal(props: ModalProps) {
             try {
                 const schedulePromise = axiosClient(HRSETTINGS.SCHEDULES.LISTS, { signal: controller.signal })
                 const clientPromise = axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
-                // const clientBranchPromise = axiosClient(CLIENTSETTINGS.CLIENTBRANCH.LISTS, { signal: controller.signal })
                 const [scheduleRes, clientRes] = await Promise.allSettled([schedulePromise, clientPromise]) as any
                 setList({
                     schedules: scheduleRes?.value?.data ?? [],
@@ -207,7 +208,7 @@ function ClientScheduleModal(props: ModalProps) {
     function onFinish({ client_start_date, client_end_date, ...restValues }: IEmployeeClients) {
         client_start_date = dayjs(client_start_date).format("YYYY-MM-DD")
         client_end_date = dayjs(client_end_date).format("YYYY-MM-DD")
-        let result = selectedData ? PUT(EMPLOYEE201.CLIENTSCHEDULE.PUT + employeeId, { ...restValues, client_start_date, client_end_date, user_id: employeeId }) : POST(EMPLOYEE201.CLIENTSCHEDULE.POST, { ...restValues, client_start_date, client_end_date, user_id: employeeId })
+        let result = selectedData ? PUT(EMPLOYEE201.CLIENTSCHEDULE.PUT + employeeId, { ...restValues, client_start_date, client_end_date }) : POST(EMPLOYEE201.CLIENTSCHEDULE.POST, { ...restValues, client_start_date, client_end_date, user_id: employeeId })
         result.then(() => {
             form.resetFields()
             handleClose()

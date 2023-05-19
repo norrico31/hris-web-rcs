@@ -1,3 +1,5 @@
+import { AxiosGetData } from "../utils/Axios"
+
 export interface IEmployeeSalary {
     gross_salary: number
     id: string
@@ -6,3 +8,5 @@ export interface IEmployeeSalary {
     user_id: string
     description?: string
 }
+
+export type EmployeeSalaryRes = AxiosGetData<IEmployeeSalary>

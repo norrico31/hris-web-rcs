@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button, Form as AntDForm, Input, Modal, Select, Space, Upload } from 'antd'
 import { InboxOutlined, PlusOutlined } from '@ant-design/icons';
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { Card } from '../../components'
+import { Action, Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
@@ -11,7 +11,7 @@ import { IArguments, IMemorandum, MemorandumRes, TableParams } from '../../share
 import useMessage from 'antd/es/message/useMessage';
 
 const [{ EMPLOYEE201: { MEMORANDUM } }] = useEndpoints()
-const { GET, POST } = useAxios()
+const { GET, POST, DELETE } = useAxios()
 
 export default function Memorandums() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
@@ -20,6 +20,7 @@ export default function Memorandums() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         const controller = new AbortController();
@@ -36,23 +37,37 @@ export default function Memorandums() {
             dataIndex: 'type',
         },
         {
-            title: 'Attachments',
-            key: 'attachments',
-            dataIndex: 'attachments',
+            title: 'FIle',
+            key: 'file',
+            dataIndex: 'file',
         },
         {
             title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
+            key: 'is_active',
+            dataIndex: 'is_active',
         },
         {
             title: 'Description',
             key: 'description',
             dataIndex: 'description',
         },
+        {
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_, record: IMemorandum) => <Action
+                title='Tasks'
+                name={record?.type}
+                onConfirm={() => handleDelete(record?.id!)}
+                onClick={() => handleEdit(record)}
+            />,
+            width: 150
+        },
     ]
 
     function fetchData(args?: IArguments) {
+        setLoading(true)
         GET<MemorandumRes>(MEMORANDUM.GET + '?user_id=' + employeeId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -64,7 +79,17 @@ export default function Memorandums() {
                         current: res?.current_page,
                     },
                 })
-            })
+            }).finally(() => setLoading(false))
+    }
+
+    function handleDelete(id: string) {
+        DELETE(MEMORANDUM.DELETE, id)
+            .finally(fetchData)
+    }
+
+    function handleEdit(data: IMemorandum) {
+        setIsModalOpen(true)
+        setSelectedData(data)
     }
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
@@ -86,6 +111,7 @@ export default function Memorandums() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}

@@ -67,6 +67,7 @@ export default function EmployeeDocuments() {
     ]
 
     function fetchData(args?: IArguments) {
+        setLoading(true)
         GET<EmployeeDocumentRes>(EMPLOYEEDOCUMENT.GET + `?user_id=${employeeId}`, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -110,6 +111,7 @@ export default function EmployeeDocuments() {
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
+                loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}

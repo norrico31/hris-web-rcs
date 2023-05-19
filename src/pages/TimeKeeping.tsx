@@ -41,18 +41,7 @@ export default function TimeKeeping() {
         setLoading(true)
         const query = '?from=' + date + '&to=' + date + '&user_id=' + user?.id
         GET<TimeKeepingRes>(TIMEKEEPING.GET + query, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
-            .then((res) => {
-                setData(res?.data ?? [])
-                // setTableParams({
-                //     ...tableParams,
-                //     pagination: {
-                //         ...tableParams?.pagination,
-                //         total: res?.total,
-                //         current: res?.current_page,
-                //         pageSize: res?.per_page,
-                //     },
-                // })
-            }).finally(() => setLoading(false))
+            .then((res) => setData(res?.data ?? [])).finally(() => setLoading(false))
     }
 
     const columns: ColumnsType<ITimeKeeping> = [
