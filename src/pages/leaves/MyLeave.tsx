@@ -215,7 +215,13 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
 
     useEffect(() => {
         if (selectedData) {
-            form.setFieldsValue({ ...selectedData })
+            form.setFieldsValue({
+                ...selectedData,
+                date_start: selectedData?.date_start ? dayjs(selectedData?.date_start, 'YYYY/MM/DD') : null,
+                date_end: selectedData?.date_end ? dayjs(selectedData?.date_end, 'YYYY/MM/DD') : null,
+                time_start: selectedData?.time_start ? dayjs(selectedData?.time_start, 'LT') : null,
+                time_end: selectedData?.time_end ? dayjs(selectedData?.time_end, 'LT') : null,
+            })
         } else form.resetFields()
 
         const controller = new AbortController();
@@ -229,8 +235,8 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
     function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: ILeave) {
         date_start = dayjs(date_start).format('YYYY/MM/DD') as any
         date_end = dayjs(date_end).format('YYYY/MM/DD') as any
-        time_start = dayjs(time_start).format('HH:MM')
-        time_end = dayjs(time_end).format('HH:MM')
+        time_start = dayjs(time_start).format('LT')
+        time_end = dayjs(time_end).format('LT')
         restProps = { ...restProps, date_start, date_end, time_start, time_end } as any
         let result = selectedData ? PUT(LEAVES.PUT + selectedData?.id, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
         result.then(() => {
@@ -259,7 +265,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
             <Row justify='space-around'>
                 <FormItem
                     label="Start Date"
-                    name="start_date"
+                    name="date_start"
                     required
                     rules={[{ required: true, message: '' }]}
                 >
@@ -270,7 +276,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                 </FormItem>
                 <FormItem
                     label="End Date"
-                    name="end_date"
+                    name="date_end"
                     required
                     rules={[{ required: true, message: '' }]}
                 >

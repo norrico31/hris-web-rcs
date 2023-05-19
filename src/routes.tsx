@@ -103,6 +103,10 @@ export const routes = createBrowserRouter([
         children: [
             {
                 path: 'dashboard',
+                element: <Navigate to='/' />
+            },
+            {
+                path: '/',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Dashboard /></Suspense>
             },
             {

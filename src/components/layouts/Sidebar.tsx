@@ -28,6 +28,8 @@ export default function Sidebar({ onSelect }: Props) {
             setLocationKey('/employee')
         } else if (location?.pathname.includes('/tasks/')) {
             setLocationKey('/tasks')
+        } else if (location?.pathname.includes('/overtime/')) {
+            setLocationKey('/overtime')
         } else if (location?.pathname.includes('/systemsettings/tasksettings/')) {
             setLocationKey('/systemsettings/tasksettings/activities')
         } else if (location?.pathname.includes('/systemsettings/hrsettings')) {
@@ -90,8 +92,8 @@ function filterMenu(user: IUser) {
 
     return [
         getItemLinks(
-            <Link to='/dashboard' id="dashboard">Dashboard</Link>,
-            '/dashboard',
+            <Link to='/' id="dashboard">Dashboard</Link>,
+            '/',
             <AiFillAppstore />,
             undefined,
             rootPath.includes('dashboard')
@@ -115,7 +117,7 @@ function filterMenu(user: IUser) {
             '/overtime',
             <AiOutlineFieldTime />,
             undefined,
-            true // rootPath.includes('overtime')
+            rootPath.includes('overtime')
         ),
         getItemLinks(
             <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,

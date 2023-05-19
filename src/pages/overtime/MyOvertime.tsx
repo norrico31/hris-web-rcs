@@ -60,27 +60,27 @@ export default function MyOvertime() {
             title: 'Date Start',
             key: 'date_start',
             dataIndex: 'date_start',
-            width: 120,
+            width: 200,
             render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
         },
         {
             title: 'Date End',
             key: 'date_end',
             dataIndex: 'date_end',
-            width: 120,
+            width: 200,
             render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
         },
         {
             title: 'Time Start',
-            key: 'time_start',
-            dataIndex: 'time_start',
-            width: 120
+            key: 'planned_ot_start',
+            dataIndex: 'planned_ot_start',
+            width: 150
         },
         {
             title: 'Time End',
-            key: 'time_end',
-            dataIndex: 'time_end',
-            width: 120
+            key: 'planned_ot_end',
+            dataIndex: 'planned_ot_end',
+            width: 150
         },
         {
             title: 'Reason',
@@ -202,8 +202,8 @@ function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleCancel, 
     function onFinish({ date, planned_ot_start,
         planned_ot_end, ...restProps }: IOvertime) {
         date = dayjs(date).format('YYYY-MM-DD')
-        planned_ot_start = dayjs(planned_ot_start).format('HH:MM')
-        planned_ot_end = dayjs(planned_ot_end).format('HH:MM')
+        planned_ot_start = dayjs(planned_ot_start).format('LT')
+        planned_ot_end = dayjs(planned_ot_end).format('LT')
         restProps = { ...restProps } as any
         let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, date, id: selectedData.id, planned_ot_start, planned_ot_end }) : POST(OVERTIME.POST, { ...restProps, date, planned_ot_start, planned_ot_end })
         result.then(() => {

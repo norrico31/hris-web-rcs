@@ -1,3 +1,4 @@
+import { Dayjs } from "dayjs"
 import { IUser, ILeaveType, ILeaveDuration } from "."
 import { AxiosGetData } from "./utils/Axios"
 
@@ -22,8 +23,8 @@ export interface ILeave {
     client_id: string
     created_at: string
     date_actioned: string
-    date_end: string
-    date_start: string
+    date_end: string | Dayjs | null
+    date_start: string | Dayjs | null
     deleted_at: string | null
     id: string
     leave_type: ILeaveType
@@ -33,8 +34,8 @@ export interface ILeave {
     reviewed_by: string | null
     leave_durations: ILeaveDuration
     status: string
-    time_end: string
-    time_start: string
+    time_end: string | Dayjs | null
+    time_start: string | Dayjs | null
     unpaid_leaves: number
     updated_at: string
     used_sl: number

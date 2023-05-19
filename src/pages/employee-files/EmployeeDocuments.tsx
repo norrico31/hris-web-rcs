@@ -10,7 +10,7 @@ import { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, IEmployeeDocument, EmployeeDocumentRes } from '../../shared/interfaces'
 
 const [{ EMPLOYEE201: { EMPLOYEEDOCUMENT } }] = useEndpoints()
-const { GET, POST, PUT } = useAxios()
+const { GET, POST, PUT, DELETE } = useAxios()
 // TODO
 export default function EmployeeDocuments() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
@@ -36,25 +36,24 @@ export default function EmployeeDocuments() {
             dataIndex: 'document_type',
         },
         {
-            title: 'Attachments',
-            key: 'attachments',
-            dataIndex: 'attachments',
+            title: 'File',
+            key: 'file',
+            dataIndex: 'file',
         },
         {
             title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
+            key: 'is_active',
+            dataIndex: 'is_active',
         },
         {
             title: 'Description',
-            key: 'description',
-            dataIndex: 'description',
+            key: 'document_description',
+            dataIndex: 'document_description',
         },
     ]
 
     function fetchData(args?: IArguments) {
-        setLoading(true)
-        GET<EmployeeDocumentRes>(EMPLOYEEDOCUMENT.GET + `?user_id=${employeeInfo?.id}`, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<EmployeeDocumentRes>(EMPLOYEEDOCUMENT.GET + `?user_id=${employeeId}`, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -118,6 +117,7 @@ const { Item: Item, useForm } = AntDForm
 function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
+
     // useEffect(() => {
     //     if (selectedData != undefined) {
     //         let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
@@ -145,16 +145,23 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
         return newFiles
     }
 
-    // TODO
     function onFinish(values: Record<string, any>) {
-        const formData = new FormData()
-        if (selectedData?.id) formData.append('_method', 'PUT')
-        formData.append('user_id', employeeId)
-        formData.append('document_type', values?.document_type)
+        setLoading(true);
+        const formData = new FormData();
+        if (selectedData?.id) formData.append('_method', 'PUT');
+        formData.append('user_id', employeeId);
+        formData.append('document_type', values?.document_type);
+
+        if (values?.file && values?.file.length > 0) {
+            const file = values?.file[0];
+            const originFileObj = file?.originFileObj;
+            formData.append('file', originFileObj ? originFileObj : '');
+            // Perform further actions or submit the form here
+        }
         formData.append('is_active', values?.is_active)
-        formData.append('file', values?.file ? values?.file[0].originFileObj : null)
-        formData.append('description', (values?.description == undefined || values?.description === null) ? '' : values?.description)
-        let result = selectedData ? POST(EMPLOYEEDOCUMENT.PUT + employeeId, formData) : POST(EMPLOYEEDOCUMENT.POST, formData)
+        formData.append('document_description', (values?.document_description == undefined || values?.document_description === null) ? '' : values?.document_description)
+        const editUrl = selectedData != undefined ? EMPLOYEEDOCUMENT.PUT + selectedData?.id : EMPLOYEEDOCUMENT.PUT + employeeId
+        let result = selectedData ? POST(editUrl, formData) : POST(EMPLOYEEDOCUMENT.POST, formData)
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -174,7 +181,7 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
             >
                 <Input placeholder='Enter document type...' />
             </Item>
-            <Item label="File">
+            <Item label="Attachments">
                 <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
                     <Upload.Dragger name="files" beforeUpload={() => false}>
                         <p className="ant-upload-drag-icon">
@@ -184,6 +191,7 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
                     </Upload.Dragger>
                 </Item>
             </Item>
+
             <Item
                 label="Status"
                 name="is_active"
@@ -193,12 +201,12 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
                 <Select
                     placeholder='Select status...'
                 >
-                    <Select.Option value="active">Active</Select.Option>
-                    <Select.Option value="inactive">Inactive</Select.Option>
+                    <Select.Option value="ACTIVE">Active</Select.Option>
+                    <Select.Option value="INACTIVE">Inactive</Select.Option>
                 </Select>
             </Item>
             <Item
-                name="description"
+                name="document_description"
                 label="Description"
             >
                 <Input placeholder='Enter description...' />

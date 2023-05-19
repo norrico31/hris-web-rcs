@@ -73,14 +73,14 @@ export default function OvertimeApproval() {
         },
         {
             title: 'Time Start',
-            key: 'time_start',
-            dataIndex: 'time_start',
+            key: 'planned_ot_start',
+            dataIndex: 'planned_ot_start',
             width: 150
         },
         {
             title: 'Time End',
-            key: 'time_end',
-            dataIndex: 'time_end',
+            key: 'planned_ot_end',
+            dataIndex: 'planned_ot_end',
             width: 150
         },
         {
@@ -139,7 +139,7 @@ export default function OvertimeApproval() {
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
         const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
-        const url = OVERTIME.GET + 'false' + status
+        const url = OVERTIME.GET + 'true' + status
         GET<OvertimeRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])

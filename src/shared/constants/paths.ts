@@ -120,6 +120,8 @@ export const LEAVESPATHS = {
     'c02': 'leave',
     'c03': 'leave',
     'c04': 'leave',
+    'c05': 'leave',
+    'c06': 'leave',
 }
 
 export const SALARYADJUSTMENTSPATHS = {
@@ -136,6 +138,12 @@ export const ROOTPATHS = {
     'd03': 'announcements',
     'd04': 'announcements',
     'b01': 'timekeeping',
+    'f01': 'overtime',
+    'f02': 'overtime',
+    'f03': 'overtime',
+    'f04': 'overtime',
+    'f05': 'overtime',
+    'f06': 'overtime',
     ...TASKSPATHS,
     ...EMPLOYEEFILESPATHS,
     ...LEAVESPATHS,

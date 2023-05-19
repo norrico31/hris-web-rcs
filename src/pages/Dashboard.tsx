@@ -32,7 +32,10 @@ export default function Dashboard() {
 
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loading) return <Skeleton />
-    if (!loading && !codes['a01']) return <Navigate to={'/' + !paths.length ? '/profile' : paths[0]} />
+    if (!loading && !codes['a01']) {
+        if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
+        return <Navigate to='/profile' />
+    }
 
     return (
         <Card title='Dashboard'>

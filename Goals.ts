@@ -1,5 +1,5 @@
 // admin@redcoresolutions.com
-// norricobiason31@gmail.com
+// katrina.jose@redcoresolutions.com
 // password.123
 
 // TODO: Employee Files (Page PUT method)
