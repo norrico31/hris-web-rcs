@@ -1,24 +1,33 @@
 import { useState, useEffect } from 'react'
 import { Button, Form as AntDForm, Input, Modal, Select, Space, Upload } from 'antd'
-import { InboxOutlined } from '@ant-design/icons';
-import { ColumnsType } from 'antd/es/table';
+import { InboxOutlined, PlusOutlined } from '@ant-design/icons';
+import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
-import { IArguments, TableParams, IEmployeeEvaluation } from '../../shared/interfaces'
+import { IArguments, TableParams, IEmployeeEvaluation, EmployeeEvaluationRes } from '../../shared/interfaces'
 import { useEndpoints } from '../../shared/constants/endpoints'
 import { useAxios } from '../../shared/lib/axios'
+import useMessage from 'antd/es/message/useMessage';
 
 const [{ EMPLOYEE201: { EVALUATION } }] = useEndpoints()
-const { GET } = useAxios()
-// TODO
+const { GET, POST } = useAxios()
+
 export default function Evaluations() {
-    const { employeeId, employeeInfo } = useEmployeeCtx()
+    const { employeeId } = useEmployeeCtx()
     const [data, setData] = useState<IEmployeeEvaluation[]>([])
     const [selectedData, setSelectedData] = useState<IEmployeeEvaluation | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IEmployeeEvaluation> = [
         {
@@ -48,9 +57,26 @@ export default function Evaluations() {
         },
     ]
 
+    function fetchData(args?: IArguments) {
+        GET<EmployeeEvaluationRes>(EVALUATION.GET + '?user_id=' + employeeId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            })
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+
     const handleSearch = (str: string) => {
         setSearch(str)
-        // fetchData({ search: str, page: 1 })
+        fetchData({ search: str, page: 1 })
     }
 
     function handleDownload() {
@@ -70,14 +96,17 @@ export default function Evaluations() {
             />
             <Table
                 columns={columns}
-                dataList={employeeInfo?.evaluations ?? []}
-                onChange={(evt) => console.log(evt)}
+                dataList={data}
+                tableParams={tableParams}
+                onChange={onChange}
             />
             <EvaluationsModal
                 title={selectedData != undefined ? 'Update' : 'Create'}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                employeeId={employeeId}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -85,28 +114,27 @@ export default function Evaluations() {
 
 type ModalProps = {
     title: string
+    employeeId: string
     isModalOpen: boolean
     selectedData?: IEmployeeEvaluation
+    fetchData(args?: IArguments): void
     handleCancel: () => void
 }
 
 const { Item: Item, useForm } = AntDForm
 
-function EvaluationsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function EvaluationsModal({ title, employeeId, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
+    const [loading, setLoading] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
 
-    // useEffect(() => {
-    //     if (selectedData != undefined) {
-    //         let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
-
-    //         form.setFieldsValue({
-    //             ...selectedData,
-    //             date: date
-    //         })
-    //     } else {
-    //         form.resetFields(undefined)
-    //     }
-    // }, [selectedData])
+    useEffect(() => {
+        if (selectedData != undefined) {
+            form.setFieldsValue({ ...selectedData, })
+        } else {
+            form.resetFields(undefined)
+        }
+    }, [selectedData])
 
     const normFile = (e: any) => {
         if (Array.isArray(e)) {
@@ -122,22 +150,38 @@ function EvaluationsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
         return newFiles
     }
 
-    function onFinish(values: Record<string, string>) {
-        console.log(values)
-        // let { date, description, ...restProps } = values
-        // let [start_date, end_date] = date
-        // start_date = dayjs(start_date).format('YYYY/MM/DD')
-        // end_date = dayjs(end_date).format('YYYY/MM/DD')
-        // restProps = { ...restProps, start_date, end_date, ...(description != undefined && { description }) }
-        // console.log(restProps)
-
-        // if success
-        form.resetFields()
-        handleCancel()
+    function onFinish(values: Record<string, any>) {
+        setLoading(true)
+        if (!values.file && !selectedData) {
+            messageApi.open({
+                type: 'error',
+                content: 'Please upload attachment',
+                duration: 5
+            })
+            setLoading(false);
+            return
+        }
+        const formData = new FormData()
+        if (selectedData?.id) formData.append('_method', 'PUT')
+        formData.append('user_id', employeeId)
+        formData.append('copy', values?.copy)
+        formData.append('file', values?.file ? values?.file[0].originFileObj : '')
+        formData.append('is_active', values?.is_active)
+        formData.append('description', (values?.description == undefined || values?.description === null) ? '' : values?.description)
+        const editUrl = selectedData != undefined ? EVALUATION.PUT + selectedData?.id : EVALUATION.PUT + employeeId
+        let result = selectedData ? POST(editUrl, formData) : POST(EVALUATION.POST, formData)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Evaluation`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish} >
+        {contextHolder}
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <Item
                 label="Copy"
                 name="copy"
@@ -146,33 +190,19 @@ function EvaluationsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
             >
                 <Input placeholder='Enter copy...' />
             </Item>
-            <Item
-                label="Type"
-                name="type"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <Select
-                    placeholder='Select type...'
-                >
-                    <Select.Option value="active">Active</Select.Option>
-                    <Select.Option value="inactive">Inactive</Select.Option>
-                </Select>
-            </Item>
-            <Item label="Attachments">
-                <Item name="attachments" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-                    <Upload.Dragger name="files" multiple beforeUpload={() => false}>
-                        <p className="ant-upload-drag-icon">
-                            <InboxOutlined />
-                        </p>
-                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        <p className="ant-upload-hint">Support for a single or bulk upload.</p>
-                    </Upload.Dragger>
+            <Item label="File">
+                <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+                    <Upload listType="picture-card" beforeUpload={() => false}>
+                        <div>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Upload</div>
+                        </div>
+                    </Upload>
                 </Item>
             </Item>
             <Item
                 label="Status"
-                name="status"
+                name="is_active"
                 required
                 rules={[{ required: true, message: '' }]}
             >
@@ -191,10 +221,10 @@ function EvaluationsModal({ title, selectedData, isModalOpen, handleCancel }: Mo
             </Item>
             <Item style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading}>
                         {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading}>
                         Cancel
                     </Button>
                 </Space>

@@ -263,7 +263,7 @@ export const useEndpoints = () => {
                 DELETE: '/employee_clients/'
             },
             EVALUATION: {
-                GET: '/employee_evaluations/',
+                GET: '/employee_evaluations',
                 POST: '/employee_evaluations/',
                 PUT: '/employee_evaluations/',
                 DELETE: '/employee_evaluations/'
@@ -275,10 +275,10 @@ export const useEndpoints = () => {
                 DELETE: '/employee_documents/'
             },
             MEMORANDUM: {
-                GET: '/memo/show/',
-                POST: '/memo/show/',
-                PUT: '/memo/show/',
-                DELETE: '/memo/show/'
+                GET: '/employee_memos',
+                POST: '/employee_memos/',
+                PUT: '/employee_memos/',
+                DELETE: '/employee_memos/'
             },
             GOVERNMENTDOCS: {
                 PAGIBIG: {

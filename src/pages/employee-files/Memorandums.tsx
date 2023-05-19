@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react'
 import { Button, Form as AntDForm, Input, Modal, Select, Space, Upload } from 'antd'
-import { InboxOutlined } from '@ant-design/icons';
-import { ColumnsType } from 'antd/es/table';
+import { InboxOutlined, PlusOutlined } from '@ant-design/icons';
+import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
 import { IArguments, IMemorandum, MemorandumRes, TableParams } from '../../shared/interfaces';
+import useMessage from 'antd/es/message/useMessage';
 
 const [{ EMPLOYEE201: { MEMORANDUM } }] = useEndpoints()
-const { GET } = useAxios()
-// TODO
+const { GET, POST } = useAxios()
+
 export default function Memorandums() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
     const [data, setData] = useState<IMemorandum[]>([])
@@ -20,13 +21,13 @@ export default function Memorandums() {
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
 
-    // useEffect(() => {
-    //     const controller = new AbortController();
-    //     fetchData({ signal: controller.signal })
-    //     return () => {
-    //         controller.abort()
-    //     }
-    // }, [])
+    useEffect(() => {
+        const controller = new AbortController();
+        fetchData({ signal: controller.signal })
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     const columns: ColumnsType<IMemorandum> = [
         {
@@ -51,28 +52,26 @@ export default function Memorandums() {
         },
     ]
 
-    // function fetchData(args?: IArguments) {
-    //     GET<MemorandumRes>(MEMORANDUM.GET + employeeId, args?.signal!, { page: args?.page!, search: args?.search! })
-    //         .then((res) => {
-    //             setData(res?.data ?? [])
-    //             setTableParams({
-    //                 ...tableParams,
-    //                 pagination: {
-    //                     ...tableParams?.pagination,
-    //                     total: res?.total,
-    //                     current: res?.current_page,
-    //                 },
-    //             })
-    //         })
-    // }
+    function fetchData(args?: IArguments) {
+        GET<MemorandumRes>(MEMORANDUM.GET + '?user_id=' + employeeId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+            .then((res) => {
+                setData(res?.data ?? [])
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams?.pagination,
+                        total: res?.total,
+                        current: res?.current_page,
+                    },
+                })
+            })
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     const handleSearch = (str: string) => {
         setSearch(str)
-        // fetchData({ search: str, page: 1 })
-    }
-
-    function handleDownload() {
-        alert('download')
+        fetchData({ search: str, page: 1 })
     }
 
     function handleCloseModal() {
@@ -88,14 +87,17 @@ export default function Memorandums() {
             />
             <Table
                 columns={columns}
-                dataList={employeeInfo?.memos}
-                onChange={(evt) => console.log(evt)}
+                dataList={data}
+                tableParams={tableParams}
+                onChange={onChange}
             />
             <MemorandumModal
                 title={selectedData != undefined ? 'Update' : 'Create'}
+                employeeId={employeeId}
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -103,28 +105,27 @@ export default function Memorandums() {
 
 type ModalProps = {
     title: string
+    employeeId: string
     isModalOpen: boolean
     selectedData?: IMemorandum
     handleCancel: () => void
+    fetchData(args?: IArguments): void
 }
 
 const { Item: Item, useForm } = AntDForm
 
-function MemorandumModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
+function MemorandumModal({ title, employeeId, fetchData, selectedData, isModalOpen, handleCancel }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
+    const [loading, setLoading] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
 
-    // useEffect(() => {
-    //     if (selectedData != undefined) {
-    //         let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
-
-    //         form.setFieldsValue({
-    //             ...selectedData,
-    //             date: date
-    //         })
-    //     } else {
-    //         form.resetFields(undefined)
-    //     }
-    // }, [selectedData])
+    useEffect(() => {
+        if (selectedData != undefined) {
+            form.setFieldsValue({ ...selectedData, })
+        } else {
+            form.resetFields(undefined)
+        }
+    }, [selectedData])
 
     const normFile = (e: any) => {
         if (Array.isArray(e)) {
@@ -140,22 +141,38 @@ function MemorandumModal({ title, selectedData, isModalOpen, handleCancel }: Mod
         return newFiles
     }
 
-    function onFinish(values: Record<string, string>) {
-        console.log(values)
-        // let { date, description, ...restProps } = values
-        // let [start_date, end_date] = date
-        // start_date = dayjs(start_date).format('YYYY/MM/DD')
-        // end_date = dayjs(end_date).format('YYYY/MM/DD')
-        // restProps = { ...restProps, start_date, end_date, ...(description != undefined && { description }) }
-        // console.log(restProps)
-
-        // if success
-        form.resetFields()
-        handleCancel()
+    function onFinish(values: Record<string, any>) {
+        setLoading(true)
+        if (!values.file && !selectedData) {
+            messageApi.open({
+                type: 'error',
+                content: 'Please upload attachment',
+                duration: 5
+            })
+            setLoading(false);
+            return
+        }
+        const formData = new FormData()
+        if (selectedData?.id) formData.append('_method', 'PUT')
+        formData.append('user_id', employeeId)
+        formData.append('type', values?.type)
+        formData.append('file', values?.file ? values?.file[0].originFileObj : '')
+        formData.append('is_active', values?.is_active)
+        formData.append('description', (values?.description == undefined || values?.description === null) ? '' : values?.description)
+        const editUrl = selectedData != undefined ? MEMORANDUM.PUT + selectedData?.id : MEMORANDUM.PUT + employeeId
+        let result = selectedData ? POST(editUrl, formData) : POST(MEMORANDUM.POST, formData)
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Memorandum`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish} >
+        {contextHolder}
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <Item
                 label="Type"
                 name="type"
@@ -164,20 +181,19 @@ function MemorandumModal({ title, selectedData, isModalOpen, handleCancel }: Mod
             >
                 <Input placeholder='Enter document type...' />
             </Item>
-            <Item label="Attachments">
-                <Item name="attachments" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-                    <Upload.Dragger name="files" multiple beforeUpload={() => false}>
-                        <p className="ant-upload-drag-icon">
-                            <InboxOutlined />
-                        </p>
-                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        <p className="ant-upload-hint">Support for a single or bulk upload.</p>
-                    </Upload.Dragger>
+            <Item label="File">
+                <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+                    <Upload listType="picture-card" beforeUpload={() => false}>
+                        <div>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Upload</div>
+                        </div>
+                    </Upload>
                 </Item>
             </Item>
             <Item
                 label="Status"
-                name="status"
+                name="is_active"
                 required
                 rules={[{ required: true, message: '' }]}
             >
@@ -196,10 +212,10 @@ function MemorandumModal({ title, selectedData, isModalOpen, handleCancel }: Mod
             </Item>
             <Item style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading}>
                         {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading}>
                         Cancel
                     </Button>
                 </Space>

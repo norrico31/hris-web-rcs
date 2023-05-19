@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Button, Form as AntDForm, Input, Modal, Select, Space, Upload } from 'antd'
-import { InboxOutlined } from '@ant-design/icons'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
-import { Card } from '../../components'
+import useMessage from 'antd/es/message/useMessage'
+import { Action, Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table, Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, IEmployeeDocument, EmployeeDocumentRes } from '../../shared/interfaces'
+import { PlusOutlined } from '@ant-design/icons';
 
 const [{ EMPLOYEE201: { EMPLOYEEDOCUMENT } }] = useEndpoints()
 const { GET, POST, PUT, DELETE } = useAxios()
@@ -50,6 +51,19 @@ export default function EmployeeDocuments() {
             key: 'document_description',
             dataIndex: 'document_description',
         },
+        {
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_, record: IEmployeeDocument) => <Action
+                title='Tasks'
+                name={record?.name}
+                onConfirm={() => handleDelete(record?.id!)}
+                onClick={() => handleEdit(record)}
+            />,
+            width: 150
+        },
     ]
 
     function fetchData(args?: IArguments) {
@@ -67,10 +81,22 @@ export default function EmployeeDocuments() {
             }).finally(() => setLoading(false))
     }
 
+    function handleDelete(id: string) {
+        DELETE(EMPLOYEEDOCUMENT.DELETE, id)
+            .finally(fetchData)
+    }
+
+    function handleEdit(data: IEmployeeDocument) {
+        setIsModalOpen(true)
+        setSelectedData(data)
+    }
+
     const handleSearch = (str: string) => {
         setSearch(str)
         fetchData({ search: str, page: 1 })
     }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function handleCloseModal() {
         setSelectedData(undefined)
@@ -87,9 +113,7 @@ export default function EmployeeDocuments() {
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
-                onChange={(pagination: TablePaginationConfig) => {
-                    fetchData({ page: pagination?.current, search })
-                }}
+                onChange={onChange}
             />
             <DocumentsModal
                 title={selectedData != undefined ? 'Update' : 'Create'}
@@ -117,19 +141,17 @@ const { Item: Item, useForm } = AntDForm
 function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
 
-    // useEffect(() => {
-    //     if (selectedData != undefined) {
-    //         let date = [dayjs(selectedData?.start_date, 'YYYY/MM/DD'), dayjs(selectedData?.end_date, 'YYYY/MM/DD')]
-
-    //         form.setFieldsValue({
-    //             ...selectedData,
-    //             date: date
-    //         })
-    //     } else {
-    //         form.resetFields(undefined)
-    //     }
-    // }, [selectedData])
+    useEffect(() => {
+        if (selectedData != undefined) {
+            form.setFieldsValue({
+                ...selectedData,
+            })
+        } else {
+            form.resetFields(undefined)
+        }
+    }, [selectedData])
 
     const normFile = (e: any) => {
         if (Array.isArray(e)) {
@@ -147,6 +169,15 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
 
     function onFinish(values: Record<string, any>) {
         setLoading(true);
+        if (!values.file && !selectedData) {
+            messageApi.open({
+                type: 'error',
+                content: 'Please upload attachment',
+                duration: 5
+            })
+            setLoading(false);
+            return
+        }
         const formData = new FormData();
         if (selectedData?.id) formData.append('_method', 'PUT');
         formData.append('user_id', employeeId);
@@ -172,7 +203,8 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
     }
 
     return <Modal title={`${title} - Documents`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish} >
+        {contextHolder}
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <Item
                 label="Document Type"
                 name="document_type"
@@ -181,17 +213,17 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
             >
                 <Input placeholder='Enter document type...' />
             </Item>
-            <Item label="Attachments">
-                <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-                    <Upload.Dragger name="files" beforeUpload={() => false}>
-                        <p className="ant-upload-drag-icon">
-                            <InboxOutlined />
-                        </p>
-                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                    </Upload.Dragger>
-                </Item>
+            <Item label="Attachments"
+                name='file'
+                valuePropName="fileList" getValueFromEvent={normFile}
+            >
+                <Upload listType="picture-card" beforeUpload={() => false}>
+                    <div>
+                        <PlusOutlined />
+                        <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                </Upload>
             </Item>
-
             <Item
                 label="Status"
                 name="is_active"
@@ -213,10 +245,10 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
             </Item>
             <Item style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading}>
                         {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading}>
                         Cancel
                     </Button>
                 </Space>
