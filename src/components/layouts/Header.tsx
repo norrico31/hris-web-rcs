@@ -7,6 +7,7 @@ import { useAuthContext } from '../../shared/contexts/Auth'
 import { useEndpoints } from '../../shared/constants'
 import { Link } from 'react-router-dom'
 import { MdDarkMode, MdLightMode } from 'react-icons/md'
+import { useDarkMode } from '../../shared/contexts/DarkMode'
 
 const { Header: AntDHeader } = Layout
 const { Text: AntText } = Typography
@@ -21,11 +22,7 @@ const [{ AUTH: { LOGOUT } }] = useEndpoints()
 
 export default function Header({ collapsed, setCollapsed }: Props) {
     const { user, setUser, setToken } = useAuthContext()
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        let darkModeStorage = localStorage.getItem('isDarkMode')
-        if (darkModeStorage == null) return false
-        return JSON.parse(darkModeStorage)
-    })
+    const { isDarkMode, toggleDarkMode } = useDarkMode()
 
     const toggle = () => {
         collapsed = !collapsed
@@ -55,12 +52,6 @@ export default function Header({ collapsed, setCollapsed }: Props) {
         },
     ]
 
-    function handleDarkMode() {
-        const toggleDarkMode = !isDarkMode
-        setIsDarkMode(toggleDarkMode)
-        localStorage.setItem('isDarkMode', JSON.stringify(toggleDarkMode))
-    }
-
     function logout(evt: React.MouseEvent) {
         evt.stopPropagation()
         evt.preventDefault()
@@ -81,7 +72,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
             </div>
             <div className='header-wrapper'>
                 <Row align='middle' style={{ gap: 10 }}>
-                    <Button style={{ border: 'none' }} onClick={handleDarkMode}> {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}</Button>
+                    <Button style={{ border: 'none' }} onClick={toggleDarkMode}> {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}</Button>
                     <Dropdown menu={{ items }}>
                         <a onClick={e => e.preventDefault()}>
                             <Space>

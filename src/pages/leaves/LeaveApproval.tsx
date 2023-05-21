@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Space, Skeleton, Popconfirm, Row, Col, DatePicker, Input, Select } from 'antd'
+import { Button, Space, Skeleton, Popconfirm, Row, Col, DatePicker, Input, Select, Descriptions, Modal } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { FcApproval } from 'react-icons/fc'
 import { RxCross2 } from 'react-icons/rx'
-import { Card, Divider, TabHeader, Table } from '../../components'
+import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
+import { AxiosResponse } from 'axios'
+import { Card, Divider, TabHeader, Table } from '../../components'
 import { renderTitle } from '../../shared/utils/utilities'
 import { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
@@ -25,6 +27,8 @@ export default function LeaveApproval() {
     renderTitle('Leave - Approval')
     const { user, loading: loadingUser } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isModalRequest, setIsModalRequest] = useState(false)
+    const [isApproved, setIsApproved] = useState(false)
     const [leaveType, setLeaveType] = useState('all')
     const [data, setData] = useState<ILeave[]>([])
     const [selectedData, setSelectedData] = useState<ILeave | undefined>(undefined)
@@ -109,36 +113,16 @@ export default function LeaveApproval() {
             key: 'approver',
             dataIndex: 'approver',
             align: 'center',
-            render: (_: any, record: ILeave) => {
-                return <Space>
-                    <Popconfirm
-                        title={`Leave request by - ${record?.user?.full_name}`}
-                        description={`Are you sure you want to approve ${record?.reason}?`}
-                        onConfirm={() => leaveApproval(`approve/${record?.id}`)}
-                        okText="Approve"
-                        cancelText="Cancel"
-                        disabled={record?.status.toLowerCase() == 'approved'}
-                    >
-                        <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
-                            <FcApproval />
-                            Approve
-                        </Button>
-                    </Popconfirm>
-                    <Popconfirm
-                        title={`Leave request by - ${record?.user?.full_name}`}
-                        description={`Are you sure you want to reject ${record?.reason}?`}
-                        onConfirm={() => leaveApproval(`reject/${record?.id}`)}
-                        okText="Reject"
-                        cancelText="Cancel"
-                        disabled={record?.status.toLowerCase() == 'approved'}
-                    >
-                        <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
-                            <RxCross2 />
-                            Reject
-                        </Button>
-                    </Popconfirm>
-                </Space>
-            },
+            render: (_: any, record: ILeave) => <Space>
+                <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => selectedRequest(record, true)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                    <FcApproval />
+                    Approve
+                </Button>
+                <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => selectedRequest(record, false)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                    <RxCross2 />
+                    Reject
+                </Button>
+            </Space>,
             width: 250
         }
     ];
@@ -162,21 +146,35 @@ export default function LeaveApproval() {
             }).finally(() => setLoading(false))
     }
 
-    function leaveApproval(url: string) {
+    async function leaveApproval(url: string, remarks: string) {
         setLoading(true)
-        POST(LEAVES.POST + url, {})
-            .then((res) => {
+        try {
+            try {
+                const res = await POST(LEAVES.POST + url, { remarks })
                 console.log(res)
-                alert('')
-            })
-            .catch((err) => console.log('error ng pag approval: ', err))
-            .catch(() => {
-                setLoading(false)
-                fetchData({})
-            })
+                return Promise.resolve(res)
+            } catch (err: any) {
+                return Promise.reject(err?.ressponse?.data?.message)
+            }
+        } catch {
+            setLoading(false)
+            fetchData({})
+        }
     }
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: leaveType })
+
+    function selectedRequest(overtime: ILeave, isApproved: boolean) {
+        setSelectedData(overtime)
+        setIsApproved(isApproved)
+        setIsModalRequest(true)
+    }
+
+    function closeModal() {
+        setSelectedData(undefined)
+        setIsModalRequest(false)
+        setIsApproved(false)
+    }
 
     return (
         <>
@@ -222,9 +220,86 @@ export default function LeaveApproval() {
                     selectedData={selectedData}
                     handleCancel={() => setIsModalOpen(false)}
                 />
+                <LeaveApprovalModal
+                    loading={loading}
+                    leaveApproval={leaveApproval}
+                    isModalOpen={isModalRequest}
+                    isApproved={isApproved}
+                    selectedRequest={selectedData}
+                    handleClose={closeModal}
+                />
             </Card>
         </>
     )
+}
+
+
+interface ModalProps {
+    isModalOpen: boolean
+    isApproved: boolean
+    loading: boolean
+    selectedRequest?: ILeave
+    handleClose: () => void
+    leaveApproval(url: string, remarks: string): Promise<AxiosResponse<any, any> | undefined>
+}
+
+function LeaveApprovalModal({ isApproved, loading, selectedRequest, isModalOpen, leaveApproval, handleClose }: ModalProps) {
+    const remarksRef = useRef<HTMLTextAreaElement>(null)
+    const [messageApi, contextHolder] = useMessage()
+
+    async function onSubmit() {
+        if (remarksRef?.current == null || remarksRef?.current.value == '') {
+            return messageApi.open({
+                type: 'error',
+                content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
+                duration: 5
+            })
+        }
+        try {
+            const url = isApproved ? 'approve/' : 'reject/'
+            const res = await leaveApproval(url + selectedRequest?.id, remarksRef.current.value)
+            console.log(res)
+            remarksRef?.current.value == ''
+        } catch (err: any) {
+            messageApi.open({
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 5
+            })
+            return err
+        }
+    }
+    return <Modal title={`Leave - ${isApproved ? 'Approve' : 'Reject'}`} open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
+        {contextHolder}
+        <Descriptions bordered column={2}>
+            <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
+            <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
+            {/* <Descriptions.Item label="Date Requested" span={2}>{selectedRequest?.date?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="Planned OT Start" span={2}>{selectedRequest?.planned_ot_start?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="Planned OT End" span={2}>{selectedRequest?.planned_ot_end?.toString()}</Descriptions.Item> */}
+        </Descriptions>
+        <Divider />
+        <Descriptions bordered layout='vertical'>
+            <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.reason}</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Descriptions bordered>
+            <Descriptions.Item label="Remarks" >
+                <Input.TextArea placeholder='Remarks...' ref={remarksRef} style={{ height: 150 }} />
+            </Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <div style={{ textAlign: 'right' }}>
+            <Space>
+                <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={onSubmit}>
+                    {isApproved ? 'Approve' : 'Reject'} Request
+                </Button>
+                <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
+                    Cancel
+                </Button>
+            </Space>
+        </div>
+    </Modal>
 }
 
 const arrStatus = [

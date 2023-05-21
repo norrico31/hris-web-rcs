@@ -142,9 +142,9 @@ export default function OvertimeApproval() {
             try {
                 const res = await POST(OVERTIME.POST + url, { remarks })
                 closeModal()
-                return await Promise.resolve(res)
+                return Promise.resolve(res)
             } catch (err) {
-                return await Promise.reject(err)
+                return Promise.reject(err)
             }
         } finally {
             setLoading(false)

@@ -9,7 +9,7 @@ const AuthContext = createContext<IAuthContext>({
 
 export const useAuthContext = () => useContext(AuthContext)
 
-export default function AuthProvider({ children }: { children: ReactNode }) {
+export default function Auth({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | undefined>(() => {
         let token = localStorage.getItem('t')!
         if (token != null || token != 'undefined' || token != undefined) {

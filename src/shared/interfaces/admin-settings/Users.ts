@@ -50,6 +50,7 @@ export interface IUser {
     line_manager: ILineManager
     manager_id: string | null
     sss: ISss
+    is_dark?: boolean
     status: string | null
     suffix: string | null
     updated_at: string
