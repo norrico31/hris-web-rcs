@@ -171,7 +171,7 @@ type ModalProps = {
 
 const { Item: FormItem, useForm } = AntDForm
 
-function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
+export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IOvertime>()
     const [loading, setLoading] = useState(false)
 

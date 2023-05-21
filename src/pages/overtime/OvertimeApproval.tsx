@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
+import { Button, Col, DatePicker, Form as AntDForm, Input, Modal, Popconfirm, Row, Select, Skeleton, Space, TimePicker, Descriptions } from 'antd'
 import { Navigate } from 'react-router-dom'
-import { Button, Popconfirm, Select, Skeleton, Space } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import { Card, TabHeader, Table } from '../../components'
+import { Card, Divider, Form, TabHeader, Table } from '../../components'
 import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
 import { useAxios } from '../../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../../shared/constants'
@@ -13,6 +13,10 @@ import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 import { FcApproval } from 'react-icons/fc'
 import { RxCross2 } from 'react-icons/rx'
+import useWindowSize from '../../shared/hooks/useWindowSize'
+import { OvertimeModal } from './MyOvertime'
+import { AxiosResponse } from 'axios'
+import useMessage from 'antd/es/message/useMessage'
 
 const { GET, POST } = useAxios()
 const [{ OVERTIME }] = useEndpoints()
@@ -29,6 +33,9 @@ export default function OvertimeApproval() {
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const { width } = useWindowSize()
+    const [isModalRequest, setIsModalRequest] = useState(false)
+    const [isApproved, setIsApproved] = useState(false)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -94,39 +101,48 @@ export default function OvertimeApproval() {
             key: 'approver',
             dataIndex: 'approver',
             align: 'center',
-            render: (_: any, record: IOvertime) => {
-                return <Space>
-                    <Popconfirm
-                        title={`Overtime request by - ${record?.user?.full_name}`}
-                        description={`Are you sure you want to approve ${record?.reason}?`}
-                        onConfirm={() => overtimeApproval(`approve/${record?.id}`)}
-                        okText="Approve"
-                        cancelText="Cancel"
-                        disabled={record?.status.toLowerCase() == 'approved'}
-                    >
-                        <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
-                            <FcApproval />
-                            Approve
-                        </Button>
-                    </Popconfirm>
-                    <Popconfirm
-                        title={`Overtime request by - ${record?.user?.full_name}`}
-                        description={`Are you sure you want to reject ${record?.reason}?`}
-                        onConfirm={() => overtimeApproval(`reject/${record?.id}`)}
-                        okText="Reject"
-                        cancelText="Cancel"
-                        disabled={record?.status.toLowerCase() == 'approved'}
-                    >
-                        <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
-                            <RxCross2 />
-                            Reject
-                        </Button>
-                    </Popconfirm>
-                </Space>
-            },
+            render: (_: any, record: IOvertime) => <Space>
+                <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => selectedRequest(record, true)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                    <FcApproval />
+                    Approve
+                </Button>
+                <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => selectedRequest(record, false)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                    <RxCross2 />
+                    Reject
+                </Button>
+            </Space>,
+            // return <Space>
+            //     <Popconfirm
+            //         title={`Overtime request by - ${record?.user?.full_name}`}
+            //         description={`Are you sure you want to approve ${record?.reason}?`}
+            //         onConfirm={() => overtimeApproval(`approve/${record?.id}`)}
+            //         okText="Approve"
+            //         cancelText="Cancel"
+            //         disabled={record?.status.toLowerCase() == 'approved'}
+            //     >
+            //         <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+            //             <FcApproval />
+            //             Approve
+            //         </Button>
+            //     </Popconfirm>
+            //     <Popconfirm
+            //         title={`Overtime request by - ${record?.user?.full_name}`}
+            //         description={`Are you sure you want to reject ${record?.reason}?`}
+            //         onConfirm={() => overtimeApproval(`reject/${record?.id}`)}
+            //         okText="Reject"
+            //         cancelText="Cancel"
+            //         disabled={record?.status.toLowerCase() == 'approved'}
+            //     >
+            //         <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+            //             <RxCross2 />
+            //             Reject
+            //         </Button>
+            //     </Popconfirm>
+            // </Space>
+
             width: 250
         }
-    ];
+    ]
     // (overtimeType == 'all' || overtimeType == 'approved' || overtimeType == 'reject') && columns.push({
     //     title: 'Approver',
     //     key: 'approved_by',
@@ -151,29 +167,42 @@ export default function OvertimeApproval() {
                         pageSize: res?.per_page,
                     },
                 })
-            }).finally(() => setLoading(false))
+            })
+            .catch((err) => err)
+            .finally(() => setLoading(false))
     }
 
-
-    function overtimeApproval(url: string) {
+    function overtimeApproval(url: string, remarks: string) {
         setLoading(true)
-        POST(OVERTIME.POST + url, {})
+        return POST(OVERTIME.POST + url, { remarks })
             .then((res) => {
-                console.log(res)
-                alert('')
+                closeModal()
+                return Promise.resolve(res)
             })
-            .catch((err) => console.log('error ng pag approval: ', err))
+            .catch((err) => Promise.reject(err))
             .finally(() => {
                 setLoading(false)
                 fetchData({ type: overtimeType })
             })
     }
 
+    function selectedRequest(overtime: IOvertime, isApproved: boolean) {
+        setSelectedData(overtime)
+        setIsApproved(isApproved)
+        setIsModalRequest(true)
+    }
+
+    function closeModal() {
+        setSelectedData(undefined)
+        setIsModalRequest(false)
+        setIsApproved(false)
+    }
+
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: overtimeType })
 
     return (
         <>
-            <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)} isRequest>
+            <Row justify='space-between' wrap>
                 <Select value={overtimeType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
                     setOvertimeType((str == undefined || str == '') ? 'all' : str)
                     fetchData({
@@ -190,7 +219,16 @@ export default function OvertimeApproval() {
                     <Select.Option value='approved'>Approved</Select.Option>
                     <Select.Option value='reject'>Rejected</Select.Option>
                 </Select>
-            </TabHeader>
+                {width < 978 && <Divider />}
+                <Col>
+                    <Space>
+                        <DatePicker.RangePicker />
+                        <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
+                        <Button type='primary' onClick={() => setIsModalOpen(true)}>Request</Button>
+                    </Space>
+                </Col>
+            </Row>
+            <Divider />
             <Card title={`For Approval - ${firstLetterCapitalize(overtimeType)}`} level={5}>
                 <Table
                     loading={loading}
@@ -200,6 +238,89 @@ export default function OvertimeApproval() {
                     onChange={onChange}
                 />
             </Card>
+            <OvertimeApprovalModal
+                loading={loading}
+                overtimeApproval={overtimeApproval}
+                isModalOpen={isModalRequest}
+                isApproved={isApproved}
+                selectedRequest={selectedData}
+                handleClose={closeModal}
+            />
+            <OvertimeModal
+                overtimeType={overtimeType}
+                fetchData={fetchData}
+                isModalOpen={isModalOpen}
+                selectedData={selectedData}
+                handleCancel={() => setIsModalOpen(false)}
+            />
         </>
     )
+}
+
+interface ModalProps {
+    isModalOpen: boolean
+    isApproved: boolean
+    loading: boolean
+    selectedRequest?: IOvertime
+    handleClose: () => void
+    overtimeApproval(url: string, remarks: string): Promise<AxiosResponse<any, any>>
+}
+
+function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOpen, overtimeApproval, handleClose }: ModalProps) {
+    const remarksRef = useRef<HTMLTextAreaElement>(null)
+    const [messageApi, contextHolder] = useMessage()
+
+    async function onSubmit() {
+        if (remarksRef?.current == null || remarksRef?.current.value == '') {
+            return messageApi.open({
+                type: 'error',
+                content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
+                duration: 5
+            })
+        }
+        try {
+            const url = isApproved ? 'approve/' : 'reject/'
+            const res = await overtimeApproval(url + selectedRequest?.id, remarksRef.current.value)
+            console.log(res)
+            remarksRef?.current.value == ''
+        } catch (err: any) {
+            messageApi.open({
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 5
+            })
+            return err
+        }
+    }
+    return <Modal title={`Overtime - ${isApproved ? 'Approve' : 'Reject'}`} open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
+        {contextHolder}
+        <Descriptions bordered column={2}>
+            <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
+            <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
+            <Descriptions.Item label="Date Requested" span={2}>{selectedRequest?.date?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="Planned OT Start" span={2}>{selectedRequest?.planned_ot_start?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="Planned OT End" span={2}>{selectedRequest?.planned_ot_end?.toString()}</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Descriptions bordered layout='vertical'>
+            <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.reason}</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Descriptions bordered>
+            <Descriptions.Item label="Remarks" >
+                <Input.TextArea placeholder='Remarks...' ref={remarksRef} style={{ height: 150 }} />
+            </Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <div style={{ textAlign: 'right' }}>
+            <Space>
+                <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={onSubmit}>
+                    {isApproved ? 'Approve' : 'Reject'} Request
+                </Button>
+                <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
+                    Cancel
+                </Button>
+            </Space>
+        </div>
+    </Modal>
 }

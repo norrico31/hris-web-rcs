@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Space, Skeleton, Popconfirm, Row, Col, DatePicker, Input } from 'antd'
+import { Button, Space, Skeleton, Popconfirm, Row, Col, DatePicker, Input, Select } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { FcApproval } from 'react-icons/fc'
@@ -14,6 +14,7 @@ import { IArguments, ILeave, LeaveRes, TableParams } from '../../shared/interfac
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes } from '../../components/layouts/Sidebar'
 import { LeaveModal } from './MyLeave'
+import useWindowSize from '../../shared/hooks/useWindowSize'
 
 const { GET, POST } = useAxios()
 const [{ LEAVES }] = useEndpoints()
@@ -30,6 +31,7 @@ export default function LeaveApproval() {
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const { width } = useWindowSize()
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -179,27 +181,29 @@ export default function LeaveApproval() {
     return (
         <>
             <Row justify='space-between' wrap>
-                {/* <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
-                        setLeaveType((str == undefined || str == '') ? 'all' : str)
-                        fetchData({
-                            args: {
-                                search,
-                                page: tableParams?.pagination?.current ?? 1,
-                                pageSize: tableParams?.pagination?.pageSize
-                            },
-                            type: (str == undefined || str == '') ? 'all' : str
-                        })
-                    }} style={{ width: 150 }}>
-                        <Select.Option value='all'>All</Select.Option>
-                        <Select.Option value='pending'>Pending</Select.Option>
-                        <Select.Option value='approved'>Approved</Select.Option>
-                        <Select.Option value='reject'>Rejected</Select.Option>
-                    </Select> */}
+                <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
+                    setLeaveType((str == undefined || str == '') ? 'all' : str)
+                    fetchData({
+                        args: {
+                            search,
+                            page: tableParams?.pagination?.current ?? 1,
+                            pageSize: tableParams?.pagination?.pageSize
+                        },
+                        type: (str == undefined || str == '') ? 'all' : str
+                    })
+                }} style={{ width: 150 }}>
+                    <Select.Option value='all'>All</Select.Option>
+                    <Select.Option value='pending'>Pending</Select.Option>
+                    <Select.Option value='approved'>Approved</Select.Option>
+                    <Select.Option value='reject'>Rejected</Select.Option>
+                </Select>
+                {width < 978 && <Divider />}
                 <Col>
-                    <DatePicker.RangePicker />
-                </Col>
-                <Col>
-                    <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
+                    <Space>
+                        <DatePicker.RangePicker />
+                        <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
+                        <Button type='primary'>Request</Button>
+                    </Space>
                 </Col>
             </Row>
             <Divider />

@@ -23,8 +23,8 @@ export interface IOvertime {
     client_id: string
     created_at: string
     date_actioned: string
-    date_end: string
-    date_start: string
+    date_end: string | Dayjs | null
+    date_start: string | Dayjs | null
     deleted_at: string | null
     id: string
     leave_type_id: string
@@ -35,14 +35,14 @@ export interface IOvertime {
     time_end: string
     time_start: string
     unpaid_leaves: number
-    date: string | Dayjs
+    date: string | Dayjs | null
     updated_at: string
     used_sl: number
     used_vl: number
     user: IUser
     user_id: string
-    planned_ot_start: string
-    planned_ot_end: string
+    planned_ot_start: string | Dayjs | null
+    planned_ot_end: string | Dayjs | null
 }
 
 export type OvertimeRes = AxiosGetData<IOvertime>
