@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Space, Skeleton, Popconfirm, Select, Row, Col, DatePicker, Input } from 'antd'
+import { Button, Space, Skeleton, Popconfirm, Row, Col, DatePicker, Input } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { FcApproval } from 'react-icons/fc'
@@ -8,15 +8,15 @@ import { RxCross2 } from 'react-icons/rx'
 import { Card, Divider, TabHeader, Table } from '../../components'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { renderTitle } from '../../shared/utils/utilities'
-import axiosClient, { useAxios } from '../../shared/lib/axios'
-import { ROOTPATHS, useEndpoints } from '../../shared/constants'
+import { useAxios } from '../../shared/lib/axios'
+import { useEndpoints } from '../../shared/constants'
 import { IArguments, ILeave, LeaveRes, TableParams } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
-import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
+import { filterCodes } from '../../components/layouts/Sidebar'
 import { LeaveModal } from './MyLeave'
 
-const { GET, POST, PUT } = useAxios()
-const [{ LEAVES, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
+const { GET, POST } = useAxios()
+const [{ LEAVES }] = useEndpoints()
 
 dayjs.extend(localizedFormat)
 
@@ -47,10 +47,8 @@ export default function LeaveApproval() {
     }, [user, search])
 
     const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
-    if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
-    if (user?.role.name.toLowerCase() !== 'manager' && user?.role.name.toLowerCase() !== 'admin') return <Navigate to={'/leave/leaves'} />
+    if (!loadingUser && !codes['c06']) return <Navigate to='/leave/myleaves' />
 
     const columns: ColumnsType<ILeave> = [
         {
@@ -147,8 +145,6 @@ export default function LeaveApproval() {
         setLoading(true)
         const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
         const url = LEAVES.GET + 'true' + status
-        console.log('type: ', type)
-        console.log('leaveType: ', leaveType)
         GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])

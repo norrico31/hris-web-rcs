@@ -160,7 +160,6 @@ function ClientScheduleModal(props: ModalProps) {
     const [list, setList] = useState<{ clients: Array<IClient>; schedules: Array<ISchedules> }>({ clients: [], schedules: [] })
     const [clientId, setClientId] = useState('')
     const [clientBranches, setClientBranches] = useState<Array<IClientBranch>>([])
-    console.log(selectedData?.client_id)
 
     useEffect(function fetchUserInfo() {
         if (selectedData) {
@@ -173,9 +172,7 @@ function ClientScheduleModal(props: ModalProps) {
                 is_active: selectedData?.is_active ?? 'ACTIVE', // TODO
                 schedule_id: selectedData?.schedule_id
             })
-        } else {
-            form.resetFields()
-        }
+        } else form.resetFields()
 
         const controller = new AbortController();
         (async () => {

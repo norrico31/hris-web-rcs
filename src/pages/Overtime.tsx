@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Tabs as AntDTabs, Col, } from 'antd'
 import { renderTitle } from '../shared/utils/utilities'
@@ -5,6 +6,7 @@ import { useAuthContext } from '../shared/contexts/Auth'
 import styled from 'styled-components'
 import { StyledRow } from './EmployeeEdit'
 import useWindowSize from '../shared/hooks/useWindowSize'
+import { filterCodes } from '../components/layouts/Sidebar'
 
 export default function Overtime() {
     renderTitle('Overtime')
@@ -13,6 +15,7 @@ export default function Overtime() {
     const navigate = useNavigate()
     const pathKey = pathname.split('/').pop()
     const { width } = useWindowSize()
+    const codes = filterCodes(user?.role?.permissions)
 
     const items = [
         {
@@ -24,10 +27,14 @@ export default function Overtime() {
             key: '/archives',
         },
     ];
-    (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') && items.push({
+    (codes['f06']) && items.push({
         label: 'For Approval',
         key: '/approval',
     },)
+
+    useEffect(() => {
+        if (pathname == '/overtime/approval' && !codes['c06']) return navigate('/overtime/myovertime')
+    }, [])
 
     return <>
         <StyledRow justify='space-between' wrap align='middle' style={{

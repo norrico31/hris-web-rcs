@@ -1,18 +1,21 @@
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Outlet, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { Tabs as AntDTabs, Col } from 'antd'
 import { renderTitle } from '../shared/utils/utilities'
 import styled from 'styled-components'
 import { StyledRow } from './EmployeeEdit'
 import useWindowSize from '../shared/hooks/useWindowSize'
 import { useAuthContext } from '../shared/contexts/Auth'
+import { filterCodes } from '../components/layouts/Sidebar'
 
 export default function Leave() {
     renderTitle('Leave')
-    const { user } = useAuthContext()
+    const { user, loading } = useAuthContext()
     let { pathname } = useLocation()
     const navigate = useNavigate()
     const pathKey = pathname.split('/').pop()
     const { width } = useWindowSize()
+    const codes = filterCodes(user?.role?.permissions)
 
     const items = [
         {
@@ -24,10 +27,14 @@ export default function Leave() {
             key: '/archives',
         },
     ];
-    (user?.role.name.toLowerCase() == 'manager' || user?.role.name.toLowerCase() == 'admin') && items.push({
+    (codes['c06']) && items.push({
         label: 'For Approval',
         key: '/approval',
     },)
+
+    useEffect(() => {
+        if (pathname == '/leave/approval' && !codes['c06']) return navigate('/leave/myleaves')
+    }, [])
 
     return <>
         <StyledRow justify='space-between' wrap align='middle' style={{
