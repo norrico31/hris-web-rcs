@@ -111,45 +111,9 @@ export default function OvertimeApproval() {
                     Reject
                 </Button>
             </Space>,
-            // return <Space>
-            //     <Popconfirm
-            //         title={`Overtime request by - ${record?.user?.full_name}`}
-            //         description={`Are you sure you want to approve ${record?.reason}?`}
-            //         onConfirm={() => overtimeApproval(`approve/${record?.id}`)}
-            //         okText="Approve"
-            //         cancelText="Cancel"
-            //         disabled={record?.status.toLowerCase() == 'approved'}
-            //     >
-            //         <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
-            //             <FcApproval />
-            //             Approve
-            //         </Button>
-            //     </Popconfirm>
-            //     <Popconfirm
-            //         title={`Overtime request by - ${record?.user?.full_name}`}
-            //         description={`Are you sure you want to reject ${record?.reason}?`}
-            //         onConfirm={() => overtimeApproval(`reject/${record?.id}`)}
-            //         okText="Reject"
-            //         cancelText="Cancel"
-            //         disabled={record?.status.toLowerCase() == 'approved'}
-            //     >
-            //         <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => null} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
-            //             <RxCross2 />
-            //             Reject
-            //         </Button>
-            //     </Popconfirm>
-            // </Space>
-
             width: 250
         }
     ]
-    // (overtimeType == 'all' || overtimeType == 'approved' || overtimeType == 'reject') && columns.push({
-    //     title: 'Approver',
-    //     key: 'approved_by',
-    //     dataIndex: 'approved_by',
-    //     render: (_: any, record: IOvertime) => record.actioned_by?.full_name,
-    //     width: 150
-    // });
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
@@ -172,18 +136,20 @@ export default function OvertimeApproval() {
             .finally(() => setLoading(false))
     }
 
-    function overtimeApproval(url: string, remarks: string) {
+    async function overtimeApproval(url: string, remarks: string) {
         setLoading(true)
-        return POST(OVERTIME.POST + url, { remarks })
-            .then((res) => {
+        try {
+            try {
+                const res = await POST(OVERTIME.POST + url, { remarks })
                 closeModal()
-                return Promise.resolve(res)
-            })
-            .catch((err) => Promise.reject(err))
-            .finally(() => {
-                setLoading(false)
-                fetchData({ type: overtimeType })
-            })
+                return await Promise.resolve(res)
+            } catch (err) {
+                return await Promise.reject(err)
+            }
+        } finally {
+            setLoading(false)
+            fetchData({ type: overtimeType })
+        }
     }
 
     function selectedRequest(overtime: IOvertime, isApproved: boolean) {

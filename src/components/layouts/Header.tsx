@@ -1,11 +1,12 @@
 import { useState, useEffect, createElement } from 'react'
-import { Layout, Dropdown, Typography, Space, MenuProps } from 'antd'
+import { Layout, Dropdown, Typography, Space, MenuProps, Button, Row } from 'antd'
 import { MenuUnfoldOutlined, MenuFoldOutlined, DownOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 import { useAxios } from '../../shared/lib/axios'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { useEndpoints } from '../../shared/constants'
 import { Link } from 'react-router-dom'
+import { MdDarkMode, MdLightMode } from 'react-icons/md'
 
 const { Header: AntDHeader } = Layout
 const { Text: AntText } = Typography
@@ -20,12 +21,18 @@ const [{ AUTH: { LOGOUT } }] = useEndpoints()
 
 export default function Header({ collapsed, setCollapsed }: Props) {
     const { user, setUser, setToken } = useAuthContext()
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        let darkModeStorage = localStorage.getItem('isDarkMode')
+        if (darkModeStorage == null) return false
+        return JSON.parse(darkModeStorage)
+    })
 
     const toggle = () => {
         collapsed = !collapsed
         setCollapsed(collapsed)
         localStorage.setItem('collapsed', JSON.stringify(collapsed))
     }
+
     const burgerMenu = createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
         className: 'trigger',
         onClick: toggle,
@@ -48,6 +55,12 @@ export default function Header({ collapsed, setCollapsed }: Props) {
         },
     ]
 
+    function handleDarkMode() {
+        const toggleDarkMode = !isDarkMode
+        setIsDarkMode(toggleDarkMode)
+        localStorage.setItem('isDarkMode', JSON.stringify(toggleDarkMode))
+    }
+
     function logout(evt: React.MouseEvent) {
         evt.stopPropagation()
         evt.preventDefault()
@@ -63,11 +76,12 @@ export default function Header({ collapsed, setCollapsed }: Props) {
         <Container style={{ paddingInline: 0 }}>
             <div className='header-wrapper'>
                 {burgerMenu}
-                <Text>HR Portal</Text>
+                <CurrentTime />
+                {/* <Text>HR Portal</Text> */}
             </div>
             <div className='header-wrapper'>
-                <Space align='center' size={20}>
-                    <CurrentTime />
+                <Row align='middle' style={{ gap: 10 }}>
+                    <Button style={{ border: 'none' }} onClick={handleDarkMode}> {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}</Button>
                     <Dropdown menu={{ items }}>
                         <a onClick={e => e.preventDefault()}>
                             <Space>
@@ -76,7 +90,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
                             </Space>
                         </a>
                     </Dropdown>
-                </Space>
+                </Row>
             </div>
         </Container>
     )
@@ -91,7 +105,7 @@ function CurrentTime() {
         }, 1000)
         return () => clearInterval(timer)
     }, [])
-    return <h3>{currentTime}</h3>
+    return <h3 style={{ marginLeft: '1rem' }}>{currentTime}</h3>
 }
 
 const UserName = styled.span`
