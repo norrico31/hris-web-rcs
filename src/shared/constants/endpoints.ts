@@ -302,6 +302,9 @@ export const useEndpoints = () => {
             },
             PAYSCHEME: {
                 PUT: '/employee_bank_details/'
+            },
+            EXPENSE: {
+                GET: '/expenses/employee?user_id='
             }
         },
         TASKS: {

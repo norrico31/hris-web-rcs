@@ -144,6 +144,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel,
     const { employeeId } = useEmployeeCtx()
     const [form] = useForm<Record<string, any>>()
     const [lists, setLists] = useState<IBenefits[]>([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -165,13 +166,16 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel,
     }, [selectedData])
 
     function onFinish(values: Record<string, string>) {
+        setLoading(true)
         let { date, description, ...restValues } = values
-        // restValues = { ...restValues, ...(description != undefined && { description }) }
         let result = selectedData ? PUT(EMPLOYEE201.BENEFITS.PUT + selectedData?.id, { ...restValues, id: selectedData.id, user_id: employeeId }) : POST(EMPLOYEE201.BENEFITS.POST, { ...restValues, user_id: employeeId })
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(fetchData)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
     }
 
     return <Modal title={`${title} - Benefit`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>

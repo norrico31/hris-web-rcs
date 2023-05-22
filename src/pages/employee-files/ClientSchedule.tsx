@@ -60,6 +60,13 @@ export default function ClientAndSchedule() {
             width: 130
         },
         {
+            title: 'Schedule',
+            key: 'schedule_id',
+            dataIndex: 'schedule_id',
+            render: (_, record) => record?.schedule?.name,
+            width: 130
+        },
+        {
             title: 'Action',
             key: 'action',
             dataIndex: 'action',
