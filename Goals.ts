@@ -1,4 +1,5 @@
 // admin@redcoresolutions.com
+// linemanager@redcoresolutions.com
 // katrina.jose@redcoresolutions.com
 // password.123
 

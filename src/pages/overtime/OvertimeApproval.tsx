@@ -27,7 +27,7 @@ export default function OvertimeApproval() {
     renderTitle('Overtime Approval')
     const { user, loading: loadingUser } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [overtimeType, setOvertimeType] = useState('all')
+    const [overtimeType, setOvertimeType] = useState('pending')
     const [data, setData] = useState<IOvertime[]>([])
     const [selectedData, setSelectedData] = useState<IOvertime | undefined>(undefined)
     const [search, setSearch] = useState('')
@@ -124,7 +124,7 @@ export default function OvertimeApproval() {
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
+        const status = `&status=${type?.toUpperCase()}`
         const url = OVERTIME.GET + 'true' + status
         GET<OvertimeRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
@@ -187,7 +187,6 @@ export default function OvertimeApproval() {
                         type: (str == undefined || str == '') ? 'all' : str
                     })
                 }} style={{ width: 150 }}>
-                    <Select.Option value='all'>All</Select.Option>
                     <Select.Option value='pending'>Pending</Select.Option>
                     <Select.Option value='approved'>Approved</Select.Option>
                     <Select.Option value='reject'>Rejected</Select.Option>
@@ -248,21 +247,21 @@ interface ModalProps {
 }
 
 function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOpen, overtimeApproval, handleClose }: ModalProps) {
-    const remarksRef = useRef<HTMLTextAreaElement>(null)
+    const [remarks, setRemarks] = useState('')
     const [messageApi, contextHolder] = useMessage()
 
     async function onSubmit() {
-        if (remarksRef?.current == null || remarksRef?.current.value == '') {
-            return messageApi.open({
-                type: 'error',
-                content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
-                duration: 5
-            })
-        }
         try {
+            if (remarks == null || remarks == '') {
+                return messageApi.open({
+                    type: 'error',
+                    content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
+                    duration: 5
+                })
+            }
             const url = isApproved ? 'approve-overtime/' : 'reject-overtime/'
             const payload = {
-                remarks: remarksRef.current.value,
+                remarks,
                 date: selectedRequest?.date,
                 planned_ot_start: selectedRequest?.planned_ot_start,
                 planned_ot_end: selectedRequest?.planned_ot_end,
@@ -270,7 +269,7 @@ function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOp
             } as Payload
             const res = await overtimeApproval(url + selectedRequest?.id, payload)
             console.log('overtime approval result: ', res)
-            remarksRef?.current.value == ''
+            setRemarks('')
         } catch (err: any) {
             messageApi.open({
                 type: 'error',
@@ -296,7 +295,7 @@ function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOp
         <Divider />
         <Descriptions bordered>
             <Descriptions.Item label="Remarks" >
-                <Input.TextArea placeholder='Remarks...' ref={remarksRef} style={{ height: 150 }} />
+                <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
             </Descriptions.Item>
         </Descriptions>
         <Divider />

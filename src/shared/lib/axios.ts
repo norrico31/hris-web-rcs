@@ -35,12 +35,14 @@ export const useAxios = () => {
         }
     }
 
-    const POST = async <T>(url: string, data: T, headers?: any) => {
+    const POST = async <T extends any>(url: string, data: T, headers?: any) => {
         try {
             const res = await axiosClient.post(url, data, { headers })
             if (res?.data?.message == 'Login Successful') return Promise.resolve(res)
             if (data instanceof FormData) {
                 Alert.information('Update Success', res.data.message)
+            } else if (data?.hasOwnProperty('remarks')) {
+                Alert.information('Approval Submit Successfully', res?.data?.message)
             } else {
                 Alert.success('Create Success', res.data.message)
             }

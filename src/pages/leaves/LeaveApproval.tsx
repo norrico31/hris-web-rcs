@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Button, Space, Skeleton, Popconfirm, Row, Col, DatePicker, Input, Select, Descriptions, Modal } from 'antd'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { FcApproval } from 'react-icons/fc'
 import { RxCross2 } from 'react-icons/rx'
@@ -76,7 +76,7 @@ export default function LeaveApproval() {
             dataIndex: 'leave_type',
             width: 120,
             filters: [],
-            render: (_, record) => record.leave_type?.name ?? '-',
+            render: (_, record) => record.leave_type?.type ?? '-',
             align: 'center'
         },
         {
@@ -93,14 +93,14 @@ export default function LeaveApproval() {
             width: 120,
             render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
         },
-        {
-            title: 'Leave duration',
-            key: 'leave_duration',
-            dataIndex: 'leave_duration',
-            render: (_, record) => record?.leave_durations?.name,
-            width: 250,
-            align: 'center'
-        },
+        // {
+        //     title: 'Leave duration',
+        //     key: 'leave_duration',
+        //     dataIndex: 'leave_duration',
+        //     render: (_, record) => record?.leave_durations?.name,
+        //     width: 250,
+        //     align: 'center'
+        // },
         {
             title: 'Status',
             key: 'status',
@@ -114,11 +114,11 @@ export default function LeaveApproval() {
             dataIndex: 'approver',
             align: 'center',
             render: (_: any, record: ILeave) => <Space>
-                <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => selectedRequest(record, true)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                <Button id='approve' size='middle' disabled={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'} onClick={() => selectedRequest(record, true)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
                     <FcApproval />
                     Approve
                 </Button>
-                <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved'} onClick={() => selectedRequest(record, false)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                <Button id='reject' size='middle' disabled={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'} onClick={() => selectedRequest(record, false)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
                     <RxCross2 />
                     Reject
                 </Button>
@@ -146,11 +146,11 @@ export default function LeaveApproval() {
             }).finally(() => setLoading(false))
     }
 
-    async function leaveApproval(url: string, remarks: string) {
+    async function leaveApproval(url: string, payload: Payload) {
         setLoading(true)
         try {
             try {
-                const res = await POST(LEAVES.POST + url, { remarks })
+                const res = await POST(LEAVES.POST + url, payload)
                 console.log(res)
                 return Promise.resolve(res)
             } catch (err: any) {
@@ -222,6 +222,8 @@ export default function LeaveApproval() {
                 />
                 <LeaveApprovalModal
                     loading={loading}
+                    leaveType={leaveType}
+                    fetchData={fetchData}
                     leaveApproval={leaveApproval}
                     isModalOpen={isModalRequest}
                     isApproved={isApproved}
@@ -234,32 +236,51 @@ export default function LeaveApproval() {
 }
 
 
+type Payload = {
+    remarks: string
+    reason: string
+    date_start: string | Dayjs
+    date_end: string | Dayjs
+}
+
 interface ModalProps {
     isModalOpen: boolean
+    leaveType: string
     isApproved: boolean
     loading: boolean
     selectedRequest?: ILeave
     handleClose: () => void
-    leaveApproval(url: string, remarks: string): Promise<AxiosResponse<any, any> | undefined>
+    leaveApproval(url: string, remarks: Payload): Promise<AxiosResponse<any, any> | undefined>
+    fetchData({ type, args }: {
+        args?: IArguments | undefined;
+        type?: string | undefined;
+    }): void
 }
 
-function LeaveApprovalModal({ isApproved, loading, selectedRequest, isModalOpen, leaveApproval, handleClose }: ModalProps) {
-    const remarksRef = useRef<HTMLTextAreaElement>(null)
+function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, isModalOpen, leaveApproval, handleClose, fetchData }: ModalProps) {
+    const [remarks, setRemarks] = useState('')
     const [messageApi, contextHolder] = useMessage()
 
     async function onSubmit() {
-        if (remarksRef?.current == null || remarksRef?.current.value == '') {
-            return messageApi.open({
-                type: 'error',
-                content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
-                duration: 5
-            })
-        }
         try {
+            if (remarks == null || remarks == '') {
+                return messageApi.open({
+                    type: 'error',
+                    content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
+                    duration: 5
+                })
+            }
+            const payload = {
+                remarks,
+                reason: selectedRequest?.reason,
+                date_start: selectedRequest?.date_start,
+                date_end: selectedRequest?.date_end,
+            } as Payload
             const url = isApproved ? 'approve/' : 'reject/'
-            const res = await leaveApproval(url + selectedRequest?.id, remarksRef.current.value)
+            const res = await leaveApproval(url + selectedRequest?.id, payload)
             console.log(res)
-            remarksRef?.current.value == ''
+            setRemarks('')
+            handleClose()
         } catch (err: any) {
             messageApi.open({
                 type: 'error',
@@ -267,6 +288,8 @@ function LeaveApprovalModal({ isApproved, loading, selectedRequest, isModalOpen,
                 duration: 5
             })
             return err
+        } finally {
+            fetchData({ type: leaveType })
         }
     }
     return <Modal title={`Leave - ${isApproved ? 'Approve' : 'Reject'}`} open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
@@ -274,9 +297,10 @@ function LeaveApprovalModal({ isApproved, loading, selectedRequest, isModalOpen,
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
             <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
-            {/* <Descriptions.Item label="Date Requested" span={2}>{selectedRequest?.date?.toString()}</Descriptions.Item>
-            <Descriptions.Item label="Planned OT Start" span={2}>{selectedRequest?.planned_ot_start?.toString()}</Descriptions.Item>
-            <Descriptions.Item label="Planned OT End" span={2}>{selectedRequest?.planned_ot_end?.toString()}</Descriptions.Item> */}
+            <Descriptions.Item label="Leave Type" span={2}>{selectedRequest?.leave_type?.type}</Descriptions.Item>
+            {/* <Descriptions.Item label="Date Requested" span={2}>{selectedRequest?.date?.toString()}</Descriptions.Item> */}
+            <Descriptions.Item label="Leave Start" span={2}>{selectedRequest?.date_start?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="Leave  End" span={2}>{selectedRequest?.date_end?.toString()}</Descriptions.Item>
         </Descriptions>
         <Divider />
         <Descriptions bordered layout='vertical'>
@@ -285,7 +309,7 @@ function LeaveApprovalModal({ isApproved, loading, selectedRequest, isModalOpen,
         <Divider />
         <Descriptions bordered>
             <Descriptions.Item label="Remarks" >
-                <Input.TextArea placeholder='Remarks...' ref={remarksRef} style={{ height: 150 }} />
+                <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
             </Descriptions.Item>
         </Descriptions>
         <Divider />

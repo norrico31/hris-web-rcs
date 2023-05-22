@@ -124,6 +124,7 @@ export default function EmployeeBenefits() {
                 selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
@@ -133,13 +134,14 @@ type ModalProps = {
     title: string
     isModalOpen: boolean
     selectedData?: IEmployeeBenefits
+    fetchData(args?: IArguments): void
     handleCancel: () => void
 }
 
 const { Item: Item, useForm } = AntDForm
 
-function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const { employeeId, fetchData } = useEmployeeCtx()
+function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
+    const { employeeId } = useEmployeeCtx()
     const [form] = useForm<Record<string, any>>()
     const [lists, setLists] = useState<IBenefits[]>([])
 
@@ -165,7 +167,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
     function onFinish(values: Record<string, string>) {
         let { date, description, ...restValues } = values
         // restValues = { ...restValues, ...(description != undefined && { description }) }
-        let result = selectedData ? PUT(EMPLOYEE201.BENEFITS.PUT + employeeId, { ...restValues, id: selectedData.id, user_id: employeeId }) : POST(EMPLOYEE201.BENEFITS.POST, { ...restValues, user_id: employeeId })
+        let result = selectedData ? PUT(EMPLOYEE201.BENEFITS.PUT + selectedData?.id, { ...restValues, id: selectedData.id, user_id: employeeId }) : POST(EMPLOYEE201.BENEFITS.POST, { ...restValues, user_id: employeeId })
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -173,7 +175,7 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
     }
 
     return <Modal title={`${title} - Benefit`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
-        <Form form={form} onFinish={onFinish} >
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <Item
                 label="Benefit"
                 name="benefit_id"
@@ -213,10 +215,10 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel 
             </Item>
             <Item style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         {selectedData != undefined ? 'Update' : 'Create'}
                     </Button>
-                    <Button type="primary" onClick={handleCancel}>
+                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
                     </Button>
                 </Space>

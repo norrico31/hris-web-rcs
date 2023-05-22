@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Form as AntDForm, Row, Col, DatePicker, Grid, Button, Select, Modal } from 'antd'
+import { Form as AntDForm, Row, Col, DatePicker, Grid, Button, Select, Modal, Space } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { Action, Card, TabHeader, Table } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
@@ -133,7 +133,6 @@ export default function ClientAndSchedule() {
             <ClientScheduleModal
                 title={selectedData ? 'Update' : 'Submit'}
                 isModalOpen={isModalOpen}
-                userId={employeeInfo?.id}
                 employeeId={employeeId}
                 selectedData={selectedData}
                 fetchData={fetchData}
@@ -205,7 +204,7 @@ function ClientScheduleModal(props: ModalProps) {
     function onFinish({ client_start_date, client_end_date, ...restValues }: IEmployeeClients) {
         client_start_date = dayjs(client_start_date).format("YYYY-MM-DD")
         client_end_date = dayjs(client_end_date).format("YYYY-MM-DD")
-        let result = selectedData ? PUT(EMPLOYEE201.CLIENTSCHEDULE.PUT + employeeId, { ...restValues, client_start_date, client_end_date }) : POST(EMPLOYEE201.CLIENTSCHEDULE.POST, { ...restValues, client_start_date, client_end_date, user_id: employeeId })
+        let result = selectedData ? PUT(EMPLOYEE201.CLIENTSCHEDULE.PUT + selectedData?.id, { ...restValues, client_start_date, client_end_date, user_id: employeeId }) : POST(EMPLOYEE201.CLIENTSCHEDULE.POST, { ...restValues, client_start_date, client_end_date, user_id: employeeId })
         result.then(() => {
             form.resetFields()
             handleClose()
@@ -236,8 +235,8 @@ function ClientScheduleModal(props: ModalProps) {
                                     if (id == undefined || id == '') {
                                         setClientBranches([])
                                         setClientId('')
-                                        form.setFieldsValue({ ...form.getFieldsValue(), client_branch_id: null })
                                     }
+                                    form.setFieldsValue({ ...form.getFieldsValue(), client_branch_id: null })
                                     setClientId(id)
                                 }}
                             >
@@ -324,9 +323,16 @@ function ClientScheduleModal(props: ModalProps) {
                         </Item>
                     </Col>
                 </Row>
-                <Row justify='end'>
-                    <Button type='primary' htmlType='submit' disabled={loading} loading={loading}>{title}</Button>
-                </Row>
+                <Item style={{ textAlign: 'right' }}>
+                    <Space>
+                        <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
+                            {selectedData != undefined ? 'Update' : 'Create'}
+                        </Button>
+                        <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
+                            Cancel
+                        </Button>
+                    </Space>
+                </Item>
             </Form>
         </Modal>
     )
