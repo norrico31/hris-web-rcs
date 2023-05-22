@@ -4,7 +4,7 @@ import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skel
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import { Form, Card, TabHeader, Table } from '../../components'
+import { Form, Card, TabHeader, Table, Action } from '../../components'
 import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
 import { useAxios } from '../../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../../shared/constants'
@@ -12,7 +12,7 @@ import { IArguments, IOvertime, OvertimeRes, TableParams } from '../../shared/in
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 
-const { GET, POST, PUT } = useAxios()
+const { GET, POST, PUT, DELETE } = useAxios()
 const [{ OVERTIME }] = useEndpoints()
 
 dayjs.extend(localizedFormat)
@@ -89,6 +89,19 @@ export default function MyOvertime() {
             width: 250,
             align: 'center'
         },
+        {
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_, record: IOvertime) => <Action
+                title='Tasks'
+                name={record?.user?.full_name}
+                onConfirm={() => handleDelete(record?.id!)}
+                onClick={() => handleEdit(record)}
+            />,
+            width: 150
+        },
     ];
     // (overtimeType == 'all' || overtimeType == 'approved' || overtimeType == 'reject') && columns.push({
     //     title: 'Approver',
@@ -115,6 +128,16 @@ export default function MyOvertime() {
                     },
                 })
             }).finally(() => setLoading(false))
+    }
+
+    function handleDelete(id: string) {
+        DELETE(OVERTIME.DELETE, id)
+            .finally(() => fetchData({ type: overtimeType }))
+    }
+
+    function handleEdit(data: IOvertime) {
+        setIsModalOpen(true)
+        setSelectedData(data)
     }
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: overtimeType })
@@ -175,29 +198,16 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
     const [form] = useForm<IOvertime>()
     const [loading, setLoading] = useState(false)
 
-    // useEffect(() => {
-    //     if (selectedData) {
-    //         form.setFieldsValue({ ...selectedData })
-    //     } else form.resetFields()
-
-    //     const controller = new AbortController();
-    //     (async () => {
-    //         try {
-    //             const OvertimeTypePromise = axiosClient(HRSETTINGS.OvertimeTYPE.LISTS, { signal: controller.signal })
-    //             const OvertimeDurationPromise = axiosClient(HRSETTINGS.OvertimeDURATION.LISTS, { signal: controller.signal })
-    //             const [OvertimeTypeRes, OvertimeDurationRes,] = await Promise.allSettled([OvertimeTypePromise, OvertimeDurationPromise]) as any
-    //             setLists({
-    //                 OvertimeTypes: OvertimeTypeRes?.value?.data ?? [],
-    //                 OvertimeDurations: OvertimeDurationRes?.value?.data ?? [],
-    //             })
-    //         } catch (error) {
-    //             console.error('error fetching clients: ', error)
-    //         }
-    //     })()
-    //     return () => {
-    //         controller.abort()
-    //     }
-    // }, [selectedData])
+    useEffect(() => {
+        if (selectedData) {
+            form.setFieldsValue({
+                ...selectedData,
+                date: selectedData?.date != null ? dayjs(selectedData?.date, 'YYYY-MM-DD') : null,
+                planned_ot_start: selectedData?.planned_ot_start != null ? dayjs(selectedData?.planned_ot_start, 'YYYY-MM-DD') : null,
+                planned_ot_end: selectedData?.planned_ot_end != null ? dayjs(selectedData?.planned_ot_end, 'YYYY-MM-DD') : null,
+            })
+        } else form.resetFields()
+    }, [selectedData])
 
     function onFinish({ date, planned_ot_start,
         planned_ot_end, ...restProps }: IOvertime) {
