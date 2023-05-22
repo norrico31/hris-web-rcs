@@ -142,6 +142,11 @@ export default function MyOvertime() {
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: overtimeType })
 
+    function closeModal() {
+        setIsModalOpen(false)
+        setSelectedData(undefined)
+    }
+
     return (
         <>
             <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)} isRequest>
@@ -172,10 +177,11 @@ export default function MyOvertime() {
                 />
             </Card>
             <OvertimeModal
+                selectedData={selectedData}
                 overtimeType={overtimeType}
                 fetchData={fetchData}
                 isModalOpen={isModalOpen}
-                handleCancel={() => setIsModalOpen(false)}
+                handleCancel={closeModal}
             />
         </>
     )
@@ -199,12 +205,13 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        if (selectedData) {
+        if (selectedData != undefined) {
+            console.log('aha')
             form.setFieldsValue({
                 ...selectedData,
                 date: selectedData?.date != null ? dayjs(selectedData?.date, 'YYYY-MM-DD') : null,
-                planned_ot_start: selectedData?.planned_ot_start != null ? dayjs(selectedData?.planned_ot_start, 'YYYY-MM-DD') : null,
-                planned_ot_end: selectedData?.planned_ot_end != null ? dayjs(selectedData?.planned_ot_end, 'YYYY-MM-DD') : null,
+                planned_ot_start: selectedData?.planned_ot_start != null ? dayjs(selectedData?.planned_ot_start, 'HH:mm') : null,
+                planned_ot_end: selectedData?.planned_ot_end != null ? dayjs(selectedData?.planned_ot_end, 'HH:mm') : null,
             })
         } else form.resetFields()
     }, [selectedData])
@@ -246,7 +253,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm:ss')} />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='HH:mm' />
                 </FormItem>
                 <FormItem
                     label="End Time"
@@ -255,7 +262,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm:ss')} />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='HH:mm' />
                 </FormItem>
             </Row>
             <FormItem

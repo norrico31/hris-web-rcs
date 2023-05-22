@@ -156,6 +156,11 @@ export default function MyLeave() {
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: leaveType })
 
+    function closeModal() {
+        setIsModalOpen(false)
+        setSelectedData(undefined)
+    }
+
     return (
         <>
             <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)} isRequest>
@@ -190,7 +195,7 @@ export default function MyLeave() {
                 fetchData={fetchData}
                 isModalOpen={isModalOpen}
                 selectedData={selectedData}
-                handleCancel={() => setIsModalOpen(false)}
+                handleCancel={closeModal}
             />
         </>
     )
@@ -215,12 +220,14 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
 
     useEffect(() => {
         if (selectedData) {
+            const timeStart = selectedData?.time_start?.toString()?.split(' ')[0]
+            const timeEnd = selectedData?.time_end?.toString()?.split(' ')[0]
             form.setFieldsValue({
                 ...selectedData,
                 date_start: selectedData?.date_start ? dayjs(selectedData?.date_start, 'YYYY/MM/DD') : null,
                 date_end: selectedData?.date_end ? dayjs(selectedData?.date_end, 'YYYY/MM/DD') : null,
-                time_start: selectedData?.time_start ? dayjs(selectedData?.time_start, 'LT') : null,
-                time_end: selectedData?.time_end ? dayjs(selectedData?.time_end, 'LT') : null,
+                time_start: selectedData?.time_start ? dayjs(timeStart, 'HH:mm') : null,
+                time_end: selectedData?.time_end ? dayjs(timeEnd, 'HH:mm') : null,
             })
         } else form.resetFields()
 
@@ -294,7 +301,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm:ss')} />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='HH:mm' />
                 </FormItem>
                 <FormItem
                     label="End Time"
@@ -302,7 +309,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     required
                     rules={[{ required: true, message: '' }]}
                 >
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm:ss')} />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='HH:mm' />
                 </FormItem>
             </Row>
             <FormItem

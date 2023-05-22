@@ -18,7 +18,7 @@ import { OvertimeModal } from './MyOvertime'
 import { AxiosResponse } from 'axios'
 import useMessage from 'antd/es/message/useMessage'
 
-const { GET, POST } = useAxios()
+const { GET, POST, PUT } = useAxios()
 const [{ OVERTIME }] = useEndpoints()
 
 dayjs.extend(localizedFormat)
@@ -57,6 +57,13 @@ export default function OvertimeApproval() {
     if (!loadingUser && ['f06'].every((c) => !codes[c])) return <Navigate to='/overtime/myovertime' />
 
     const columns: ColumnsType<IOvertime> = [
+        {
+            title: 'Submitted by',
+            key: 'full_name',
+            dataIndex: 'full_name',
+            render: (_, record) => record?.user?.full_name ?? '-',
+            width: 170,
+        },
         {
             title: 'Status',
             key: 'status',
@@ -136,11 +143,11 @@ export default function OvertimeApproval() {
             .finally(() => setLoading(false))
     }
 
-    async function overtimeApproval(url: string, remarks: string) {
+    async function overtimeApproval(url: string, payload: Payload) {
         setLoading(true)
         try {
             try {
-                const res = await POST(OVERTIME.POST + url, { remarks })
+                const res = await PUT(OVERTIME.POST + url, payload)
                 closeModal()
                 return Promise.resolve(res)
             } catch (err) {
@@ -223,13 +230,21 @@ export default function OvertimeApproval() {
     )
 }
 
+type Payload = {
+    remarks: string
+    reason: string
+    date: string
+    planned_ot_start: string
+    planned_ot_end: string
+}
+
 interface ModalProps {
     isModalOpen: boolean
     isApproved: boolean
     loading: boolean
     selectedRequest?: IOvertime
     handleClose: () => void
-    overtimeApproval(url: string, remarks: string): Promise<AxiosResponse<any, any>>
+    overtimeApproval(url: string, remarks: Payload): Promise<AxiosResponse<any, any>>
 }
 
 function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOpen, overtimeApproval, handleClose }: ModalProps) {
@@ -245,9 +260,16 @@ function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOp
             })
         }
         try {
-            const url = isApproved ? 'approve/' : 'reject/'
-            const res = await overtimeApproval(url + selectedRequest?.id, remarksRef.current.value)
-            console.log(res)
+            const url = isApproved ? 'approve-overtime/' : 'reject-overtime/'
+            const payload = {
+                remarks: remarksRef.current.value,
+                date: selectedRequest?.date,
+                planned_ot_start: selectedRequest?.planned_ot_start,
+                planned_ot_end: selectedRequest?.planned_ot_end,
+                reason: selectedRequest?.reason
+            } as Payload
+            const res = await overtimeApproval(url + selectedRequest?.id, payload)
+            console.log('overtime approval result: ', res)
             remarksRef?.current.value == ''
         } catch (err: any) {
             messageApi.open({
