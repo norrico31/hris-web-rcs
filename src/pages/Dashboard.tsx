@@ -39,25 +39,22 @@ export default function Dashboard() {
 
     return (
         <Card title='Dashboard'>
-            <Divider />
-            <Row justify='space-between' gutter={[24, 24]} wrap>
+            {/* <Divider /> */}
+            {/* <Row justify='space-between' gutter={[24, 24]} wrap>
                 <Col xs={24} sm={24} md={22} lg={12} xl={11} >
                     <AntDCard
                         hoverable
                         style={{ width: 400 }}
-                    // cover={}
                     >
                         <Title level={3}>Bailon, Christian</Title>
                         <Paragraph>Operations Department</Paragraph>
                         <Paragraph>Technical & Delivery Head</Paragraph>
                         <Paragraph type='secondary'>christian.bailon@redcoresolutions.com</Paragraph>
-                        {/* <AntDCard.Meta title="" description="christian.bailon@redcoresolutions.com" /> */}
                     </AntDCard>
                 </Col>
                 <Col xs={24} sm={24} md={22} lg={12} xl={11} >
                     <div>
                         <h2>Holidays</h2>
-                        {/* <Calendar fullscreen={false} /> */}
                     </div>
                 </Col>
                 <Col xs={24} sm={24} md={22} lg={12} xl={11} >
@@ -70,7 +67,8 @@ export default function Dashboard() {
 
                     </Card>
                 </Col>
-            </Row>
+            </Row> */}
+            <h1>HELLO WORLD!</h1>
         </Card>
     )
 }

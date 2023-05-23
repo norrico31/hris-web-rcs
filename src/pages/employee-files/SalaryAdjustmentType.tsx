@@ -49,7 +49,7 @@ export default function SalaryAdjustmentTyp() {
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<ExpenseRes>(EMPLOYEE201.EXPENSE.GET + employeeId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<ExpenseRes>(EMPLOYEE201.EXPENSE.GET + employeeInfo?.id, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({

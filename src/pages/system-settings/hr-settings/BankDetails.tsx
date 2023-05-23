@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Popconfirm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
 import { BankDetailsRes, IArguments, IBankDetails, TableParams } from '../../../shared/interfaces'
+import { BiRefresh } from 'react-icons/bi'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
@@ -16,15 +17,22 @@ export default function BankDetails() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isArchive, setIsArchive] = useState(false)
     const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        fetchData({
+            signal: controller.signal,
+            search,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize,
+            isArchive
+        })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [isArchive, search])
 
     const columns: ColumnsType<IBankDetails> = [
         {
@@ -47,18 +55,42 @@ export default function BankDetails() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IBankDetails) => <Action
+            render: (_: any, record: IBankDetails) => !isArchive ? <Action
                 title='Bank Details'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
-            />
+            /> : <Popconfirm
+                title={`Restore Task`}
+                description={`Are you sure you want to restore ${record?.name}?`}
+                onConfirm={() => {
+                    GET(HRSETTINGS.BANKDETAILS.RESTORE + record?.id)
+                        .then((res) => console.log(res))
+                        .finally(() => fetchData({
+                            search,
+                            page: tableParams?.pagination?.current ?? 1,
+                            pageSize: tableParams?.pagination?.pageSize,
+                            isArchive
+                        }))
+                }}
+                okText="Restore"
+                cancelText="Cancel"
+            >
+                <Button id='restore' type='primary' size='middle' onClick={() => null}>
+                    <Space>
+                        <BiRefresh />
+                        Restore
+                    </Space>
+                </Button>
+            </Popconfirm>,
+            width: 150
         },
     ]
 
     const fetchData = (args?: IArguments) => {
         setLoading(true)
-        GET<BankDetailsRes>(HRSETTINGS.BANKDETAILS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        let url = args?.isArchive ? (HRSETTINGS.BANKDETAILS.GET + '/archives') : HRSETTINGS.BANKDETAILS.GET
+        GET<BankDetailsRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -71,15 +103,6 @@ export default function BankDetails() {
                     },
                 })
             }).finally(() => setLoading(false))
-    }
-
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            search: str,
-            page: tableParams?.pagination?.current ?? 1,
-            pageSize: tableParams?.pagination?.pageSize
-        })
     }
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
@@ -100,29 +123,41 @@ export default function BankDetails() {
     }
 
     return (
-        <Card title='Bank Details'>
+        <Card title={`Bank Details ${isArchive ? '- Archives' : ''}`}>
             <TabHeader
-                handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
-            />
-            <Table
+                handleSearch={setSearch}
+                handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}
+                handleModalArchive={!isArchive ? () => setIsArchive(true) : undefined}
+            >
+                {isArchive ? <Button onClick={() => setIsArchive(false)}>Back to bank details</Button> : null}
+            </TabHeader>
+            {!isArchive ? (
+                <>
+                    <Table
+                        loading={loading}
+                        columns={columns}
+                        dataList={data}
+                        tableParams={tableParams}
+                        onChange={onChange}
+                    />
+                    <BankDetailsModal
+                        title={selectedData != undefined ? 'Update' : 'Create'}
+                        selectedData={selectedData}
+                        isModalOpen={isModalOpen}
+                        handleCancel={handleCloseModal}
+                        fetchData={fetchData}
+                    />
+                </>
+            ) : (<Table
                 loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
                 onChange={onChange}
-            />
-            <BankDetailsModal
-                title={selectedData != undefined ? 'Update' : 'Create'}
-                selectedData={selectedData}
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-                fetchData={fetchData}
-            />
+            />)}
         </Card>
     )
 }
-
 
 interface ModalProps {
     title: string

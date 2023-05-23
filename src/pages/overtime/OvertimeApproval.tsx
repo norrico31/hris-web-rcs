@@ -1,16 +1,17 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
-import { Button, Col, DatePicker, Form as AntDForm, Input, Modal, Popconfirm, Row, Select, Skeleton, Space, TimePicker, Descriptions } from 'antd'
+import { useState, useEffect } from 'react'
+import { Button, Col, DatePicker, Input, Modal, Row, Select, Skeleton, Space, Descriptions } from 'antd'
 import { Navigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import { Card, Divider, Form, TabHeader, Table } from '../../components'
+import { useSearchDebounce } from '../../shared/hooks/useDebounce'
+import { Card, Divider, Table } from '../../components'
 import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
 import { useAxios } from '../../shared/lib/axios'
-import { ROOTPATHS, useEndpoints } from '../../shared/constants'
+import { useEndpoints } from '../../shared/constants'
 import { IArguments, IOvertime, OvertimeRes, TableParams } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
-import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
+import { filterCodes } from '../../components/layouts/Sidebar'
 import { FcApproval } from 'react-icons/fc'
 import { RxCross2 } from 'react-icons/rx'
 import useWindowSize from '../../shared/hooks/useWindowSize'
@@ -31,6 +32,7 @@ export default function OvertimeApproval() {
     const [data, setData] = useState<IOvertime[]>([])
     const [selectedData, setSelectedData] = useState<IOvertime | undefined>(undefined)
     const [search, setSearch] = useState('')
+    const searchDebounce = useSearchDebounce(search)
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const { width } = useWindowSize()
@@ -41,7 +43,8 @@ export default function OvertimeApproval() {
         const controller = new AbortController();
         if (user != undefined) fetchData({
             args: {
-                signal: controller.signal, search,
+                search: searchDebounce,
+                signal: controller.signal,
                 page: tableParams?.pagination?.current,
                 pageSize: tableParams?.pagination?.pageSize,
             },
@@ -50,7 +53,7 @@ export default function OvertimeApproval() {
         return () => {
             controller.abort()
         }
-    }, [user, search])
+    }, [user, searchDebounce])
 
     const codes = filterCodes(user?.role?.permissions)
     if (loadingUser) return <Skeleton />
@@ -71,18 +74,11 @@ export default function OvertimeApproval() {
             width: 120,
         },
         {
-            title: 'Date Start',
+            title: 'Overtime Date',
             key: 'date_start',
             dataIndex: 'date_start',
             width: 150,
-            render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
-        },
-        {
-            title: 'Date End',
-            key: 'date_end',
-            dataIndex: 'date_end',
-            width: 150,
-            render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
+            render: (_, record) => `${dayjs(record?.date).format('MMMM')} ${dayjs(record?.date).format('D')}, ${dayjs(record?.date).format('YYYY')}`
         },
         {
             title: 'Time Start',
@@ -177,19 +173,19 @@ export default function OvertimeApproval() {
         <>
             <Row justify='space-between' wrap>
                 <Select value={overtimeType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
-                    setOvertimeType((str == undefined || str == '') ? 'all' : str)
+                    setOvertimeType((str == undefined || str == '') ? 'pending' : str)
                     fetchData({
                         args: {
                             search,
                             page: tableParams?.pagination?.current ?? 1,
                             pageSize: tableParams?.pagination?.pageSize
                         },
-                        type: (str == undefined || str == '') ? 'all' : str
+                        type: (str == undefined || str == '') ? 'pending' : str
                     })
                 }} style={{ width: 150 }}>
                     <Select.Option value='pending'>Pending</Select.Option>
                     <Select.Option value='approved'>Approved</Select.Option>
-                    <Select.Option value='reject'>Rejected</Select.Option>
+                    <Select.Option value='rejected'>Rejected</Select.Option>
                 </Select>
                 {width < 978 && <Divider />}
                 <Col>
@@ -252,7 +248,7 @@ function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOp
 
     async function onSubmit() {
         try {
-            if (remarks == null || remarks == '') {
+            if (!isApproved && (remarks == null || remarks == '')) {
                 return messageApi.open({
                     type: 'error',
                     content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
@@ -279,12 +275,14 @@ function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOp
             return err
         }
     }
+
     return <Modal title={`Overtime - ${isApproved ? 'Approve' : 'Reject'}`} open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
         {contextHolder}
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
+            <Descriptions.Item label="Requested Date" span={2}>{new Date(selectedRequest?.created_at!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
             <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
-            <Descriptions.Item label="Date Requested" span={2}>{selectedRequest?.date?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="Date Overtime" span={2}>{new Date(selectedRequest?.date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
             <Descriptions.Item label="Planned OT Start" span={2}>{selectedRequest?.planned_ot_start?.toString()}</Descriptions.Item>
             <Descriptions.Item label="Planned OT End" span={2}>{selectedRequest?.planned_ot_end?.toString()}</Descriptions.Item>
         </Descriptions>

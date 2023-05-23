@@ -8,6 +8,7 @@ import { RxCross2 } from 'react-icons/rx'
 import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { AxiosResponse } from 'axios'
+import { useSearchDebounce } from '../../shared/hooks/useDebounce'
 import { Card, Divider, TabHeader, Table } from '../../components'
 import { renderTitle } from '../../shared/utils/utilities'
 import { useAxios } from '../../shared/lib/axios'
@@ -24,15 +25,16 @@ const [{ LEAVES }] = useEndpoints()
 dayjs.extend(localizedFormat)
 
 export default function LeaveApproval() {
-    renderTitle('Leave - Approval')
+    renderTitle('Leave Approval')
     const { user, loading: loadingUser } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isModalRequest, setIsModalRequest] = useState(false)
     const [isApproved, setIsApproved] = useState(false)
-    const [leaveType, setLeaveType] = useState('all')
+    const [leaveType, setLeaveType] = useState('pending')
     const [data, setData] = useState<ILeave[]>([])
     const [selectedData, setSelectedData] = useState<ILeave | undefined>(undefined)
     const [search, setSearch] = useState('')
+    const searchDebounce = useSearchDebounce(search)
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const { width } = useWindowSize()
@@ -41,7 +43,8 @@ export default function LeaveApproval() {
         const controller = new AbortController();
         if (user != undefined) fetchData({
             args: {
-                signal: controller.signal, search,
+                search: searchDebounce,
+                signal: controller.signal,
                 page: tableParams?.pagination?.current,
                 pageSize: tableParams?.pagination?.pageSize,
             },
@@ -50,7 +53,7 @@ export default function LeaveApproval() {
         return () => {
             controller.abort()
         }
-    }, [user, search])
+    }, [user, searchDebounce])
 
     const codes = filterCodes(user?.role?.permissions)
     if (loadingUser) return <Skeleton />
@@ -75,7 +78,6 @@ export default function LeaveApproval() {
             key: 'leave_type',
             dataIndex: 'leave_type',
             width: 120,
-            filters: [],
             render: (_, record) => record.leave_type?.type ?? '-',
             align: 'center'
         },
@@ -93,19 +95,10 @@ export default function LeaveApproval() {
             width: 120,
             render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
         },
-        // {
-        //     title: 'Leave duration',
-        //     key: 'leave_duration',
-        //     dataIndex: 'leave_duration',
-        //     render: (_, record) => record?.leave_durations?.name,
-        //     width: 250,
-        //     align: 'center'
-        // },
         {
             title: 'Status',
             key: 'status',
             dataIndex: 'status',
-            filters: arrStatus,
             width: 120,
         },
         {
@@ -129,7 +122,7 @@ export default function LeaveApproval() {
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
+        const status = `&status=${type?.toUpperCase()}`
         const url = LEAVES.GET + 'true' + status
         GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
@@ -180,20 +173,19 @@ export default function LeaveApproval() {
         <>
             <Row justify='space-between' wrap>
                 <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
-                    setLeaveType((str == undefined || str == '') ? 'all' : str)
+                    setLeaveType((str == undefined || str == '') ? 'pending' : str)
                     fetchData({
                         args: {
                             search,
                             page: tableParams?.pagination?.current ?? 1,
                             pageSize: tableParams?.pagination?.pageSize
                         },
-                        type: (str == undefined || str == '') ? 'all' : str
+                        type: (str == undefined || str == '') ? 'pending' : str
                     })
                 }} style={{ width: 150 }}>
-                    <Select.Option value='all'>All</Select.Option>
                     <Select.Option value='pending'>Pending</Select.Option>
                     <Select.Option value='approved'>Approved</Select.Option>
-                    <Select.Option value='reject'>Rejected</Select.Option>
+                    <Select.Option value='rejected'>Rejected</Select.Option>
                 </Select>
                 {width < 978 && <Divider />}
                 <Col>
@@ -263,7 +255,7 @@ function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, i
 
     async function onSubmit() {
         try {
-            if (remarks == null || remarks == '') {
+            if (!isApproved && (remarks == null || remarks == '')) {
                 return messageApi.open({
                     type: 'error',
                     content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
@@ -296,11 +288,11 @@ function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, i
         {contextHolder}
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
+            <Descriptions.Item label="Requested Date" span={2}>{new Date(selectedRequest?.created_at!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Leave Start" span={2}>{new Date(selectedRequest?.date_start! + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Leave End" span={2}>{new Date(selectedRequest?.date_end! + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
             <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
             <Descriptions.Item label="Leave Type" span={2}>{selectedRequest?.leave_type?.type}</Descriptions.Item>
-            {/* <Descriptions.Item label="Date Requested" span={2}>{selectedRequest?.date?.toString()}</Descriptions.Item> */}
-            <Descriptions.Item label="Leave Start" span={2}>{selectedRequest?.date_start?.toString()}</Descriptions.Item>
-            <Descriptions.Item label="Leave  End" span={2}>{selectedRequest?.date_end?.toString()}</Descriptions.Item>
         </Descriptions>
         <Divider />
         <Descriptions bordered layout='vertical'>

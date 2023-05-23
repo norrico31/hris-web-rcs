@@ -19,7 +19,7 @@ const [{ LEAVES }] = useEndpoints()
 dayjs.extend(localizedFormat)
 
 export default function LeaveArchives() {
-    renderTitle('Leave')
+    renderTitle('Leave Archives')
     const { user, loading: loadingUser } = useAuthContext()
     const [leaveType, setLeaveType] = useState('all')
     const [data, setData] = useState<ILeave[]>([])

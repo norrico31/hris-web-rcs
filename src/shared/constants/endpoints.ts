@@ -65,6 +65,7 @@ export const useEndpoints = () => {
             },
             HRSETTINGS: {
                 BANKDETAILS: {
+                    RESTORE: '/bank_details/restore/',
                     LISTS: '/options/bank_details',
                     GET: '/bank_details',
                     POST: '/bank_details/',

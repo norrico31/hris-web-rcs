@@ -3,4 +3,5 @@ export interface IArguments {
     page?: number
     signal?: AbortSignal
     pageSize?: number
+    isArchive?: boolean
 }
