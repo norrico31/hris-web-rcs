@@ -118,7 +118,7 @@ export default function LeaveApproval() {
             </Space>,
             width: 250
         }
-    ];
+    ]
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm, Switch } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Switch, Popconfirm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
+import { BiRefresh } from 'react-icons/bi'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
@@ -16,15 +17,22 @@ export default function HolidayType() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isArchive, setIsArchive] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    useEffect(function fetch() {
+    useEffect(function () {
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        fetchData({
+            signal: controller.signal,
+            search,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize,
+            isArchive
+        })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [isArchive, search])
 
     const columns: ColumnsType<IHolidayType> = [
         {
@@ -48,18 +56,42 @@ export default function HolidayType() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IHolidayType) => <Action
-                title='Employee Status'
+            render: (_: any, record: IHolidayType) => !isArchive ? <Action
+                title='holiday type'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
-            />
+            /> : <Popconfirm
+                title={`Restore holiday types`}
+                description={`Are you sure you want to restore ${record?.name}?`}
+                onConfirm={() => {
+                    GET(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.RESTORE + record?.id)
+                        .then((res) => console.log(res))
+                        .finally(() => fetchData({
+                            search,
+                            page: tableParams?.pagination?.current ?? 1,
+                            pageSize: tableParams?.pagination?.pageSize,
+                            isArchive
+                        }))
+                }}
+                okText="Restore"
+                cancelText="Cancel"
+            >
+                <Button id='restore' type='primary' size='middle' onClick={() => null}>
+                    <Space align='center'>
+                        <BiRefresh />
+                        Restore
+                    </Space>
+                </Button>
+            </Popconfirm>,
+            width: 150
         },
     ]
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<HolidayTypeRes>(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        let url = args?.isArchive ? (SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.GET + '/archives') : SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.GET;
+        GET<HolidayTypeRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -74,16 +106,7 @@ export default function HolidayType() {
             }).finally(() => setLoading(false))
     }
 
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            search: str,
-            page: tableParams?.pagination?.current ?? 1,
-            pageSize: tableParams?.pagination?.pageSize
-        })
-    }
-
-    const handleChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize!, isArchive })
 
     function handleDelete(id: string) {
         DELETE(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYTYPES.DELETE, id)
@@ -101,25 +124,38 @@ export default function HolidayType() {
     }
 
     return (
-        <Card title='Holiday Type'>
+        <Card title={`Holiday Types ${isArchive ? '- Archives' : ''}`}>
             <TabHeader
-                handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
-            />
-            <Table
+                handleSearch={setSearch}
+                handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}
+                handleModalArchive={!isArchive ? () => setIsArchive(true) : undefined}
+            >
+                {isArchive ? <Button onClick={() => setIsArchive(false)}>Back to holiday types</Button> : null}
+            </TabHeader>
+            {!isArchive ? (
+                <>
+                    <Table
+                        loading={loading}
+                        columns={columns}
+                        dataList={data}
+                        tableParams={tableParams}
+                        onChange={onChange}
+                    />
+                    <HolidayTypeModal
+                        title={selectedData != undefined ? 'Update' : 'Create'}
+                        selectedData={selectedData}
+                        isModalOpen={isModalOpen}
+                        handleCancel={handleCloseModal}
+                        fetchData={fetchData}
+                    />
+                </>
+            ) : (<Table
                 loading={loading}
                 columns={columns}
-                tableParams={tableParams}
                 dataList={data}
-                onChange={handleChange}
-            />
-            <HolidayTypeModal
-                title={selectedData != undefined ? 'Update' : 'Create'}
-                selectedData={selectedData}
-                isModalOpen={isModalOpen}
-                fetchData={fetchData}
-                handleCancel={handleCloseModal}
-            />
+                tableParams={tableParams}
+                onChange={onChange}
+            />)}
         </Card>
     )
 }

@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm, Popconfirm } from 'antd'
-import Modal from 'antd/es/modal/Modal'
+import { Space, Button, Input, Form as AntDForm, Popconfirm, Modal } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
+import { BiRefresh } from 'react-icons/bi'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
 import { BankDetailsRes, IArguments, IBankDetails, TableParams } from '../../../shared/interfaces'
-import { BiRefresh } from 'react-icons/bi'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
@@ -56,12 +55,12 @@ export default function BankDetails() {
             dataIndex: 'action',
             align: 'center',
             render: (_: any, record: IBankDetails) => !isArchive ? <Action
-                title='Bank Details'
+                title='bank details'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
             /> : <Popconfirm
-                title={`Restore Task`}
+                title={`Restore bank details`}
                 description={`Are you sure you want to restore ${record?.name}?`}
                 onConfirm={() => {
                     GET(HRSETTINGS.BANKDETAILS.RESTORE + record?.id)
@@ -87,7 +86,7 @@ export default function BankDetails() {
         },
     ]
 
-    const fetchData = (args?: IArguments) => {
+    function fetchData(args?: IArguments) {
         setLoading(true)
         let url = args?.isArchive ? (HRSETTINGS.BANKDETAILS.GET + '/archives') : HRSETTINGS.BANKDETAILS.GET
         GET<BankDetailsRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
@@ -105,7 +104,7 @@ export default function BankDetails() {
             }).finally(() => setLoading(false))
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize!, isArchive })
 
     function handleDelete(id: string) {
         DELETE(HRSETTINGS.BANKDETAILS.DELETE, id)

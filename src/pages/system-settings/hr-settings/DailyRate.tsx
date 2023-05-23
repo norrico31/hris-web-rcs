@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Space, Button, Input, Form as AntDForm, Switch } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Switch, Popconfirm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
+import { BiRefresh } from 'react-icons/bi'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { DailyRateRes, IArguments, IDailyRate, TableParams } from '../../../shared/interfaces'
 import { useAxios } from '../../../shared/lib/axios'
@@ -17,14 +18,21 @@ export default function DailyRate() {
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [isArchive, setIsArchive] = useState(false)
 
     useEffect(function () {
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        fetchData({
+            signal: controller.signal,
+            search,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize,
+            isArchive
+        })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [isArchive, search])
 
     const columns: ColumnsType<IDailyRate> = [
         {
@@ -81,19 +89,42 @@ export default function DailyRate() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IDailyRate) => <Action
-                title='Bank Details'
+            render: (_: any, record: IDailyRate) => !isArchive ? <Action
+                title='daily rate'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
-            />,
-            width: 200
+            /> : <Popconfirm
+                title={`Restore daily rate`}
+                description={`Are you sure you want to restore ${record?.name}?`}
+                onConfirm={() => {
+                    GET(HRSETTINGS.DAILYRATE.RESTORE + record?.id)
+                        .then((res) => console.log(res))
+                        .finally(() => fetchData({
+                            search,
+                            page: tableParams?.pagination?.current ?? 1,
+                            pageSize: tableParams?.pagination?.pageSize,
+                            isArchive
+                        }))
+                }}
+                okText="Restore"
+                cancelText="Cancel"
+            >
+                <Button id='restore' type='primary' size='middle' onClick={() => null}>
+                    <Space align='center'>
+                        <BiRefresh />
+                        Restore
+                    </Space>
+                </Button>
+            </Popconfirm>,
+            width: 150
         },
     ]
 
-    const fetchData = (args?: IArguments) => {
+    function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<DailyRateRes>(HRSETTINGS.DAILYRATE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        let url = args?.isArchive ? (HRSETTINGS.DAILYRATE.GET + '/archives') : HRSETTINGS.DAILYRATE.GET;
+        GET<DailyRateRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -108,16 +139,7 @@ export default function DailyRate() {
             }).finally(() => setLoading(false))
     }
 
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            search: str,
-            page: tableParams?.pagination?.current ?? 1,
-            pageSize: tableParams?.pagination?.pageSize
-        })
-    }
-
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize!, isArchive })
 
     function handleDelete(id: string) {
         DELETE(HRSETTINGS.DAILYRATE.DELETE, id)
@@ -135,25 +157,38 @@ export default function DailyRate() {
     }
 
     return (
-        <Card title='Daily Rates'>
+        <Card title={`Daily Rates ${isArchive ? '- Archives' : ''}`}>
             <TabHeader
-                handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
-            />
-            <Table
+                handleSearch={setSearch}
+                handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}
+                handleModalArchive={!isArchive ? () => setIsArchive(true) : undefined}
+            >
+                {isArchive ? <Button onClick={() => setIsArchive(false)}>Back to daily rates</Button> : null}
+            </TabHeader>
+            {!isArchive ? (
+                <>
+                    <Table
+                        loading={loading}
+                        columns={columns}
+                        dataList={data}
+                        tableParams={tableParams}
+                        onChange={onChange}
+                    />
+                    <DailyRateModal
+                        title={selectedData != undefined ? 'Update' : 'Create'}
+                        selectedData={selectedData}
+                        isModalOpen={isModalOpen}
+                        handleCancel={handleCloseModal}
+                        fetchData={fetchData}
+                    />
+                </>
+            ) : (<Table
                 loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
                 onChange={onChange}
-            />
-            <DailyRateModal
-                title={selectedData != undefined ? 'Update' : 'Create'}
-                selectedData={selectedData}
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-                fetchData={fetchData}
-            />
+            />)}
         </Card>
     )
 }

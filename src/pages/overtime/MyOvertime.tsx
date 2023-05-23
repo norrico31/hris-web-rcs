@@ -102,14 +102,7 @@ export default function MyOvertime() {
             />,
             width: 150
         },
-    ];
-    // (overtimeType == 'all' || overtimeType == 'approved' || overtimeType == 'reject') && columns.push({
-    //     title: 'Approver',
-    //     key: 'approved_by',
-    //     dataIndex: 'approved_by',
-    //     render: (_: any, record: IOvertime) => record.actioned_by?.full_name,
-    //     width: 150
-    // });
+    ]
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)

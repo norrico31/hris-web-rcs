@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Form as AntDForm, Modal, Input, DatePicker, Space, Button, Select, Radio } from 'antd'
+import { Form as AntDForm, Modal, Input, Space, Button, Select, Radio, Popconfirm } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import dayjs from 'dayjs'
+import { BiRefresh } from 'react-icons/bi'
 import { TabHeader, Table, Form, Card, Action } from '../../../components'
 import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
@@ -16,15 +16,22 @@ export default function Benefits() {
     const [selectedData, setSelectedData] = useState<IBenefits | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
+    const [isArchive, setIsArchive] = useState(false)
     const [loading, setLoading] = useState(true)
 
     useEffect(function () {
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        fetchData({
+            signal: controller.signal,
+            search,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize,
+            isArchive
+        })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [isArchive, search])
 
     const columns: ColumnsType<IBenefits> = [
         {
@@ -53,28 +60,42 @@ export default function Benefits() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IBenefits) => <Action
-                title='Bank Details'
+            render: (_: any, record: IBenefits) => !isArchive ? <Action
+                title='benefits'
                 name={record.name}
                 onConfirm={() => handleDelete(record.id)}
                 onClick={() => handleEdit(record)}
-            />
+            /> : <Popconfirm
+                title={`Restore benefits`}
+                description={`Are you sure you want to restore ${record?.name}?`}
+                onConfirm={() => {
+                    GET(HRSETTINGS.BENEFITS.RESTORE + record?.id)
+                        .then((res) => console.log(res))
+                        .finally(() => fetchData({
+                            search,
+                            page: tableParams?.pagination?.current ?? 1,
+                            pageSize: tableParams?.pagination?.pageSize,
+                            isArchive
+                        }))
+                }}
+                okText="Restore"
+                cancelText="Cancel"
+            >
+                <Button id='restore' type='primary' size='middle' onClick={() => null}>
+                    <Space align='center'>
+                        <BiRefresh />
+                        Restore
+                    </Space>
+                </Button>
+            </Popconfirm>,
+            width: 150
         },
     ]
 
-    function handleDelete(id: string) {
-        DELETE(HRSETTINGS.BENEFITS.DELETE, id)
-            .finally(fetchData)
-    }
-
-    function handleEdit(data: IBenefits) {
-        setIsModalOpen(true)
-        setSelectedData(data)
-    }
-
-    const fetchData = (args?: IArguments) => {
+    function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<BenefitsRes>(HRSETTINGS.BENEFITS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        let url = args?.isArchive ? (HRSETTINGS.BENEFITS.GET + '/archives') : HRSETTINGS.BENEFITS.GET
+        GET<BenefitsRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -89,16 +110,17 @@ export default function Benefits() {
             }).finally(() => setLoading(false))
     }
 
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            search: str,
-            page: tableParams?.pagination?.current ?? 1,
-            pageSize: tableParams?.pagination?.pageSize
-        })
+    function handleDelete(id: string) {
+        DELETE(HRSETTINGS.BENEFITS.DELETE, id)
+            .finally(fetchData)
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+    function handleEdit(data: IBenefits) {
+        setIsModalOpen(true)
+        setSelectedData(data)
+    }
+
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize!, isArchive })
 
     function handleCloseModal() {
         setSelectedData(undefined)
@@ -106,25 +128,38 @@ export default function Benefits() {
     }
 
     return (
-        <Card title='Benefits'>
+        <Card title={`Benefits ${isArchive ? '- Archives' : ''}`}>
             <TabHeader
-                handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
-            />
-            <Table
+                handleSearch={setSearch}
+                handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}
+                handleModalArchive={!isArchive ? () => setIsArchive(true) : undefined}
+            >
+                {isArchive ? <Button onClick={() => setIsArchive(false)}>Back to benefits</Button> : null}
+            </TabHeader>
+            {!isArchive ? (
+                <>
+                    <Table
+                        loading={loading}
+                        columns={columns}
+                        dataList={data}
+                        tableParams={tableParams}
+                        onChange={onChange}
+                    />
+                    <BenefitsModal
+                        title={selectedData != undefined ? 'Update' : 'Create'}
+                        selectedData={selectedData}
+                        isModalOpen={isModalOpen}
+                        handleCancel={handleCloseModal}
+                        fetchData={fetchData}
+                    />
+                </>
+            ) : (<Table
                 loading={loading}
                 columns={columns}
-                tableParams={tableParams}
                 dataList={data}
+                tableParams={tableParams}
                 onChange={onChange}
-            />
-            <BenefitsModal
-                title={selectedData != undefined ? 'Update' : 'Create'}
-                selectedData={selectedData}
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-                fetchData={fetchData}
-            />
+            />)}
         </Card>
     )
 }
