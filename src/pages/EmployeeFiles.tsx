@@ -151,6 +151,7 @@ export default function EmployeeFiles() {
             <TabHeader
                 handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
+                handleModalArchive={() => navigate('/employee/archives')}
             />
             <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} onChange={onChange} />
             <EmployeeModal

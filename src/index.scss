@@ -152,3 +152,22 @@ h1 {
 .toggle-name {
     margin-right: 5px;
 }
+
+.fc-toolbar-title {
+    color: #9B3423;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:disabled,
+.fc .fc-button-primary {
+    background-color: #9b3423;
+    border-color: #ccc;
+
+    &:hover {
+        background-color: #a8695f;
+        border-color: #d8d8d8;
+        outline: none;
+    }
+    &:active {
+        border: none;
+    }
+}

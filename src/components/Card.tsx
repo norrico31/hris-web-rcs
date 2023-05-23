@@ -6,7 +6,7 @@ const { Title } = Typography
 
 type Props = {
     level?: 5 | 1 | 2 | 3 | 4;
-    title: string | ReactNode;
+    title?: string | ReactNode;
     children: ReactNode;
     style?: React.CSSProperties
 }
@@ -14,7 +14,7 @@ type Props = {
 export default function Card({ level = 3, title, style, children }: Props) {
     return (
         <Container style={style}>
-            <Title level={level}>{title}</Title>
+            {title && <Title level={level}>{title}</Title>}
             {children}
         </Container>
     )

@@ -17,6 +17,7 @@ const Leave = lazy(() => import('./pages/Leave'))
 const Tasks = lazy(() => import('./pages/Tasks'))
 const TasksArchives = lazy(() => import('./pages/TasksArchives'))
 const EmployeeFiles = lazy(() => import('./pages/EmployeeFiles'))
+const EmployeeFilesArchives = lazy(() => import('./pages/EmployeeFilesArchives'))
 const SalaryAdjustment = lazy(() => import('./pages/SalaryAdjustment'))
 const WhosInOut = lazy(() => import('./pages/WhosInOut'))
 const Announcements = lazy(() => import('./pages/Announcements'))
@@ -307,6 +308,10 @@ export const routes = createBrowserRouter([
             {
                 path: 'employee',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeFiles /></Suspense>
+            },
+            {
+                path: 'employee/archives',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeFilesArchives /></Suspense>
             },
             {
                 path: 'salaryadjustments',

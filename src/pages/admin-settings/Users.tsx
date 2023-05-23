@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Space, Button, Input, Form as AntDForm, Select, Popconfirm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
+import { BiRefresh } from 'react-icons/bi'
 import { Action, Table, Card, TabHeader, Form } from "../../components"
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
@@ -17,14 +18,21 @@ export default function Users() {
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [isArchive, setIsArchive] = useState(false)
 
     useEffect(function () {
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        fetchData({
+            signal: controller.signal,
+            search,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize,
+            isArchive
+        })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [isArchive, search])
 
     const columns: ColumnsType<IUser> = [
         {
@@ -68,7 +76,7 @@ export default function Users() {
             key: 'activation',
             dataIndex: 'activation',
             align: 'center',
-            render: (_: any, record: IUser) => <Popconfirm
+            render: (_: any, record: IUser) => !isArchive ? <Popconfirm
                 title={`${!record?.is_active ? 'Activate' : 'Deactivate'} User`}
                 description={`Are you sure you want to ${!record?.is_active ? 'activate' : 'deactivate'} ${record?.full_name}?`}
                 onConfirm={() => {
@@ -79,13 +87,37 @@ export default function Users() {
                 cancelText="Cancel"
             >
                 <Button type={record?.is_active ? 'default' : 'primary'}>{!record?.is_active ? 'Activate' : 'Deactivate'}</Button>
-            </Popconfirm>
+            </Popconfirm> : <Popconfirm
+                title={`Restore users`}
+                description={`Are you sure you want to restore ${record?.full_name}?`}
+                onConfirm={() => {
+                    GET(ADMINSETTINGS.USERS.RESTORE + record?.id)
+                        .then((res) => console.log(res))
+                        .finally(() => fetchData({
+                            search,
+                            page: tableParams?.pagination?.current ?? 1,
+                            pageSize: tableParams?.pagination?.pageSize,
+                            isArchive
+                        }))
+                }}
+                okText="Restore"
+                cancelText="Cancel"
+            >
+                <Button id='restore' type='primary' size='middle' onClick={() => null}>
+                    <Space align='center'>
+                        <BiRefresh />
+                        Restore
+                    </Space>
+                </Button>
+            </Popconfirm>,
+            width: 150
         },
     ]
 
-    const fetchData = (args?: IArguments) => {
+    function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<UserRes>(ADMINSETTINGS.USERS.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        let url = args?.isArchive ? (ADMINSETTINGS.USERS.GET + '/archives') : ADMINSETTINGS.USERS.GET;
+        GET<UserRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -99,16 +131,8 @@ export default function Users() {
             }).finally(() => setLoading(false))
     }
 
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            search: str,
-            page: tableParams?.pagination?.current ?? 1,
-            pageSize: tableParams?.pagination?.pageSize
-        })
-    }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize!, isArchive })
 
     function userActivation(url: string, id: string) {
         PUT(url + id, {})
@@ -134,25 +158,38 @@ export default function Users() {
     }
 
     return (
-        <Card title='User Management'>
+        <Card title={`Users ${isArchive ? '- Archives' : ''}`}>
             <TabHeader
-                handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
-            />
-            <Table
+                handleSearch={setSearch}
+                handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}
+                handleModalArchive={!isArchive ? () => setIsArchive(true) : undefined}
+            >
+                {isArchive ? <Button onClick={() => setIsArchive(false)}>Back to users</Button> : null}
+            </TabHeader>
+            {!isArchive ? (
+                <>
+                    <Table
+                        loading={loading}
+                        columns={columns}
+                        dataList={data}
+                        tableParams={tableParams}
+                        onChange={onChange}
+                    />
+                    <UserModal
+                        title={selectedData != undefined ? 'Update' : 'Create'}
+                        selectedData={selectedData}
+                        isModalOpen={isModalOpen}
+                        handleCancel={handleCloseModal}
+                        fetchData={fetchData}
+                    />
+                </>
+            ) : (<Table
                 loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
                 onChange={onChange}
-            />
-            <UserModal
-                title={selectedData != undefined ? 'Update' : 'Create'}
-                selectedData={selectedData}
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-                fetchData={fetchData}
-            />
+            />)}
         </Card>
     )
 }
@@ -304,12 +341,6 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                     ))}
                 </Select>
             </FormItem>
-            {/* <FormItem
-                name="description"
-                label="Description"
-            >
-                <Input placeholder='Enter Description...' />
-            </FormItem> */}
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>

@@ -1,33 +1,58 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton } from 'antd'
+import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton, Divider as AntDDivider, Badge, BadgeProps } from 'antd'
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import listPlugin from '@fullcalendar/list'
+import interactionPlugin from '@fullcalendar/interaction'
+import { MdExitToApp, MdMoreTime } from 'react-icons/md'
+import { FaUsers } from 'react-icons/fa'
+import { EventClickArg } from '@fullcalendar/core'
+import { AiOutlineCalendar } from 'react-icons/ai'
 import { renderTitle } from "../shared/utils/utilities"
 import { Card, Divider } from '../components'
 import { useAuthContext } from '../shared/contexts/Auth'
 import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import axiosClient, { useAxios } from '../shared/lib/axios'
+import { IHoliday } from '../shared/interfaces'
 
 const { Paragraph, Title } = Typography
 
-const [{ ANNOUNCEMENT }] = useEndpoints()
-const { GET, } = useAxios()
-
-// Whos in/out (COUNT)
-// Holidays
-// Leaves
-
+const [{ ANNOUNCEMENT, WHOSINOUT, LEAVES, EMPLOYEE201, SYSTEMSETTINGS: { HRSETTINGS: { HOLIDAYS } } }] = useEndpoints()
+const { GET } = useAxios()
 
 export default function Dashboard() {
     renderTitle('Dashboard')
     const { user, loading } = useAuthContext()
     const codes = filterCodes(user?.role?.permissions)
+    const [lists, setLists] = useState<{ whosIn: number; whosOut: number; announcements: any[]; leaves: number; employees: number; holidays: IHoliday[] }>({ whosIn: 0, whosOut: 0, announcements: [], leaves: 0, employees: 0, holidays: [] })
+    const [currentEvents, setCurrentEvents] = useState([])
 
     useEffect(() => {
-        GET(ANNOUNCEMENT.GET)
-            .then((res) => {
-
-            })
+        const controller = new AbortController();
+        (async () => {
+            try {
+                const whosInPromise = axiosClient(WHOSINOUT.IN, { signal: controller.signal })
+                const whosOutPromise = axiosClient(WHOSINOUT.OUT, { signal: controller.signal })
+                const announcementPromise = axiosClient(ANNOUNCEMENT.LISTS, { signal: controller.signal })
+                const leaveTodayPromise = axiosClient(LEAVES.LISTS, { signal: controller.signal }) // add date today
+                const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal })
+                const holidayPromise = axiosClient(HOLIDAYS.GET, { signal: controller.signal })
+                const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
+                setLists({
+                    whosIn: whosInRes?.value?.data?.data?.total ?? 0,
+                    whosOut: whosOutRes?.value?.data?.data?.total ?? 0,
+                    announcements: announcementRes?.value?.data?.data?.data ?? [],
+                    leaves: leaveTodayRes?.value?.data?.data?.total ?? 0,
+                    employees: employeeRes?.value?.data?.data?.total ?? 0,
+                    holidays: holidayRes?.value?.data?.data?.data ?? []
+                })
+            } catch (error) {
+                console.error('error fetching clients: ', error)
+            }
+        })()
     }, [])
 
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
@@ -37,38 +62,101 @@ export default function Dashboard() {
         return <Navigate to='/profile' />
     }
 
+    const handleDateClick = (selected: any) => {
+        const title = prompt('Please enter a new title for your event')
+        const calendarApi = selected.view.calendar
+        calendarApi.unselect()
+
+        if (title) {
+            calendarApi.addEvent({
+                id: `${selected.dateStr}-${selected.title}`,
+                title,
+                start: selected.startStr,
+                end: selected.endStr,
+                allDay: selected.allday
+            })
+        }
+    }
+
+    const handleEventClick = (selected: EventClickArg) => {
+        // if (window.confirm(`Are you sure you want to delete the event ${selected.event.title}`)) selected.event.remove()
+        alert(selected.event.title)
+    }
+    const holidayEvents = lists?.holidays?.map((holiday) => ({ title: holiday?.name!, date: holiday?.holiday_date! }))
+
     return (
-        <Card title='Dashboard'>
-            {/* <Divider /> */}
-            {/* <Row justify='space-between' gutter={[24, 24]} wrap>
-                <Col xs={24} sm={24} md={22} lg={12} xl={11} >
-                    <AntDCard
-                        hoverable
-                        style={{ width: 400 }}
-                    >
-                        <Title level={3}>Bailon, Christian</Title>
-                        <Paragraph>Operations Department</Paragraph>
-                        <Paragraph>Technical & Delivery Head</Paragraph>
-                        <Paragraph type='secondary'>christian.bailon@redcoresolutions.com</Paragraph>
-                    </AntDCard>
-                </Col>
-                <Col xs={24} sm={24} md={22} lg={12} xl={11} >
-                    <div>
-                        <h2>Holidays</h2>
-                    </div>
-                </Col>
-                <Col xs={24} sm={24} md={22} lg={12} xl={11} >
-                    <AntDCard title='Announcements' style={{ minHeight: 500, maxHeight: 500 }}>
-
-                    </AntDCard>
-                </Col>
-                <Col xs={24} sm={24} md={22} lg={12} xl={11} >
-                    <Card title='Events' level={4} style={{ minHeight: 500, maxHeight: 500 }}>
-
+        <Card title={`Hello ${user?.full_name}!`}>
+            <Divider />
+            <Row justify='space-between' gutter={[24, 24]} wrap>
+                <Col xs={24} sm={24} md={22} lg={12} xl={6} >
+                    <Card title="Time In">
+                        <Row justify='space-between' align='middle'>
+                            <Title level={5} style={{ margin: 0 }}><MdMoreTime size={24} /></Title>
+                            <Title level={3} style={{ margin: 0 }}>{lists.whosIn}</Title>
+                        </Row>
                     </Card>
                 </Col>
-            </Row> */}
-            <h1>HELLO WORLD!</h1>
+                <Col xs={24} sm={24} md={22} lg={12} xl={6}>
+                    <Card title="Time Out">
+                        <Row justify='space-between'>
+                            <Title level={5} style={{ margin: 0 }}><MdExitToApp size={24} /></Title>
+                            <Title level={3} style={{ margin: 0 }}>{lists.whosOut}</Title>
+                        </Row>
+                    </Card>
+                </Col>
+                <Col xs={24} sm={24} md={22} lg={12} xl={6}>
+                    <Card title="Today's Leave">
+                        <Row justify='space-between'>
+                            <Title level={5} style={{ margin: 0 }}><AiOutlineCalendar size={24} /></Title>
+                            <Title level={3} style={{ margin: 0 }}>{lists.leaves}</Title>
+                        </Row>
+                    </Card>
+                </Col>
+                <Col xs={24} sm={24} md={22} lg={12} xl={6}>
+                    <Card title="Employees">
+                        <Row justify='space-between'>
+                            <Title level={5} style={{ margin: 0 }}><FaUsers size={24} /></Title>
+                            <Title level={3} style={{ margin: 0 }}>{lists.employees}</Title>
+                        </Row>
+                    </Card>
+                </Col>
+            </Row>
+            <Row justify='space-between' wrap>
+                <Divider />
+                <Col xs={24} sm={24} md={22} lg={6} xl={9}>
+                    <AntDCard title='Announcements' style={{ minHeight: 500, maxHeight: 500 }}>
+                    </AntDCard>
+                </Col>
+                <Col xs={24} sm={24} md={22} lg={12} xl={14}>
+                    <Card title='Holidays'>
+                        <div style={{ overflow: 'auto' }}>
+                            <FullCalendar
+                                plugins={[
+                                    dayGridPlugin,
+                                    timeGridPlugin,
+                                    interactionPlugin,
+                                    listPlugin,
+                                ]}
+                                headerToolbar={{
+                                    left: "prev,next today",
+                                    center: "title",
+                                    right: "dayGridMonth,timeGridWeek,listMonth",
+                                }}
+                                initialView="dayGridMonth"
+                                editable={true}
+                                selectable={true}
+                                selectMirror={true}
+                                dayMaxEvents={true}
+                                select={handleDateClick}
+                                eventClick={handleEventClick}
+                                // eventsSet={(events) => setCurrentEvents(events)}
+                                // TODO DISPLAY EVENTS
+                                events={holidayEvents as any}
+                            />
+                        </div>
+                    </Card>
+                </Col>
+            </Row>
         </Card>
     )
 }

@@ -180,6 +180,7 @@ export const useEndpoints = () => {
             },
             CLIENTSETTINGS: {
                 CLIENT: {
+                    RESTORE: '/clients/restore/',
                     LISTS: '/options/clients',
                     GET: '/clients',
                     POST: '/clients/',
@@ -187,6 +188,7 @@ export const useEndpoints = () => {
                     DELETE: '/clients/'
                 },
                 CLIENTBRANCH: {
+                    RESTORE: '/client_branches/restore/',
                     LISTS: '/options/client_branches',
                     GET: '/client_branches',
                     POST: '/client_branches/',
@@ -194,6 +196,7 @@ export const useEndpoints = () => {
                     DELETE: '/client_branches/'
                 },
                 CLIENTADJUSTMENT: {
+                    RESTORE: '/client_adjustments/restore/',
                     GET: '/client_adjustments',
                     POST: '/client_adjustments/',
                     PUT: '/client_adjustments/',
@@ -202,6 +205,7 @@ export const useEndpoints = () => {
             },
             EXPENSESETTINGS: {
                 EXPENSE: {
+                    RESTORE: '/expenses/restore/',
                     LISTS: '/options/expenses',
                     GET: '/expenses',
                     POST: '/expenses/',
@@ -210,6 +214,7 @@ export const useEndpoints = () => {
 
                 },
                 EXPENSETYPE: {
+                    RESTORE: '/expense_types/restore/',
                     LISTS: '/options/expense_types',
                     GET: '/expense_types',
                     POST: '/expense_types/',
@@ -220,6 +225,7 @@ export const useEndpoints = () => {
         },
         ADMINSETTINGS: {
             ROLES: {
+                RESTORE: '/roles/restore/',
                 LINEMANAGERS: '/options/line_managers',
                 LISTS: '/options/roles',
                 GET: '/roles',
@@ -228,6 +234,7 @@ export const useEndpoints = () => {
                 DELETE: '/roles/'
             },
             USERS: {
+                RESTORE: '/users/restore/',
                 LISTS: '/options/users',
                 GET: '/users',
                 POST: '/users/',
@@ -249,6 +256,8 @@ export const useEndpoints = () => {
             }
         },
         EMPLOYEE201: {
+            ARCHIVES: '/employees/archives',
+            RESTORE: '/employees/restore/',
             LISTS: '/options/employees',
             GET: '/employees',
             POST: '/employees',

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { NavigateFunction, useNavigate } from 'react-router-dom'
-import { Space, Button, Input, Form as AntDForm, Col, Popconfirm, Row, Modal } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Popconfirm, Row, Modal } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import { ExclamationCircleFilled } from '@ant-design/icons'
-import { Action, Table, Card, TabHeader, Form, MainHeader } from "../../components"
+import { BiRefresh } from 'react-icons/bi'
+import { Table, Card, TabHeader, Form } from "../../components"
 import { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
 import { IArguments, IRole, RoleRes, TableParams } from '../../shared/interfaces'
@@ -20,14 +20,21 @@ export default function Roles() {
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [isArchive, setIsArchive] = useState(false)
 
     useEffect(function () {
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        fetchData({
+            signal: controller.signal,
+            search,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize,
+            isArchive
+        })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [isArchive, search])
 
     const columns: ColumnsType<IRole> = [
         {
@@ -45,7 +52,7 @@ export default function Roles() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IRole) => <Space>
+            render: (_: any, record: IRole) => !isArchive ? <Space>
                 <Button
                     id='edit'
                     type='default'
@@ -69,13 +76,37 @@ export default function Roles() {
                         <BsFillTrashFill />
                     </Button>
                 </Popconfirm>
-            </Space>
+            </Space> : <Popconfirm
+                title={`Restore roles`}
+                description={`Are you sure you want to restore ${record?.name}?`}
+                onConfirm={() => {
+                    GET(ADMINSETTINGS.ROLES.RESTORE + record?.id)
+                        .then((res) => console.log(res))
+                        .finally(() => fetchData({
+                            search,
+                            page: tableParams?.pagination?.current ?? 1,
+                            pageSize: tableParams?.pagination?.pageSize,
+                            isArchive
+                        }))
+                }}
+                okText="Restore"
+                cancelText="Cancel"
+            >
+                <Button id='restore' type='primary' size='middle' onClick={() => null}>
+                    <Space align='center'>
+                        <BiRefresh />
+                        Restore
+                    </Space>
+                </Button>
+            </Popconfirm>,
+            width: 150
         },
     ]
 
-    const fetchData = (args?: IArguments) => {
+    function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<RoleRes>(ADMINSETTINGS.ROLES.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        let url = args?.isArchive ? (ADMINSETTINGS.ROLES.GET + '/archives') : ADMINSETTINGS.ROLES.GET;
+        GET<RoleRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -89,16 +120,7 @@ export default function Roles() {
             }).finally(() => setLoading(false))
     }
 
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            search: str,
-            page: tableParams?.pagination?.current ?? 1,
-            pageSize: tableParams?.pagination?.pageSize
-        })
-    }
-
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize!, isArchive })
 
     function handleDelete(id: string) {
         DELETE(ADMINSETTINGS.ROLES.DELETE, id)
@@ -110,43 +132,45 @@ export default function Roles() {
     }
 
     return (
-        <>
-            <MainHeader>
-                <Col>
-                    <h1 className='color-white'>Roles</h1>
-                </Col>
-                <Col>
-                    <Button className="btn-timeinout" size="large" onClick={() => setIsModalOpen(true)}>
-                        Create
-                    </Button>
-                </Col>
-            </MainHeader>
+        <Card title={`Roles ${isArchive ? '- Archives' : ''}`}>
             <TabHeader
-                handleSearch={handleSearch}
+                handleSearch={setSearch}
+                handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}
+                handleModalArchive={!isArchive ? () => setIsArchive(true) : undefined}
             >
-                <Button type='primary'>View Archives</Button>
+                {isArchive ? <Button onClick={() => setIsArchive(false)}>Back to roles</Button> : null}
             </TabHeader>
-            <Table
+            {!isArchive ? (
+                <>
+                    <Table
+                        loading={loading}
+                        columns={columns}
+                        dataList={data}
+                        tableParams={tableParams}
+                        onChange={onChange}
+                    />
+                    <RoleModal
+                        title={selectedData != undefined ? 'Update' : 'Create'}
+                        isModalOpen={isModalOpen}
+                        handleCancel={handleCloseModal}
+                        fetchData={fetchData}
+                        navigate={navigate}
+                    />
+                </>
+            ) : (<Table
                 loading={loading}
                 columns={columns}
                 dataList={data}
                 tableParams={tableParams}
                 onChange={onChange}
-            />
-            <RoleModal
-                title='Create'
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-                fetchData={fetchData}
-                navigate={navigate}
-            />
-        </>
+            />)}
+        </Card>
     )
 }
 
 
 interface RoleInputProps {
-    selectedData: IRole
+    selectedData?: IRole
     fetchData?: (args?: IArguments) => void
     handleCancel: () => void
 }
@@ -223,7 +247,7 @@ export function RoleInputs({ selectedData, fetchData, handleCancel }: RoleInputP
         setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }
-        PUT(ADMINSETTINGS.ROLES.PUT + selectedData?.id, { ...restValues, id: selectedData.id })
+        PUT(ADMINSETTINGS.ROLES.PUT + selectedData?.id, { ...restValues, id: selectedData?.id })
             .then(() => {
                 setTimeout(() => {
                     form.resetFields()
