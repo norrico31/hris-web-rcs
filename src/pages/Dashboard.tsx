@@ -25,10 +25,11 @@ const { GET } = useAxios()
 
 export default function Dashboard() {
     renderTitle('Dashboard')
-    const { user, loading } = useAuthContext()
+    const { user, loading: loadingUser } = useAuthContext()
     const codes = filterCodes(user?.role?.permissions)
     const [lists, setLists] = useState<{ whosIn: number; whosOut: number; announcements: any[]; leaves: number; employees: number; holidays: IHoliday[] }>({ whosIn: 0, whosOut: 0, announcements: [], leaves: 0, employees: 0, holidays: [] })
     const [currentEvents, setCurrentEvents] = useState([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const controller = new AbortController();
@@ -41,14 +42,16 @@ export default function Dashboard() {
                 const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal })
                 const holidayPromise = axiosClient(HOLIDAYS.GET, { signal: controller.signal })
                 const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
+                console.log(employeeRes?.value)
                 setLists({
                     whosIn: whosInRes?.value?.data?.data?.total ?? 0,
                     whosOut: whosOutRes?.value?.data?.data?.total ?? 0,
                     announcements: announcementRes?.value?.data?.data?.data ?? [],
                     leaves: leaveTodayRes?.value?.data?.data?.total ?? 0,
-                    employees: employeeRes?.value?.data?.data?.total ?? 0,
+                    employees: employeeRes?.value?.data?.length ?? 0,
                     holidays: holidayRes?.value?.data?.data?.data ?? []
                 })
+                setLoading(false)
             } catch (error) {
                 console.error('error fetching clients: ', error)
             }
@@ -56,8 +59,8 @@ export default function Dashboard() {
     }, [])
 
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
-    if (loading) return <Skeleton />
-    if (!loading && !codes['a01']) {
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['a01']) {
         if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
         return <Navigate to='/profile' />
     }
@@ -84,11 +87,11 @@ export default function Dashboard() {
     }
     const holidayEvents = lists?.holidays?.map((holiday) => ({ title: holiday?.name!, date: holiday?.holiday_date! }))
 
-    return (
+    return loading ? <Skeleton /> : (
         <Card title={`Hello ${user?.full_name}!`}>
-            <Divider />
+            <AntDDivider />
             <Row justify='space-between' gutter={[24, 24]} wrap>
-                <Col xs={24} sm={24} md={22} lg={12} xl={6} >
+                <Col xs={24} sm={12} md={12} lg={12} xl={6} >
                     <Card title="Time In">
                         <Row justify='space-between' align='middle'>
                             <Title level={5} style={{ margin: 0 }}><MdMoreTime size={24} /></Title>
@@ -96,7 +99,7 @@ export default function Dashboard() {
                         </Row>
                     </Card>
                 </Col>
-                <Col xs={24} sm={24} md={22} lg={12} xl={6}>
+                <Col xs={24} sm={12} md={12} lg={12} xl={6}>
                     <Card title="Time Out">
                         <Row justify='space-between'>
                             <Title level={5} style={{ margin: 0 }}><MdExitToApp size={24} /></Title>
@@ -104,7 +107,7 @@ export default function Dashboard() {
                         </Row>
                     </Card>
                 </Col>
-                <Col xs={24} sm={24} md={22} lg={12} xl={6}>
+                <Col xs={24} sm={12} md={12} lg={12} xl={6}>
                     <Card title="Today's Leave">
                         <Row justify='space-between'>
                             <Title level={5} style={{ margin: 0 }}><AiOutlineCalendar size={24} /></Title>
@@ -112,7 +115,7 @@ export default function Dashboard() {
                         </Row>
                     </Card>
                 </Col>
-                <Col xs={24} sm={24} md={22} lg={12} xl={6}>
+                <Col xs={24} sm={12} md={12} lg={12} xl={6}>
                     <Card title="Employees">
                         <Row justify='space-between'>
                             <Title level={5} style={{ margin: 0 }}><FaUsers size={24} /></Title>
@@ -123,11 +126,11 @@ export default function Dashboard() {
             </Row>
             <Row justify='space-between' wrap>
                 <Divider />
-                <Col xs={24} sm={24} md={22} lg={6} xl={9}>
+                <Col xs={24} sm={24} md={22} lg={9} xl={9}>
                     <AntDCard title='Announcements' style={{ minHeight: 500, maxHeight: 500 }}>
                     </AntDCard>
                 </Col>
-                <Col xs={24} sm={24} md={22} lg={12} xl={14}>
+                <Col xs={24} sm={24} md={22} lg={14} xl={14}>
                     <Card title='Holidays'>
                         <div style={{ overflow: 'auto' }}>
                             <FullCalendar

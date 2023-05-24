@@ -85,13 +85,6 @@ export default function SalaryAdjustmentTyp() {
                 dataList={data}
                 onChange={onChange}
             />
-            {/* <SalaryAdjustmentTypModal
-                title={selectedData != undefined ? 'Update' : 'Create'}
-                selectedData={selectedData}
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-                fetchData={fetchData}
-            /> */}
         </Card>
     )
 }
