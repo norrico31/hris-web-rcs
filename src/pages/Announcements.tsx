@@ -1,32 +1,27 @@
 import { useState, useEffect, useMemo } from "react"
-import { Navigate } from "react-router-dom"
+import { Navigate, useNavigate } from "react-router-dom"
 import { useAuthContext } from "../shared/contexts/Auth"
-import { Button, Col, DatePicker, Form as AntDForm, Input, Modal, Select, Space, Upload, Row, Radio, Skeleton } from "antd"
-import dayjs from "dayjs"
+import { Button, Col, Form as AntDForm, Input, Modal, Upload, Skeleton, Space } from "antd"
 import { PlusOutlined } from '@ant-design/icons'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { AiOutlineCalendar } from 'react-icons/ai'
 import useMessage from "antd/es/message/useMessage"
 import { Action, MainHeader, Table, Form, TabHeader } from "../components"
 import { renderTitle } from "../shared/utils/utilities"
-import axiosClient, { useAxios } from "../shared/lib/axios"
+import { useAxios } from "../shared/lib/axios"
 import { ROOTPATHS, useEndpoints } from "../shared/constants"
-import { IArguments, IEmployee, IExpenseType, IUser, TableParams } from "../shared/interfaces"
+import { AnnouncementRes, IAnnouncements, IArguments, TableParams } from "../shared/interfaces"
 import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 
-interface IAnnouncements extends Partial<{ id: string }> {
-    title: string
-    content: string
-    img: string | null
-    user: IUser
-}
-
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ EMPLOYEE201, SYSTEMSETTINGS: { EXPENSESETTINGS: { EXPENSE, EXPENSETYPE } }, ADMINSETTINGS, ANNOUNCEMENT }] = useEndpoints()
+const [{ ANNOUNCEMENT }] = useEndpoints()
+
+// TODO: ARCHIVES
 
 export default function Announcements() {
     renderTitle('Salary Adjustment')
     const { user, loading: loadingUser } = useAuthContext()
+    const navigate = useNavigate()
     const [data, setData] = useState<IAnnouncements[]>([])
     const [selectedData, setSelectedData] = useState<IAnnouncements | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -72,8 +67,8 @@ export default function Announcements() {
             dataIndex: 'action',
             align: 'center',
             render: (_, record: IAnnouncements) => <Action
-                title='Tasks'
-                name={record?.user?.full_name}
+                title='announcements'
+                name={record?.title}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => handleEdit(record)}
             />
@@ -82,7 +77,7 @@ export default function Announcements() {
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<any>(ANNOUNCEMENT.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<AnnouncementRes>(ANNOUNCEMENT.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -138,6 +133,7 @@ export default function Announcements() {
             </MainHeader>
             <TabHeader
                 handleSearch={handleSearch}
+                handleModalArchive={() => navigate('/announcements/archives')}
             />
             <Table
                 loading={loading}

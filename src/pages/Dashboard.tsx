@@ -153,7 +153,6 @@ export default function Dashboard() {
                                 select={handleDateClick}
                                 eventClick={handleEventClick}
                                 // eventsSet={(events) => setCurrentEvents(events)}
-                                // TODO DISPLAY EVENTS
                                 events={holidayEvents as any}
                             />
                         </div>

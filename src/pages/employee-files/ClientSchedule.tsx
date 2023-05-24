@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Form as AntDForm, Row, Col, DatePicker, Grid, Button, Select, Modal, Space } from 'antd'
+import { Form as AntDForm, Row, Col, DatePicker, Button, Select, Modal, Space } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { Action, Card, TabHeader, Table } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
@@ -16,7 +16,7 @@ const [{ SYSTEMSETTINGS: { HRSETTINGS, CLIENTSETTINGS }, EMPLOYEE201 }] = useEnd
 const { GET, PUT, POST, DELETE } = useAxios()
 
 export default function ClientAndSchedule() {
-    const { employeeId, employeeInfo } = useEmployeeCtx()
+    const { employeeId } = useEmployeeCtx()
     const [selectedData, setSelectedData] = useState<IEmployeeClients | undefined>(undefined)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [data, setData] = useState<IEmployeeClients[]>([])
@@ -127,7 +127,7 @@ export default function ClientAndSchedule() {
     return (
         <Card title='Client And Schedule'>
             <TabHeader
-                handleSearch={handleSearch} // TODO SEARCH ENDPOINT 
+                handleSearch={handleSearch}
                 handleCreate={() => setIsModalOpen(true)}
             />
             <Table
@@ -175,7 +175,7 @@ function ClientScheduleModal(props: ModalProps) {
                 client_branch_id: selectedData?.client_branch_id,
                 client_start_date: dayjs(selectedData?.client_start_date, 'YYYY-MM-DD'),
                 client_end_date: selectedData?.client_end_date ? dayjs(selectedData?.client_end_date, 'YYYY-MM-DD') : null,
-                is_active: selectedData?.is_active ?? 'ACTIVE', // TODO
+                is_active: selectedData?.is_active ?? 'ACTIVE',
                 schedule_id: selectedData?.schedule_id
             })
         } else form.resetFields()

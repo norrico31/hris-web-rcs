@@ -27,7 +27,9 @@ interface ISalaryAdjustment extends Partial<{ id: string }> {
 }
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ EMPLOYEE201, SYSTEMSETTINGS: { EXPENSESETTINGS: { EXPENSE, EXPENSETYPE } }, ADMINSETTINGS }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { EXPENSESETTINGS: { EXPENSE, EXPENSETYPE } }, ADMINSETTINGS }] = useEndpoints()
+
+// TODO: ARCHIVES
 
 export default function SalaryAdjustment() {
     renderTitle('Salary Adjustment')

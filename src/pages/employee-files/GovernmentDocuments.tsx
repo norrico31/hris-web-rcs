@@ -152,7 +152,6 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
     }
 
     function onFinish(values: any) {
-        // TODO
         setLoading(true)
         const formData = new FormData()
         if (selectedData?.id) formData.append('_method', 'PUT')

@@ -48,7 +48,7 @@ export default function MyOvertime() {
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['f01', 'f02', 'f03', 'f04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
-    // TODO: add actions for edit delete
+    // TODO: add cancel action 
     const columns: ColumnsType<IOvertime> = [
         {
             title: 'Status',

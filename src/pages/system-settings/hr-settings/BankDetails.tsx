@@ -121,6 +121,31 @@ export default function BankDetails() {
         setIsModalOpen(false)
     }
 
+    const renderChildren = !isArchive ? (
+        <>
+            <Table
+                loading={loading}
+                columns={columns}
+                dataList={data}
+                tableParams={tableParams}
+                onChange={onChange}
+            />
+            <BankDetailsModal
+                title={selectedData != undefined ? 'Update' : 'Create'}
+                selectedData={selectedData}
+                isModalOpen={isModalOpen}
+                handleCancel={handleCloseModal}
+                fetchData={fetchData}
+            />
+        </>
+    ) : (<Table
+        loading={loading}
+        columns={columns}
+        dataList={data}
+        tableParams={tableParams}
+        onChange={onChange}
+    />)
+
     return (
         <Card title={`Bank Details ${isArchive ? '- Archives' : ''}`}>
             <TabHeader
@@ -130,30 +155,7 @@ export default function BankDetails() {
             >
                 {isArchive ? <Button onClick={() => setIsArchive(false)}>Back to bank details</Button> : null}
             </TabHeader>
-            {!isArchive ? (
-                <>
-                    <Table
-                        loading={loading}
-                        columns={columns}
-                        dataList={data}
-                        tableParams={tableParams}
-                        onChange={onChange}
-                    />
-                    <BankDetailsModal
-                        title={selectedData != undefined ? 'Update' : 'Create'}
-                        selectedData={selectedData}
-                        isModalOpen={isModalOpen}
-                        handleCancel={handleCloseModal}
-                        fetchData={fetchData}
-                    />
-                </>
-            ) : (<Table
-                loading={loading}
-                columns={columns}
-                dataList={data}
-                tableParams={tableParams}
-                onChange={onChange}
-            />)}
+            {renderChildren}
         </Card>
     )
 }

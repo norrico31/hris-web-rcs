@@ -11,8 +11,8 @@ import { IArguments, TableParams, IEmployeeDocument, EmployeeDocumentRes } from 
 import { PlusOutlined } from '@ant-design/icons';
 
 const [{ EMPLOYEE201: { EMPLOYEEDOCUMENT } }] = useEndpoints()
-const { GET, POST, PUT, DELETE } = useAxios()
-// TODO
+const { GET, POST, DELETE } = useAxios()
+
 export default function EmployeeDocuments() {
     const { employeeId, employeeInfo } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)

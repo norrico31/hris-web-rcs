@@ -5,12 +5,9 @@ import { Card } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { TabHeader, Table } from '../../components'
 import { IEmployeeSalary } from '../../shared/interfaces'
-// TODO: PUT method
-export default function EmployeeSalaryHistory() {
-    const { employeeId, employeeInfo } = useEmployeeCtx()
-    const [form] = useForm<IEmployeeSalary>()
 
-    console.log(employeeInfo?.salary_history)
+export default function EmployeeSalaryHistory() {
+    const { employeeInfo } = useEmployeeCtx()
 
     const columns: ColumnsType<IEmployeeSalary> = [
         {
@@ -33,10 +30,6 @@ export default function EmployeeSalaryHistory() {
 
     function fetchData(search: string) {
         console.log(search)
-    }
-
-    function handleDownload() {
-        alert('download')
     }
 
     return (

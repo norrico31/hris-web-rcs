@@ -20,8 +20,8 @@ export default function MainHeader({ children }: Props) {
 const Main = styled(Row)`
     width: 100%;
     background: rgb(155, 52, 35);
-    height: 60px;
-    padding: 0 3rem;
+    min-height: 60px;
+    padding: 1rem 2rem;
     border-radius: 8px;
     display: flex;
 

@@ -46,14 +46,12 @@ export default function Users() {
             dataIndex: 'email',
         },
         {
-            // TODO FILTERING
             title: 'Role',
             key: 'role',
             dataIndex: 'role',
             render: (_, record) => record?.role?.name ?? '-'
         },
         {
-            // TODO FILTERING
             title: 'Department',
             key: 'department',
             dataIndex: 'department',

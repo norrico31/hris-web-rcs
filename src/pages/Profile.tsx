@@ -10,8 +10,6 @@ const { useForm, Item } = AntDForm
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ AUTH: { UPDATEPROFILE } }] = useEndpoints()
 
-// TODO
-
 export default function Profile() {
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(false)

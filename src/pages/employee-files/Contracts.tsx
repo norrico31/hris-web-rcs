@@ -55,7 +55,6 @@ export default function EmployeeContracts() {
             key: 'description',
             dataIndex: 'description',
         },
-        // TODO (EDIT, DELETE)
         {
             title: 'Action',
             key: 'action',
