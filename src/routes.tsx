@@ -19,6 +19,7 @@ const TasksArchives = lazy(() => import('./pages/TasksArchives'))
 const EmployeeFiles = lazy(() => import('./pages/EmployeeFiles'))
 const EmployeeFilesArchives = lazy(() => import('./pages/EmployeeFilesArchives'))
 const SalaryAdjustment = lazy(() => import('./pages/SalaryAdjustment'))
+const SalaryAdjustmentArchives = lazy(() => import('./pages/SalaryAdjustmentArchives'))
 const WhosInOut = lazy(() => import('./pages/WhosInOut'))
 const Announcements = lazy(() => import('./pages/Announcements'))
 const AnnouncementsArchives = lazy(() => import('./pages/AnnouncementArchives'))
@@ -75,7 +76,6 @@ const IssueLogs = lazy(() => import('./pages/admin-settings/IssueLogs'))
 // Employee Files (201)
 const EmployeeBenefits = lazy(() => import('./pages/employee-files/EmployeeBenefits'))
 const ClientSchedule = lazy(() => import('./pages/employee-files/ClientSchedule'))
-const EmployeeSchedule = lazy(() => import('./pages/employee-files/Schedule'))
 const Contracts = lazy(() => import('./pages/employee-files/Contracts'))
 const EmployeeDocuments = lazy(() => import('./pages/employee-files/EmployeeDocuments'))
 const Evaluations = lazy(() => import('./pages/employee-files/Evaluations'))
@@ -321,6 +321,10 @@ export const routes = createBrowserRouter([
             {
                 path: 'salaryadjustments',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><SalaryAdjustment /></Suspense>
+            },
+            {
+                path: 'salaryadjustments/archives',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><SalaryAdjustmentArchives /></Suspense>
             },
             {
                 path: 'whosinout',

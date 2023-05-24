@@ -48,7 +48,6 @@ export default function MyOvertime() {
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['f01', 'f02', 'f03', 'f04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
-    // TODO: add cancel action 
     const columns: ColumnsType<IOvertime> = [
         {
             title: 'Status',
@@ -94,12 +93,14 @@ export default function MyOvertime() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: IOvertime) => <Action
-                title='Tasks'
-                name={record?.user?.full_name}
-                onConfirm={() => handleDelete(record?.id!)}
-                onClick={() => handleEdit(record)}
-            />,
+            render: (_, record: IOvertime) => <>
+                <Action
+                    title='Tasks'
+                    name={record?.user?.full_name}
+                    onConfirm={() => handleDelete(record?.id!)}
+                    onClick={() => handleEdit(record)}
+                />
+            </>,
             width: 150
         },
     ]
@@ -199,7 +200,6 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
 
     useEffect(() => {
         if (selectedData != undefined) {
-            console.log('aha')
             form.setFieldsValue({
                 ...selectedData,
                 date: selectedData?.date != null ? dayjs(selectedData?.date, 'YYYY-MM-DD') : null,
@@ -208,6 +208,15 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
             })
         } else form.resetFields()
     }, [selectedData])
+
+    function cancelRequest() {
+        GET(OVERTIME.CANCEL + selectedData?.id)
+            .then((res) => res)
+            .finally(() => {
+                fetchData({ type: overtimeType })
+                setLoading(false)
+            })
+    }
 
     function onFinish({ date, planned_ot_start,
         planned_ot_end, ...restProps }: IOvertime) {
@@ -225,10 +234,10 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         })
     }
 
-    return <Modal title='Request a Overtime' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${selectedData ? 'Update ' : 'Submit '} Overtime Request`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
-                label="Start Date"
+                label="Overtime Date"
                 name="date"
                 required
                 rules={[{ required: true, message: '' }]}
@@ -266,16 +275,21 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
             >
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>
-            <FormItem style={{ textAlign: 'right' }}>
+            <Row justify={selectedData ? 'space-between' : 'end'}>
+                {selectedData && (
+                    <Button className='btn-secondary' loading={loading} disabled={loading} onClick={cancelRequest}>
+                        Cancel Request
+                    </Button>
+                )}
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         Submit Request
                     </Button>
-                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
+                    {/* <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
-                    </Button>
+                    </Button> */}
                 </Space>
-            </FormItem>
+            </Row>
         </Form>
     </Modal>
 }

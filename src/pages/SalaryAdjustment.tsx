@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
-import { Navigate } from "react-router-dom"
+import { Navigate, useNavigate } from "react-router-dom"
 import { useAuthContext } from "../shared/contexts/Auth"
 import { Button, Col, DatePicker, Form as AntDForm, Input, Modal, Select, Space, Upload, Row, Radio, Skeleton } from "antd"
 import dayjs from "dayjs"
@@ -11,29 +11,16 @@ import { Action, MainHeader, Table, Form, TabHeader } from "../components"
 import { renderTitle } from "../shared/utils/utilities"
 import axiosClient, { useAxios } from "../shared/lib/axios"
 import { ROOTPATHS, useEndpoints } from "../shared/constants"
-import { IArguments, IEmployee, IExpenseType, IUser, TableParams } from "../shared/interfaces"
+import { IArguments, IEmployee, IExpenseType, ISalaryAdjustment, SalaryAdjustmentRes, TableParams } from "../shared/interfaces"
 import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
-
-interface ISalaryAdjustment extends Partial<{ id: string }> {
-    task_activity: string[]
-    task_type: string[]
-    sprint_name: string[]
-    manhours: string
-    expense_date: string
-    expense_type: IExpenseType
-    receipt_attachment: any
-    description: string;
-    user: IUser
-}
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { EXPENSESETTINGS: { EXPENSE, EXPENSETYPE } }, ADMINSETTINGS }] = useEndpoints()
 
-// TODO: ARCHIVES
-
 export default function SalaryAdjustment() {
     renderTitle('Salary Adjustment')
     const { user, loading: loadingUser } = useAuthContext()
+    const navigate = useNavigate()
     const [data, setData] = useState<ISalaryAdjustment[]>([])
     const [selectedData, setSelectedData] = useState<ISalaryAdjustment | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -48,6 +35,7 @@ export default function SalaryAdjustment() {
             controller.abort()
         }
     }, [])
+
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
@@ -59,30 +47,35 @@ export default function SalaryAdjustment() {
             title: 'Employee Name',
             key: 'employee_name',
             dataIndex: 'employee_name',
-            render: (_, record) => record?.user?.full_name
+            render: (_, record) => record?.user?.full_name,
+            width: 200,
         },
         {
             title: 'Adjustment Type',
             key: 'adjustment_type_id',
             dataIndex: 'adjustment_type_id',
-            render: (_, record) => record?.expense_type?.name
+            render: (_, record) => record?.expense_type?.name ?? '-',
+            width: 200,
         },
         {
             title: 'Adjustment Date',
             key: 'expense_date',
             dataIndex: 'expense_date',
+            width: 200
         },
         {
             title: 'Amount',
             key: 'amount',
             dataIndex: 'amount',
             align: 'center',
+            width: 150
         },
         {
             title: 'Remarks',
             key: 'remarks',
             dataIndex: 'remarks',
             align: 'center',
+            width: 200
         },
         {
             title: 'Action',
@@ -94,13 +87,14 @@ export default function SalaryAdjustment() {
                 name={record?.user?.full_name}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => handleEdit(record)}
-            />
+            />,
+            width: 150
         },
     ]
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<any>(EXPENSE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<SalaryAdjustmentRes>(EXPENSE.GET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -154,9 +148,7 @@ export default function SalaryAdjustment() {
                     </Button>
                 </Col>
             </MainHeader>
-            <TabHeader
-                handleSearch={handleSearch}
-            />
+            <TabHeader handleModalArchive={() => navigate('/salaryadjustments/archives')} handleSearch={handleSearch} />
             <Table
                 loading={loading}
                 columns={columns}
@@ -196,14 +188,11 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                 ...selectedData,
                 expense_date: dayjs(selectedData.expense_date, 'YYYY/MM/DD') as any
             })
-        } else {
-            form.resetFields(undefined)
-        }
+        } else form.resetFields(undefined)
 
         const controller = new AbortController();
         (async () => {
             try {
-                // const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal })
                 const employeePromise = axiosClient(ADMINSETTINGS.USERS.LISTS, { signal: controller.signal })
                 const expenseTypePromise = axiosClient(EXPENSETYPE.LISTS, { signal: controller.signal })
                 const [employeeRes, expenseTypeRes,] = await Promise.allSettled([employeePromise, expenseTypePromise]) as any
@@ -220,34 +209,37 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         }
     }, [selectedData])
 
-    function onFinish(values: ISalaryAdjustment) {
+    function onFinish(values: Record<string, any>) {
         setLoading(true)
-        let { expense_date, receipt_attachment, description, ...restValues } = values
-        expense_date = dayjs(expense_date, 'YYYY/MM/DD') as any
-        receipt_attachment = receipt_attachment ? receipt_attachment[0] : null
-        restValues = { ...restValues, expense_date, receipt_attachment, ...(description != undefined && { description }) } as any
-        let result = selectedData ? PUT(EXPENSE.PUT + selectedData.id!, { ...restValues, id: selectedData.id }) : POST(EXPENSE.POST, restValues)
-        // when there's attachment FORM DATA
+        const formData = new FormData()
+        formData.append('user_id', values?.user_id)
+        formData.append('expense_type_id', values?.expense_type_id)
+        formData.append('amount', values?.amount)
+        formData.append('expense_date', values?.expense_date ? dayjs(values?.expense_date, 'YYYY/MM/DD') + '' : '')
+        formData.append('is_taxable', values?.is_taxable)
+        formData.append('is_active', values?.is_active)
+        formData.append('remarks', values?.remarks)
+        formData.append('expense_description', values?.expense_description ? values?.expense_description : '')
+        formData.append('receipt_attachment', values?.receipt_attachment ? values?.receipt_attachment[0]?.originFileObj : '')
+        let result = selectedData ? PUT(EXPENSE.PUT + selectedData.id!, formData) : POST(EXPENSE.POST, formData)
         result.then(() => {
             form.resetFields()
             handleCancel()
+        }).catch((err) => {
+            messageApi.open({
+                type: 'error',
+                content: err.response.data.message ?? err.response.data.error,
+                duration: 5
+            })
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
         })
-            .catch((err) => {
-                messageApi.open({
-                    type: 'error',
-                    content: err.response.data.message ?? err.response.data.error,
-                    duration: 5
-                })
-            })
-            .finally(() => {
-                fetchData()
-                setLoading(false)
-            })
     }
 
     return <Modal title={`${title} - Adjustment`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender width={700}>
         {contextHolder}
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
             <Row justify='space-between' wrap>
                 <Col span={11}>
                     <FormItem
@@ -330,8 +322,8 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                 </Col>
                 <Col span={11}>
                     <FormItem
-                        name="remarks"
                         label="Remarks"
+                        name="remarks"
                         required
                         rules={[{ required: true, message: '' }]}
                     >
@@ -340,21 +332,16 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                     <FormItem
                         label="Expense Description"
                         name="expense_description"
-                    // required
-                    // rules={[{ required: true, message: 'Please expense description!' }]}
                     >
                         <Input.TextArea placeholder='Enter expense description...' />
                     </FormItem>
-
                     <FormItem
                         label='Receipt File'
                         name='receipt_attachment'
                         valuePropName="fileList"
                         getValueFromEvent={normFile}
-                    // required
-                    // rules={[{ required: true, message: '' }]}
                     >
-                        <Upload listType="picture-card" beforeUpload={() => false}>
+                        <Upload listType="picture-card" beforeUpload={() => false} accept=".png,.jpeg,.jpg">
                             <div>
                                 <PlusOutlined />
                                 <div style={{ marginTop: 8 }}>Upload</div>
@@ -363,10 +350,10 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                     </FormItem>
                     <FormItem style={{ textAlign: 'right' }}>
                         <Space>
-                            <Button id={selectedData != undefined ? 'Update' : 'Create'} type="primary" htmlType="submit">
+                            <Button id={selectedData != undefined ? 'Update' : 'Create'} type="primary" htmlType="submit" loading={loading}>
                                 {selectedData != undefined ? 'Edit' : 'Create'}
                             </Button>
-                            <Button id='cancel' type="primary" onClick={handleCancel}>
+                            <Button id='cancel' type="primary" onClick={handleCancel} loading={loading}>
                                 Cancel
                             </Button>
                         </Space>

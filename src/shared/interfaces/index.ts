@@ -8,6 +8,7 @@ export * from './TimeKeeping'
 export * from './Leave'
 export * from './Overtime'
 export * from './Announcements'
+export * from './SalaryAdjustments'
 
 export * from './admin-settings/Role'
 export * from './admin-settings/Users'

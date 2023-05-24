@@ -16,8 +16,6 @@ import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 const { GET, DELETE } = useAxios()
 const [{ ANNOUNCEMENT }] = useEndpoints()
 
-// TODO: ARCHIVES
-
 export default function Announcements() {
     renderTitle('Salary Adjustment')
     const { user, loading: loadingUser } = useAuthContext()

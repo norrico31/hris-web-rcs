@@ -19,6 +19,7 @@ export const useEndpoints = () => {
             GET: '/time_keepings'
         },
         OVERTIME: {
+            CANCEL: '/overtimes/cancel/',
             ARCHIVES: '/overtimes/archives',
             RESTORE: '/overtimes/restore/',
             GET: '/overtimes?manager=',
@@ -31,6 +32,7 @@ export const useEndpoints = () => {
             OUT: '/time_keepings/whos/out',
         },
         LEAVES: {
+            CANCEL: '/leaves/cancel/',
             LISTS: '/options/leaves',
             ARCHIVES: '/leaves/archives',
             RESTORE: '/leaves/restore/',

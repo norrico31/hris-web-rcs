@@ -16,8 +16,6 @@ import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ ANNOUNCEMENT }] = useEndpoints()
 
-// TODO: ARCHIVES
-
 export default function Announcements() {
     renderTitle('Salary Adjustment')
     const { user, loading: loadingUser } = useAuthContext()
@@ -40,10 +38,10 @@ export default function Announcements() {
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
-    // if (!loadingUser && !codes['a01']) { d01 - d04
-    //     if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
-    //     return <Navigate to='/profile' />
-    // }
+    if (!loadingUser && ['d01', 'd02', 'd03', 'd04'].every((c) => !codes[c])) {
+        if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
+        return <Navigate to='/profile' />
+    }
 
     const columns: ColumnsType<IAnnouncements> = [
         {

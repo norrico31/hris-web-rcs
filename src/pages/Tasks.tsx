@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider, Popconfirm } from 'antd'
+import { useState, useEffect, useMemo } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider, Popconfirm, Skeleton } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -10,19 +10,20 @@ import { useTasksServices } from '../shared/services/TasksSettings'
 import { Action, TabHeader, Table, Form, MainHeader, } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import axiosClient, { useAxios } from '../shared/lib/axios'
-import { useEndpoints } from '../shared/constants'
+import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { TableParams, ITasks, TasksRes, IArguments, ITeam } from '../shared/interfaces'
 import { ActivityModal } from './system-settings/task-settings/TaskActivities'
 import { SprintModal } from './system-settings/task-settings/TaskSprint'
 import { TypesModal } from './system-settings/task-settings/TaskTypes'
 import { Alert } from '../shared/lib/alert'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS }, }] = useEndpoints()
 
 export default function Tasks() {
     renderTitle('Tasks')
-    const { user } = useAuthContext()
+    const { user, loading: loadingUser } = useAuthContext()
     const navigate = useNavigate()
     const [data, setData] = useState<ITasks[]>([])
     const [selectedData, setSelectedData] = useState<ITasks | undefined>(undefined)
@@ -40,6 +41,14 @@ export default function Tasks() {
             controller.abort()
         }
     }, [])
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && ['e01', 'e02', 'e03', 'e04'].every((c) => !codes[c])) {
+        if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
+        return <Navigate to='/profile' />
+    }
 
     const columns: ColumnsType<ITasks> = [
         {

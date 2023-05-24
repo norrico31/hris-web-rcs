@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Popconfirm } from 'antd'
+import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { Form, Card, TabHeader, Table, Action } from '../../components'
@@ -8,7 +8,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../../shared/constants'
-import { IArguments, ILeave, ILeaveDuration, ILeaveType, LeaveRes, TableParams } from '../../shared/interfaces'
+import { IArguments, ILeave, ILeaveType, LeaveRes, TableParams } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 
@@ -49,13 +49,6 @@ export default function MyLeave() {
     if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<ILeave> = [
-        // {
-        //     title: 'Name',
-        //     key: 'full_nam,e',
-        //     dataIndex: 'full_nam,e',
-        //     render: (_, record) => record?.user?.full_name ?? '-',
-        //     width: 150,
-        // },
         {
             title: 'Status',
             key: 'status',
@@ -116,14 +109,7 @@ export default function MyLeave() {
             />,
             width: 150
         },
-    ];
-    // (leaveType == 'all' || leaveType == 'approved' || leaveType == 'reject') && columns.push({
-    //     title: 'Approver',
-    //     key: 'approved_by',
-    //     dataIndex: 'approved_by',
-    //     render: (_: any, record: ILeave) => record.actioned_by?.full_name,
-    //     width: 150
-    // });
+    ]
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
@@ -239,6 +225,15 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         }
     }, [selectedData])
 
+    function cancelRequest() {
+        GET(LEAVES.CANCEL + selectedData?.id)
+            .then((res) => res)
+            .finally(() => {
+                fetchData({ type: leaveType })
+                setLoading(false)
+            })
+    }
+
     function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: ILeave) {
         date_start = dayjs(date_start).format('YYYY/MM/DD') as any
         date_end = dayjs(date_end).format('YYYY/MM/DD') as any
@@ -320,16 +315,21 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
             >
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>
-            <FormItem style={{ textAlign: 'right' }}>
+            <Row justify={selectedData ? 'space-between' : 'end'}>
+                {selectedData && (
+                    <Button className='btn-secondary' loading={loading} disabled={loading} onClick={cancelRequest}>
+                        Cancel Request
+                    </Button>
+                )}
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         Submit Request
                     </Button>
-                    <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
+                    {/* <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
-                    </Button>
+                    </Button> */}
                 </Space>
-            </FormItem>
+            </Row>
         </Form>
     </Modal>
 }

@@ -30,6 +30,12 @@ export default function Sidebar({ onSelect }: Props) {
             setLocationKey('/tasks')
         } else if (location?.pathname.includes('/overtime/')) {
             setLocationKey('/overtime')
+        } else if (location?.pathname.includes('/announcements/')) {
+            setLocationKey('/announcements')
+        } else if (location?.pathname.includes('/salaryadjustments/')) {
+            setLocationKey('/salaryadjustments')
+        } else if (location?.pathname.includes('/employee/')) {
+            setLocationKey('/employee')
         } else if (location?.pathname.includes('/systemsettings/tasksettings/')) {
             setLocationKey('/systemsettings/tasksettings/activities')
         } else if (location?.pathname.includes('/systemsettings/hrsettings')) {

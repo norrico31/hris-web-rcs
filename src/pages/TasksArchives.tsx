@@ -147,9 +147,7 @@ export default function TasksArchives() {
         <MainHeader>
             <h1 className='color-white' style={{ margin: 0 }}>Tasks - Archives</h1>
         </MainHeader>
-        <TabHeader
-            handleSearch={handleSearch}
-        >
+        <TabHeader handleSearch={handleSearch}>
             <Button onClick={() => navigate('/tasks')}>Back to Tasks</Button>
         </TabHeader>
         <Table

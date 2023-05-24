@@ -28,7 +28,6 @@ export default function Dashboard() {
     const { user, loading: loadingUser } = useAuthContext()
     const codes = filterCodes(user?.role?.permissions)
     const [lists, setLists] = useState<{ whosIn: number; whosOut: number; announcements: any[]; leaves: number; employees: number; holidays: IHoliday[] }>({ whosIn: 0, whosOut: 0, announcements: [], leaves: 0, employees: 0, holidays: [] })
-    const [currentEvents, setCurrentEvents] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -82,14 +81,13 @@ export default function Dashboard() {
     }
 
     const handleEventClick = (selected: EventClickArg) => {
-        // if (window.confirm(`Are you sure you want to delete the event ${selected.event.title}`)) selected.event.remove()
         alert(selected.event.title)
     }
     const holidayEvents = lists?.holidays?.map((holiday) => ({ title: holiday?.name!, date: holiday?.holiday_date! }))
 
     return loading ? <Skeleton /> : (
-        <Card title={`Hello ${user?.full_name}!`}>
-            <AntDDivider />
+        <>
+            <Title level={2}>Hello {user?.full_name}!</Title>
             <Row justify='space-between' gutter={[24, 24]} wrap>
                 <Col xs={24} sm={12} md={12} lg={12} xl={6} >
                     <Card title="Time In">
@@ -152,13 +150,12 @@ export default function Dashboard() {
                                 dayMaxEvents={true}
                                 select={handleDateClick}
                                 eventClick={handleEventClick}
-                                // eventsSet={(events) => setCurrentEvents(events)}
                                 events={holidayEvents as any}
                             />
                         </div>
                     </Card>
                 </Col>
             </Row>
-        </Card>
+        </>
     )
 }
