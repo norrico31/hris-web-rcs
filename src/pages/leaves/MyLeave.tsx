@@ -3,8 +3,9 @@ import { Navigate } from 'react-router-dom'
 import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
-import { Form, Card, TabHeader, Table, Action } from '../../components'
+import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
+import { Form, Card, TabHeader, Table, Action } from '../../components'
 import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../../shared/constants'
@@ -203,6 +204,8 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
     const [form] = useForm<ILeave>()
     const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<ILeaveType[]>([])
+    const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
 
     useEffect(() => {
         if (selectedData) {
@@ -244,13 +247,19 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(() => {
+        }).catch((err) => messageApi.open({
+            key,
+            type: 'error',
+            content: err?.response?.data?.message,
+            duration: 5
+        })).finally(() => {
             fetchData({ type: leaveType })
             setLoading(false)
         })
     }
 
     return <Modal title='Request a Leave' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+        {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Leave Type"

@@ -7,6 +7,7 @@ import { Action, Table, Card, TabHeader, Form } from "../../components"
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
 import { IArguments, IUser, UserRes, TableParams, IRole, IDepartment, ILineManager } from '../../shared/interfaces'
+import useMessage from 'antd/es/message/useMessage'
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
@@ -207,17 +208,19 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
     const [loading, setLoading] = useState(false)
     const [roleId, setRoleId] = useState('')
     const [lists, setLists] = useState<{ roles: IRole[]; departments: IDepartment[]; manager: ILineManager[] }>({ roles: [], departments: [], manager: [] })
+    const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
 
     const isManagerRole = useMemo(() => {
         const managers: Record<string, IRole> = lists?.roles.reduce((roles, role) => ({ ...roles, [role.id]: role }), {})
         return managers[roleId]?.name.toLocaleLowerCase()
     }, [roleId])
 
-    console.log(isManagerRole)
-
     useEffect(() => {
         if (selectedData != undefined) {
-            form.setFieldsValue({ ...selectedData })
+            console.log(selectedData)
+            setRoleId(selectedData?.role?.id)
+            form.setFieldsValue({ ...selectedData, manager_id: selectedData?.managers[0]?.id! })
         } else {
             form.resetFields(undefined)
         }
@@ -246,13 +249,19 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(() => {
+        }).catch((err) => messageApi.open({
+            key,
+            type: 'error',
+            content: err?.response?.data?.message,
+            duration: 5
+        })).finally(() => {
             fetchData()
             setLoading(false)
         })
     }
 
     return <Modal title={`${title} - User`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+        {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="First Name"

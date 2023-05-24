@@ -213,6 +213,8 @@ export default function OvertimeApproval() {
                 isApproved={isApproved}
                 selectedRequest={selectedData}
                 handleClose={closeModal}
+                fetchData={fetchData}
+                overtimeType={overtimeType}
             />
             <OvertimeModal
                 overtimeType={overtimeType}
@@ -237,23 +239,31 @@ interface ModalProps {
     isModalOpen: boolean
     isApproved: boolean
     loading: boolean
+    overtimeType: string
     selectedRequest?: IOvertime
     handleClose: () => void
     overtimeApproval(url: string, remarks: Payload): Promise<AxiosResponse<any, any>>
+    fetchData({ type, args }: {
+        args?: IArguments | undefined;
+        type?: string | undefined;
+    }): void
 }
 
-function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOpen, overtimeApproval, handleClose }: ModalProps) {
+function OvertimeApprovalModal({ isApproved, overtimeType, loading, selectedRequest, isModalOpen, overtimeApproval, handleClose, fetchData }: ModalProps) {
     const [remarks, setRemarks] = useState('')
     const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
 
     async function onSubmit() {
         try {
             if (!isApproved && (remarks == null || remarks == '')) {
-                return messageApi.open({
+                messageApi.open({
+                    key,
                     type: 'error',
                     content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
                     duration: 5
                 })
+                return
             }
             const url = isApproved ? 'approve-overtime/' : 'reject-overtime/'
             const payload = {
@@ -273,6 +283,8 @@ function OvertimeApprovalModal({ isApproved, loading, selectedRequest, isModalOp
                 duration: 5
             })
             return err
+        } finally {
+            fetchData({ type: overtimeType })
         }
     }
 

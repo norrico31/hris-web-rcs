@@ -252,14 +252,15 @@ interface ModalProps {
 function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, isModalOpen, leaveApproval, handleClose, fetchData }: ModalProps) {
     const [remarks, setRemarks] = useState('')
     const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
 
     async function onSubmit() {
         try {
             if (!isApproved && (remarks == null || remarks == '')) {
                 return messageApi.open({
+                    key,
                     type: 'error',
                     content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
-                    duration: 5
                 })
             }
             const payload = {
@@ -270,7 +271,6 @@ function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, i
             } as Payload
             const url = isApproved ? 'approve/' : 'reject/'
             const res = await leaveApproval(url + selectedRequest?.id, payload)
-            console.log(res)
             setRemarks('')
             handleClose()
         } catch (err: any) {

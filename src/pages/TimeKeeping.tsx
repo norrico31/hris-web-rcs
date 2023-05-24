@@ -121,7 +121,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
     const [error, setError] = useState<string | null>(null)
     const [messageApi, contextHolder] = message.useMessage()
     const [loading, setLoading] = useState(false)
-    console.log(data)
+
     useEffect(() => {
         const handleSuccess = (position: GeolocationPosition) => {
             setError(null)

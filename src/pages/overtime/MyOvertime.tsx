@@ -4,6 +4,7 @@ import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skel
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
+import useMessage from 'antd/es/message/useMessage'
 import { Form, Card, TabHeader, Table, Action } from '../../components'
 import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
 import { useAxios } from '../../shared/lib/axios'
@@ -197,6 +198,8 @@ const { Item: FormItem, useForm } = AntDForm
 export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<IOvertime>()
     const [loading, setLoading] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -228,13 +231,19 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(() => {
+        }).catch((err) => messageApi.open({
+            key,
+            type: 'error',
+            content: err?.response?.data?.message,
+            duration: 5
+        })).finally(() => {
             fetchData({ type: overtimeType })
             setLoading(false)
         })
     }
 
     return <Modal title={`${selectedData ? 'Update ' : 'Submit '} Overtime Request`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+        {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Overtime Date"
