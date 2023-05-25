@@ -50,52 +50,69 @@ export default function MyLeave() {
     if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<ILeave> = [
+
         {
-            title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
-            width: 120,
+            title: 'Submitted On',
+            key: 'created_at',
+            dataIndex: 'created_at',
+            render: (_, record) => new Date(record.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }),
+            width: 150,
+            align: 'center'
         },
         {
             title: 'Leave Type',
             key: 'leave_type',
             dataIndex: 'leave_type',
-            width: 120,
-            render: (_, record) => record.leave_type?.name ?? '-',
+            width: 150,
+            render: (_, record) => record.leave_type?.type ?? '-',
             align: 'center'
         },
         {
-            title: 'Date Start',
+            title: 'Leave Start Requested',
             key: 'date_start',
             dataIndex: 'date_start',
-            width: 120,
+            width: 300,
             render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
         },
         {
-            title: 'Date End',
+            title: 'Leave End Requested',
             key: 'date_end',
             dataIndex: 'date_end',
-            width: 120,
+            width: 300,
             render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
         },
+        // {
+        //     title: 'Time Start',
+        //     key: 'time_start',
+        //     dataIndex: 'time_start',
+        //     width: 120
+        // },
+        // {
+        //     title: 'Time End',
+        //     key: 'time_end',
+        //     dataIndex: 'time_end',
+        //     width: 120
+        // },
         {
-            title: 'Time Start',
-            key: 'time_start',
-            dataIndex: 'time_start',
-            width: 120
-        },
-        {
-            title: 'Time End',
-            key: 'time_end',
-            dataIndex: 'time_end',
-            width: 120
-        },
-        {
-            title: 'Reason',
-            key: 'reason',
-            dataIndex: 'reason',
+            title: 'Requested Leave Duration',
+            key: 'leave_duration',
+            dataIndex: 'leave_duration',
+            render: (_, record) => record?.leave_durations?.name,
             width: 250,
             align: 'center'
+        },
+        // {
+        //     title: 'Reason',
+        //     key: 'reason',
+        //     dataIndex: 'reason',
+        //     width: 250,
+        //     align: 'center'
+        // },
+        {
+            title: 'Status',
+            key: 'status',
+            dataIndex: 'status',
+            width: 120,
         },
         {
             title: 'Action',
@@ -307,7 +324,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='HH:mm' />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
                 </FormItem>
                 <FormItem
                     label="End Time"
@@ -315,7 +332,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     required
                     rules={[{ required: true, message: '' }]}
                 >
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='HH:mm' />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
                 </FormItem>
             </Row>
             <FormItem

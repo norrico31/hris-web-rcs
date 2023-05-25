@@ -265,7 +265,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='HH:mm' />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
                 </FormItem>
                 <FormItem
                     label="End Time"
@@ -274,7 +274,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='HH:mm' />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
                 </FormItem>
             </Row>
             <FormItem
