@@ -100,6 +100,7 @@ export default function MyOvertime() {
                     name={record?.user?.full_name}
                     onConfirm={() => handleDelete(record?.id!)}
                     onClick={() => handleEdit(record)}
+                    isDisable={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
                 />
             </>,
             width: 150
@@ -221,8 +222,8 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
             })
     }
 
-    function onFinish({ date, planned_ot_start,
-        planned_ot_end, ...restProps }: IOvertime) {
+    function onFinish({ date, planned_ot_start, planned_ot_end, ...restProps }: IOvertime) {
+        setLoading(true)
         date = dayjs(date).format('YYYY-MM-DD')
         planned_ot_start = dayjs(planned_ot_start).format('LT')
         planned_ot_end = dayjs(planned_ot_end).format('LT')

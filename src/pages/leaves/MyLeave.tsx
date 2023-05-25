@@ -107,6 +107,7 @@ export default function MyLeave() {
                 name={record?.user?.full_name}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => handleEdit(record)}
+                isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected'}
             />,
             width: 150
         },
@@ -238,6 +239,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
     }
 
     function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: ILeave) {
+        setLoading(true)
         date_start = dayjs(date_start).format('YYYY/MM/DD') as any
         date_end = dayjs(date_end).format('YYYY/MM/DD') as any
         time_start = dayjs(time_start).format('LT')
