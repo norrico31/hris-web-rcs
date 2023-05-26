@@ -1,4 +1,4 @@
-import { IUser } from "./admin-settings/Users"
+import { IUser, ISchedules } from "."
 import { AxiosGetData } from "./utils/Axios"
 
 export interface ITimeKeeping {
@@ -35,6 +35,8 @@ export interface ITimeKeeping {
     updated_at: string | null
     user: IUser
     user_id: string | null
+    schedule_time?: string
+    schedule: ISchedules
 }
 
 export type TimeKeepingRes = AxiosGetData<ITimeKeeping>

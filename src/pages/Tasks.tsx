@@ -399,7 +399,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             render: (_, record, idx) => <Input.TextArea
                 disabled={!teamId}
                 placeholder='Enter description...'
-                style={{ width: 250 }}
+                style={{ width: 250, height: 80 }}
                 value={dataColumns[idx].description}
                 onChange={(evt) => {
                     dataColumns[idx].description = evt.target.value ?? null

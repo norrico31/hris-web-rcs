@@ -41,7 +41,7 @@ export default function WhosInOut() {
             key: 'client_schedule',
             dataIndex: 'client_schedule',
             width: 150,
-            // render: (_, record) => record?.user?.full_name // TODO
+            render: (_, record) => record?.schedule_time
         },
         {
             title: 'Department',
