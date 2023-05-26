@@ -125,6 +125,7 @@ export default function TaskActivities() {
 }
 
 interface ModalProps {
+    teamLists?: ITeam[]
     teamId?: string
     title: string
     isModalOpen: boolean
@@ -135,26 +136,22 @@ interface ModalProps {
 
 const { Item: FormItem, useForm } = AntDForm
 
-export function ActivityModal({ title, teamId, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+export function ActivityModal({ title, teamId, teamLists, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITaskActivities>()
-    const [teams, setTeams] = useState<ITeam[]>([])
+    // const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (selectedData != undefined) {
             form.setFieldsValue({ ...selectedData! })
-        } else {
-            form.resetFields(undefined)
-        }
-
-        const controller = new AbortController();
-        const URL = teamId ? (HRSETTINGS.TEAMS.USERS_LISTS + '?team_id=' + teamId) : HRSETTINGS.TEAMS.LISTS;
-        axiosClient(URL, { signal: controller.signal })
-            .then((res) => setTeams(res?.data ?? []));
-        return () => {
-            controller.abort()
-        }
-    }, [selectedData, teamId])
+        } else form.resetFields(undefined)
+        // const controller = new AbortController();
+        // !teamLists?.length && axiosClient(HRSETTINGS.TEAMS.LISTS, { signal: controller.signal })
+        //     .then((res) => setTeams(res?.data ?? []));
+        // return () => {
+        //     controller.abort()
+        // }
+    }, [selectedData])
 
     function onFinish(values: ITaskActivities) {
         setLoading(true)

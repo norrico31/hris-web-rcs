@@ -75,13 +75,6 @@ export default function Tasks() {
             render: (_, record) => record.sprint?.name,
             width: 130
         },
-        // {
-        //     title: 'Department',
-        //     key: 'department_id',
-        //     dataIndex: 'department_id',
-        //     render: (_, record) => record.department?.name,
-        //     width: 130
-        // },
         {
             title: 'Team',
             key: 'team_id',
@@ -158,7 +151,6 @@ export default function Tasks() {
     }
 
     function handleEdit(data: ITasks) {
-        setIsModalOpen(true)
         setSelectedData(data)
     }
 
@@ -167,15 +159,21 @@ export default function Tasks() {
         setIsModalOpen(false)
     }
 
-    return (selectedData || isModalOpen) ? (
+    return isModalOpen ? (
         (
-            <TasksInputs
-                title={selectedData != undefined ? 'Update' : 'Create'}
-                selectedData={selectedData}
+            <TasksCreateInputs
+                title='Create'
                 fetchData={fetchData}
                 handleCancel={handleCloseModal}
             />
         )
+    ) : selectedData ? (
+        <TasksUpdateInputs
+            title='Update'
+            selectedData={selectedData}
+            fetchData={fetchData}
+            handleCancel={handleCloseModal}
+        />
     ) : (
         <>
             <MainHeader>
@@ -210,9 +208,15 @@ export default function Tasks() {
     )
 }
 
-type Props = {
+type CreateInputProps = {
     title: string
-    selectedData?: ITasks
+    fetchData: (args?: IArguments) => void
+    handleCancel: () => void
+}
+
+type UpdateInputProps = {
+    title: string
+    selectedData: ITasks
     fetchData: (args?: IArguments) => void
     handleCancel: () => void
 }
@@ -220,18 +224,26 @@ type Props = {
 const { Item: FormItem, useForm } = AntDForm
 const { Title } = Typography
 
+interface Task {
+    id?: string
+    task_activity_id?: string
+    task_type_id?: string
+    sprint_id?: string
+    manhours?: string
+    description?: string
+}
+
 const initDataColState = () => [{
     id: uuidv4(),
-    task_activity_id: 'Select task activity',
-    task_type_id: 'Select task type',
-    sprint_id: 'Select sprint',
-    manhours: 0,
-    description: 'Enter Description'
+    task_activity_id: undefined,
+    task_type_id: undefined,
+    sprint_id: undefined,
+    manhours: undefined,
+    description: undefined
 }]
 
-function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
+function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps) {
     const [form] = useForm<ITasks>()
-    const { user } = useAuthContext()
     const [isModalActivity, setIsModalActivity] = useState(false)
     const [isModalTypes, setIsModalTypes] = useState(false)
     const [isModalSprints, setIsModalSprints] = useState(false)
@@ -239,30 +251,24 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
     const [teamId, setTeamId] = useState('')
+    const [teamListById, setTeamListById] = useState<ITeam[]>([])
 
+    const controller = new AbortController();
     useEffect(() => {
-        if (selectedData != undefined) {
-            setTeamId(selectedData.team?.id)
-            form.setFieldsValue({
-                ...selectedData,
-                date: dayjs(selectedData.date, 'YYYY/MM/DD') as any
-            })
-        } else {
-            form.resetFields(undefined)
-        }
-        const controller = new AbortController();
         axiosClient(HRSETTINGS.TEAMS.USERS_LISTS, { signal: controller.signal })
             .then((res) => setTeams(res?.data ?? []));
         return () => {
             controller.abort()
         }
-    }, [selectedData])
+    }, [handleCancel])
 
     useEffect(() => {
-        if (teamId != undefined || teamId != '') {
+        if (teamId) {
             fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + ('?team_id=' + teamId), 'activities');
             fetchList(TASKSSETTINGS.TYPES.LISTS + ('?team_id=' + teamId), 'types');
             fetchList(TASKSSETTINGS.SPRINT.LISTS + ('?team_id=' + teamId), 'sprints');
+            axiosClient(HRSETTINGS.TEAMS.USERS_LISTS + '?team_id=' + teamId, { signal: controller.signal })
+                .then((res) => setTeamListById(res?.data ?? []));
         }
     }, [teamId])
 
@@ -271,7 +277,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         setTasks((prevTasks) => ({ ...prevTasks, [key]: data }))
     }
 
-    const [dataColumns, setDataColumns] = useState(initDataColState)
+    const [dataColumns, setDataColumns] = useState<Task[]>(initDataColState)
 
     function addRow() {
         dataColumns.push(initDataColState()[0])
@@ -281,8 +287,8 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
     const columns: ColumnsType<ITasks> = [
         {
             title: 'Task Activity',
-            key: 'task_activity',
-            dataIndex: 'task_activity',
+            key: 'task_activity_id',
+            dataIndex: 'task_activity_id',
             render: (_, record, idx) => {
                 return <Row justify='space-between' style={{ width: 210, alignItems: 'center' }}>
                     <Select
@@ -294,8 +300,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                         style={{ width: 150 }}
                         value={dataColumns[idx].task_activity_id}
                         onChange={(id) => {
-                            // if (id === 'Select task activity' || id == undefined) {}
-                            dataColumns[idx].task_activity_id = id
+                            dataColumns[idx].task_activity_id = id ?? null
                             setDataColumns([...dataColumns])
                         }}
                     >
@@ -313,8 +318,8 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         },
         {
             title: 'Task Type',
-            key: 'task_type',
-            dataIndex: 'task_type',
+            key: 'task_type_id',
+            dataIndex: 'task_type_id',
             render: (_, record, idx) => <Row justify='space-between' align='middle' style={{ width: 210 }}>
                 <Select
                     placeholder='Select task type'
@@ -325,8 +330,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     style={{ width: 150 }}
                     value={dataColumns[idx].task_type_id}
                     onChange={(id) => {
-                        // if (id === 'Select task activity' || id == undefined) {}
-                        dataColumns[idx].task_type_id = id
+                        dataColumns[idx].task_type_id = id ?? null
                         setDataColumns([...dataColumns])
                     }}
                 >
@@ -343,8 +347,8 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         },
         {
             title: 'Sprint',
-            key: 'sprint_name',
-            dataIndex: 'sprint_name',
+            key: 'sprint_id',
+            dataIndex: 'sprint_id',
             render: (_, record, idx) => <Row justify='space-between' style={{ width: 210 }}>
                 <Select
                     placeholder='Select sprint'
@@ -355,7 +359,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     style={{ width: 150 }}
                     value={dataColumns[idx].sprint_id}
                     onChange={(id) => {
-                        dataColumns[idx].sprint_id = id
+                        dataColumns[idx].sprint_id = id ?? null
                         setDataColumns([...dataColumns])
                     }}
                 >
@@ -375,12 +379,13 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             key: 'manhours',
             dataIndex: 'manhours',
             render: (_, record, idx) => <Input
+                disabled={!teamId}
                 type='number'
                 placeholder='Enter manhours...'
                 style={{ width: 150 }}
                 value={dataColumns[idx].manhours}
                 onChange={(evt) => {
-                    dataColumns[idx].manhours = Number(evt.target.value)
+                    dataColumns[idx].manhours = evt.target.value ?? null
                     setDataColumns([...dataColumns])
                 }}
             />,
@@ -389,14 +394,15 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         },
         {
             title: 'Description',
-            key: 'team_id',
-            dataIndex: 'team_id',
+            key: 'description',
+            dataIndex: 'description',
             render: (_, record, idx) => <Input.TextArea
+                disabled={!teamId}
                 placeholder='Enter description...'
                 style={{ width: 250 }}
                 value={dataColumns[idx].description}
                 onChange={(evt) => {
-                    dataColumns[idx].description = evt.target.value
+                    dataColumns[idx].description = evt.target.value ?? null
                     setDataColumns([...dataColumns])
                 }}
             />,
@@ -407,20 +413,19 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             title: 'Action',
             key: 'action',
             dataIndex: 'action',
-            render: (_, record, idx) => <Space>
+            render: (_, record, idx) => <Space key={record?.id}>
                 <Popconfirm
                     title='Clear Field'
                     description='Are you sure you want to clear this row field'
                     onConfirm={() => {
-                        // TODO: remove field data from state
                         dataColumns[idx] = initDataColState()[0]
                         setDataColumns([...dataColumns])
                     }}
                     okText="Clear"
                     cancelText="Cancel"
-                    disabled={dataColumns[idx] === initDataColState()[0]}
+                    disabled={dataColumns?.length == 1}
                 >
-                    <Button >Clear Fields</Button>
+                    <Button disabled={dataColumns?.length == 1}>Clear Fields</Button>
                 </Popconfirm>
                 <Popconfirm
                     title='Remove Row'
@@ -431,8 +436,9 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     }}
                     okText="Remove"
                     cancelText="Cancel"
+                    disabled={dataColumns?.length == 1}
                 >
-                    <Button type='primary' key={record?.id}>Remove Row</Button>
+                    <Button type='primary' key={record?.id} disabled={dataColumns?.length == 1}>Remove Row</Button>
                 </Popconfirm>
             </Space>,
             width: 250,
@@ -448,14 +454,12 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
             date,
             tasks: dataColumns
         }
-        payload = { ...payload, user_id: selectedData ? selectedData.user_id : user?.id!, date, ...(values?.description != undefined && { description: values?.description }) } as any
-        let result = selectedData ? PUT(TASKS.PUT + selectedData.id!, { ...payload, id: selectedData.id }) : POST(TASKS.POST, payload)
+        let result = POST(TASKS.POST, { ...payload, date, ...(values?.description != undefined && { description: values?.description }) })
         result.then(() => {
             form.resetFields()
             handleCancel()
             setDataColumns(initDataColState)
         }).catch((err) => {
-            // display error
             console.log(err)
         }).finally(() => {
             fetchData()
@@ -492,7 +496,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     showSearch
                     optionFilterProp="children"
                     value={teamId}
-                    disabled={teamId != '' && (tasks.activities.length > 0 && tasks.types.length > 0 && tasks.sprints.length > 0)}
+                    // disabled={teamId != '' && (tasks.activities.length > 0 && tasks.types.length > 0 && tasks.sprints.length > 0)}
                     onChange={(id) => {
                         setTeamId(id)
                         form.setFieldsValue({
@@ -523,8 +527,8 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
                     </Button>
                 </Space>
                 <Space>
-                    <Button id={selectedData != undefined ? 'Edit' : 'Create'} type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        {selectedData != undefined ? 'Update' : 'Create'}
+                    <Button id='Create' type="primary" htmlType="submit" loading={loading} disabled={loading}>
+                        Create
                     </Button>
                     <Button id='cancel' onClick={handleCancel} loading={loading} disabled={loading}>
                         Cancel
@@ -535,6 +539,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         <ActivityModal
             title='Create'
             teamId={teamId}
+            teamLists={teamListById}
             fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + teamId ? (TASKSSETTINGS.ACTIVITIES.LISTS + '?team_id=' + teamId) : '', 'activities')}
             isModalOpen={isModalActivity}
             handleCancel={() => setIsModalActivity(false)}
@@ -542,6 +547,7 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         <TypesModal
             title='Create'
             teamId={teamId}
+            teamLists={teamListById}
             fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS + teamId ? (TASKSSETTINGS.TYPES.LISTS + '?team_id=' + teamId) : '', 'types')}
             isModalOpen={isModalTypes}
             handleCancel={() => setIsModalTypes(false)}
@@ -549,6 +555,228 @@ function TasksInputs({ title, selectedData, fetchData, handleCancel }: Props) {
         <SprintModal
             title='Create'
             teamId={teamId}
+            teamLists={teamListById}
+            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS + teamId ? (TASKSSETTINGS.SPRINT.LISTS + '?team_id=' + teamId) : '', 'sprints')}
+            isModalOpen={isModalSprints}
+            handleCancel={() => setIsModalSprints(false)}
+        />
+    </>
+}
+
+function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: UpdateInputProps) {
+    const [form] = useForm<ITasks>()
+    const { user } = useAuthContext()
+    const [isModalActivity, setIsModalActivity] = useState(false)
+    const [isModalTypes, setIsModalTypes] = useState(false)
+    const [isModalSprints, setIsModalSprints] = useState(false)
+    const [tasks, setTasks] = useTasksServices()
+    const [teams, setTeams] = useState<ITeam[]>([])
+    const [loading, setLoading] = useState(false)
+    const [teamId, setTeamId] = useState('')
+    const [teamListById, setTeamListById] = useState<ITeam[]>([])
+
+    useEffect(() => {
+        if (selectedData != undefined) {
+            setTeamId(selectedData.team?.id)
+            form.setFieldsValue({
+                ...selectedData,
+                date: dayjs(selectedData.date, 'YYYY/MM/DD') as any
+            })
+        } else {
+            form.resetFields(undefined)
+        }
+        const controller = new AbortController();
+        axiosClient(HRSETTINGS.TEAMS.USERS_LISTS, { signal: controller.signal })
+            .then((res) => setTeams(res?.data ?? []));
+        return () => {
+            controller.abort()
+        }
+    }, [selectedData])
+
+    useEffect(() => {
+        const controller = new AbortController();
+        if (teamId) {
+            fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + ('?team_id=' + teamId), 'activities');
+            fetchList(TASKSSETTINGS.TYPES.LISTS + ('?team_id=' + teamId), 'types');
+            fetchList(TASKSSETTINGS.SPRINT.LISTS + ('?team_id=' + teamId), 'sprints');
+            axiosClient(HRSETTINGS.TEAMS.USERS_LISTS + '?team_id=' + teamId, { signal: controller.signal })
+                .then((res) => setTeamListById(res?.data ?? []));
+        }
+        return () => {
+            controller.abort()
+        }
+    }, [teamId])
+
+    async function fetchList(url: string, key: 'activities' | 'types' | 'sprints') {
+        const data = await getList(url)
+        setTasks((prevTasks) => ({ ...prevTasks, [key]: data }))
+    }
+
+    function onFinish(values: ITasks) {
+        setLoading(true)
+        let { date, description, ...restValues } = values
+        date = dayjs(date).format('YYYY/MM/DD') as any
+        restValues = { ...restValues, user_id: selectedData ? selectedData.user_id : user?.id!, date, ...(description != undefined && { description }) } as any
+        let result = PUT(TASKS.PUT + selectedData.id!, { ...restValues, id: selectedData.id });
+        result.then(() => {
+            form.resetFields()
+            handleCancel()
+        }).catch((err) => {
+            // display error
+            console.log(err)
+        }).finally(() => {
+            fetchData()
+            setLoading(false)
+        })
+    }
+
+    return <>
+        <Title level={2}>Tasks - {title}</Title>
+        <Form form={form} onFinish={onFinish} disabled={loading}>
+            <FormItem
+                label="Task Name"
+                name="name"
+                required
+                rules={[{ required: true, message: '' }]}
+            >
+                <Input placeholder='Enter task name...' />
+            </FormItem>
+            <FormItem
+                label="Date"
+                name="date"
+                required
+                rules={[{ required: true, message: '' }]}
+            >
+                <DatePicker
+                    format='YYYY/MM/DD'
+                    style={{ width: '100%' }}
+                />
+            </FormItem>
+            <FormItem name='team_id' label="Team" required rules={[{ required: true, message: '' }]}>
+                <Select
+                    placeholder='Select team'
+                    allowClear
+                    showSearch
+                    optionFilterProp="children"
+                    value={teamId}
+                    onChange={(id) => {
+                        setTeamId(id)
+                        form.setFieldsValue({
+                            ...form.getFieldsValue(),
+                            task_activity_id: null,
+                            task_type_id: null,
+                            sprint_id: null,
+                        })
+                    }}
+                >
+                    {teams.map((team) => (
+                        <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
+                    ))}
+                </Select>
+            </FormItem>
+            <Row gutter={[24, 24]} align='middle'>
+                <Col span={18}>
+                    <FormItem name='task_activity_id' label="Task Activity" required rules={[{ required: true, message: '' }]}>
+                        <Select
+                            placeholder='Select task activity'
+                            allowClear
+                            showSearch
+                            optionFilterProp="children"
+                            disabled={!teamId}
+                        >
+                            {tasks.activities?.map((act) => (
+                                <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
+                            ))}
+                        </Select>
+                    </FormItem>
+                </Col>
+                <Col>
+                    <Button className='btn-secondary' onClick={() => setIsModalActivity(true)} disabled={!teamId}>
+                        Add Activity
+                    </Button>
+                </Col>
+            </Row>
+            <Row gutter={[24, 24]} align='middle'>
+                <Col span={18}>
+                    <FormItem name='task_type_id' label="Task Type" required rules={[{ required: true, message: '' }]}>
+                        <Select
+                            placeholder='Select task type'
+                            allowClear
+                            showSearch
+                            optionFilterProp="children"
+                            disabled={!teamId}
+                        >
+                            {tasks.types?.map((act) => (
+                                <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
+                            ))}
+                        </Select>
+                    </FormItem>
+                </Col>
+                <Col>
+                    <Button className='btn-secondary' onClick={() => setIsModalTypes(true)} disabled={!teamId}>
+                        Add Type
+                    </Button>
+                </Col>
+            </Row>
+            <Row gutter={[24, 24]} align='middle'>
+                <Col span={18}>
+                    <FormItem name='sprint_id' label="Sprint" required rules={[{ required: true, message: '' }]}>
+                        <Select
+                            placeholder='Select sprint'
+                            allowClear
+                            showSearch
+                            optionFilterProp="children"
+                            disabled={!teamId}
+                        >
+                            {tasks.sprints?.map((act) => (
+                                <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
+                            ))}
+                        </Select>
+                    </FormItem>
+                </Col>
+                <Col>
+                    <Button className='btn-secondary' onClick={() => setIsModalSprints(true)} disabled={!teamId}>
+                        Add Sprint
+                    </Button>
+                </Col>
+            </Row>
+            <FormItem name="manhours" label="Manhours" required rules={[{ required: true, message: '' }]}>
+                <Input placeholder='Enter manhours...' />
+            </FormItem>
+            <FormItem name="description" label="Description">
+                <Input.TextArea placeholder='Enter description...' />
+            </FormItem>
+            <FormItem style={{ textAlign: 'right' }}>
+                <Space>
+                    <Button id='Update' type="primary" htmlType="submit" loading={loading} disabled={loading}>
+                        Update
+                    </Button>
+                    <Button id='cancel' type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
+                        Cancel
+                    </Button>
+                </Space>
+            </FormItem>
+        </Form>
+        <ActivityModal
+            title='Create'
+            teamId={teamId}
+            teamLists={teamListById}
+            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + teamId ? (TASKSSETTINGS.ACTIVITIES.LISTS + '?team_id=' + teamId) : '', 'activities')}
+            isModalOpen={isModalActivity}
+            handleCancel={() => setIsModalActivity(false)}
+        />
+        <TypesModal
+            title='Create'
+            teamId={teamId}
+            teamLists={teamListById}
+            fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS + teamId ? (TASKSSETTINGS.TYPES.LISTS + '?team_id=' + teamId) : '', 'types')}
+            isModalOpen={isModalTypes}
+            handleCancel={() => setIsModalTypes(false)}
+        />
+        <SprintModal
+            title='Create'
+            teamId={teamId}
+            teamLists={teamListById}
             fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS + teamId ? (TASKSSETTINGS.SPRINT.LISTS + '?team_id=' + teamId) : '', 'sprints')}
             isModalOpen={isModalSprints}
             handleCancel={() => setIsModalSprints(false)}
@@ -622,6 +850,7 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
         </Modal>
     )
 }
+
 
 interface ArchiveModalProps {
     isModalOpen: boolean

@@ -21,27 +21,27 @@ const propNames = ['activities', 'types', 'sprints']
 
 export const useTasksServices = () => {
     const [tasksSettings, setTasksSettings] = useState(initState)
-    useEffect(function fetchData() {
-        const controller = new AbortController();
-        (async () => {
-            try {
-                const results = await Promise.allSettled(promises(urls, controller.signal)) as any satisfies ITasksServices
-                const objectKeyed: any = {} as ITasksServices satisfies ITasksServices
-                for (let i = 0; i < results.length; i++) {
-                    if (results[i].status == 'fulfilled') {
-                        const arrays = results[i].value?.data;
-                        objectKeyed[propNames[i]] = arrays;
-                    }
-                }
-                setTasksSettings({ ...objectKeyed })
-            } catch (error) {
-                return error
-            }
-        })();
-        return () => {
-            controller.abort()
-        }
-    }, [])
+    // useEffect(function fetchData() {
+    //     const controller = new AbortController();
+    //     (async () => {
+    //         try {
+    //             const results = await Promise.allSettled(promises(urls, controller.signal)) as any satisfies ITasksServices
+    //             const objectKeyed: any = {} as ITasksServices satisfies ITasksServices
+    //             for (let i = 0; i < results.length; i++) {
+    //                 if (results[i].status == 'fulfilled') {
+    //                     const arrays = results[i].value?.data;
+    //                     objectKeyed[propNames[i]] = arrays;
+    //                 }
+    //             }
+    //             setTasksSettings({ ...objectKeyed })
+    //         } catch (error) {
+    //             return error
+    //         }
+    //     })();
+    //     return () => {
+    //         controller.abort()
+    //     }
+    // }, [])
     return [tasksSettings, setTasksSettings] as const
 }
 

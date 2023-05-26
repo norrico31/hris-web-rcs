@@ -81,18 +81,6 @@ export default function MyLeave() {
             width: 300,
             render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
         },
-        // {
-        //     title: 'Time Start',
-        //     key: 'time_start',
-        //     dataIndex: 'time_start',
-        //     width: 120
-        // },
-        // {
-        //     title: 'Time End',
-        //     key: 'time_end',
-        //     dataIndex: 'time_end',
-        //     width: 120
-        // },
         {
             title: 'Requested Leave Duration',
             key: 'leave_duration',
@@ -101,13 +89,6 @@ export default function MyLeave() {
             width: 250,
             align: 'center'
         },
-        // {
-        //     title: 'Reason',
-        //     key: 'reason',
-        //     dataIndex: 'reason',
-        //     width: 250,
-        //     align: 'center'
-        // },
         {
             title: 'Status',
             key: 'status',
@@ -338,7 +319,6 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     rules={[{ required: true, message: '' }]}
                 >
                     <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='h:mm a' />
                 </FormItem>
             </Row>
             <FormItem
@@ -359,9 +339,6 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         Submit Request
                     </Button>
-                    {/* <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
-                        Cancel
-                    </Button> */}
                 </Space>
             </Row>
         </Form>

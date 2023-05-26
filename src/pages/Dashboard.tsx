@@ -41,7 +41,6 @@ export default function Dashboard() {
                 const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal })
                 const holidayPromise = axiosClient(HOLIDAYS.GET, { signal: controller.signal })
                 const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
-                console.log(employeeRes?.value)
                 setLists({
                     whosIn: whosInRes?.value?.data?.data?.total ?? 0,
                     whosOut: whosOutRes?.value?.data?.data?.total ?? 0,
