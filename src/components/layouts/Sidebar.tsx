@@ -133,7 +133,7 @@ function filterMenu(user: IUser) {
             rootPath.includes('timekeeping')
         ),
         getItemLinks(
-            <Link to='/tasks'>Tasks</Link>,
+            <Link to='/tasks'>Tasks Entry</Link>,
             '/tasks',
             <FaTasks />,
             undefined,

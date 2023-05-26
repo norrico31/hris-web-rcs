@@ -247,8 +247,12 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
     }, [selectedData])
 
     function cancelRequest() {
+        setLoading(true)
         GET(LEAVES.CANCEL + selectedData?.id)
-            .then((res) => res)
+            .then((res) => {
+                form.resetFields()
+                handleCancel()
+            })
             .finally(() => {
                 fetchData({ type: leaveType })
                 setLoading(false)
@@ -262,6 +266,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         time_start = dayjs(time_start).format('LT')
         time_end = dayjs(time_end).format('LT')
         restProps = { ...restProps, date_start, date_end, time_start, time_end } as any
+        setLoading(true)
         let result = selectedData ? PUT(LEAVES.PUT + selectedData?.id, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
         result.then(() => {
             form.resetFields()
@@ -333,6 +338,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     rules={[{ required: true, message: '' }]}
                 >
                     <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format='h:mm a' />
                 </FormItem>
             </Row>
             <FormItem

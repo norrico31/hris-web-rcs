@@ -5,7 +5,7 @@ export interface IEmployeeClients {
     client: IClient
     branch_name: IClientBranch
     client_branch_id: string
-    client_end_date: string
+    client_end_date: string | null
     client_id: string
     client_start_date: string
     id: string

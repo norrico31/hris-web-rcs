@@ -71,7 +71,8 @@ export default function LeaveApproval() {
             title: 'Submitted on',
             key: 'date',
             dataIndex: 'date',
-            width: 160,
+            render: (_, record) => `${dayjs(record?.created_at).format('MMMM')} ${dayjs(record?.created_at).format('D')}, ${dayjs(record?.created_at).format('YYYY')}`,
+            width: 110,
         },
         {
             title: 'Leave type',

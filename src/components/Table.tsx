@@ -19,14 +19,15 @@ function Table({ loading, isSizeChanger = true, columns, dataList, tableParams, 
         <div>
             <AntDTable
                 loading={loading}
+                bordered
                 dataSource={dataList}
-                pagination={{
+                pagination={tableParams ? {
                     ...tableParams?.pagination,
                     showSizeChanger: isSizeChanger,
                     position: ['bottomCenter'],
                     showTotal: (number: number) => <p style={{ marginRight: '1rem' }}>Total: {number}</p>,
                     itemRender: ItemRender,
-                }}
+                } : false}
                 columns={columns}
                 scroll={{ x: 100, }}
                 rowKey={(data: any) => data?.id}

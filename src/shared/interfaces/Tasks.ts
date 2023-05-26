@@ -1,3 +1,4 @@
+import { Dayjs } from "dayjs"
 import { IUser, AxiosGetData, ITeam } from "."
 
 interface IRelations {
@@ -7,7 +8,7 @@ interface IRelations {
 
 export interface ITasks extends IUser {
     created_at: string
-    date: string
+    date: string | Dayjs | null
     deleted_at: string | null
     description: string | null
     id: string

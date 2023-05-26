@@ -213,8 +213,8 @@ function EmployeeBenefitsModal({ title, selectedData, isModalOpen, handleCancel,
                 <Select
                     placeholder='Select status...'
                 >
-                    <Select.Option value="activate">Active</Select.Option>
-                    <Select.Option value="inactive">Inactive</Select.Option>
+                    <Select.Option value="ACTIVE">Active</Select.Option>
+                    <Select.Option value="INACTIVE">Inactive</Select.Option>
                 </Select>
             </Item>
             <Item style={{ textAlign: 'right' }}>

@@ -139,7 +139,7 @@ export function ActivityModal({ title, teamId, selectedData, isModalOpen, fetchD
     const [form] = useForm<ITaskActivities>()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
-    console.log('activity modal: ', teamId)
+
     useEffect(() => {
         if (selectedData != undefined) {
             form.setFieldsValue({ ...selectedData! })

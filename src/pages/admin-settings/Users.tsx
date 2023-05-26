@@ -312,7 +312,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                     ))}
                 </Select>
             </FormItem>
-            {isManagerRole == 'line manager' && (
+            {/* {isManagerRole == 'line manager' && (
                 <FormItem
                     label="Manager"
                     name="manager_id"
@@ -330,7 +330,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
                         ))}
                     </Select>
                 </FormItem>
-            )}
+            )} */}
             <FormItem
                 label="Department"
                 name="department_id"

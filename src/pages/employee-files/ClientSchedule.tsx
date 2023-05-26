@@ -210,7 +210,7 @@ function ClientScheduleModal(props: ModalProps) {
 
     function onFinish({ client_start_date, client_end_date, ...restValues }: IEmployeeClients) {
         client_start_date = dayjs(client_start_date).format("YYYY-MM-DD")
-        client_end_date = dayjs(client_end_date).format("YYYY-MM-DD")
+        client_end_date = client_end_date ? dayjs(client_end_date).format("YYYY-MM-DD") : null;
         let result = selectedData ? PUT(EMPLOYEE201.CLIENTSCHEDULE.PUT + selectedData?.id, { ...restValues, client_start_date, client_end_date, user_id: employeeId }) : POST(EMPLOYEE201.CLIENTSCHEDULE.POST, { ...restValues, client_start_date, client_end_date, user_id: employeeId })
         result.then(() => {
             form.resetFields()

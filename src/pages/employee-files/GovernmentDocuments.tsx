@@ -67,7 +67,7 @@ export default function GovernmentDocs() {
                         userId={employeeId}
                         title='SSS'
                         keyProp='sss_number'
-                        url={GOVERNMENTDOCS.TIN.PUT}
+                        url={GOVERNMENTDOCS.SSS.PUT}
                         fetchData={fetchData}
                         isModalOpen={isModalSss}
                         handleCancel={() => setIsModalSss(false)}
@@ -83,7 +83,7 @@ export default function GovernmentDocs() {
                         userId={employeeId}
                         title='Tin'
                         keyProp='tin_number'
-                        url={GOVERNMENTDOCS.SSS.PUT}
+                        url={GOVERNMENTDOCS.TIN.PUT}
                         fetchData={fetchData}
                         isModalOpen={isModalTin}
                         handleCancel={() => setIsModalTin(false)}

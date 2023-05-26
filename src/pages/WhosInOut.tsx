@@ -37,6 +37,13 @@ export default function WhosInOut() {
             render: (_, record) => record?.user?.full_name
         },
         {
+            title: 'Schedule',
+            key: 'client_schedule',
+            dataIndex: 'client_schedule',
+            width: 150,
+            // render: (_, record) => record?.user?.full_name // TODO
+        },
+        {
             title: 'Department',
             key: 'department',
             dataIndex: 'department',

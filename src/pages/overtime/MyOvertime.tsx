@@ -228,6 +228,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         planned_ot_start = dayjs(planned_ot_start).format('LT')
         planned_ot_end = dayjs(planned_ot_end).format('LT')
         restProps = { ...restProps } as any
+        setLoading(true)
         let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, date, id: selectedData.id, planned_ot_start, planned_ot_end }) : POST(OVERTIME.POST, { ...restProps, date, planned_ot_start, planned_ot_end })
         result.then(() => {
             form.resetFields()
