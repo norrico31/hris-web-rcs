@@ -90,7 +90,12 @@ h1 {
 .header-wrapper * {
     margin: 0;
     white-space: nowrap;
-    color: #9B3423 !important;
+}
+.header-wrapper.dark * {
+    color: #fff;
+}
+.header-wrapper.light * {
+    color: #9B3423;
 }
 .dropdown-icon {
     color: gray;
@@ -114,8 +119,17 @@ h1 {
     max-height: 630px;
 }
 
-.light {
-    background: #fff;
+.bg-light {
+    background: #fff !important;
+}
+.bg-dark {
+    background: #313131 !important;
+}
+.text-light {
+    color: #fff !important;
+}
+.text-dark {
+    color: #9B3423 !important;
 }
 
 :where(.css-dev-only-do-not-override-1kba0ko).ant-table-wrapper .ant-table-pagination {

@@ -17,6 +17,7 @@ import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import axiosClient, { useAxios } from '../shared/lib/axios'
 import { IHoliday } from '../shared/interfaces'
+import { useDarkMode } from '../shared/contexts/DarkMode'
 
 const { Paragraph, Title } = Typography
 
@@ -26,6 +27,7 @@ const { GET } = useAxios()
 export default function Dashboard() {
     renderTitle('Dashboard')
     const { user, loading: loadingUser } = useAuthContext()
+    const { isDarkMode } = useDarkMode()
     const codes = filterCodes(user?.role?.permissions)
     const [lists, setLists] = useState<{ whosIn: number; whosOut: number; announcements: any[]; leaves: number; employees: number; holidays: IHoliday[] }>({ whosIn: 0, whosOut: 0, announcements: [], leaves: 0, employees: 0, holidays: [] })
     const [loading, setLoading] = useState(true)
@@ -89,7 +91,7 @@ export default function Dashboard() {
             <Title level={2}>Hello {user?.full_name}!</Title>
             <Row justify='space-between' gutter={[24, 24]} wrap>
                 <Col xs={24} sm={12} md={12} lg={12} xl={6} >
-                    <Card title="Time In">
+                    <Card title="Time In" isDarkMode={isDarkMode}>
                         <Row justify='space-between' align='middle'>
                             <Title level={5} style={{ margin: 0 }}><MdMoreTime size={24} /></Title>
                             <Title level={3} style={{ margin: 0 }}>{lists.whosIn}</Title>
@@ -97,7 +99,7 @@ export default function Dashboard() {
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} md={12} lg={12} xl={6}>
-                    <Card title="Time Out">
+                    <Card title="Time Out" isDarkMode={isDarkMode}>
                         <Row justify='space-between'>
                             <Title level={5} style={{ margin: 0 }}><MdExitToApp size={24} /></Title>
                             <Title level={3} style={{ margin: 0 }}>{lists.whosOut}</Title>
@@ -105,7 +107,7 @@ export default function Dashboard() {
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} md={12} lg={12} xl={6}>
-                    <Card title="Today's Leave">
+                    <Card title="Today's Leave" isDarkMode={isDarkMode}>
                         <Row justify='space-between'>
                             <Title level={5} style={{ margin: 0 }}><AiOutlineCalendar size={24} /></Title>
                             <Title level={3} style={{ margin: 0 }}>{lists.leaves}</Title>
@@ -113,7 +115,7 @@ export default function Dashboard() {
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} md={12} lg={12} xl={6}>
-                    <Card title="Employees">
+                    <Card title="Employees" isDarkMode={isDarkMode}>
                         <Row justify='space-between'>
                             <Title level={5} style={{ margin: 0 }}><FaUsers size={24} /></Title>
                             <Title level={3} style={{ margin: 0 }}>{lists.employees}</Title>
@@ -124,11 +126,12 @@ export default function Dashboard() {
             <Row justify='space-between' wrap>
                 <Divider />
                 <Col xs={24} sm={24} md={22} lg={9} xl={9}>
-                    <AntDCard title='Announcements' style={{ minHeight: 500, maxHeight: 500 }}>
-                    </AntDCard>
+                    <Card title='Announcements' style={{ minHeight: 500, maxHeight: 500 }} isDarkMode={isDarkMode}>
+                        <AntDDivider />
+                    </Card>
                 </Col>
                 <Col xs={24} sm={24} md={22} lg={14} xl={14}>
-                    <Card title='Holidays'>
+                    <Card title='Holidays' isDarkMode={isDarkMode}>
                         <div style={{ overflow: 'auto' }}>
                             <FullCalendar
                                 plugins={[

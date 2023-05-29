@@ -5,7 +5,7 @@ import axiosClient from './../lib/axios'
 
 const [{ SYSTEMSETTINGS: { TASKSSETTINGS } }] = useEndpoints()
 
-interface ITasksServices {
+export interface ITasksServices {
     activities: ITaskActivities[]
     types: ITaskTypes[]
     sprints: ITaskSprint[]

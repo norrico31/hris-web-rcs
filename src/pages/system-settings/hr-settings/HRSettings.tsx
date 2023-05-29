@@ -45,7 +45,7 @@ export default function HRSettings() {
             key: '/hrsettings/departments',
         },
         hrPaths.includes('teams') && {
-            label: 'Teams',
+            label: 'Projects / Teams',
             key: '/hrsettings/teams',
         },
         hrPaths.includes('positions') && {

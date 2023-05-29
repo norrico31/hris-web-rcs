@@ -10,6 +10,7 @@ import Sidebar from './Sidebar'
 import Header from './Header'
 import { useEndpoints } from '../../shared/constants'
 import { AuthUserRes } from '../../shared/interfaces'
+import { useDarkMode } from '../../shared/contexts/DarkMode'
 
 const { Sider, Content: AntDContent } = AntdLayout
 const [{ AUTH: { USER, LOGIN } }] = useEndpoints()
@@ -17,6 +18,7 @@ const [{ AUTH: { USER, LOGIN } }] = useEndpoints()
 export default function Layout() {
     const { user, token, setToken, setUser, setLoading } = useAuthContext()
     if (token == undefined) return <Navigate to={LOGIN} />
+    const { isDarkMode } = useDarkMode()
 
     const [collapsed, setCollapsed] = useState(() => {
         let isCollapsed = localStorage.getItem('collapsed')
@@ -60,16 +62,16 @@ export default function Layout() {
     const handleSelect = () => breakpoint && setCollapsed(true)
 
     return (
-        <StyledLayout style={{ minHeight: '95vh' }}>
+        <StyledLayout style={{ minHeight: '100vh' }}>
             <Sider trigger={null} collapsible collapsed={collapsed} width={280} breakpoint='md' collapsedWidth={collapsedWidth} onBreakpoint={onBreakpoint}>
-                <div style={{ height: 64, padding: '.3rem', background: '#fff', display: 'grid', placeItems: 'center' }}>
-                    <Logo collapsed={collapsed} />
+                <div style={{ height: 64, padding: '.3rem', background: isDarkMode ? '#313131' : '#fff', display: 'grid', placeItems: 'center' }}>
+                    <Logo collapsed={collapsed} isDarkMode={isDarkMode} />
                 </div>
                 <Sidebar onSelect={handleSelect} />
             </Sider>
-            <AntdLayout>
+            <AntdLayout style={{ backgroundColor: isDarkMode ? '#424242' : '#fff' }}>
                 <Header collapsed={collapsed} setCollapsed={setCollapsed} />
-                <Content className='light'>
+                <Content className={isDarkMode ? 'bg-dark' : 'bg-light'}>
                     <Outlet />
                 </Content>
             </AntdLayout>
@@ -100,6 +102,7 @@ const Content = styled(AntDContent)`
 
 type Logo = {
     collapsed: boolean
+    isDarkMode: boolean
 }
 
 const Logo = styled.div<Logo>`
@@ -109,4 +112,5 @@ const Logo = styled.div<Logo>`
     background-image: url(${props => !props.collapsed ? RcsLogo : LogoSmall});
     background-repeat: no-repeat;
     background-position: center;
+    background-color: ${({ isDarkMode }) => isDarkMode ? '#313131' : '#fff'} ;
 `

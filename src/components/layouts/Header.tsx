@@ -64,15 +64,14 @@ export default function Header({ collapsed, setCollapsed }: Props) {
     }
 
     return (
-        <Container style={{ paddingInline: 0 }}>
-            <div className='header-wrapper'>
+        <Container style={{ paddingInline: 0 }} isDark={isDarkMode}>
+            <div className={`header-wrapper ${isDarkMode ? 'dark' : 'light'}`}>
                 {burgerMenu}
-                <CurrentTime />
-                {/* <Text>HR Portal</Text> */}
+                <CurrentTime isDarkMode={isDarkMode} />
             </div>
-            <div className='header-wrapper'>
+            <div className={`header-wrapper ${isDarkMode ? 'dark' : 'light'}`}>
                 <Row align='middle' style={{ gap: 10 }}>
-                    <Button style={{ border: 'none' }} onClick={toggleDarkMode}> {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}</Button>
+                    <Button className={isDarkMode ? 'bg-dark' : 'bg-light'} style={{ border: 'none' }} onClick={toggleDarkMode}> {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}</Button>
                     <Dropdown menu={{ items }}>
                         <a onClick={e => e.preventDefault()}>
                             <Space>
@@ -87,7 +86,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
     )
 }
 
-function CurrentTime() {
+function CurrentTime({ isDarkMode }: { isDarkMode: boolean }) {
     const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString())
     useEffect(() => {
         const timer = setInterval(() => {
@@ -96,7 +95,7 @@ function CurrentTime() {
         }, 1000)
         return () => clearInterval(timer)
     }, [])
-    return <h3 style={{ marginLeft: '1rem' }}>{currentTime}</h3>
+    return <h3 style={{ marginLeft: '1rem' }} className={isDarkMode ? 'text-light' : 'text-dark'}>{currentTime}</h3>
 }
 
 const UserName = styled.span`
@@ -105,16 +104,11 @@ const UserName = styled.span`
     font-size: 16px;
 `
 
-const Container = styled(AntDHeader)`
-    background: #fff !important;
+const Container = styled(AntDHeader) <{ isDark: boolean }>`
+    background: ${({ isDark }) => isDark ? '#313131' : '#fff'}  !important;
+
     padding: 0;
     display: flex;
     justify-content: space-between;
 
-`
-
-const Text = styled(AntText)`
-    padding-left: 4px;
-    font-weight: bold;
-    color: #003765;
 `

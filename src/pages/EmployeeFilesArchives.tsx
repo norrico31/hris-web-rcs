@@ -143,7 +143,7 @@ export default function EmployeeFiles() {
     return (
         <>
             <MainHeader>
-                <h1 className='color-white'>Employees</h1>
+                <h1 className='color-white'>Employees 201 Files - Archives</h1>
             </MainHeader>
             <TabHeader
                 handleSearch={handleSearch}

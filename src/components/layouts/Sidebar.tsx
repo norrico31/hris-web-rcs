@@ -67,7 +67,6 @@ export default function Sidebar({ onSelect }: Props) {
 const MenuContainer = styled(AntdMenu)`
     background-color: #9B3423;
     color: #fff;
-    height: 100%;
 
     .ant-menu-title-content a {
         display: block;
@@ -133,7 +132,7 @@ function filterMenu(user: IUser) {
             rootPath.includes('timekeeping')
         ),
         getItemLinks(
-            <Link to='/tasks'>Tasks Entry</Link>,
+            <Link to='/tasks'>My Tasks</Link>,
             '/tasks',
             <FaTasks />,
             undefined,
@@ -212,7 +211,7 @@ function filterMenu(user: IUser) {
             adminPaths.includes('users') || adminPaths.includes('roles') || adminPaths.includes('auditlogs') || adminPaths.includes('auditlogs')
         ),
         getItemLinks(
-            <Link to='/employee'>Employee Files</Link>,
+            <Link to='/employee'>Employee 201 Files</Link>,
             '/employee',
             <FaUsersCog />,
             undefined,

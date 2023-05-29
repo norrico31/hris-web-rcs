@@ -43,6 +43,4 @@ function ItemRender(_: number, type: string, originalElement: ReactNode) {
     return originalElement
 }
 
-const scroll = { y: 600, x: 500 }
-
 export default memo(Table)

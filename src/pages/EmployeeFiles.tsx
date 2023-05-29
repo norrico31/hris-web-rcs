@@ -134,10 +134,6 @@ export default function EmployeeFiles() {
             .finally(fetchData)
     }
 
-    function handleDownload() {
-        console.log('dowwnload')
-    }
-
     function handleCloseModal() {
         setSelectedData(undefined)
         setIsModalOpen(false)
@@ -146,7 +142,7 @@ export default function EmployeeFiles() {
     return (
         <>
             <MainHeader>
-                <h1 className='color-white'>Employees</h1>
+                <h1 className='color-white'>Employees 201 Files</h1>
             </MainHeader>
             <TabHeader
                 handleSearch={handleSearch}

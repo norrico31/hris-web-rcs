@@ -126,7 +126,7 @@ export default function Team() {
     }
 
     return (
-        <Card title={`Teams ${isArchive ? '- Archives' : ''}`}>
+        <Card title={`Projects / Teams ${isArchive ? '- Archives' : ''}`}>
             <TabHeader
                 handleSearch={setSearch}
                 handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}
