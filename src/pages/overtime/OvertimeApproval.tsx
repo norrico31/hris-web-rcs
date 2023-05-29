@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button, Col, DatePicker, Input, Modal, Row, Select, Skeleton, Space, Descriptions } from 'antd'
+import { Button, Col, DatePicker, Input, Modal, Row, Select, Skeleton, Space } from 'antd'
 import { Navigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
@@ -15,11 +15,11 @@ import { filterCodes } from '../../components/layouts/Sidebar'
 import { FcApproval } from 'react-icons/fc'
 import { RxCross2 } from 'react-icons/rx'
 import useWindowSize from '../../shared/hooks/useWindowSize'
-import { OvertimeModal } from './MyOvertime'
+import { OvertimeDescription, OvertimeModal } from './MyOvertime'
 import { AxiosResponse } from 'axios'
 import useMessage from 'antd/es/message/useMessage'
 
-const { GET, POST, PUT } = useAxios()
+const { GET, PUT } = useAxios()
 const [{ OVERTIME }] = useEndpoints()
 
 dayjs.extend(localizedFormat)
@@ -290,25 +290,11 @@ function OvertimeApprovalModal({ isApproved, overtimeType, loading, selectedRequ
 
     return <Modal title={`Overtime - ${isApproved ? 'Approve' : 'Reject'}`} open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
         {contextHolder}
-        <Descriptions bordered column={2}>
-            <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
-            <Descriptions.Item label="Requested Date" span={2}>{new Date(selectedRequest?.created_at!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
-            <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
-            <Descriptions.Item label="Date Overtime" span={2}>{new Date(selectedRequest?.date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
-            <Descriptions.Item label="Planned OT Start" span={2}>{selectedRequest?.planned_ot_start?.toString()}</Descriptions.Item>
-            <Descriptions.Item label="Planned OT End" span={2}>{selectedRequest?.planned_ot_end?.toString()}</Descriptions.Item>
-        </Descriptions>
-        <Divider />
-        <Descriptions bordered layout='vertical'>
-            <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.reason}</Descriptions.Item>
-        </Descriptions>
-        <Divider />
-        <Descriptions bordered>
-            <Descriptions.Item label="Remarks" >
-                <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
-            </Descriptions.Item>
-        </Descriptions>
-        <Divider />
+        <OvertimeDescription
+            remarks={remarks}
+            setRemarks={setRemarks}
+            selectedRequest={selectedRequest!}
+        />
         <div style={{ textAlign: 'right' }}>
             <Space>
                 <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={onSubmit}>

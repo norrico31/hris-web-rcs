@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker } from 'antd'
+import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import useMessage from 'antd/es/message/useMessage'
-import { Form, Card, TabHeader, Table, Action } from '../../components'
+import { Form, Card, TabHeader, Table, Action, Divider } from '../../components'
 import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
 import { useAxios } from '../../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../../shared/constants'
@@ -28,6 +28,7 @@ export default function MyOvertime() {
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [isModalCancel, setIsModalCancel] = useState(false)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -94,7 +95,7 @@ export default function MyOvertime() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: IOvertime) => <>
+            render: (_, record: IOvertime) => <Space direction='vertical'>
                 <Action
                     title='Tasks'
                     name={record?.user?.full_name}
@@ -102,7 +103,10 @@ export default function MyOvertime() {
                     onClick={() => handleEdit(record)}
                     isDisable={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
                 />
-            </>,
+                <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                    Cancel Request
+                </Button>
+            </Space>,
             width: 150
         },
     ]
@@ -138,9 +142,15 @@ export default function MyOvertime() {
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: overtimeType })
 
+    function handleRequestSelected(overtime: IOvertime) {
+        setSelectedData(overtime)
+        setIsModalCancel(true)
+    }
+
     function closeModal() {
         setIsModalOpen(false)
         setSelectedData(undefined)
+        setIsModalCancel(false)
     }
 
     return (
@@ -179,6 +189,13 @@ export default function MyOvertime() {
                 isModalOpen={isModalOpen}
                 handleCancel={closeModal}
             />
+            <ModalCancelRequest
+                isModalOpen={isModalCancel}
+                selectedRequest={selectedData!}
+                handleCancel={closeModal}
+                overtimeType={overtimeType}
+                fetchData={fetchData}
+            />
         </>
     )
 }
@@ -212,15 +229,6 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
             })
         } else form.resetFields()
     }, [selectedData])
-
-    function cancelRequest() {
-        GET(OVERTIME.CANCEL + selectedData?.id)
-            .then((res) => res)
-            .finally(() => {
-                fetchData({ type: overtimeType })
-                setLoading(false)
-            })
-    }
 
     function onFinish({ date, planned_ot_start, planned_ot_end, ...restProps }: IOvertime) {
         setLoading(true)
@@ -274,7 +282,6 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     required
                     rules={[{ required: true, message: '' }]}
                 >
-
                     <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
                 </FormItem>
             </Row>
@@ -287,20 +294,104 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>
             <Row justify={selectedData ? 'space-between' : 'end'}>
-                {selectedData && (
-                    <Button className='btn-secondary' loading={loading} disabled={loading} onClick={cancelRequest}>
-                        Cancel Request
-                    </Button>
-                )}
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         Submit Request
                     </Button>
-                    {/* <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
-                        Cancel
-                    </Button> */}
                 </Space>
             </Row>
         </Form>
     </Modal>
+}
+
+type ModalCancelRequestProps = {
+    isModalOpen: boolean
+    handleCancel: () => void
+    selectedRequest: IOvertime
+    overtimeType: string
+    fetchData({ type, args }: {
+        args?: IArguments | undefined;
+        type?: string | undefined;
+    }): void
+}
+
+function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, overtimeType, handleCancel }: ModalCancelRequestProps) {
+    const [loading, setLoading] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
+    const [remarks, setRemarks] = useState('')
+
+    const key = 'error'
+    function cancelRequest() {
+        if (remarks == null || remarks == '') {
+            messageApi.open({
+                key,
+                type: 'error',
+                content: `Please enter remarks to cancel the request'}`,
+                duration: 5
+            })
+            return
+        }
+        setLoading(true)
+        PUT(OVERTIME.CANCEL + selectedRequest?.id, { cancellation_remarks: remarks })
+            .then((res) => null)
+            .catch((err) => messageApi.open({
+                key,
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 5
+            }))
+            .finally(() => {
+                fetchData({ type: overtimeType })
+                setLoading(false)
+            })
+    }
+
+    return <Modal title='Overtime - Cancel Request' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+        {contextHolder}
+        <OvertimeDescription
+            selectedRequest={selectedRequest!}
+            remarks={remarks}
+            setRemarks={setRemarks}
+        />
+        <div style={{ textAlign: 'right' }}>
+            <Space>
+                <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={cancelRequest}>
+                    Cancel Request
+                </Button>
+                <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
+                    Cancel
+                </Button>
+            </Space>
+        </div>
+    </Modal>
+}
+
+type OvertimeDescriptionProps = {
+    selectedRequest: IOvertime;
+    remarks: string;
+    setRemarks: React.Dispatch<React.SetStateAction<string>>
+}
+
+export function OvertimeDescription({ selectedRequest, remarks, setRemarks }: OvertimeDescriptionProps) {
+    return <>
+        <Descriptions bordered column={2}>
+            <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
+            <Descriptions.Item label="Requested Date" span={2}>{new Date(selectedRequest?.created_at!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
+            <Descriptions.Item label="Date Overtime" span={2}>{new Date(selectedRequest?.date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Planned OT Start" span={2}>{selectedRequest?.planned_ot_start?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="Planned OT End" span={2}>{selectedRequest?.planned_ot_end?.toString()}</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Descriptions bordered layout='vertical'>
+            <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.reason}</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Descriptions bordered>
+            <Descriptions.Item label="Remarks" >
+                <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
+            </Descriptions.Item>
+        </Descriptions>
+        <Divider />
+    </>
 }

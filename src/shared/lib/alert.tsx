@@ -26,20 +26,20 @@ const NOTIFICATION_COLORS: {
     }
 } = {
     success: {
-        borderColor: '#39a912',
-        backgroundColor: '#d4fec5',
+        borderColor: '#a3ed8b',
+        backgroundColor: '#dcfbd1',
     },
     warning: {
-        borderColor: '#F7C145',
-        backgroundColor: '#FFEDCA',
+        borderColor: '#ffd982',
+        backgroundColor: '#fef3dd',
     },
     error: {
-        borderColor: '#ff3d3d',
-        backgroundColor: '#ffd5d5',
+        borderColor: '#ff7272',
+        backgroundColor: '#fddbdb',
     },
     information: {
-        borderColor: '#45ccff',
-        backgroundColor: '#dbf5ff',
+        borderColor: '#8de1ff',
+        backgroundColor: '#e2f2f9',
     },
 }
 

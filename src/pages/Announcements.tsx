@@ -189,13 +189,11 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).catch((err) => {
-            messageApi.open({
-                type: 'error',
-                content: err.response.data.message ?? err.response.data.error,
-                duration: 5
-            })
-        }).finally(() => {
+        }).catch((err) => messageApi.open({
+            type: 'error',
+            content: err.response.data.message ?? err.response.data.error,
+            duration: 5
+        })).finally(() => {
             fetchData()
             setLoading(false)
         })
