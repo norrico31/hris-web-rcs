@@ -183,9 +183,9 @@ export default function OvertimeApproval() {
                         type: (str == undefined || str == '') ? 'pending' : str
                     })
                 }} style={{ width: 150 }}>
-                    <Select.Option value='pending'>Pending</Select.Option>
-                    <Select.Option value='approved'>Approved</Select.Option>
-                    <Select.Option value='rejected'>Rejected</Select.Option>
+                    {selectOptions.map((opt) => (
+                        <Select.Option value={opt.toLocaleLowerCase()} key={opt}>{opt}</Select.Option>
+                    ))}
                 </Select>
                 {width < 978 && <Divider />}
                 <Col>
@@ -226,6 +226,8 @@ export default function OvertimeApproval() {
         </>
     )
 }
+
+const selectOptions = ['Pending', 'Approved', 'Rejected']
 
 type Payload = {
     remarks: string

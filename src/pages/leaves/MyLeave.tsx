@@ -49,67 +49,7 @@ export default function MyLeave() {
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
-    const columns: ColumnsType<ILeave> = [
-
-        {
-            title: 'Submitted On',
-            key: 'created_at',
-            dataIndex: 'created_at',
-            render: (_, record) => new Date(record.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }),
-            width: 150,
-            align: 'center'
-        },
-        {
-            title: 'Leave Type',
-            key: 'leave_type',
-            dataIndex: 'leave_type',
-            width: 150,
-            render: (_, record) => record.leave_type?.type ?? '-',
-            align: 'center'
-        },
-        {
-            title: 'Leave Start Requested',
-            key: 'date_start',
-            dataIndex: 'date_start',
-            width: 300,
-            render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
-        },
-        {
-            title: 'Leave End Requested',
-            key: 'date_end',
-            dataIndex: 'date_end',
-            width: 300,
-            render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
-        },
-        {
-            title: 'Requested Leave Duration',
-            key: 'leave_duration',
-            dataIndex: 'leave_duration',
-            render: (_, record) => record?.leave_durations?.name,
-            width: 250,
-            align: 'center'
-        },
-        {
-            title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
-            width: 120,
-        },
-        {
-            title: 'Action',
-            key: 'action',
-            dataIndex: 'action',
-            align: 'center',
-            render: (_, record: ILeave) => <Action
-                title='Tasks'
-                name={record?.user?.full_name}
-                onConfirm={() => handleDelete(record?.id!)}
-                onClick={() => handleEdit(record)}
-                isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected'}
-            />,
-            width: 150
-        },
-    ]
+    const columns: ColumnsType<ILeave> = renderColumns({ handleEdit, handleDelete })
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
@@ -161,10 +101,9 @@ export default function MyLeave() {
                         type: (str == undefined || str == '') ? 'all' : str
                     })
                 }} style={{ width: 150 }}>
-                    <Select.Option value='all'>All</Select.Option>
-                    <Select.Option value='pending'>Pending</Select.Option>
-                    <Select.Option value='approved'>Approved</Select.Option>
-                    <Select.Option value='reject'>Rejected</Select.Option>
+                    {selectOptions.map((opt) => (
+                        <Select.Option value={opt.toLocaleLowerCase()} key={opt}>{opt}</Select.Option>
+                    ))}
                 </Select>
             </TabHeader>
             <Card title={`My Leaves - ${firstLetterCapitalize(leaveType)}`} level={5}>
@@ -186,6 +125,8 @@ export default function MyLeave() {
         </>
     )
 }
+
+const selectOptions = ['All', 'Pending', 'Approved', 'Rejected']
 
 type ModalProps = {
     leaveType: string
@@ -344,3 +285,65 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         </Form>
     </Modal>
 }
+
+const renderColumns = ({ handleEdit, handleDelete }: { handleEdit: (ot: ILeave) => void; handleDelete: (id: string) => void }): ColumnsType<ILeave> => [
+
+    {
+        title: 'Submitted On',
+        key: 'created_at',
+        dataIndex: 'created_at',
+        render: (_, record) => new Date(record.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }),
+        width: 150,
+        align: 'center'
+    },
+    {
+        title: 'Leave Type',
+        key: 'leave_type',
+        dataIndex: 'leave_type',
+        width: 150,
+        render: (_, record) => record.leave_type?.type ?? '-',
+        align: 'center'
+    },
+    {
+        title: 'Leave Start Requested',
+        key: 'date_start',
+        dataIndex: 'date_start',
+        width: 300,
+        render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
+    },
+    {
+        title: 'Leave End Requested',
+        key: 'date_end',
+        dataIndex: 'date_end',
+        width: 300,
+        render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
+    },
+    {
+        title: 'Requested Leave Duration',
+        key: 'durations',
+        dataIndex: 'durations',
+        // render: (_, record) => record?.leave_durations?.name,
+        width: 250,
+        align: 'center'
+    },
+    {
+        title: 'Status',
+        key: 'status',
+        dataIndex: 'status',
+        width: 120,
+    },
+    {
+        title: 'Action',
+        key: 'action',
+        dataIndex: 'action',
+        align: 'center',
+        render: (_, record: ILeave) => <Action
+            title='Tasks'
+            name={record?.user?.full_name}
+            onConfirm={() => handleDelete(record?.id!)}
+            onClick={() => handleEdit(record)}
+            isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected'}
+        />,
+        width: 150
+    },
+]

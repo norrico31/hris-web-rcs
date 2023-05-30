@@ -184,9 +184,9 @@ export default function LeaveApproval() {
                         type: (str == undefined || str == '') ? 'pending' : str
                     })
                 }} style={{ width: 150 }}>
-                    <Select.Option value='pending'>Pending</Select.Option>
-                    <Select.Option value='approved'>Approved</Select.Option>
-                    <Select.Option value='rejected'>Rejected</Select.Option>
+                    {selectOptions.map((opt) => (
+                        <Select.Option value={opt.toLocaleLowerCase()} key={opt}>{opt}</Select.Option>
+                    ))}
                 </Select>
                 {width < 978 && <Divider />}
                 <Col>
@@ -227,6 +227,7 @@ export default function LeaveApproval() {
         </>
     )
 }
+const selectOptions = ['Pending', 'Approved', 'Rejected']
 
 
 type Payload = {
@@ -292,6 +293,8 @@ function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, i
             <Descriptions.Item label="Requested Date" span={2}>{new Date(selectedRequest?.created_at!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
             <Descriptions.Item label="Leave Start" span={2}>{new Date(selectedRequest?.date_start! + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
             <Descriptions.Item label="Leave End" span={2}>{new Date(selectedRequest?.date_end! + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Start Time" span={2}>{selectedRequest?.time_start?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="End Time" span={2}>{selectedRequest?.time_end?.toString()}</Descriptions.Item>
             <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
             <Descriptions.Item label="Leave Type" span={2}>{selectedRequest?.leave_type?.type}</Descriptions.Item>
         </Descriptions>

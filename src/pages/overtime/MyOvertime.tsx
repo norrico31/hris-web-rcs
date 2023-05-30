@@ -167,10 +167,9 @@ export default function MyOvertime() {
                         type: (str == undefined || str == '') ? 'all' : str
                     })
                 }} style={{ width: 150 }}>
-                    <Select.Option value='all'>All</Select.Option>
-                    <Select.Option value='pending'>Pending</Select.Option>
-                    <Select.Option value='approved'>Approved</Select.Option>
-                    <Select.Option value='reject'>Rejected</Select.Option>
+                    {selectOptions.map((opt) => (
+                        <Select.Option value={opt.toLocaleLowerCase()} key={opt}>{opt}</Select.Option>
+                    ))}
                 </Select>
             </TabHeader>
             <Card title={`My Overtimes - ${firstLetterCapitalize(overtimeType)}`} level={5}>
@@ -199,6 +198,8 @@ export default function MyOvertime() {
         </>
     )
 }
+
+const selectOptions = ['All', 'Pending', 'Approved', 'Rejected']
 
 type ModalProps = {
     overtimeType: string
@@ -326,7 +327,7 @@ function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, overtimeT
             messageApi.open({
                 key,
                 type: 'error',
-                content: `Please enter remarks to cancel the request'}`,
+                content: `Please enter remarks to cancel the request`,
                 duration: 5
             })
             return
