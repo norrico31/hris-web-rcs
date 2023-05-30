@@ -182,9 +182,10 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
     const [tasks, setTasks] = useState<Array<ITasksServices>>([{ activities: [], sprints: [], types: [] }])
     const [teams, setTeams] = useState<Array<ITeam[]>>([])
     const [loading, setLoading] = useState(false)
-    const [teamIds, setTeamId] = useState<Array<string>>([])
+    const [teamIds, setTeamIds] = useState<Array<string>>([])
     const [dataColumns, setDataColumns] = useState<{ [key: string]: string | number | undefined; }[]>(initDataColState)
     const [currentIdx, setCurrentIdx] = useState(0)
+    const [messageApi, contextHolder] = useMessage()
 
     const controller = new AbortController();
     useEffect(() => {
@@ -194,7 +195,6 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
     }, [handleCancel])
 
     useEffect(() => {
-        // if (teamIds) return
         if (teamIds[currentIdx]) {
             fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + ('?team_id=' + teamIds[currentIdx]), 'activities', currentIdx);
             fetchList(TASKSSETTINGS.TYPES.LISTS + ('?team_id=' + teamIds[currentIdx]), 'types', currentIdx);
@@ -227,11 +227,17 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         setDataColumns([...dataColumns])
     }
 
-    function removeRow(recordId: string) {
-        const newDataCol = dataColumns.filter(c => c.id != recordId)
+    function removeRow(recordId: string, idx: number) {
+        const newDataCol = dataColumns.filter(c => c.id !== recordId)
+        const newTasks = tasks.splice(idx, 1)
         setDataColumns(newDataCol)
+        setTasks(newTasks)
+        if (teamIds[idx]) {
+            const idxId = teamIds.indexOf(teamIds[idx])
+            if (idxId > -1) teamIds.splice(idx, 1)
+            setTeamIds([...teamIds])
+        }
     }
-
 
     const columns: ColumnsType<ITasks> = useMemo(() => [
         {
@@ -246,7 +252,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                 value={teamIds[idx]}
                 onChange={(id) => {
                     teamIds[idx] = id
-                    setTeamId([...teamIds])
+                    setTeamIds([...teamIds])
                     setCurrentIdx(idx)
                     handleSelectChange(id, idx, 'team_id')
                 }}
@@ -402,7 +408,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                 <PopupConfirm
                     title='Remove Row'
                     description='Are you sure you want to remove this row?'
-                    onConfirm={() => removeRow(record?.id)}
+                    onConfirm={() => removeRow(record?.id, idx)}
                     okText="Remove"
                     disabled={dataColumns?.length == 1}
                 />
@@ -421,6 +427,11 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
     ])
 
     function onFinish(values: ITasks) {
+        if (dataColumns.length < 1) return messageApi.open({
+            type: 'error',
+            content: 'Please enter project / team for tasks',
+            duration: 3
+        })
         setLoading(true)
         const date = dayjs(values?.date).format('YYYY-MM-DD') as any
         let payload = {
@@ -433,15 +444,18 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             form.resetFields()
             handleCancel()
             setDataColumns(initDataColState)
-        }).catch((err) => {
-            console.log(err)
-        }).finally(() => {
+        }).catch((err) => messageApi.open({
+            type: 'error',
+            content: err.response.data.message ?? err.response.data.error,
+            duration: 3
+        })).finally(() => {
             fetchData()
             setLoading(false)
         })
     }
 
     return <>
+        {contextHolder}
         <Title level={2}>My Tasks - {title}</Title>
         <Divider />
         <Form form={form} onFinish={onFinish} disabled={loading}>
@@ -498,13 +512,13 @@ function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: Upd
     const [tasks, setTasks] = useTasksServices()
     const [teams, setTeams] = useState<ITeam[]>([])
     const [loading, setLoading] = useState(false)
-    const [teamIds, setTeamId] = useState('')
+    const [teamIds, setTeamIds] = useState('')
     const [teamListById, setTeamListById] = useState<ITeam[]>([])
     const [messageApi, contextHolder] = useMessage()
 
     useEffect(() => {
         if (selectedData != undefined) {
-            setTeamId(selectedData.team?.id)
+            setTeamIds(selectedData.team?.id)
             form.setFieldsValue({
                 ...selectedData,
                 date: dayjs(selectedData.date, 'YYYY/MM/DD') as any
@@ -589,7 +603,7 @@ function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: Upd
                     optionFilterProp="children"
                     value={teamIds}
                     onChange={(id) => {
-                        setTeamId(id)
+                        setTeamIds(id)
                         form.setFieldsValue({
                             ...form.getFieldsValue(),
                             task_activity_id: null,

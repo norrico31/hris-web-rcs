@@ -253,7 +253,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
             key,
             type: 'error',
             content: err?.response?.data?.message,
-            duration: 5
+            duration: 3
         })).finally(() => {
             fetchData()
             setLoading(false)
