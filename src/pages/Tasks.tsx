@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider, Popconfirm, Skeleton } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
@@ -202,32 +202,32 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         }
     }, [currentIdx, teamIds])
 
-    async function fetchList(url: string, key: 'activities' | 'types' | 'sprints', idx: number) {
+    const fetchList = useCallback(async function (url: string, key: 'activities' | 'types' | 'sprints', idx: number) {
         const data = await getList(url)
         tasks[idx] = { ...tasks[idx], [key]: data ?? [] }
         setTasks([...tasks])
-    }
+    }, [tasks])
 
-    function addRow() {
+    const addRow = useCallback(function () {
         setDataColumns(prevRow => [...prevRow, initDataColState()[0]])
-    }
+    }, [dataColumns])
 
-    function handleSelectChange(id: string, idx: number, key: string) {
+    const handleSelectChange = useCallback(function (id: string, idx: number, key: string) {
         dataColumns[idx][key] = id ?? null
         setDataColumns([...dataColumns])
-    }
+    }, [dataColumns])
 
-    function handleInputChange(evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, idx: number, key: string) {
+    const handleInputChange = useCallback(function (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, idx: number, key: string) {
         dataColumns[idx][key] = evt.target.value ?? null
         setDataColumns([...dataColumns])
-    }
+    }, [dataColumns])
 
-    function clearField(idx: number) {
+    const clearField = useCallback(function (idx: number) {
         dataColumns[idx] = initDataColState()[0]
         setDataColumns([...dataColumns])
-    }
+    }, [dataColumns])
 
-    function removeRow(recordId: string, idx: number) {
+    const removeRow = useCallback(function (recordId: string, idx: number) {
         const newDataCol = dataColumns.filter(c => c.id !== recordId)
         const newTasks = tasks.splice(idx, 1)
         setDataColumns(newDataCol)
@@ -237,7 +237,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             if (idxId > -1) teamIds.splice(idx, 1)
             setTeamIds([...teamIds])
         }
-    }
+    }, [dataColumns, tasks, teamIds])
 
     const columns: ColumnsType<ITasks> = useMemo(() => [
         {
@@ -424,6 +424,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         isModalActivity,
         isModalTypes,
         isModalSprints,
+        currentIdx
     ])
 
     function onFinish(values: ITasks) {
