@@ -16,10 +16,11 @@ export const useDarkMode = () => useContext(DarkModeContext)
 export default function DarkMode({ children }: { children: ReactNode }) {
     const { user } = useAuthContext()
     const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-        let darkmode = localStorage.getItem('darkmode')
-        if (darkmode == null) {
-            return false
-        } else return JSON.parse(darkmode)
+        // let darkmode = localStorage.getItem('darkmode')
+        // if (darkmode == null) {
+        //     return false
+        // } else return JSON.parse(darkmode)
+        return false
     })
 
     function toggleDarkMode() {

@@ -71,7 +71,7 @@ export default function Header({ collapsed, setCollapsed }: Props) {
             </div>
             <div className={`header-wrapper ${isDarkMode ? 'dark' : 'light'}`}>
                 <Row align='middle' style={{ gap: 10 }}>
-                    <Button className={isDarkMode ? 'bg-dark' : 'bg-light'} style={{ border: 'none' }} onClick={toggleDarkMode}> {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}</Button>
+                    {/* <Button className={isDarkMode ? 'bg-dark' : 'bg-light'} style={{ border: 'none' }} onClick={toggleDarkMode}> {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}</Button> */}
                     <Dropdown menu={{ items }}>
                         <a onClick={e => e.preventDefault()}>
                             <Space>

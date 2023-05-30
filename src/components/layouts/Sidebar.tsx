@@ -218,7 +218,7 @@ function filterMenu(user: IUser) {
             rootPath.includes('employee')
         ),
         getItemLinks(
-            <Link to='/leave/myleaves'>Leave</Link>,
+            <Link to='/leave/myleaves'>Leaves</Link>,
             '/leave',
             <AiOutlineCalendar />,
             undefined,

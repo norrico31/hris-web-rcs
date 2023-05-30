@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker } from 'antd'
+import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Divider } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import useMessage from 'antd/es/message/useMessage'
@@ -28,6 +28,7 @@ export default function MyLeave() {
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [isModalCancel, setIsModalCancel] = useState(false)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -49,7 +50,7 @@ export default function MyLeave() {
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
-    const columns: ColumnsType<ILeave> = renderColumns({ handleEdit, handleDelete })
+    const columns: ColumnsType<ILeave> = renderColumns({ handleEdit, handleDelete, handleRequestSelected })
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
@@ -70,6 +71,11 @@ export default function MyLeave() {
             }).finally(() => setLoading(false))
     }
 
+    function handleRequestSelected(overtime: ILeave) {
+        setSelectedData(overtime)
+        setIsModalCancel(true)
+    }
+
     function handleDelete(id: string) {
         DELETE(LEAVES.DELETE, id)
             .finally(() => fetchData({ type: leaveType }))
@@ -85,6 +91,7 @@ export default function MyLeave() {
     function closeModal() {
         setIsModalOpen(false)
         setSelectedData(undefined)
+        setIsModalCancel(false)
     }
 
     return (
@@ -121,6 +128,13 @@ export default function MyLeave() {
                 isModalOpen={isModalOpen}
                 selectedData={selectedData}
                 handleCancel={closeModal}
+            />
+            <ModalCancelRequest
+                leaveType={leaveType}
+                fetchData={fetchData}
+                selectedRequest={selectedData}
+                handleClose={closeModal}
+                isModalOpen={isModalCancel}
             />
         </>
     )
@@ -270,23 +284,16 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
             >
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>
-            <Row justify={selectedData ? 'space-between' : 'end'}>
-                {selectedData && (
-                    <Button className='btn-secondary' loading={loading} disabled={loading} onClick={cancelRequest}>
-                        Cancel Request
-                    </Button>
-                )}
-                <Space>
-                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        Submit Request
-                    </Button>
-                </Space>
+            <Row justify='end'>
+                <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
+                    Submit Request
+                </Button>
             </Row>
         </Form>
     </Modal>
 }
 
-const renderColumns = ({ handleEdit, handleDelete }: { handleEdit: (ot: ILeave) => void; handleDelete: (id: string) => void }): ColumnsType<ILeave> => [
+const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { handleEdit: (ot: ILeave) => void; handleDelete: (id: string) => void; handleRequestSelected: (ot: ILeave) => void; }): ColumnsType<ILeave> => [
 
     {
         title: 'Submitted On',
@@ -322,7 +329,6 @@ const renderColumns = ({ handleEdit, handleDelete }: { handleEdit: (ot: ILeave) 
         title: 'Requested Leave Duration',
         key: 'durations',
         dataIndex: 'durations',
-        // render: (_, record) => record?.leave_durations?.name,
         width: 250,
         align: 'center'
     },
@@ -337,13 +343,115 @@ const renderColumns = ({ handleEdit, handleDelete }: { handleEdit: (ot: ILeave) 
         key: 'action',
         dataIndex: 'action',
         align: 'center',
-        render: (_, record: ILeave) => <Action
-            title='Tasks'
-            name={record?.user?.full_name}
-            onConfirm={() => handleDelete(record?.id!)}
-            onClick={() => handleEdit(record)}
-            isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected'}
-        />,
+        render: (_, record: ILeave) => <Space direction='vertical'>
+            <Action
+                title='Tasks'
+                name={record?.user?.full_name}
+                onConfirm={() => handleDelete(record?.id!)}
+                onClick={() => handleEdit(record)}
+                isDisable={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
+            />
+            <Button
+                className='btn-secondary'
+                onClick={() => handleRequestSelected(record)}
+                disabled={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
+            >
+                Cancel Request
+            </Button>
+        </Space>,
         width: 150
     },
 ]
+
+interface ModalCancelRequest {
+    isModalOpen: boolean
+    leaveType: string
+    selectedRequest?: ILeave
+    handleClose: () => void
+    fetchData({ type, args }: {
+        args?: IArguments | undefined;
+        type?: string | undefined;
+    }): void
+}
+
+function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClose, fetchData }: ModalCancelRequest) {
+    const [remarks, setRemarks] = useState('')
+    const [messageApi, contextHolder] = useMessage()
+    const [loading, setLoading] = useState(false)
+    const key = 'error'
+
+    function onSubmit() {
+        if (remarks == null || remarks == '') {
+            messageApi.open({
+                key,
+                type: 'error',
+                content: `Please enter remarks to cancel the request`,
+                duration: 5
+            })
+            return
+        }
+        setLoading(true)
+        POST(LEAVES.CANCEL + selectedRequest?.id, { cancel_reason: remarks })
+            .then((res) => null)
+            .catch((err) => messageApi.open({
+                key,
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 5
+            }))
+            .finally(() => {
+                fetchData({ type: leaveType })
+                setLoading(false)
+            })
+    }
+    return <Modal title='Leave - Cancel Request' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
+        {contextHolder}
+        <LeaveDescription
+            selectedRequest={selectedRequest!}
+            remarks={remarks}
+            setRemarks={setRemarks}
+        />
+        <Divider />
+        <div style={{ textAlign: 'right' }}>
+            <Space>
+                <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={onSubmit}>
+                    Cancel Request
+                </Button>
+                <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
+                    Cancel
+                </Button>
+            </Space>
+        </div>
+    </Modal>
+}
+
+type LeaveDescriptionProps = {
+    selectedRequest: ILeave;
+    remarks: string;
+    setRemarks: React.Dispatch<React.SetStateAction<string>>
+}
+
+export function LeaveDescription({ selectedRequest, remarks, setRemarks }: LeaveDescriptionProps) {
+    return <>
+        <Descriptions bordered column={2}>
+            <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
+            <Descriptions.Item label="Requested Date" span={2}>{new Date(selectedRequest?.created_at!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Leave Start" span={2}>{new Date(selectedRequest?.date_start! + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Leave End" span={2}>{new Date(selectedRequest?.date_end! + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Start Time" span={2}>{selectedRequest?.time_start?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="End Time" span={2}>{selectedRequest?.time_end?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
+            <Descriptions.Item label="Leave Type" span={2}>{selectedRequest?.leave_type?.type}</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Descriptions bordered layout='vertical'>
+            <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.reason}</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Descriptions bordered>
+            <Descriptions.Item label="Remarks" >
+                <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
+            </Descriptions.Item>
+        </Descriptions>
+    </>
+}

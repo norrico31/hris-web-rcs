@@ -321,22 +321,3 @@ function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, i
         </div>
     </Modal>
 }
-
-const arrStatus = [
-    {
-        value: 'all',
-        text: 'All'
-    },
-    {
-        value: 'pending',
-        text: 'Pending'
-    },
-    {
-        value: 'approved',
-        text: 'Approved'
-    },
-    {
-        value: 'reject',
-        text: 'Reject'
-    },
-]

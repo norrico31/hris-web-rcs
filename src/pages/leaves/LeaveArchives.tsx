@@ -50,8 +50,8 @@ export default function LeaveArchives() {
     const columns: ColumnsType<ILeave> = [
         {
             title: 'Name',
-            key: 'full_nam,e',
-            dataIndex: 'full_nam,e',
+            key: 'full_name',
+            dataIndex: 'full_name',
             render: (_, record) => record?.user?.full_name ?? '-',
             width: 150,
         },
@@ -66,7 +66,7 @@ export default function LeaveArchives() {
             key: 'leave_type',
             dataIndex: 'leave_type',
             width: 120,
-            render: (_, record) => record.leave_type?.name ?? '-',
+            render: (_, record) => record.leave_type?.type ?? '-',
             align: 'center'
         },
         {
