@@ -4,7 +4,8 @@ export const useEndpoints = () => {
             USER: '/auth-user',
             LOGIN: '/login',
             LOGOUT: '/logout',
-            UPDATEPROFILE: '/update_password'
+            UPDATEPROFILE: '/update_password',
+            FORGOTPASSWORD: '/forgot_password',
         },
         ANNOUNCEMENT: {
             LISTS: '/options/announcements',
@@ -275,7 +276,8 @@ export const useEndpoints = () => {
                 GET: '/employee_contracts',
                 POST: '/employee_contracts/',
                 PUT: '/employee_contracts/',
-                DELETE: '/employee_contracts/'
+                DELETE: '/employee_contracts/',
+                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/contract/'
             },
             USERPROFILE: {
                 GET: '/employees',
@@ -293,32 +295,39 @@ export const useEndpoints = () => {
                 GET: '/employee_evaluations',
                 POST: '/employee_evaluations/',
                 PUT: '/employee_evaluations/',
-                DELETE: '/employee_evaluations/'
+                DELETE: '/employee_evaluations/',
+                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/evaluation/'
             },
             EMPLOYEEDOCUMENT: {
                 GET: '/employee_documents',
                 POST: '/employee_documents/',
                 PUT: '/employee_documents/',
-                DELETE: '/employee_documents/'
+                DELETE: '/employee_documents/',
+                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/document/'
             },
             MEMORANDUM: {
                 GET: '/employee_memos',
                 POST: '/employee_memos/',
                 PUT: '/employee_memos/',
-                DELETE: '/employee_memos/'
+                DELETE: '/employee_memos/',
+                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/memo/'
             },
             GOVERNMENTDOCS: {
                 PAGIBIG: {
-                    PUT: '/employee_pagibigs/'
+                    PUT: '/employee_pagibigs/',
+                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/pagibig/'
                 },
                 PHILHEALTH: {
-                    PUT: '/employee_philhealths/'
+                    PUT: '/employee_philhealths/',
+                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/philhealth/'
                 },
                 TIN: {
-                    PUT: '/employee_tins/'
+                    PUT: '/employee_tins/',
+                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/tin/'
                 },
                 SSS: {
-                    PUT: '/employee_sss/'
+                    PUT: '/employee_sss/',
+                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/sss/'
                 },
             },
             EMPLOYEESALARY: {

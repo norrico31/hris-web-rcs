@@ -40,6 +40,7 @@ export default function GovernmentDocs() {
                         isModalOpen={isModalPagibig}
                         handleCancel={() => setIsModalPagibig(false)}
                         selectedData={employeeInfo?.pagibig}
+                        downloadUrl={GOVERNMENTDOCS.PAGIBIG.DOWNLOAD}
                     />
                 </CardItem>
                 <CardItem
@@ -56,6 +57,7 @@ export default function GovernmentDocs() {
                         isModalOpen={isModalPhilHealth}
                         handleCancel={() => setIsModalPhilHealth(false)}
                         selectedData={employeeInfo?.philhealth}
+                        downloadUrl={GOVERNMENTDOCS.PHILHEALTH.DOWNLOAD}
                     />
                 </CardItem>
                 <CardItem
@@ -72,6 +74,7 @@ export default function GovernmentDocs() {
                         isModalOpen={isModalSss}
                         handleCancel={() => setIsModalSss(false)}
                         selectedData={employeeInfo?.sss}
+                        downloadUrl={GOVERNMENTDOCS.SSS.DOWNLOAD}
                     />
                 </CardItem>
                 <CardItem
@@ -88,6 +91,7 @@ export default function GovernmentDocs() {
                         isModalOpen={isModalTin}
                         handleCancel={() => setIsModalTin(false)}
                         selectedData={employeeInfo?.tin}
+                        downloadUrl={GOVERNMENTDOCS.TIN.DOWNLOAD}
                     />
                 </CardItem>
             </Row>
@@ -129,9 +133,10 @@ interface PagibigUpdateModalProps {
     selectedData?: any
     fetchData(args?: IArguments): void
     handleCancel: () => void
+    downloadUrl: string
 }
 
-function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModalOpen, fetchData, handleCancel }: PagibigUpdateModalProps) {
+function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModalOpen, fetchData, handleCancel, downloadUrl }: PagibigUpdateModalProps) {
     const [form] = useForm<any>()
     const [loading, setLoading] = useState(false)
     const [messageApi, contextHolder] = useMessage()
@@ -149,6 +154,18 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
             return e;
         }
         return e?.fileList;
+    }
+
+    function handleDownload() {
+        // TODO: Logic to retrieve the file URL or data
+    
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = downloadUrl + `${selectedData?.id}`; // Replace 'your_file_url' with the actual file URL or data URL
+        link.target = '_blank';
+    
+        // Trigger the download
+        link.click();
     }
 
     function onFinish(values: any) {
@@ -196,6 +213,18 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
                     </Upload.Dragger>
                 </FormItem>
             </FormItem>
+            {selectedData && selectedData.file_name && (
+                <FormItem>
+                    <div>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ marginBottom: 8 }}>Download</span>
+                        <a href={selectedData.file_name} onClick={(e) => { e.preventDefault(); handleDownload(); }}>
+                        {selectedData.file_name}
+                        </a>
+                    </div>
+                    </div>
+                </FormItem>
+            )}
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>

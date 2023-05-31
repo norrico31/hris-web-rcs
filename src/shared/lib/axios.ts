@@ -38,6 +38,10 @@ export const useAxios = () => {
     const POST = async <T extends any>(url: string, data: T, headers?: any) => {
         try {
             const res = await axiosClient.post(url, data, { headers })
+            if (res?.data?.data === "Temporary password has been sent to your email.") {
+                Alert.information('Forgot Password Success', res?.data?.data)
+                return Promise.resolve(res?.data)
+            }
             if (res?.data?.message == 'Login Successful') return Promise.resolve(res)
             if (data instanceof FormData) {
                 Alert.information('Update Success', res.data.message)

@@ -8,7 +8,7 @@ import { TabHeader, Table, Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, IEmployeeDocument, EmployeeDocumentRes } from '../../shared/interfaces'
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
 
 const [{ EMPLOYEE201: { EMPLOYEEDOCUMENT } }] = useEndpoints()
 const { GET, POST, DELETE } = useAxios()
@@ -36,11 +36,6 @@ export default function EmployeeDocuments() {
             key: 'document_type',
             dataIndex: 'document_type',
         },
-        // {
-        //     title: 'File',
-        //     key: 'file',
-        //     dataIndex: 'file',
-        // },
         {
             title: 'Status',
             key: 'is_active',
@@ -169,6 +164,18 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
         return newFiles
     }
 
+    function handleDownload() {
+        // TODO: Logic to retrieve the file URL or data
+
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = EMPLOYEEDOCUMENT.DOWNLOAD + `${selectedData?.id}`; // Replace 'your_file_url' with the actual file URL or data URL
+        link.target = '_blank';
+
+        // Trigger the download
+        link.click();
+    }
+
     function onFinish(values: Record<string, any>) {
         setLoading(true);
         if (!values.file && !selectedData) {
@@ -215,17 +222,28 @@ function DocumentsModal({ title, employeeId, selectedData, isModalOpen, handleCa
             >
                 <Input placeholder='Enter document type...' />
             </Item>
-            <Item label="Attachments"
-                name='file'
-                valuePropName="fileList" getValueFromEvent={normFile}
-            >
-                <Upload listType="picture-card" beforeUpload={() => false}>
-                    <div>
-                        <PlusOutlined />
-                        <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
-                </Upload>
+            <Item label="File">
+                <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+                    <Upload.Dragger name="files" beforeUpload={() => false}>
+                        <p className="ant-upload-drag-icon">
+                            <InboxOutlined />
+                        </p>
+                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                    </Upload.Dragger>
+                </Item>
             </Item>
+            {selectedData && selectedData.file_name && (
+                <Item>
+                    <div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ marginBottom: 8 }}>Download</span>
+                            <a href={selectedData.file_name} onClick={(e) => { e.preventDefault(); handleDownload(); }}>
+                                {selectedData.file_name}
+                            </a>
+                        </div>
+                    </div>
+                </Item>
+            )}
             <Item
                 label="Status"
                 name="is_active"

@@ -36,11 +36,6 @@ export default function Memorandums() {
             key: 'type',
             dataIndex: 'type',
         },
-        // {
-        //     title: 'FIle',
-        //     key: 'file',
-        //     dataIndex: 'file',
-        // },
         {
             title: 'Status',
             key: 'is_active',
@@ -167,6 +162,18 @@ function MemorandumModal({ title, employeeId, fetchData, selectedData, isModalOp
         return newFiles
     }
 
+    function handleDownload() {
+        // TODO: Logic to retrieve the file URL or data
+
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = MEMORANDUM.DOWNLOAD + `${selectedData?.id}`; // Replace 'your_file_url' with the actual file URL or data URL
+        link.target = '_blank';
+
+        // Trigger the download
+        link.click();
+    }
+
     function onFinish(values: Record<string, any>) {
         setLoading(true)
         if (!values.file && !selectedData) {
@@ -209,14 +216,26 @@ function MemorandumModal({ title, employeeId, fetchData, selectedData, isModalOp
             </Item>
             <Item label="File">
                 <Item name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-                    <Upload listType="picture-card" beforeUpload={() => false}>
-                        <div>
-                            <PlusOutlined />
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                        </div>
-                    </Upload>
+                    <Upload.Dragger name="files" beforeUpload={() => false}>
+                        <p className="ant-upload-drag-icon">
+                            <InboxOutlined />
+                        </p>
+                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                    </Upload.Dragger>
                 </Item>
             </Item>
+            {selectedData && selectedData.file_name && (
+                <Item>
+                    <div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ marginBottom: 8 }}>Download</span>
+                            <a href={selectedData.file_name} onClick={(e) => { e.preventDefault(); handleDownload(); }}>
+                                {selectedData.file_name}
+                            </a>
+                        </div>
+                    </div>
+                </Item>
+            )}
             <Item
                 label="Status"
                 name="is_active"

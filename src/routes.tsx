@@ -3,14 +3,17 @@ import { createBrowserRouter, Navigate, Outlet } from "react-router-dom"
 import { Skeleton } from "antd"
 import styled from "styled-components";
 import { Layout } from "./components"
-import Login from './pages/Login'
 import TasksSettings from './pages/system-settings/task-settings/TasksSettings'
 import HRSettings from './pages/system-settings/hr-settings/HRSettings'
 import ExpenseSettings from './pages/system-settings/expense-settings/ExpenseSettings'
 import ClientSettings from './pages/system-settings/client-settings/ClientSettings'
 import EmployeeEdit from './pages/EmployeeEdit'
 
+// import Login from './pages/Login'
 // Root
+const LoginLayout = lazy(() => import('./pages/LoginLayout'))
+const Login = lazy(() => import('./pages/Login'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const TimeKeeping = lazy(() => import('./pages/TimeKeeping'))
 const Leave = lazy(() => import('./pages/Leave'))
@@ -451,8 +454,18 @@ export const routes = createBrowserRouter([
         ]
     },
     {
-        path: '/login',
-        element: <Login />
+        path: '/',
+        element: <LoginLayout />,
+        children: [
+            {
+                path: 'login',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Login /></Suspense>,
+            },
+            {
+                path: 'forgotpassword',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><ForgotPassword /></Suspense>,
+            },
+        ]
     },
 ])
 
