@@ -191,9 +191,10 @@ export default function LeaveApproval() {
                 {width < 978 && <Divider />}
                 <Col>
                     <Space>
+                        {/* TODO: rangepicker onchange */}
                         <DatePicker.RangePicker />
                         <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
-                        <Button type='primary'>Request</Button>
+                        {/* <Button type='primary'>Request</Button> */}
                     </Space>
                 </Col>
             </Row>

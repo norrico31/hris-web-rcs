@@ -9,7 +9,3 @@
 // CLIENT BILLING
 
 // lt --subdomain staging-hrportal.redcoresolutions --port 8000
-
-// TODO: My Tasks
-// LEAVE
-// ANNOUNCEMENTS

@@ -190,9 +190,10 @@ export default function OvertimeApproval() {
                 {width < 978 && <Divider />}
                 <Col>
                     <Space>
+                        {/* TODO: rangepicker onchange */}
                         <DatePicker.RangePicker />
                         <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
-                        <Button type='primary' onClick={() => setIsModalOpen(true)}>Request</Button>
+                        {/* <Button type='primary' onClick={() => setIsModalOpen(true)}>Request</Button> */}
                     </Space>
                 </Col>
             </Row>
@@ -278,6 +279,7 @@ function OvertimeApprovalModal({ isApproved, overtimeType, loading, selectedRequ
             const res = await overtimeApproval(url + selectedRequest?.id, payload)
             console.log('overtime approval result: ', res)
             setRemarks('')
+            handleClose()
         } catch (err: any) {
             messageApi.open({
                 type: 'error',
