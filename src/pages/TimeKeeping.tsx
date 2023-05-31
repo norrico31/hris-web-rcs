@@ -53,10 +53,10 @@ export default function TimeKeeping() {
         },
         {
             title: 'Schedule',
-            key: 'client_schedule',
-            dataIndex: 'client_schedule',
+            key: 'schedule',
+            dataIndex: 'schedule',
             width: 150,
-            render: (_, record) => record?.schedule_time
+            render: (_, record) => record?.schedule?.name
         },
         {
             title: 'Time',
