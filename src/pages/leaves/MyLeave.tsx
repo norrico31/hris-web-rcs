@@ -396,13 +396,19 @@ function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClo
         }
         setLoading(true)
         POST(LEAVES.CANCEL + selectedRequest?.id, { cancel_reason: remarks })
-            .then((res) => null)
-            .catch((err) => messageApi.open({
-                key,
-                type: 'error',
-                content: err?.response?.data?.message,
-                duration: 5
-            }))
+            .then((res) => {
+                setRemarks('')
+                handleClose()
+            })
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 5
+                })
+                setLoading(false)
+            })
             .finally(() => {
                 fetchData({ type: leaveType })
                 setLoading(false)

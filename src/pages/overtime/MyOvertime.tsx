@@ -353,13 +353,19 @@ function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, overtimeT
         }
         setLoading(true)
         PUT(OVERTIME.CANCEL + selectedRequest?.id, { cancellation_remarks: remarks })
-            .then((res) => null)
-            .catch((err) => messageApi.open({
-                key,
-                type: 'error',
-                content: err?.response?.data?.message,
-                duration: 5
-            }))
+            .then((res) => {
+                setRemarks('')
+                handleCancel()
+            })
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 5
+                })
+                setLoading(false)
+            })
             .finally(() => {
                 fetchData({ type: overtimeType })
                 setLoading(false)
