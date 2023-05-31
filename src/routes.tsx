@@ -14,7 +14,7 @@ import EmployeeEdit from './pages/EmployeeEdit'
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const TimeKeeping = lazy(() => import('./pages/TimeKeeping'))
 const Leave = lazy(() => import('./pages/Leave'))
-const Tasks = lazy(() => import('./pages/Tasks'))
+const MyTasks = lazy(() => import('./pages/MyTasks'))
 const TasksArchives = lazy(() => import('./pages/TasksArchives'))
 const EmployeeFiles = lazy(() => import('./pages/EmployeeFiles'))
 const EmployeeFilesArchives = lazy(() => import('./pages/EmployeeFilesArchives'))
@@ -24,6 +24,12 @@ const WhosInOut = lazy(() => import('./pages/WhosInOut'))
 const Announcements = lazy(() => import('./pages/Announcements'))
 const AnnouncementsArchives = lazy(() => import('./pages/AnnouncementArchives'))
 const Profile = lazy(() => import('./pages/Profile'))
+
+// My Teams
+const MyTeam = lazy(() => import('./pages/MyTeam'))
+const MyTeamEdit = lazy(() => import('./pages/MyTeamEdit'))
+const TeamProfile = lazy(() => import('./pages/teams/TeamProfile'))
+const TeamSchedule = lazy(() => import('./pages/teams/TeamSchedule'))
 
 // Leaves
 const MyLeaves = lazy(() => import('./pages/leaves/MyLeave'))
@@ -150,7 +156,29 @@ export const routes = createBrowserRouter([
             },
             {
                 path: 'tasks',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><Tasks /></Suspense>
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTasks /></Suspense>
+            },
+            {
+                path: 'team',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTeam /></Suspense>,
+            },
+            {
+                path: 'team/edit/:teamId',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTeamEdit /></Suspense>,
+                children: [
+                    {
+                        path: 'profile',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><TeamProfile /></Suspense>
+                    },
+                    {
+                        path: 'teams',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientSchedule /></Suspense>
+                    },
+                    {
+                        path: 'schedules',
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><TeamSchedule /></Suspense>
+                    },
+                ]
             },
             {
                 path: 'tasks/archives',

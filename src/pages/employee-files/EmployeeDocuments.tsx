@@ -36,11 +36,11 @@ export default function EmployeeDocuments() {
             key: 'document_type',
             dataIndex: 'document_type',
         },
-        {
-            title: 'File',
-            key: 'file',
-            dataIndex: 'file',
-        },
+        // {
+        //     title: 'File',
+        //     key: 'file',
+        //     dataIndex: 'file',
+        // },
         {
             title: 'Status',
             key: 'is_active',

@@ -343,6 +343,33 @@ export const useEndpoints = () => {
             DELETE: '/tasks/',
             DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/report_service/api/tasks_report'
         },
+        MYTEAMS: {
+            PROFILE: {
+                ARCHIVES: '/employees/manager/myteams/archives',
+                RESTORE: 'employees/manager/myteams/restore/',
+                SHOW: '/employees/manager/myteams/',
+                GET: '/employees/manager/myteams',
+                POST: '/employees/manager/myteams/',
+                PUT: '/employees/manager/myteams/',
+                DELETE: '/employees/manager/myteams/',
+            },
+            TEAMS: {
+                ARCHIVES: '/employees/manager/teams/archives',
+                RESTORE: 'employees/manager/teams/restore/',
+                GET: '/employees/manager/teams',
+                POST: '/employees/manager/teams/',
+                PUT: '/employees/manager/teams/',
+                DELETE: '/employees/manager/teams/',
+            },
+            SCHEDULES: {
+                ARCHIVES: '/employees/manager/schedules/archives',
+                RESTORE: 'employees/manager/schedules/restore/',
+                GET: '/employees/manager/schedules',
+                POST: '/employees/manager/schedules/',
+                PUT: '/employees/manager/schedules/',
+                DELETE: '/employees/manager/schedules/',
+            }
+        }
     }
     return [ENDPOINTS]
 }

@@ -9,19 +9,19 @@ import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, IEmployeeClients, IClient, IClientBranch, ISchedules, EmployeeClientsRes } from '../../shared/interfaces'
 import dayjs from 'dayjs';
 import useWindowSize from '../../shared/hooks/useWindowSize'
+import { useTeamCtx } from '../MyTeamEdit'
 
 const { useForm, Item } = AntDForm
 
 const [{ SYSTEMSETTINGS: { HRSETTINGS, CLIENTSETTINGS }, EMPLOYEE201 }] = useEndpoints()
 const { GET, PUT, POST, DELETE } = useAxios()
 
-export default function ClientAndSchedule() {
-    const { employeeId } = useEmployeeCtx()
+export default function TeamSchedule() {
+    const { teamId, teamInfo } = useTeamCtx()
     const [selectedData, setSelectedData] = useState<IEmployeeClients | undefined>(undefined)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [data, setData] = useState<IEmployeeClients[]>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
-    const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(false)
 
     useEffect(function fetch() {
@@ -83,7 +83,7 @@ export default function ClientAndSchedule() {
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<EmployeeClientsRes>(EMPLOYEE201.CLIENTSCHEDULE.GET + '?user_id=' + employeeId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<EmployeeClientsRes>(EMPLOYEE201.CLIENTSCHEDULE.GET + '?user_id=' + teamId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -98,16 +98,7 @@ export default function ClientAndSchedule() {
             }).finally(() => setLoading(false))
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
-
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            search: str,
-            page: tableParams?.pagination?.current ?? 1,
-            pageSize: tableParams?.pagination?.pageSize
-        })
-    }
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, pageSize: pagination?.pageSize! })
 
     function handleDelete(id: string) {
         DELETE(EMPLOYEE201.CLIENTSCHEDULE.DELETE, id)
@@ -125,11 +116,7 @@ export default function ClientAndSchedule() {
     }
 
     return (
-        <Card title='Client And Schedule'>
-            <TabHeader
-                handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
-            />
+        <Card title={`Schedule - ${teamInfo?.full_name}`}>
             <Table
                 loading={loading}
                 columns={columns}
@@ -140,7 +127,7 @@ export default function ClientAndSchedule() {
             <ClientScheduleModal
                 title={selectedData ? 'Update' : 'Submit'}
                 isModalOpen={isModalOpen}
-                employeeId={employeeId}
+                employeeId={teamId}
                 selectedData={selectedData}
                 fetchData={fetchData}
                 handleClose={handleCloseModal}

@@ -41,11 +41,11 @@ export default function Evaluations() {
             key: 'type',
             dataIndex: 'type',
         },
-        {
-            title: 'File',
-            key: 'file',
-            dataIndex: 'file',
-        },
+        // {
+        //     title: 'File',
+        //     key: 'file',
+        //     dataIndex: 'file',
+        // },
         {
             title: 'Status',
             key: 'is_active',

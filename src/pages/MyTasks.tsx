@@ -25,8 +25,8 @@ import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS }, }] = useEndpoints()
 
-export default function Tasks() {
-    renderTitle('Tasks')
+export default function MyTasks() {
+    renderTitle('My Tasks')
     const { user, loading: loadingUser } = useAuthContext()
     const navigate = useNavigate()
     let [data, setData] = useState<ITasks[]>([])
@@ -426,7 +426,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         isModalSprints,
         currentIdx
     ])
-
+    const key = 'error'
     function onFinish(values: ITasks) {
         if (dataColumns.length < 1) return messageApi.open({
             type: 'error',
@@ -445,11 +445,15 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             form.resetFields()
             handleCancel()
             setDataColumns(initDataColState)
-        }).catch((err) => messageApi.open({
-            type: 'error',
-            content: err.response.data.message ?? err.response.data.error,
-            duration: 3
-        })).finally(() => {
+        }).catch((err) => {
+            messageApi.open({
+                key,
+                type: 'error',
+                content: err.response.data.message ?? err.response.data.error,
+                duration: 3
+            })
+            setLoading(false)
+        }).finally(() => {
             fetchData()
             setLoading(false)
         })

@@ -208,7 +208,6 @@ export default function OvertimeApproval() {
                 />
             </Card>
             <OvertimeApprovalModal
-                loading={loading}
                 overtimeApproval={overtimeApproval}
                 isModalOpen={isModalRequest}
                 isApproved={isApproved}
@@ -241,7 +240,6 @@ type Payload = {
 interface ModalProps {
     isModalOpen: boolean
     isApproved: boolean
-    loading: boolean
     overtimeType: string
     selectedRequest?: IOvertime
     handleClose: () => void
@@ -252,9 +250,10 @@ interface ModalProps {
     }): void
 }
 
-function OvertimeApprovalModal({ isApproved, overtimeType, loading, selectedRequest, isModalOpen, overtimeApproval, handleClose, fetchData }: ModalProps) {
+function OvertimeApprovalModal({ isApproved, overtimeType, selectedRequest, isModalOpen, overtimeApproval, handleClose, fetchData }: ModalProps) {
     const [remarks, setRemarks] = useState('')
     const [messageApi, contextHolder] = useMessage()
+    const [loading, setLoading] = useState(false)
     const key = 'error'
 
     async function onSubmit() {
@@ -268,6 +267,7 @@ function OvertimeApprovalModal({ isApproved, overtimeType, loading, selectedRequ
                 })
                 return
             }
+            setLoading(true)
             const url = isApproved ? 'approve-overtime/' : 'reject-overtime/'
             const payload = {
                 remarks,
@@ -289,6 +289,7 @@ function OvertimeApprovalModal({ isApproved, overtimeType, loading, selectedRequ
             return err
         } finally {
             fetchData({ type: overtimeType })
+            setLoading(false)
         }
     }
 

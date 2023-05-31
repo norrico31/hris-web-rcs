@@ -215,7 +215,6 @@ export default function LeaveApproval() {
                     handleCancel={() => setIsModalOpen(false)}
                 />
                 <LeaveApprovalModal
-                    loading={loading}
                     leaveType={leaveType}
                     fetchData={fetchData}
                     leaveApproval={leaveApproval}
@@ -242,7 +241,6 @@ interface ModalProps {
     isModalOpen: boolean
     leaveType: string
     isApproved: boolean
-    loading: boolean
     selectedRequest?: ILeave
     handleClose: () => void
     leaveApproval(url: string, remarks: Payload): Promise<AxiosResponse<any, any> | undefined>
@@ -252,9 +250,10 @@ interface ModalProps {
     }): void
 }
 
-function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, isModalOpen, leaveApproval, handleClose, fetchData }: ModalProps) {
+function LeaveApprovalModal({ isApproved, leaveType, selectedRequest, isModalOpen, leaveApproval, handleClose, fetchData }: ModalProps) {
     const [remarks, setRemarks] = useState('')
     const [messageApi, contextHolder] = useMessage()
+    const [loading, setLoading] = useState(false)
     const key = 'error'
 
     async function onSubmit() {
@@ -266,6 +265,7 @@ function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, i
                     content: `Please enter remarks before ${isApproved ? 'approve' : 'reject'}`,
                 })
             }
+            setLoading(true)
             const payload = {
                 remarks,
                 reason: selectedRequest?.reason,
@@ -285,6 +285,7 @@ function LeaveApprovalModal({ isApproved, loading, leaveType, selectedRequest, i
             return err
         } finally {
             fetchData({ type: leaveType })
+            setLoading(false)
         }
     }
     return <Modal title={`Leave - ${isApproved ? 'Approve' : 'Reject'}`} open={isModalOpen} onCancel={handleClose} footer={null} forceRender>

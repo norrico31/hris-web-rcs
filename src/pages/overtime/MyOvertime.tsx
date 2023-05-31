@@ -62,14 +62,14 @@ export default function MyOvertime() {
             key: 'date_start',
             dataIndex: 'date_start',
             width: 200,
-            render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
+            // render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
         },
         {
             title: 'Date End',
             key: 'date_end',
             dataIndex: 'date_end',
             width: 200,
-            render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
+            // render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
         },
         {
             title: 'Time Start',
@@ -224,49 +224,68 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         if (selectedData != undefined) {
             form.setFieldsValue({
                 ...selectedData,
-                date: selectedData?.date != null ? dayjs(selectedData?.date, 'YYYY-MM-DD') : null,
+                date_start: selectedData?.date_start != null ? dayjs(selectedData?.date_start, 'YYYY-MM-DD') : null,
+                date_end: selectedData?.date_end != null ? dayjs(selectedData?.date_end, 'YYYY-MM-DD') : null,
                 planned_ot_start: selectedData?.planned_ot_start != null ? dayjs(selectedData?.planned_ot_start, 'HH:mm') : null,
                 planned_ot_end: selectedData?.planned_ot_end != null ? dayjs(selectedData?.planned_ot_end, 'HH:mm') : null,
             })
         } else form.resetFields()
     }, [selectedData])
 
-    function onFinish({ date, planned_ot_start, planned_ot_end, ...restProps }: IOvertime) {
-        setLoading(true)
-        date = dayjs(date).format('YYYY-MM-DD')
+    async function onFinish({ date_start, date_end, planned_ot_start, planned_ot_end, ...restProps }: IOvertime) {
+        date_start = dayjs(date_start).format('YYYY-MM-DD')
+        date_end = dayjs(date_end).format('YYYY-MM-DD')
         planned_ot_start = dayjs(planned_ot_start).format('LT')
         planned_ot_end = dayjs(planned_ot_end).format('LT')
         restProps = { ...restProps } as any
         setLoading(true)
-        let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, date, id: selectedData.id, planned_ot_start, planned_ot_end }) : POST(OVERTIME.POST, { ...restProps, date, planned_ot_start, planned_ot_end })
-        result.then(() => {
+        try {
+            let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, date_start, date_end, id: selectedData.id, planned_ot_start, planned_ot_end }) : POST(OVERTIME.POST, { ...restProps, date_start, date_end, planned_ot_start, planned_ot_end })
+            const res = await result
+            console.log(res)
             form.resetFields()
             handleCancel()
-        }).catch((err) => messageApi.open({
-            key,
-            type: 'error',
-            content: err?.response?.data?.message,
-            duration: 5
-        })).finally(() => {
+        } catch (err: any) {
+            messageApi.open({
+                key,
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 5
+            })
+            setLoading(false)
+        } finally {
             fetchData({ type: overtimeType })
             setLoading(false)
-        })
+        }
     }
 
     return <Modal title={`${selectedData ? 'Update ' : 'Submit '} Overtime Request`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
-            <FormItem
-                label="Overtime Date"
-                name="date"
-                required
-                rules={[{ required: true, message: '' }]}
-            >
-                <DatePicker
-                    format='YYYY/MM/DD'
-                    style={{ width: '100%' }}
-                />
-            </FormItem>
+            <Row justify='space-around'>
+                <FormItem
+                    label="Start Date"
+                    name="date_start"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+                    <DatePicker
+                        format='YYYY/MM/DD'
+                        style={{ width: '100%' }}
+                    />
+                </FormItem>
+                <FormItem
+                    label="End Date"
+                    name="date_end"
+                    required
+                    rules={[{ required: true, message: '' }]}
+                >
+                    <DatePicker
+                        format='YYYY/MM/DD'
+                        style={{ width: '100%' }}
+                    />
+                </FormItem>
+            </Row>
             <Row justify='space-around'>
                 <FormItem
                     label="Start Time"
@@ -379,7 +398,8 @@ export function OvertimeDescription({ selectedRequest, remarks, setRemarks }: Ov
             <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
             <Descriptions.Item label="Requested Date" span={2}>{new Date(selectedRequest?.created_at!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
             <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
-            <Descriptions.Item label="Date Overtime" span={2}>{new Date(selectedRequest?.date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Date Start Overtime" span={2}>{new Date(selectedRequest?.date_start + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Date End Overtime" span={2}>{new Date(selectedRequest?.date_end + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
             <Descriptions.Item label="Planned OT Start" span={2}>{selectedRequest?.planned_ot_start?.toString()}</Descriptions.Item>
             <Descriptions.Item label="Planned OT End" span={2}>{selectedRequest?.planned_ot_end?.toString()}</Descriptions.Item>
         </Descriptions>

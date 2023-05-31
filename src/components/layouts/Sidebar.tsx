@@ -28,6 +28,8 @@ export default function Sidebar({ onSelect }: Props) {
             setLocationKey('/employee')
         } else if (location?.pathname.includes('/tasks/')) {
             setLocationKey('/tasks')
+        } else if (location?.pathname.includes('/team/')) {
+            setLocationKey('/team')
         } else if (location?.pathname.includes('/overtime/')) {
             setLocationKey('/overtime')
         } else if (location?.pathname.includes('/announcements/')) {
@@ -137,6 +139,13 @@ function filterMenu(user: IUser) {
             <FaTasks />,
             undefined,
             rootPath.includes('tasks')
+        ),
+        getItemLinks(
+            <Link to='/team'>My Team</Link>,
+            '/team',
+            <FaUsers />,
+            undefined,
+            true // rootPath.includes('teams')
         ),
         getItemLinks(
             'System Settings',

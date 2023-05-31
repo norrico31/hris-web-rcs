@@ -36,11 +36,11 @@ export default function Memorandums() {
             key: 'type',
             dataIndex: 'type',
         },
-        {
-            title: 'FIle',
-            key: 'file',
-            dataIndex: 'file',
-        },
+        // {
+        //     title: 'FIle',
+        //     key: 'file',
+        //     dataIndex: 'file',
+        // },
         {
             title: 'Status',
             key: 'is_active',

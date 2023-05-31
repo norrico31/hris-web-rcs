@@ -195,27 +195,31 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
             })
     }
 
-    function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: ILeave) {
+    async function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: ILeave) {
         setLoading(true)
         date_start = dayjs(date_start).format('YYYY/MM/DD') as any
         date_end = dayjs(date_end).format('YYYY/MM/DD') as any
         time_start = dayjs(time_start).format('LT')
         time_end = dayjs(time_end).format('LT')
         restProps = { ...restProps, date_start, date_end, time_start, time_end } as any
-        setLoading(true)
-        let result = selectedData ? PUT(LEAVES.PUT + selectedData?.id, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
-        result.then(() => {
+        try {
+            let result = selectedData ? PUT(LEAVES.PUT + selectedData?.id, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
+            const res = await result
+            console.log(res)
             form.resetFields()
             handleCancel()
-        }).catch((err) => messageApi.open({
-            key,
-            type: 'error',
-            content: err?.response?.data?.message,
-            duration: 5
-        })).finally(() => {
+        } catch (err: any) {
+            messageApi.open({
+                key,
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 5
+            })
+            setLoading(false)
+        } finally {
             fetchData({ type: leaveType })
             setLoading(false)
-        })
+        }
     }
 
     return <Modal title='Request a Leave' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
