@@ -43,7 +43,7 @@ export const Divider = styled(AntDDivider)`
     margin: .5rem;
 `
 
-function debounce(cb: (...search: string[]) => void, delay: number) {
+export function debounce(cb: (...search: string[]) => void, delay: number) {
     let timerId: NodeJS.Timeout
     return (...args: string[]) => {
         if (timerId) {

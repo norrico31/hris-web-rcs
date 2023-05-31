@@ -12,8 +12,8 @@ import { TableParams, ITasks, TasksRes, IArguments } from '../shared/interfaces'
 const { GET } = useAxios()
 const [{ TASKS }] = useEndpoints()
 
-export default function TasksArchives() {
-    renderTitle('Tasks - Archives')
+export default function MyTaskArvhices() {
+    renderTitle('My Tasks - Archives')
     const [data, setData] = useState<ITasks[]>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')

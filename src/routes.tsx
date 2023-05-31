@@ -14,7 +14,8 @@ import EmployeeEdit from './pages/EmployeeEdit'
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const TimeKeeping = lazy(() => import('./pages/TimeKeeping'))
 const Leave = lazy(() => import('./pages/Leave'))
-const MyTasks = lazy(() => import('./pages/MyTasks'))
+const Tasks = lazy(() => import('./pages/Tasks'))
+const MyTeamTask = lazy(() => import('./pages/MyTeamTask'))
 const TasksArchives = lazy(() => import('./pages/TasksArchives'))
 const EmployeeFiles = lazy(() => import('./pages/EmployeeFiles'))
 const EmployeeFilesArchives = lazy(() => import('./pages/EmployeeFilesArchives'))
@@ -24,6 +25,9 @@ const WhosInOut = lazy(() => import('./pages/WhosInOut'))
 const Announcements = lazy(() => import('./pages/Announcements'))
 const AnnouncementsArchives = lazy(() => import('./pages/AnnouncementArchives'))
 const Profile = lazy(() => import('./pages/Profile'))
+
+// My Team Task
+const MyTeamTasks = lazy(() => import('./pages/MyTeamTask'))
 
 // My Teams
 const MyTeam = lazy(() => import('./pages/MyTeam'))
@@ -155,13 +159,40 @@ export const routes = createBrowserRouter([
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Profile /></Suspense>
             },
             {
-                path: 'tasks',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTasks /></Suspense>
-            },
-            {
                 path: 'team',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTeam /></Suspense>,
             },
+            {
+                path: 'teamtask',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTeamTasks /></Suspense>,
+            },
+            {
+                path: 'tasks',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><Tasks /></Suspense>,
+
+            },
+            {
+                path: 'tasks/archives',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><TasksArchives /></Suspense>
+            },
+            // {
+            //     path: 'tasks',
+            //     element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTasks /></Suspense>,
+            //     children: [
+            //         {
+            //             path: 'mytasks',
+            //             element: <Suspense fallback={<Content><Skeleton /></Content>}><MyAllTasks /></Suspense>,
+            //         },
+            //         {
+            //             path: 'mytaskteam',
+            //             element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTaskTeam /></Suspense>,
+            //         },
+            //         {
+            //             path: 'archives',
+            //             element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTaskArchives /></Suspense>,
+            //         },
+            //     ]
+            // },
             {
                 path: 'team/edit/:teamId',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTeamEdit /></Suspense>,
@@ -180,10 +211,7 @@ export const routes = createBrowserRouter([
                     },
                 ]
             },
-            {
-                path: 'tasks/archives',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><TasksArchives /></Suspense>
-            },
+
             {
                 path: 'leave',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Leave /></Suspense>,

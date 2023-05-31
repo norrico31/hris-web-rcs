@@ -337,6 +337,8 @@ export const useEndpoints = () => {
         TASKS: {
             ARCHIVES: '/tasks/archives',
             RESTORE: 'tasks/restore/',
+            TEAMTASKS: '/tasks/team_task',
+            EMPLOYEES: '/tasks/team_task',
             GET: '/tasks',
             POST: '/tasks/',
             PUT: '/tasks/',

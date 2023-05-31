@@ -25,7 +25,7 @@ import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ TASKS, SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS }, }] = useEndpoints()
 
-export default function MyTasks() {
+export default function Tasks() {
     renderTitle('My Tasks')
     const { user, loading: loadingUser } = useAuthContext()
     const navigate = useNavigate()

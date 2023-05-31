@@ -6,13 +6,14 @@ import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalen
 import { MdAdminPanelSettings } from 'react-icons/md'
 import { FaTasks, FaCriticalRole, FaUsersCog, FaUsers } from 'react-icons/fa'
 import { GiHumanPyramid } from 'react-icons/gi'
-import { BiTimeFive, BiTimer } from 'react-icons/bi'
+import { BiTimeFive, BiTimer, BiUserCheck } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
 import { TfiAnnouncement } from 'react-icons/tfi'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { IRolePermission, IUser } from '../../shared/interfaces'
 import { ADMINSETTINGSPATHS, CLIENTSETTINGSPATHS, HRSETTINGSPATHS, ROOTPATHS, TASKSETTINGSPATHS } from '../../shared/constants'
+import { GrDocumentUser } from 'react-icons/gr'
 
 type Props = {
     onSelect: () => void
@@ -137,6 +138,13 @@ function filterMenu(user: IUser) {
             <Link to='/tasks'>My Tasks</Link>,
             '/tasks',
             <FaTasks />,
+            undefined,
+            rootPath.includes('tasks')
+        ),
+        getItemLinks(
+            <Link to='/teamtask'>My Team Tasks</Link>,
+            '/teamtask',
+            <BiUserCheck />,
             undefined,
             rootPath.includes('tasks')
         ),
