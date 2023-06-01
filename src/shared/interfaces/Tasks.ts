@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs"
-import { IUser, AxiosGetData, ITeam } from "."
+import { IUser, AxiosGetData, ITeam, IDepartment } from "."
 
 interface IRelations {
     id: string
@@ -20,6 +20,25 @@ export interface ITasks extends IUser {
     task_type: IRelations
     team: ITeam
     task_type_id: string | null
+    updated_at: string
+    user_id: string
+}
+
+export interface ITeamTask {
+    created_at: string
+    deleted_at: string | null
+    department: IDepartment
+    department_id: string
+    description: string
+    id: string
+    name: string
+    updated_at: string
+}
+export interface ITeamProjects {
+    created_at: string
+    id: string
+    team_id: string
+    teams: ITeamTask[]
     updated_at: string
     user_id: string
 }

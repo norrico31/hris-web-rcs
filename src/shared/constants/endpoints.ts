@@ -347,6 +347,7 @@ export const useEndpoints = () => {
             ARCHIVES: '/tasks/archives',
             RESTORE: 'tasks/restore/',
             TEAMTASKS: '/tasks/team_task',
+            TEAMTASKSPROJECTS: '/employees/manager/myteams/teams/',
             EMPLOYEES: '/tasks/team_task',
             GET: '/tasks',
             POST: '/tasks/',

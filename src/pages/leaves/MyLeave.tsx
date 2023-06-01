@@ -169,8 +169,8 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                 ...selectedData,
                 date_start: selectedData?.date_start ? dayjs(selectedData?.date_start, 'YYYY/MM/DD') : null,
                 date_end: selectedData?.date_end ? dayjs(selectedData?.date_end, 'YYYY/MM/DD') : null,
-                time_start: selectedData?.time_start ? dayjs(timeStart, 'HH:mm') : null,
-                time_end: selectedData?.time_end ? dayjs(timeEnd, 'HH:mm') : null,
+                time_start: selectedData?.time_start ? dayjs(timeStart, 'h:mm A') : null,
+                time_end: selectedData?.time_end ? dayjs(timeEnd, 'h:mm A') : null,
             })
         } else form.resetFields()
 
@@ -269,7 +269,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
                 </FormItem>
                 <FormItem
                     label="End Time"
@@ -277,7 +277,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     required
                     rules={[{ required: true, message: '' }]}
                 >
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
                 </FormItem>
             </Row>
             <FormItem

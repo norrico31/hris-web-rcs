@@ -52,17 +52,17 @@ export default function MyOvertime() {
 
     const columns: ColumnsType<IOvertime> = [
         {
-            title: 'Status',
-            key: 'status',
-            dataIndex: 'status',
-            width: 120,
-        },
-        {
             title: 'Date Start',
             key: 'date_start',
             dataIndex: 'date_start',
             width: 200,
             // render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
+        },
+        {
+            title: 'Time Start',
+            key: 'planned_ot_start',
+            dataIndex: 'planned_ot_start',
+            width: 150
         },
         {
             title: 'Date End',
@@ -72,23 +72,16 @@ export default function MyOvertime() {
             // render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
         },
         {
-            title: 'Time Start',
-            key: 'planned_ot_start',
-            dataIndex: 'planned_ot_start',
-            width: 150
-        },
-        {
             title: 'Time End',
             key: 'planned_ot_end',
             dataIndex: 'planned_ot_end',
             width: 150
         },
         {
-            title: 'Reason',
-            key: 'reason',
-            dataIndex: 'reason',
-            width: 250,
-            align: 'center'
+            title: 'Status',
+            key: 'status',
+            dataIndex: 'status',
+            width: 120,
         },
         {
             title: 'Action',
@@ -226,8 +219,8 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                 ...selectedData,
                 date_start: selectedData?.date_start != null ? dayjs(selectedData?.date_start, 'YYYY-MM-DD') : null,
                 date_end: selectedData?.date_end != null ? dayjs(selectedData?.date_end, 'YYYY-MM-DD') : null,
-                planned_ot_start: selectedData?.planned_ot_start != null ? dayjs(selectedData?.planned_ot_start, 'HH:mm') : null,
-                planned_ot_end: selectedData?.planned_ot_end != null ? dayjs(selectedData?.planned_ot_end, 'HH:mm') : null,
+                planned_ot_start: selectedData?.planned_ot_start != null ? dayjs(selectedData?.planned_ot_start, 'h:mm A') : null,
+                planned_ot_end: selectedData?.planned_ot_end != null ? dayjs(selectedData?.planned_ot_end, 'h:mm A') : null,
             })
         } else form.resetFields()
     }, [selectedData])
@@ -294,7 +287,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     rules={[{ required: true, message: '' }]}
                 >
 
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
                 </FormItem>
                 <FormItem
                     label="End Time"
@@ -302,7 +295,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     required
                     rules={[{ required: true, message: '' }]}
                 >
-                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm a" />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
                 </FormItem>
             </Row>
             <FormItem

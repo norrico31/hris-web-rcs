@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate, Outlet } from "react-router-dom"
 import { Skeleton } from "antd"
 import styled from "styled-components";
 import { Layout } from "./components"
+import Login from './pages/Login'
 import TasksSettings from './pages/system-settings/task-settings/TasksSettings'
 import HRSettings from './pages/system-settings/hr-settings/HRSettings'
 import ExpenseSettings from './pages/system-settings/expense-settings/ExpenseSettings'
@@ -11,8 +12,7 @@ import EmployeeEdit from './pages/EmployeeEdit'
 
 // import Login from './pages/Login'
 // Root
-const LoginLayout = lazy(() => import('./pages/LoginLayout'))
-const Login = lazy(() => import('./pages/Login'))
+// const Login = lazy(() => import('./pages/Login'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const TimeKeeping = lazy(() => import('./pages/TimeKeeping'))
@@ -31,6 +31,7 @@ const Profile = lazy(() => import('./pages/Profile'))
 
 // My Team Task
 const MyTeamTasks = lazy(() => import('./pages/MyTeamTask'))
+const ProjectTeams = lazy(() => import('./pages/teams/ProjectTeams'))
 
 // My Teams
 const MyTeam = lazy(() => import('./pages/MyTeam'))
@@ -206,7 +207,7 @@ export const routes = createBrowserRouter([
                     },
                     {
                         path: 'teams',
-                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ClientSchedule /></Suspense>
+                        element: <Suspense fallback={<Content><Skeleton /></Content>}><ProjectTeams /></Suspense>
                     },
                     {
                         path: 'schedules',
@@ -454,18 +455,18 @@ export const routes = createBrowserRouter([
         ]
     },
     {
-        path: '/',
-        element: <LoginLayout />,
-        children: [
-            {
-                path: 'login',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><Login /></Suspense>,
-            },
-            {
-                path: 'forgotpassword',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><ForgotPassword /></Suspense>,
-            },
-        ]
+        path: '/login',
+        element: <Login />,
+        // children: [
+        //     {
+        //         path: 'login',
+        //         element: <Suspense fallback={<Content><Skeleton /></Content>}><Login /></Suspense>,
+        //     },
+        //     {
+        //         path: 'forgotpassword',
+        //         element: <Suspense fallback={<Content><Skeleton /></Content>}><ForgotPassword /></Suspense>,
+        //     },
+        // ]
     },
 ])
 

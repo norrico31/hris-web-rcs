@@ -72,13 +72,13 @@ export default function MyTeam() {
             width: 130,
             render: (_, record) => record.department?.name ?? '-'
         },
-        {
-            title: 'Date Hired',
-            key: 'date_hired',
-            dataIndex: 'date_hired',
-            align: 'center',
-            width: 110,
-        },
+        // {
+        //     title: 'Date Hired',
+        //     key: 'date_hired',
+        //     dataIndex: 'date_hired',
+        //     align: 'center',
+        //     width: 110,
+        // },
         {
             title: 'Status',
             key: 'is_active',

@@ -1,6 +1,7 @@
 // admin@redcoresolutions.com
 // linemanager@redcoresolutions.com
 // katrina.jose@redcoresolutions.com
+// rcs.approver@gmail.com
 // password.123
 
 // DASHBOARD (announcements, HOLIDAYS, LEAVES) (REMOVE EVENTS)

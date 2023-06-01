@@ -17,7 +17,7 @@ export default function MyTeamEdit() {
     const { teamId } = useParams()
     let { pathname } = useLocation()
     const navigate = useNavigate()
-    const { width } = useWindowSize()
+    // const { width } = useWindowSize()
     if (teamId == undefined) return <Navigate to='/employee' />
 
     const [data, setData] = useState<IUser | undefined>()
@@ -37,14 +37,16 @@ export default function MyTeamEdit() {
 
     const pathKey = pathname.split('/').pop()
     return <>
-        <StyledRow justify='space-between' wrap align='middle' style={{
+        {/* <StyledRow justify='space-between' wrap align='middle' style={{
             gap: width < 579 ? '.5rem' : 'initial',
             textAlign: width < 579 ? 'center' : 'initial'
-        }}>
+        }}> */}
+        <StyledRow justify='space-between' wrap align='middle'>
             <Col xs={24} sm={12} md={12} lg={12} xl={11}>
                 <h2 className='color-white'>Team Profile - {data?.full_name}</h2>
             </Col>
-            <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}>
+            {/* <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}> */}
+            <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: 'right' }}>
                 <Button onClick={() => navigate('/team')}>Back to teams</Button>
             </Col>
         </StyledRow>
