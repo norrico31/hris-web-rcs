@@ -44,7 +44,7 @@ export const EMPLOYEEPATHS = [
     //     key: '/salaryhistory',
     // },
     {
-        label: 'Salary Adjustment Type',
+        label: 'Salary Adjustment',
         key: '/salaryadjustmenttype',
     },
     {

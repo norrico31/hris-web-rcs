@@ -266,8 +266,6 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
             <FormItem
                 label="First Name"
                 name="first_name"
-                required
-                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter first name...' />
             </FormItem>
@@ -280,24 +278,18 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
             <FormItem
                 label="Last Name"
                 name="last_name"
-                required
-                rules={[{ required: true, message: '' }]}
             >
                 <Input placeholder='Enter last name...' />
             </FormItem>
             <FormItem
                 label="Email Address"
                 name="email"
-                required
-                rules={[{ required: true, message: '' }]}
             >
                 <Input type='email' placeholder='Enter email address...' />
             </FormItem>
             <FormItem
                 label="Role"
                 name="role_id"
-                required
-                rules={[{ required: true, message: '' }]}
             >
                 <Select
                     optionFilterProp="children"
@@ -334,8 +326,6 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
             <FormItem
                 label="Department"
                 name="department_id"
-                required
-                rules={[{ required: true, message: '' }]}
             >
                 <Select
                     optionFilterProp="children"

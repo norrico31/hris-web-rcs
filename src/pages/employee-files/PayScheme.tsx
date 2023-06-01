@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Button, Descriptions, Input, Row, Skeleton, Form as AntDForm } from 'antd'
+import { Button, Descriptions, Input, Row, Skeleton, Form as AntDForm, Select } from 'antd'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { Card, Divider, Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
-import { useAxios } from '../../shared/lib/axios'
+import axiosClient, { useAxios } from '../../shared/lib/axios'
+import { IBankDetails } from '../../shared/interfaces'
 
-const [{ EMPLOYEE201: { PAYSCHEME } }] = useEndpoints()
+const [{ EMPLOYEE201: { PAYSCHEME }, SYSTEMSETTINGS: { HRSETTINGS: { BANKDETAILS: { LISTS } } } }] = useEndpoints()
 const { PUT } = useAxios()
 
 const { Item: Item, useForm } = AntDForm
@@ -13,6 +14,7 @@ const { Item: Item, useForm } = AntDForm
 export default function PayScheme() {
     const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
     const [form] = useForm<Record<string, any>>()
+    const [lists, setLists] = useState<IBankDetails[]>([])
 
     const [loading, setLoading] = useState(false)
 
@@ -20,6 +22,14 @@ export default function PayScheme() {
         form.setFieldsValue({
             ...employeeInfo?.bank_detail
         })
+        const controller = new AbortController();
+        axiosClient(LISTS, { signal: controller.signal })
+            .then((res) => {
+                setLists(res?.data ?? [])
+            })
+        return () => {
+            controller.abort()
+        }
     }, [employeeInfo])
 
     function onFinish(values: Record<string, any>) {
@@ -44,15 +54,29 @@ export default function PayScheme() {
                                 <Input placeholder='Enter account number...' />
                             </Item>
                         </Descriptions.Item>
-                        <Descriptions.Item label="Bank Name">
+                        <Descriptions.Item label="Bank Details">
                             <Item name="bank_name" >
-                                <Input placeholder='Enter bank name...' />
+                                <Select
+                                    placeholder='Select Bank details'
+                                    allowClear
+                                    showSearch
+                                    optionFilterProp="children"
+                                >
+                                    <Select.Option value="">Select Bank Details</Select.Option>
+                                    {lists.map((bank_detail) => (
+                                        <Select.Option value={bank_detail.name} key={bank_detail.id}>{bank_detail.name}</Select.Option>
+                                    ))}
+                                </Select>
                             </Item>
-                            {/* <Input placeholder='Enter bank name...' /> */}
                         </Descriptions.Item>
                         <Descriptions.Item label="Pay Scheme">
                             <Item name="pay_scheme" >
-                                <Input placeholder='Enter pay scheme...' />
+                                <Select
+                                    placeholder='Select pay scheme...'
+                                >
+                                    <Select.Option value="cash">Cash</Select.Option>
+                                    <Select.Option value="bank_account">Bank Account</Select.Option>
+                                </Select>
                             </Item>
                             {/* <Input placeholder='Enter pay scheme...' /> */}
                         </Descriptions.Item>

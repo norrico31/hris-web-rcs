@@ -75,7 +75,7 @@ export default function SalaryAdjustmentTyp() {
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
     return (
-        <Card title='Salary Adjustment Type'>
+        <Card title='Salary Adjustment'>
             <TabHeader
                 handleSearch={handleSearch}
             />

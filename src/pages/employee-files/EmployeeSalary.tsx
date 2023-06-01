@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button, Form as AntDForm, Input, Modal, Select, Space, Upload } from 'antd'
+import { Button, Form as AntDForm, Input, Modal, Select, Space, Upload, InputNumber } from 'antd'
 import { InboxOutlined, PlusOutlined } from '@ant-design/icons';
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { Action, Card } from '../../components'
@@ -11,7 +11,7 @@ import axiosClient, { useAxios } from '../../shared/lib/axios'
 import useMessage from 'antd/es/message/useMessage';
 
 const [{ EMPLOYEE201: { EMPLOYEESALARY }, SYSTEMSETTINGS: { HRSETTINGS: { SALARYRATES } } }] = useEndpoints()
-const { GET, POST, DELETE } = useAxios()
+const { GET, POST, DELETE, PUT } = useAxios()
 
 export default function EmployeeSalary() {
     const { employeeId } = useEmployeeCtx()
@@ -40,6 +40,7 @@ export default function EmployeeSalary() {
             title: 'Salary Rate',
             key: 'salary_rate',
             dataIndex: 'salary_rate',
+            render: (salaryRate) => salaryRate?.rate,
         },
         {
             title: 'Description',
@@ -164,7 +165,7 @@ function EmployeeSalaryModal({ title, employeeId, selectedData, isModalOpen, han
     function onFinish(values: Record<string, any>) {
         setLoading(true)
         const editUrl = selectedData != undefined ? EMPLOYEESALARY.PUT + selectedData?.id : EMPLOYEESALARY.PUT + employeeId
-        let result = selectedData ? POST(editUrl, { ...values }) : POST(EMPLOYEESALARY.POST, { ...values, user_id: employeeId })
+        let result = selectedData ? PUT(editUrl, { ...values, user_id: employeeId }) : POST(EMPLOYEESALARY.POST, { ...values, user_id: employeeId })
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -182,7 +183,10 @@ function EmployeeSalaryModal({ title, employeeId, selectedData, isModalOpen, han
                 required
                 rules={[{ required: true, message: '' }]}
             >
-                <Input placeholder='Enter gross salary...' />
+                <InputNumber
+                    placeholder='Enter gross salary...'
+                    style={{ width: '100%' }}
+                />
             </Item>
             <Item
                 label="Salary Rate"

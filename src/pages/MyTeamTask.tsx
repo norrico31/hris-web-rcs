@@ -3,7 +3,8 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { DatePicker, Space, Button, Select, Row, Skeleton, Input, DatePickerProps } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { useAuthContext } from '../shared/contexts/Auth'
-import { Table, Divider, debounce } from '../components'
+import { useSearchDebounce } from '../shared/hooks/useDebounce'
+import { Table, Divider } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useAxios } from '../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../shared/constants'
@@ -29,41 +30,34 @@ export default function MyTeamTask() {
     const [isModalDownload, setIsModalDownload] = useState(false)
     const [loading, setLoading] = useState(true)
     const [users, setUsers] = useState<Array<string>>([])
+    const debounceSearch = useSearchDebounce(search)
     const [selectedUser, setSelectedUser] = useState<string | undefined>(undefined)
     const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined)
 
     const columns = useMemo(renderColumns, [data])
 
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            search: str,
-            date: selectedDate,
-            user: selectedUser,
-            page: tableParams?.pagination?.current ?? 1,
-            pageSize: tableParams?.pagination?.pageSize
-        })
-    }
-    const debouncedSearch = useCallback(debounce((handleSearch), 500), [])
+    const controller = new AbortController();
+    useEffect(() => {
+        GET<any>('tasks/team_task/users', controller.signal)
+            .then(setUsers);
+        return () => {
+            controller.abort()
+        }
+    }, [])
 
     useEffect(function fetch() {
-        const controller = new AbortController();
         fetchData({
-            search,
+            search: debounceSearch,
             signal: controller.signal,
             date: selectedDate,
             user: selectedUser,
             page: tableParams?.pagination?.current ?? 1,
             pageSize: tableParams?.pagination?.pageSize
         })
-
-        GET<any>('tasks/team_task/users')
-            .then(setUsers);
-
         return () => {
             controller.abort()
         }
-    }, [selectedDate, selectedUser])
+    }, [selectedDate, selectedUser, debounceSearch])
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
@@ -108,12 +102,8 @@ export default function MyTeamTask() {
                         <Select.Option value={user} key={user} style={{ color: '#777777' }}>{user}</Select.Option>
                     ))}
                 </Select>
-                <DatePicker format='YYYY-MM-DD' defaultValue={dayjs(selectedDate)} onChange={handleDatePickerChange} />
-                <Input.Search placeholder='Search...' value={search} onChange={(evt) => {
-                    const searchTerm = evt.target.value
-                    setSearch(searchTerm)
-                    debouncedSearch(searchTerm)
-                }} />
+                <DatePicker format='YYYY-MM-DD' onChange={handleDatePickerChange} />
+                <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
             </Space>
         </Row>
         <Divider />

@@ -438,8 +438,8 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         let payload = {
             ...values,
             date,
-            tasks: dataColumns
-        }
+            tasks: removeRowsWithOnlyId(dataColumns)
+        };
         let result = POST(TASKS.POST, { ...payload, date, ...(values?.description != undefined && { description: values?.description }) })
         result.then(() => {
             form.resetFields()
@@ -459,6 +459,27 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         })
     }
 
+    // function removeRowsWithOnlyId(dataColumns: any[]) {
+    //     const filteredColumns = dataColumns.filter((row: any) => {
+    //         const hasNullValue = Object.values(row).some((value) => value === null);
+    //         return !hasNullValue;
+    //     });
+    
+    //     const tasks = filteredColumns.filter((row: any) => Object.keys(row).length > 1);
+    
+    //     return tasks.length > 0 ? tasks : undefined;
+    // }
+
+    function removeRowsWithOnlyId(dataColumns: any[]) {
+        const filteredColumns = dataColumns.filter((row: any) => {
+            const hasNullValue = Object.values(row).some((value) => value === null);
+            return !(Object.keys(row).length === 1 && row.hasOwnProperty('id')) && !hasNullValue;
+        });
+    
+        return filteredColumns.length > 0 ? filteredColumns : undefined;
+    }
+
+    
     return <>
         {contextHolder}
         <Title level={2}>My Tasks - {title}</Title>
