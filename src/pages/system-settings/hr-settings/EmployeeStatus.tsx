@@ -196,7 +196,7 @@ function EmployeeStatusModal({ title, selectedData, isModalOpen, handleCancel, f
                 label="Employee Status Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter employee status name...' />
             </FormItem>

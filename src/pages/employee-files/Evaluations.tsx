@@ -216,7 +216,7 @@ function EvaluationsModal({ title, employeeId, selectedData, isModalOpen, handle
                 label="Copy"
                 name="copy"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter copy...' />
             </Item>
@@ -224,7 +224,7 @@ function EvaluationsModal({ title, employeeId, selectedData, isModalOpen, handle
                 label="Type"
                 name="type"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter type...' />
             </Item>
@@ -254,7 +254,7 @@ function EvaluationsModal({ title, employeeId, selectedData, isModalOpen, handle
                 label="Status"
                 name="is_active"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Select
                     placeholder='Select status...'

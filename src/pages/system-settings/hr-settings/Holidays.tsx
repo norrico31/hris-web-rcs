@@ -240,7 +240,7 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 label="Holiday Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter holiday name...' />
             </FormItem>
@@ -248,7 +248,7 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 label="Holiday Type"
                 name="holiday_type_id"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Select placeholder='Select holiday type...' optionFilterProp="children" allowClear showSearch>
                     {lists?.holidayTypes.map((holiday) => (
@@ -262,7 +262,7 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                         label="Daily Rate"
                         name="daily_rate_id"
                         required
-                        rules={[{ required: true, message: '' }]}
+                        rules={[{ required: true, message: 'Required' }]}
                     >
                         <Select placeholder='Select Daily Rate...' optionFilterProp="children" allowClear showSearch>
                             {lists?.dailyRates.map((daily) => (
@@ -276,7 +276,7 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                         label="Holiday Date"
                         name="holiday_date"
                         required
-                        rules={[{ required: true, message: '' }]}
+                        rules={[{ required: true, message: 'Required' }]}
                     >
                         <DatePicker style={{ width: '100%' }} />
                     </FormItem>
@@ -286,7 +286,7 @@ function HolidaysModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 label="Locally Observed?"
                 name="is_local"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Select placeholder='Enter locally observed...' optionFilterProp="children" showSearch allowClear>
                     <Select.Option value='yes' style={{ color: '#777777' }}>Yes</Select.Option>

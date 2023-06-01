@@ -464,9 +464,9 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
     //         const hasNullValue = Object.values(row).some((value) => value === null);
     //         return !hasNullValue;
     //     });
-    
+
     //     const tasks = filteredColumns.filter((row: any) => Object.keys(row).length > 1);
-    
+
     //     return tasks.length > 0 ? tasks : undefined;
     // }
 
@@ -475,11 +475,11 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             const hasNullValue = Object.values(row).some((value) => value === null);
             return !(Object.keys(row).length === 1 && row.hasOwnProperty('id')) && !hasNullValue;
         });
-    
+
         return filteredColumns.length > 0 ? filteredColumns : undefined;
     }
 
-    
+
     return <>
         {contextHolder}
         <Title level={2}>My Tasks - {title}</Title>
@@ -490,7 +490,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                     label="Task Name"
                     name="name"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Input placeholder='Enter task name...' />
                 </FormItem>
@@ -498,7 +498,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                     label="Date"
                     name="date"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -606,7 +606,7 @@ function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: Upd
                 label="Task Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter task name...' />
             </FormItem>
@@ -614,14 +614,14 @@ function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: Upd
                 label="Date"
                 name="date"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <DatePicker
                     format='YYYY/MM/DD'
                     style={{ width: '100%' }}
                 />
             </FormItem>
-            <FormItem name='team_id' label="Team" required rules={[{ required: true, message: '' }]}>
+            <FormItem name='team_id' label="Team" required rules={[{ required: true, message: 'Required' }]}>
                 <Select
                     placeholder='Select team'
                     allowClear

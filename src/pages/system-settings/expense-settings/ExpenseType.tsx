@@ -217,7 +217,7 @@ function ExpenseTypeModal({ title, selectedData, isModalOpen, handleCancel, fetc
                 label="Expense Type"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter expense name...' />
             </FormItem>
@@ -225,7 +225,7 @@ function ExpenseTypeModal({ title, selectedData, isModalOpen, handleCancel, fetc
                 label="Entry"
                 name="entry"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter expense entry...' />
             </FormItem>

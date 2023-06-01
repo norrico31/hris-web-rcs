@@ -175,7 +175,7 @@ export function TypesModal({ title, teamId, teamLists, selectedData, isModalOpen
                 label="Type Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter type name...' />
             </FormItem>

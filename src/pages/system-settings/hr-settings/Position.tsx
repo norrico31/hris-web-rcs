@@ -197,7 +197,7 @@ function PositionModal({ title, selectedData, isModalOpen, handleCancel, fetchDa
                 label="Position Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter position name...' />
             </FormItem>

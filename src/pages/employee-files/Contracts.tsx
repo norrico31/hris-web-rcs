@@ -103,7 +103,7 @@ export default function EmployeeContracts() {
         setSelectedData(undefined)
         setIsModalOpen(false)
     }
-    
+
     return (
         <Card title='Contracts'>
             <TabHeader
@@ -201,12 +201,12 @@ function ContractsModal({ title, employeeId, selectedData, isModalOpen, handleCa
 
     function handleDownload() {
         // TODO: Logic to retrieve the file URL or data
-    
+
         // Create a temporary link element
         const link = document.createElement('a');
         link.href = EMPLOYEE201.CONTRACTS.DOWNLOAD + `${selectedData?.id}`; // Replace 'your_file_url' with the actual file URL or data URL
         link.target = '_blank';
-    
+
         // Trigger the download
         link.click();
     }
@@ -218,7 +218,7 @@ function ContractsModal({ title, employeeId, selectedData, isModalOpen, handleCa
                 label="Type"
                 name="type"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter type...' />
             </Item>
@@ -235,21 +235,20 @@ function ContractsModal({ title, employeeId, selectedData, isModalOpen, handleCa
             {selectedData && selectedData.file_name && (
                 <Item>
                     <div>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ marginBottom: 8 }}>Download</span>
-                        <a href={selectedData.file_name} onClick={(e) => { e.preventDefault(); handleDownload(); }}>
-                        {selectedData.file_name}
-                        </a>
-                    </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ marginBottom: 8 }}>Download</span>
+                            <a href={selectedData.file_name} onClick={(e) => { e.preventDefault(); handleDownload(); }}>
+                                {selectedData.file_name}
+                            </a>
+                        </div>
                     </div>
                 </Item>
             )}
-
             <Item
                 label="Status"
                 name="is_active"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Select
                     placeholder='Select status...'

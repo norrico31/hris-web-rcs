@@ -97,7 +97,7 @@ export default function UserProfileEmployee() {
                             label="Employee Code"
                             name="employee_code"
                             required
-                            rules={[{ required: true, message: '' }]}
+                            rules={[{ required: true, message: 'Required' }]}
                         >
                             <Input placeholder='Enter employee code...' />
                         </Item>
@@ -275,7 +275,7 @@ export default function UserProfileEmployee() {
                         label="Team"
                         name="team_id"
                         required
-                        rules={[{ required: true, message: '' }]}
+                        rules={[{ required: true, message: 'Required' }]}
                     >
                         <Select
                             placeholder='Select line manager...'

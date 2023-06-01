@@ -196,7 +196,7 @@ function SalaryRatesModal({ title, selectedData, isModalOpen, handleCancel, fetc
                 label="Salary Rate"
                 name="rate"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter salary rate...' />
             </FormItem>

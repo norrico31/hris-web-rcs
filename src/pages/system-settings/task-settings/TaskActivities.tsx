@@ -171,7 +171,7 @@ export function ActivityModal({ title, teamId, teamLists, selectedData, isModalO
                 label="Activity Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter activity name...' />
             </FormItem>

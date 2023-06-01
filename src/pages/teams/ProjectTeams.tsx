@@ -158,7 +158,7 @@ function ProjectTeamsModal({ title, isModalOpen, selectedData, handleClose, fetc
         <Modal title={`Client and Schedule - ${title}`} open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
             <Form form={form} onFinish={onFinish} disabled={loading}>
                 <Col xs={24} sm={24} md={22} lg={10} xl={10} >
-                    <Item label="Project / Team" name="team_id" required rules={[{ required: true, message: '' }]}>
+                    <Item label="Project / Team" name="team_id" required rules={[{ required: true, message: 'Required' }]}>
                         <Select placeholder='Select team' allowClear showSearch optionFilterProp="children">
                             {teams.map((team) => (
                                 <Select.Option value={team.id} key={team.id}>{team.name}</Select.Option>

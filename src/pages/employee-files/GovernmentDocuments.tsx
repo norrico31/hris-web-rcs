@@ -158,12 +158,12 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
 
     function handleDownload() {
         // TODO: Logic to retrieve the file URL or data
-    
+
         // Create a temporary link element
         const link = document.createElement('a');
         link.href = downloadUrl + `${selectedData?.id}`; // Replace 'your_file_url' with the actual file URL or data URL
         link.target = '_blank';
-    
+
         // Trigger the download
         link.click();
     }
@@ -199,7 +199,7 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
                 label={title + ' Number'}
                 name={keyProp}
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input type='number' placeholder='Enter pagibig number...' />
             </FormItem>
@@ -216,12 +216,12 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
             {selectedData && selectedData.file_name && (
                 <FormItem>
                     <div>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ marginBottom: 8 }}>Download</span>
-                        <a href={selectedData.file_name} onClick={(e) => { e.preventDefault(); handleDownload(); }}>
-                        {selectedData.file_name}
-                        </a>
-                    </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ marginBottom: 8 }}>Download</span>
+                            <a href={selectedData.file_name} onClick={(e) => { e.preventDefault(); handleDownload(); }}>
+                                {selectedData.file_name}
+                            </a>
+                        </div>
                     </div>
                 </FormItem>
             )}

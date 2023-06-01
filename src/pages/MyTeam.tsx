@@ -146,8 +146,8 @@ export default function MyTeam() {
             </MainHeader>
             <TabHeader
                 handleSearch={handleSearch}
-                handleCreate={() => setIsModalOpen(true)}
-                handleModalArchive={() => navigate('/team/archives')}
+            // handleCreate={() => setIsModalOpen(true)}
+            // handleModalArchive={() => navigate('/team/archives')}
             />
             <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} onChange={onChange} />
             {/* <EmployeeModal

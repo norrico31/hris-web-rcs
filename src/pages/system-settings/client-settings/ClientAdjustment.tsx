@@ -224,11 +224,11 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
                 label="Client Adjustment"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter client branch adjustment name...' />
             </FormItem>
-            <FormItem name='client_id' label="Client" required rules={[{ required: true, message: '' }]}>
+            <FormItem name='client_id' label="Client" required rules={[{ required: true, message: 'Required' }]}>
                 <Select
                     placeholder='Select client...'
                     allowClear
@@ -240,7 +240,7 @@ function ClientAdjustmentModal({ title, selectedData, isModalOpen, handleCancel,
                     ))}
                 </Select>
             </FormItem>
-            <FormItem name='expense_type_id' label="Expense Type" required rules={[{ required: true, message: '' }]}>
+            <FormItem name='expense_type_id' label="Expense Type" required rules={[{ required: true, message: 'Required' }]}>
                 <Select
                     placeholder='Select expense type...'
                     allowClear

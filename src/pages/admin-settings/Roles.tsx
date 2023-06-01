@@ -210,7 +210,7 @@ function RoleModal({ title, isModalOpen, handleCancel, fetchData, navigate }: Ro
                 label="Role Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter position name...' />
             </FormItem>
@@ -264,7 +264,7 @@ export function RoleInputs({ selectedData, fetchData, handleCancel }: RoleInputP
             label="Role Name"
             name="name"
             required
-            rules={[{ required: true, message: '' }]}
+            rules={[{ required: true, message: 'Required' }]}
         >
             <Input placeholder='Enter position name...' />
         </FormItem>

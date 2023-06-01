@@ -211,7 +211,7 @@ function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }
                 label="Team Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter team name...' />
             </FormItem>
@@ -219,7 +219,7 @@ function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }
                 label="Departments"
                 name="department_id"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Select placeholder='Select team...' optionFilterProp="children" allowClear showSearch>
                     {departments.map((dep) => (

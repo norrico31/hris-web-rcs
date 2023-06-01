@@ -163,14 +163,12 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
 
     useEffect(() => {
         if (selectedData) {
-            const timeStart = selectedData?.time_start?.toString()?.split(' ')[0]
-            const timeEnd = selectedData?.time_end?.toString()?.split(' ')[0]
             form.setFieldsValue({
                 ...selectedData,
                 date_start: selectedData?.date_start ? dayjs(selectedData?.date_start, 'YYYY/MM/DD') : null,
                 date_end: selectedData?.date_end ? dayjs(selectedData?.date_end, 'YYYY/MM/DD') : null,
-                time_start: selectedData?.time_start ? dayjs(timeStart, 'h:mm A') : null,
-                time_end: selectedData?.time_end ? dayjs(timeEnd, 'h:mm A') : null,
+                time_start: selectedData?.time_start ? dayjs(selectedData?.time_start, 'h:mm A') : null,
+                time_end: selectedData?.time_end ? dayjs(selectedData?.time_end, 'h:mm A') : null,
             })
         } else form.resetFields()
 
@@ -181,19 +179,6 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
             controller.abort()
         }
     }, [selectedData])
-
-    function cancelRequest() {
-        setLoading(true)
-        GET(LEAVES.CANCEL + selectedData?.id)
-            .then((res) => {
-                form.resetFields()
-                handleCancel()
-            })
-            .finally(() => {
-                fetchData({ type: leaveType })
-                setLoading(false)
-            })
-    }
 
     async function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: ILeave) {
         setLoading(true)
@@ -229,7 +214,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                 label="Leave Type"
                 name="leave_type_id"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Select placeholder='Select leave type...' optionFilterProp="children" allowClear showSearch>
                     {lists.map((leave) => (
@@ -242,7 +227,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     label="Start Date"
                     name="date_start"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -253,7 +238,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     label="End Date"
                     name="date_end"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -266,7 +251,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     label="Start Time"
                     name="time_start"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
 
                     <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
@@ -275,7 +260,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     label="End Time"
                     name="time_end"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
                 </FormItem>
@@ -284,7 +269,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                 label="Reason"
                 name="reason"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>
@@ -353,12 +338,12 @@ const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { ha
                 name={record?.user?.full_name}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => handleEdit(record)}
-                isDisable={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
+            // isDisable={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
             />
             <Button
                 className='btn-secondary'
                 onClick={() => handleRequestSelected(record)}
-                disabled={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
+            // disabled={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
             >
                 Cancel Request
             </Button>

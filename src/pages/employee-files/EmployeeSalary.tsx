@@ -181,7 +181,7 @@ function EmployeeSalaryModal({ title, employeeId, selectedData, isModalOpen, han
                 label="Gross Salary"
                 name="gross_salary"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <InputNumber
                     placeholder='Enter gross salary...'
@@ -192,7 +192,7 @@ function EmployeeSalaryModal({ title, employeeId, selectedData, isModalOpen, han
                 label="Salary Rate"
                 name="salary_rate_id"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
 
                 <Select

@@ -249,12 +249,15 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).catch((err) => messageApi.open({
-            key,
-            type: 'error',
-            content: err?.response?.data?.message,
-            duration: 3
-        })).finally(() => {
+        }).catch((err) => {
+            messageApi.open({
+                key,
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 3
+            })
+            setLoading(false)
+        }).finally(() => {
             fetchData()
             setLoading(false)
         })

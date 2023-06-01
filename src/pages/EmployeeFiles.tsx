@@ -363,7 +363,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Employee No."
                     name="employee_code"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Input placeholder='Enter employee no...' />
                 </FormItem>
@@ -371,7 +371,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="First Name"
                     name="first_name"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Input placeholder='Enter first name...' />
                 </FormItem>
@@ -385,7 +385,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Last Name"
                     name="last_name"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Input placeholder='Enter last name...' />
                 </FormItem>
@@ -437,7 +437,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 >
                     <Input type='number' placeholder='Enter contact number...' />
                 </FormItem>
-                <FormItem name='email' label="Email Address" required rules={[{ required: true, message: '' }]}>
+                <FormItem name='email' label="Email Address" required rules={[{ required: true, message: 'Required' }]}>
                     <Input type='email' placeholder='Enter email address...' />
                 </FormItem>
                 <FormItem
@@ -474,7 +474,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Department"
                     name="department_id"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Select
                         placeholder='Select department...'
@@ -493,7 +493,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Team"
                     name="team_id"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Select
                         placeholder='Select team...'
@@ -514,7 +514,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Role"
                     name="role_id"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Select
                         placeholder='Select role...'
@@ -531,7 +531,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Line Manager"
                     name="manager_id"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Select
                         placeholder='Select line manager...'
@@ -652,7 +652,6 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                 <FormItem
                     name='client_branch_id'
                     label="Client Branch"
-
                 >
                     <Select
                         placeholder='Select client branch...'

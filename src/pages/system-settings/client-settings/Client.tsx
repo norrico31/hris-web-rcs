@@ -217,7 +217,7 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 label="Client Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter client...' />
             </FormItem>
@@ -225,7 +225,7 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 label="Address"
                 name="address"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter address...' />
             </FormItem>
@@ -233,7 +233,7 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 label="Contact Number"
                 name="contact_number"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input type='number' placeholder='Enter contact number...' />
             </FormItem>
@@ -241,7 +241,7 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 label="Contact Person"
                 name="contact_person"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input type='text' placeholder='Enter contact person...' />
             </FormItem>

@@ -260,7 +260,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     label="Start Date"
                     name="date_start"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -271,7 +271,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     label="End Date"
                     name="date_end"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <DatePicker
                         format='YYYY/MM/DD'
@@ -284,7 +284,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     label="Start Time"
                     name="planned_ot_start"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
 
                     <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
@@ -293,7 +293,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                     label="End Time"
                     name="planned_ot_end"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
                 </FormItem>
@@ -302,7 +302,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
                 label="Reason"
                 name="reason"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>

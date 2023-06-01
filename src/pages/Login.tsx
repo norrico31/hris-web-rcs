@@ -63,11 +63,11 @@ export default function Login() {
                                 </div>
                             </Col>
                         </Row>
-                        <Form.Item label="Email" name="email" rules={[{ required: true, message: "", },]}>
+                        <Form.Item label="Email" name="email" rules={[{ required: true, message: "Required", },]}>
                             <Input type='email' placeholder='Enter email' />
                         </Form.Item>
                         {!isForgotPassword && (
-                            <Form.Item label="Password" name="password" rules={[{ required: true, message: "", },]}>
+                            <Form.Item label="Password" name="password" rules={[{ required: true, message: "Required", },]}>
                                 <Input.Password type='password' placeholder='Enter password' />
                             </Form.Item>
                         )}

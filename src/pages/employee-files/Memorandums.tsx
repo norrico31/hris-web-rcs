@@ -210,7 +210,7 @@ function MemorandumModal({ title, employeeId, fetchData, selectedData, isModalOp
                 label="Type"
                 name="type"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter document type...' />
             </Item>
@@ -240,7 +240,7 @@ function MemorandumModal({ title, employeeId, fetchData, selectedData, isModalOp
                 label="Status"
                 name="is_active"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Select
                     placeholder='Select status...'

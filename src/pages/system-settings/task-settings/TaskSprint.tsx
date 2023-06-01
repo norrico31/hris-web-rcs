@@ -194,7 +194,7 @@ export function SprintModal({ title, teamId, teamLists, selectedData, isModalOpe
                 label="Sprint Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter type name...' />
             </FormItem>
@@ -214,7 +214,7 @@ export function SprintModal({ title, teamId, teamLists, selectedData, isModalOpe
                 label="Start and End Date"
                 name="date"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <DatePicker.RangePicker
                     format='YYYY/MM/DD'

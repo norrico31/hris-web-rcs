@@ -219,7 +219,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCanc
                 label="Schedule Name"
                 name="name"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter team name...' />
             </FormItem>
@@ -228,7 +228,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCanc
                     label="Time In"
                     name="time_in"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <TimePicker />
                 </FormItem>
@@ -236,7 +236,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCanc
                     label="Time Out"
                     name="time_out"
                     required
-                    rules={[{ required: true, message: '' }]}
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <TimePicker />
                 </FormItem>

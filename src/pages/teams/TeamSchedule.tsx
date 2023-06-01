@@ -218,7 +218,7 @@ function ClientScheduleModal(props: ModalProps) {
                             label="Client"
                             name="client_id"
                             required
-                            rules={[{ required: true, message: '' }]}
+                            rules={[{ required: true, message: 'Required' }]}
                         >
                             <Select
                                 placeholder='Select client'
@@ -246,7 +246,7 @@ function ClientScheduleModal(props: ModalProps) {
                             label="Client Branch"
                             name="client_branch_id"
                             required
-                            rules={[{ required: true, message: '' }]}
+                            rules={[{ required: true, message: 'Required' }]}
                         >
                             <Select
                                 placeholder='Select client branch'
@@ -268,7 +268,7 @@ function ClientScheduleModal(props: ModalProps) {
                             label="Effectivity Start Schedule"
                             name="client_start_date"
                             required
-                            rules={[{ required: true, message: '' }]}
+                            rules={[{ required: true, message: 'Required' }]}
                         >
                             <DatePicker style={{ width: '100%' }} />
                         </Item>
@@ -288,7 +288,7 @@ function ClientScheduleModal(props: ModalProps) {
                             label="Status"
                             name="is_active"
                             required
-                            rules={[{ required: true, message: '' }]}
+                            rules={[{ required: true, message: 'Required' }]}
                         >
                             <Select
                                 placeholder='Select status...'
@@ -303,7 +303,7 @@ function ClientScheduleModal(props: ModalProps) {
                             label="Schedule"
                             name="schedule_id"
                             required
-                            rules={[{ required: true, message: '' }]}
+                            rules={[{ required: true, message: 'Required' }]}
                         >
                             <Select
                                 placeholder='Select schedule'

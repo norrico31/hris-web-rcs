@@ -206,7 +206,7 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
                 label="Title"
                 name="title"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input placeholder='Enter title...' />
             </FormItem>
@@ -214,7 +214,7 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
                 label="Content"
                 name="content"
                 required
-                rules={[{ required: true, message: '' }]}
+                rules={[{ required: true, message: 'Required' }]}
             >
                 <Input.TextArea placeholder='Enter content...' />
             </FormItem>

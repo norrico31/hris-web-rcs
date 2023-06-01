@@ -246,7 +246,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         label="Employee Name"
                         name="user_id"
                         required
-                        rules={[{ required: true, message: '' }]}
+                        rules={[{ required: true, message: 'Required' }]}
                     >
                         <Select
                             placeholder='Select employee'
@@ -263,7 +263,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         label="Expense Type"
                         name="expense_type_id"
                         required
-                        rules={[{ required: true, message: '' }]}
+                        rules={[{ required: true, message: 'Required' }]}
                     >
                         <Select
                             placeholder='Select expense type'
@@ -279,7 +279,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                     <FormItem
                         label="Salary Adjustment Amount"
                         name='amount'
-                        required rules={[{ required: true, message: '' }]}
+                        required rules={[{ required: true, message: 'Required' }]}
                     >
                         <Input type='number' placeholder='Enter adjustment adjustment amount...' />
                     </FormItem>
@@ -287,7 +287,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         label="Expense Date"
                         name="expense_date"
                         required
-                        rules={[{ required: true, message: '' }]}
+                        rules={[{ required: true, message: 'Required' }]}
                     >
                         <DatePicker
                             format='YYYY/MM/DD'
@@ -300,7 +300,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                             label="Taxable"
                             name="is_taxable"
                             required
-                            rules={[{ required: true, message: '' }]}
+                            rules={[{ required: true, message: 'Required' }]}
                         >
                             <Radio.Group>
                                 <Radio value="no">No</Radio>
@@ -311,7 +311,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                             label="Active"
                             name="is_active"
                             required
-                            rules={[{ required: true, message: '' }]}
+                            rules={[{ required: true, message: 'Required' }]}
                         >
                             <Radio.Group>
                                 <Radio value="no">No</Radio>
@@ -325,7 +325,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         label="Remarks"
                         name="remarks"
                         required
-                        rules={[{ required: true, message: '' }]}
+                        rules={[{ required: true, message: 'Required' }]}
                     >
                         <Input.TextArea placeholder='Enter remarks...' />
                     </FormItem>
