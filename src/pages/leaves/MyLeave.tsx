@@ -338,15 +338,17 @@ const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { ha
                 name={record?.user?.full_name}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => handleEdit(record)}
-            // isDisable={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
+                isDisable={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected' || record?.status.toLowerCase() == 'canceled' || record?.status.toLowerCase() == 'cancelled'}
             />
-            <Button
-                className='btn-secondary'
-                onClick={() => handleRequestSelected(record)}
-            // disabled={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
-            >
-                Cancel Request
-            </Button>
+            {record?.status.toLowerCase() == 'pending' && (
+                <Button
+                    className='btn-secondary'
+                    onClick={() => handleRequestSelected(record)}
+                    disabled={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
+                >
+                    Cancel Request
+                </Button>
+            )}
         </Space>,
         width: 150
     },

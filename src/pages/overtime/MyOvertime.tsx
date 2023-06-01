@@ -88,18 +88,22 @@ export default function MyOvertime() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: IOvertime) => <Space direction='vertical'>
-                <Action
-                    title='Tasks'
-                    name={record?.user?.full_name}
-                    onConfirm={() => handleDelete(record?.id!)}
-                    onClick={() => handleEdit(record)}
-                    isDisable={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
-                />
-                <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
-                    Cancel Request
-                </Button>
-            </Space>,
+            render: (_, record: IOvertime) => {
+                return <Space direction='vertical'>
+                    <Action
+                        title='Tasks'
+                        name={record?.user?.full_name}
+                        onConfirm={() => handleDelete(record?.id!)}
+                        onClick={() => handleEdit(record)}
+                        isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled'}
+                    />
+                    {record?.status.toLowerCase() === 'pending' && (
+                        <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                            {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
+                        </Button>
+                    )}
+                </Space>
+            },
             width: 150
         },
     ]
@@ -306,7 +310,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
             >
                 <Input.TextArea placeholder='Enter reason...' />
             </FormItem>
-            <Row justify={selectedData ? 'space-between' : 'end'}>
+            <Row justify='end'>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         Submit Request
@@ -374,11 +378,13 @@ function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, overtimeT
         />
         <div style={{ textAlign: 'right' }}>
             <Space>
-                <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={cancelRequest}>
-                    Cancel Request
-                </Button>
+                {!selectedRequest?.cancellation_remarks && (
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={cancelRequest}>
+                        Cancel Request
+                    </Button>
+                )}
                 <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
-                    Cancel
+                    Close
                 </Button>
             </Space>
         </div>
@@ -408,8 +414,10 @@ export function OvertimeDescription({ selectedRequest, remarks, setRemarks }: Ov
         </Descriptions>
         <Divider />
         <Descriptions bordered>
-            <Descriptions.Item label="Remarks" >
-                <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
+            <Descriptions.Item label={selectedRequest?.cancellation_remarks ? 'Cancellation Remarks' : "Remarks"} >
+                {selectedRequest?.cancellation_remarks ? (selectedRequest?.cancellation_remarks) : (
+                    <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} disabled={!!selectedRequest?.cancellation_remarks} />
+                )}
             </Descriptions.Item>
         </Descriptions>
         <Divider />

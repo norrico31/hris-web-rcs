@@ -19,6 +19,7 @@ export interface IOvertime {
         role_id: string
         updated_at: string
     }
+    cancellation_remarks: string | null
     client_branch_id: string
     client_id: string
     created_at: string

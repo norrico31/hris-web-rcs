@@ -10,10 +10,7 @@ import ExpenseSettings from './pages/system-settings/expense-settings/ExpenseSet
 import ClientSettings from './pages/system-settings/client-settings/ClientSettings'
 import EmployeeEdit from './pages/EmployeeEdit'
 
-// import Login from './pages/Login'
 // Root
-// const Login = lazy(() => import('./pages/Login'))
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const TimeKeeping = lazy(() => import('./pages/TimeKeeping'))
 const Leave = lazy(() => import('./pages/Leave'))
@@ -98,11 +95,8 @@ const LeaveCredits = lazy(() => import('./pages/employee-files/LeaveCredits'))
 const Memorandums = lazy(() => import('./pages/employee-files/Memorandums'))
 const PayScheme = lazy(() => import('./pages/employee-files/PayScheme'))
 const EmployeeSalary = lazy(() => import('./pages/employee-files/EmployeeSalary'))
-// const EmployeeSalaryHistory = lazy(() => import('./pages/employee-files/EmployeeSalaryHistory'))
-// const EmployeeSalaryAdjustments = lazy(() => import('./pages/employee-files/EmployeeSalaryAdjustments'))
 const SalaryAdjustmentType = lazy(() => import('./pages/employee-files/SalaryAdjustmentType'))
 const UserProfile = lazy(() => import('./pages/employee-files/UserProfile'))
-// const EmployeeSalaryRate = lazy(() => import('./pages/employee-files/EmployeeSalaryRate'))
 
 function Content({ children }: { children: any }) {
     return (
@@ -179,24 +173,6 @@ export const routes = createBrowserRouter([
                 path: 'tasks/archives',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><TasksArchives /></Suspense>
             },
-            // {
-            //     path: 'tasks',
-            //     element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTasks /></Suspense>,
-            //     children: [
-            //         {
-            //             path: 'mytasks',
-            //             element: <Suspense fallback={<Content><Skeleton /></Content>}><MyAllTasks /></Suspense>,
-            //         },
-            //         {
-            //             path: 'mytaskteam',
-            //             element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTaskTeam /></Suspense>,
-            //         },
-            //         {
-            //             path: 'archives',
-            //             element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTaskArchives /></Suspense>,
-            //         },
-            //     ]
-            // },
             {
                 path: 'team/edit/:teamId',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><MyTeamEdit /></Suspense>,
@@ -434,18 +410,10 @@ export const routes = createBrowserRouter([
                         path: 'salary',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalary /></Suspense>
                     },
-                    // {
-                    //     path: 'salaryadjustments',
-                    //     element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryAdjustments /></Suspense>
-                    // },
                     {
                         path: 'salaryadjustmenttype',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><SalaryAdjustmentType /></Suspense>
                     },
-                    // {
-                    //     path: 'salaryhistory',
-                    //     element: <Suspense fallback={<Content><Skeleton /></Content>}><EmployeeSalaryHistory /></Suspense>
-                    // },
                     {
                         path: 'userprofile',
                         element: <Suspense fallback={<Content><Skeleton /></Content>}><UserProfile /></Suspense>
@@ -457,16 +425,6 @@ export const routes = createBrowserRouter([
     {
         path: '/login',
         element: <Login />,
-        // children: [
-        //     {
-        //         path: 'login',
-        //         element: <Suspense fallback={<Content><Skeleton /></Content>}><Login /></Suspense>,
-        //     },
-        //     {
-        //         path: 'forgotpassword',
-        //         element: <Suspense fallback={<Content><Skeleton /></Content>}><ForgotPassword /></Suspense>,
-        //     },
-        // ]
     },
 ])
 
