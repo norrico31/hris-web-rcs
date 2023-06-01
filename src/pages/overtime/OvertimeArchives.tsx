@@ -127,7 +127,7 @@ export default function OvertimeArchives() {
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
+        const status = (type !== 'all') ? `?status=${type?.toUpperCase()}` : ''
         GET<OvertimeRes>(OVERTIME.ARCHIVES + status, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])

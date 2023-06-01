@@ -12,15 +12,17 @@ type TableListProps<T> = {
     isSizeChanger?: boolean
     onChange?: ((pagination: TablePaginationConfig, filters: Record<string, FilterValue | null>, sorter: any, extra: TableCurrentDataSource<any>) => void) | undefined
     dataList: T
+    rowSelection?: any
 }
 
-function Table({ loading, isSizeChanger = true, columns, dataList, tableParams, onChange }: TableListProps<any>) {
+function Table({ loading, isSizeChanger = true, columns, rowSelection, dataList, tableParams, onChange }: TableListProps<any>) {
     return (
         <div>
             <AntDTable
                 loading={loading}
                 bordered
                 dataSource={dataList}
+                rowSelection={rowSelection}
                 pagination={tableParams ? {
                     ...tableParams?.pagination,
                     showSizeChanger: isSizeChanger,

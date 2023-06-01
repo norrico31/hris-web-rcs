@@ -186,6 +186,8 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
     const [dataColumns, setDataColumns] = useState<{ [key: string]: string | number | undefined; }[]>(initDataColState)
     const [currentIdx, setCurrentIdx] = useState(0)
     const [messageApi, contextHolder] = useMessage()
+    const [isMultipleDelete, setIsMultipleDelete] = useState(false)
+    const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
 
     const controller = new AbortController();
     useEffect(() => {
@@ -393,29 +395,6 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             width: 250,
             align: 'center'
         },
-        {
-            title: 'Action',
-            key: 'action',
-            dataIndex: 'action',
-            render: (_, record, idx) => <Space key={record?.id}>
-                <PopupConfirm
-                    title='Clear Field'
-                    description='Are you sure you want to clear this row field'
-                    onConfirm={() => clearField(idx)}
-                    okText="Clear"
-                    disabled={dataColumns?.length == 1}
-                />
-                <PopupConfirm
-                    title='Remove Row'
-                    description='Are you sure you want to remove this row?'
-                    onConfirm={() => removeRow(record?.id, idx)}
-                    okText="Remove"
-                    disabled={dataColumns?.length == 1}
-                />
-            </Space>,
-            width: 250,
-            align: 'center'
-        }
     ], [
         tasks,
         teams,
@@ -424,8 +403,33 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         isModalActivity,
         isModalTypes,
         isModalSprints,
-        currentIdx
+        currentIdx,
+        isMultipleDelete
     ])
+    !isMultipleDelete && columns.push({
+        title: 'Action',
+        key: 'action',
+        dataIndex: 'action',
+        render: (_, record, idx) => <Space key={record?.id}>
+            <PopupConfirm
+                title='Clear Field'
+                description='Are you sure you want to clear this row field'
+                onConfirm={() => clearField(idx)}
+                okText="Clear"
+                disabled={dataColumns?.length == 1}
+            />
+            <PopupConfirm
+                title='Remove Row'
+                description='Are you sure you want to remove this row?'
+                onConfirm={() => removeRow(record?.id, idx)}
+                okText="Remove"
+                disabled={dataColumns?.length == 1}
+            />
+        </Space>,
+        width: 250,
+        align: 'center'
+    })
+
     const key = 'error'
     function onFinish(values: ITasks) {
         if (dataColumns.length < 1) return messageApi.open({
@@ -438,8 +442,9 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         let payload = {
             ...values,
             date,
-            tasks: removeRowsWithOnlyId(dataColumns)
-        };
+            tasks: dataColumns
+        }
+
         let result = POST(TASKS.POST, { ...payload, date, ...(values?.description != undefined && { description: values?.description }) })
         result.then(() => {
             form.resetFields()
@@ -458,28 +463,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             setLoading(false)
         })
     }
-
-    // function removeRowsWithOnlyId(dataColumns: any[]) {
-    //     const filteredColumns = dataColumns.filter((row: any) => {
-    //         const hasNullValue = Object.values(row).some((value) => value === null);
-    //         return !hasNullValue;
-    //     });
-
-    //     const tasks = filteredColumns.filter((row: any) => Object.keys(row).length > 1);
-
-    //     return tasks.length > 0 ? tasks : undefined;
-    // }
-
-    function removeRowsWithOnlyId(dataColumns: any[]) {
-        const filteredColumns = dataColumns.filter((row: any) => {
-            const hasNullValue = Object.values(row).some((value) => value === null);
-            return !(Object.keys(row).length === 1 && row.hasOwnProperty('id')) && !hasNullValue;
-        });
-
-        return filteredColumns.length > 0 ? filteredColumns : undefined;
-    }
-
-
+    console.log(selectedRowIds)
     return <>
         {contextHolder}
         <Title level={2}>My Tasks - {title}</Title>
@@ -506,13 +490,29 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                     />
                 </FormItem>
             </Row>
-            <Table columns={columns} dataList={dataColumns} />
+            <Table columns={columns} dataList={dataColumns} rowSelection={isMultipleDelete ? {
+                type: 'checkbox',
+                onChange: (_: React.Key[], selectedRows: { [key: string]: string | number | undefined; }[]) => {
+                    const rowIds = selectedRows.map((r) => r.id) as string[]
+                    setSelectedRowIds(rowIds)
+                },
+            } : null} />
             <Divider style={{ border: 0 }} />
             <Row justify='space-between'>
                 <Space>
+                    {!selectedRowIds.length && (
+                        <Button type='primary' disabled={dataColumns.length < 2} onClick={() => setIsMultipleDelete(!isMultipleDelete)}>
+                            {isMultipleDelete ? 'Cancel Multiple Delete' : 'Multiple Delete'}
+                        </Button>
+                    )}
+                    {selectedRowIds.length > 0 && isMultipleDelete && (
+                        <Button type='primary' onClick={() => alert(selectedRowIds)}>
+                            Delete Selected
+                        </Button>
+                    )}
                     <Button className='btn-secondary' disabled={!teamIds} onClick={addRow}>
                         <Space>
-                            <BsBuildingFillAdd /> Entry
+                            <BsBuildingFillAdd /> Add Entry
                         </Space>
                     </Button>
                 </Space>
@@ -909,7 +909,7 @@ const PopupConfirm = ({ title, description, okText, onConfirm, disabled }: Popup
     cancelText="Cancel"
     disabled={disabled}
 >
-    <Button disabled={disabled}>{okText} Fields</Button>
+    <Button disabled={disabled}>{okText} Entry</Button>
 </Popconfirm>
 
 
