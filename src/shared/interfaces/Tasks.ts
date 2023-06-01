@@ -6,12 +6,13 @@ interface IRelations {
     name: string
 }
 
-export interface ITasks extends IUser {
+export interface ITasks {
     created_at: string
     date: string | Dayjs | null
     deleted_at: string | null
     description: string | null
     id: string
+    name: string
     manhours: string
     sprint: IRelations
     sprint_id: string | null
@@ -22,6 +23,7 @@ export interface ITasks extends IUser {
     task_type_id: string | null
     updated_at: string
     user_id: string
+    user: IUser
 }
 
 export interface ITeamTask {

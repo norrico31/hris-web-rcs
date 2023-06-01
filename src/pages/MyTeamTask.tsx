@@ -1,44 +1,45 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { DatePicker, Space, Button, Select, Row, Col, Modal, Popconfirm, Skeleton, Input } from 'antd'
+import { DatePicker, Space, Button, Select, Row, Skeleton, Input, DatePickerProps } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import axios from 'axios'
-import dayjs from 'dayjs'
-import { GrFormAdd } from 'react-icons/gr'
 import { useAuthContext } from '../shared/contexts/Auth'
-import { TabHeader, Table, Divider, debounce } from '../components'
+import { Table, Divider, debounce } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useAxios } from '../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { TableParams, ITasks, TasksRes, IArguments } from '../shared/interfaces'
-import { Alert } from '../shared/lib/alert'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { StyledRow } from './EmployeeEdit'
+import dayjs, { Dayjs } from 'dayjs'
 
 const { GET } = useAxios()
-const [{ TASKS, }] = useEndpoints()
+const [{ TASKS }] = useEndpoints()
+
+interface IParams extends IArguments {
+    user?: string
+    date?: string
+}
 
 export default function MyTeamTask() {
     renderTitle('My Team Tasks')
     const { user, loading: loadingUser } = useAuthContext()
-    const navigate = useNavigate()
     let [data, setData] = useState<ITasks[]>([])
-    const [selectedData, setSelectedData] = useState<ITasks | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [isModalArchive, setIsModalArchive] = useState(false)
     const [isModalDownload, setIsModalDownload] = useState(false)
     const [loading, setLoading] = useState(true)
-
+    const [users, setUsers] = useState<Array<string>>([])
+    const [selectedUser, setSelectedUser] = useState<string | undefined>(undefined)
+    const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined)
 
     const columns = useMemo(renderColumns, [data])
-    data = useMemo(() => data, [data])
 
     const handleSearch = (str: string) => {
         setSearch(str)
         fetchData({
             search: str,
+            date: selectedDate,
+            user: selectedUser,
             page: tableParams?.pagination?.current ?? 1,
             pageSize: tableParams?.pagination?.pageSize
         })
@@ -47,11 +48,22 @@ export default function MyTeamTask() {
 
     useEffect(function fetch() {
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        fetchData({
+            search,
+            signal: controller.signal,
+            date: selectedDate,
+            user: selectedUser,
+            page: tableParams?.pagination?.current ?? 1,
+            pageSize: tableParams?.pagination?.pageSize
+        })
+
+        GET<any>('tasks/team_task/users')
+            .then(setUsers);
+
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [selectedDate, selectedUser])
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
@@ -61,9 +73,9 @@ export default function MyTeamTask() {
         return <Navigate to='/profile' />
     }
 
-    function fetchData(args?: IArguments) {
+    function fetchData(args?: IParams) {
         setLoading(true)
-        GET<TasksRes>(TASKS.TEAMTASKS, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<TasksRes>(TASKS.TEAMTASKS, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize!, user: args?.user, date: args?.date })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -78,7 +90,11 @@ export default function MyTeamTask() {
             }).finally(() => setLoading(false))
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize!, user: selectedUser, date: selectedDate })
+
+    const handleDatePickerChange: DatePickerProps['onChange'] = (date, dateString) => {
+        setSelectedDate(dayjs(date).format('YYYY-MM-DD'))
+    }
 
     return <>
         <StyledRow justify='space-between' wrap align='middle'>
@@ -87,12 +103,12 @@ export default function MyTeamTask() {
         <Row justify='space-between'>
             <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
             <Space>
-                <Select placeholder='Select Employee...' optionFilterProp="children" allowClear showSearch>
-                    {/* {lists?.holidayTypes.map((holiday) => (
-                        <Select.Option value={holiday.id} key={holiday.id} style={{ color: '#777777' }}>{holiday.name}</Select.Option>
-                    ))} */}
+                <Select placeholder='Select Employee...' optionFilterProp="children" allowClear showSearch style={{ width: 150 }} value={selectedUser} onChange={setSelectedUser}>
+                    {users.map((user) => (
+                        <Select.Option value={user} key={user} style={{ color: '#777777' }}>{user}</Select.Option>
+                    ))}
                 </Select>
-                <DatePicker />
+                <DatePicker format='YYYY-MM-DD' defaultValue={dayjs(selectedDate)} onChange={handleDatePickerChange} />
                 <Input.Search placeholder='Search...' value={search} onChange={(evt) => {
                     const searchTerm = evt.target.value
                     setSearch(searchTerm)
@@ -117,7 +133,7 @@ function renderColumns(): ColumnsType<ITasks> {
             title: 'Name',
             key: 'name',
             dataIndex: 'name',
-            // render: (_, record) => record.task_activity?.name,
+            render: (_, record) => record.user?.full_name,
             width: 130
         },
         {

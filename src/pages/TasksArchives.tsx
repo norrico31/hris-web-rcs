@@ -91,7 +91,7 @@ export default function MyTaskArvhices() {
             align: 'center',
             render: (_, record: ITasks) => <Popconfirm
                 title={`Restore Task`}
-                description={`Are you sure you want to restore ${record?.full_name}?`}
+                description={`Are you sure you want to restore ${record?.name}?`}
                 onConfirm={() => {
                     GET(TASKS.RESTORE + record?.id)
                         .then((res) => {
