@@ -38,6 +38,7 @@ export default function OvertimeApproval() {
     const { width } = useWindowSize()
     const [isModalRequest, setIsModalRequest] = useState(false)
     const [isApproved, setIsApproved] = useState(false)
+    const [{ start_date, end_date }, setDate] = useState<{ start_date?: string; end_date?: string }>({ start_date: undefined, end_date: undefined })
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -48,7 +49,9 @@ export default function OvertimeApproval() {
                 page: tableParams?.pagination?.current,
                 pageSize: tableParams?.pagination?.pageSize,
             },
-            type: overtimeType
+            type: overtimeType,
+            start_date,
+            end_date
         })
         return () => {
             controller.abort()
@@ -118,10 +121,11 @@ export default function OvertimeApproval() {
         }
     ]
 
-    function fetchData({ type, args }: { args?: IArguments; type?: string }) {
+    function fetchData({ type, args, start_date, end_date }: { args?: IArguments; type?: string; start_date?: string; end_date?: string; }) {
         setLoading(true)
         const status = `&status=${type?.toUpperCase()}`
-        const url = OVERTIME.GET + 'true' + status
+        let url = OVERTIME.GET + 'true' + status
+        url = (start_date && end_date) ? (url + `&start_date=${start_date}&end_date=${end_date}`) : url
         GET<OvertimeRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -167,7 +171,7 @@ export default function OvertimeApproval() {
         setIsApproved(false)
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: overtimeType })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search: searchDebounce, pageSize: pagination?.pageSize! }, type: overtimeType, start_date, end_date })
 
     return (
         <>
@@ -176,11 +180,13 @@ export default function OvertimeApproval() {
                     setOvertimeType((str == undefined || str == '') ? 'pending' : str)
                     fetchData({
                         args: {
-                            search,
+                            search: searchDebounce,
                             page: tableParams?.pagination?.current ?? 1,
                             pageSize: tableParams?.pagination?.pageSize
                         },
-                        type: (str == undefined || str == '') ? 'pending' : str
+                        type: (str == undefined || str == '') ? 'pending' : str,
+                        start_date,
+                        end_date
                     })
                 }} style={{ width: 150 }}>
                     {selectOptions.map((opt) => (
@@ -190,10 +196,13 @@ export default function OvertimeApproval() {
                 {width < 978 && <Divider />}
                 <Col>
                     <Space>
-                        {/* TODO: rangepicker onchange */}
-                        <DatePicker.RangePicker />
+                        <DatePicker.RangePicker onChange={(d: any) => {
+                            const start_date = d?.length > 0 ? dayjs(d[0]).format('YYYY/MM/DD') : undefined
+                            const end_date = d?.length > 0 ? dayjs(d[1]).format('YYYY/MM/DD') : undefined
+                            fetchData({ type: overtimeType, start_date, end_date, args: { page: tableParams?.pagination?.current ?? 1, search: searchDebounce, pageSize: tableParams?.pagination?.pageSize } })
+                            setDate({ start_date, end_date })
+                        }} />
                         <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
-                        {/* <Button type='primary' onClick={() => setIsModalOpen(true)}>Request</Button> */}
                     </Space>
                 </Col>
             </Row>

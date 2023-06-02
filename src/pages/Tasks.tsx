@@ -183,7 +183,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
     const [teams, setTeams] = useState<Array<ITeam[]>>([])
     const [loading, setLoading] = useState(false)
     const [teamIds, setTeamIds] = useState<Array<string>>([])
-    const [dataColumns, setDataColumns] = useState<{ [key: string]: string | number | undefined; }[]>(initDataColState)
+    const [dataColumns, setDataColumns] = useState<DataColumns>(initDataColState)
     const [currentIdx, setCurrentIdx] = useState(0)
     const [messageApi, contextHolder] = useMessage()
     const [isMultipleDelete, setIsMultipleDelete] = useState(false)
@@ -439,12 +439,12 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         })
         setLoading(true)
         const date = dayjs(values?.date).format('YYYY-MM-DD') as any
+        const tasks = filterTasks(dataColumns)
         let payload = {
             ...values,
             date,
-            tasks: dataColumns
+            tasks
         }
-
         let result = POST(TASKS.POST, { ...payload, date, ...(values?.description != undefined && { description: values?.description }) })
         result.then(() => {
             form.resetFields()
@@ -500,7 +500,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             <Divider style={{ border: 0 }} />
             <Row justify='space-between'>
                 <Space>
-                    {!selectedRowIds.length && (
+                    {/* {!selectedRowIds.length && (
                         <Button type='primary' disabled={dataColumns.length < 2} onClick={() => setIsMultipleDelete(!isMultipleDelete)}>
                             {isMultipleDelete ? 'Cancel Multiple Delete' : 'Multiple Delete'}
                         </Button>
@@ -509,7 +509,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                         <Button type='primary' onClick={() => alert(selectedRowIds)}>
                             Delete Selected
                         </Button>
-                    )}
+                    )} */}
                     <Button className='btn-secondary' disabled={!teamIds} onClick={addRow}>
                         <Space>
                             <BsBuildingFillAdd /> Add Entry
@@ -980,3 +980,24 @@ function renderColumns({ handleDelete, handleEdit }: { handleDelete: (id: string
 }
 
 const getList = (url: string) => axiosClient.get(url).then((res) => res?.data ?? [])
+
+function filterTasks(tasks: DataColumns) {
+    const filteredTasks = tasks.filter((task) => {
+        const filteredTask: { [key: string]: any } = {};
+        Object.keys(task).forEach((key) => {
+            const value = task[key];
+            if (value !== undefined && value !== '' && value !== null) {
+                filteredTask[key] = value;
+            }
+        });
+        const columnKeys = Object.keys(filteredTask);
+        const hasOnlyIdColumn = columnKeys.length === 1 && columnKeys.includes('id');
+        return !hasOnlyIdColumn;
+    });
+
+    return filteredTasks;
+}
+
+type DataColumns = {
+    [key: string]: string | number | undefined;
+}[]

@@ -37,7 +37,7 @@ export default function LeaveApproval() {
     const searchDebounce = useSearchDebounce(search)
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
-    const { width } = useWindowSize()
+    const [{ date_start, date_end }, setDate] = useState<{ date_start?: string; date_end?: string }>({ date_start: undefined, date_end: undefined })
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -48,7 +48,9 @@ export default function LeaveApproval() {
                 page: tableParams?.pagination?.current,
                 pageSize: tableParams?.pagination?.pageSize,
             },
-            type: leaveType
+            type: leaveType,
+            date_start,
+            date_end
         })
         return () => {
             controller.abort()
@@ -121,10 +123,11 @@ export default function LeaveApproval() {
         }
     ]
 
-    function fetchData({ type, args }: { args?: IArguments; type?: string }) {
+    function fetchData({ type, args, date_start, date_end }: { args?: IArguments; type?: string; date_start?: string; date_end?: string }) {
         setLoading(true)
         const status = `&status=${type?.toUpperCase()}`
-        const url = LEAVES.GET + 'true' + status
+        let url = LEAVES.GET + 'true' + status
+        url = (date_start && date_end) ? (url + `&date_start=${date_start}&date_end=${date_end}`) : url
         GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -156,7 +159,7 @@ export default function LeaveApproval() {
         }
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: leaveType })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search: searchDebounce, pageSize: pagination?.pageSize! }, type: leaveType, date_start, date_end })
 
     function selectedRequest(overtime: ILeave, isApproved: boolean) {
         setSelectedData(overtime)
@@ -169,7 +172,7 @@ export default function LeaveApproval() {
         setIsModalRequest(false)
         setIsApproved(false)
     }
-
+    console.log('aha')
     return (
         <>
             <Row justify='space-between' wrap>
@@ -177,24 +180,29 @@ export default function LeaveApproval() {
                     setLeaveType((str == undefined || str == '') ? 'pending' : str)
                     fetchData({
                         args: {
-                            search,
+                            search: searchDebounce,
                             page: tableParams?.pagination?.current ?? 1,
                             pageSize: tableParams?.pagination?.pageSize
                         },
-                        type: (str == undefined || str == '') ? 'pending' : str
+                        type: (str == undefined || str == '') ? 'pending' : str,
+                        date_start,
+                        date_end
                     })
                 }} style={{ width: 150 }}>
                     {selectOptions.map((opt) => (
                         <Select.Option value={opt.toLocaleLowerCase()} key={opt}>{opt}</Select.Option>
                     ))}
                 </Select>
-                {width < 978 && <Divider />}
+                <DividerWidth />
                 <Col>
                     <Space>
-                        {/* TODO: rangepicker onchange */}
-                        <DatePicker.RangePicker />
+                        <DatePicker.RangePicker onChange={(d: any) => {
+                            const date_start = d?.length > 0 ? dayjs(d[0]).format('YYYY-MM-DD') : undefined
+                            const date_end = d?.length > 0 ? dayjs(d[1]).format('YYYY-MM-DD') : undefined
+                            fetchData({ type: leaveType, date_start, date_end, args: { page: tableParams?.pagination?.current ?? 1, search: searchDebounce, pageSize: tableParams?.pagination?.pageSize } })
+                            setDate({ date_start, date_end })
+                        }} />
                         <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
-                        {/* <Button type='primary'>Request</Button> */}
                     </Space>
                 </Col>
             </Row>
@@ -228,6 +236,11 @@ export default function LeaveApproval() {
     )
 }
 const selectOptions = ['Pending', 'Approved', 'Rejected']
+
+function DividerWidth() {
+    const { width } = useWindowSize()
+    return width < 978 ? <Divider /> : null
+}
 
 
 type Payload = {

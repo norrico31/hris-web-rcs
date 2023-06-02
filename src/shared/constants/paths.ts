@@ -144,6 +144,8 @@ export const ROOTPATHS = {
     'f04': 'overtime',
     'f05': 'overtime',
     'f06': 'overtime',
+    'md01': 'my team tasks',
+    'mb01': 'my team projects',
     ...TASKSPATHS,
     ...EMPLOYEEFILESPATHS,
     ...LEAVESPATHS,

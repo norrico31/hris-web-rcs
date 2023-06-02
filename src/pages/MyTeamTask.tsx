@@ -84,7 +84,7 @@ export default function MyTeamTask() {
             }).finally(() => setLoading(false))
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize!, user: selectedUser, date: selectedDate })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search: debounceSearch, pageSize: pagination?.pageSize!, user: selectedUser, date: selectedDate })
 
     const handleDatePickerChange: DatePickerProps['onChange'] = (date, dateString) => {
         setSelectedDate(dayjs(date).format('YYYY-MM-DD'))

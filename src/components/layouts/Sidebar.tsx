@@ -97,7 +97,6 @@ function filterMenu(user: IUser) {
     const hrPaths = filterPaths(user?.role?.permissions!, HRSETTINGSPATHS)
     const clientPaths = filterPaths(user?.role?.permissions!, CLIENTSETTINGSPATHS)
     const adminPaths = filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS)
-
     return [
         getItemLinks(
             <Link to='/' id="dashboard">Dashboard</Link>,
@@ -146,14 +145,14 @@ function filterMenu(user: IUser) {
             '/teamtask',
             <BiUserCheck />,
             undefined,
-            rootPath.includes('tasks')
+            rootPath.includes('my team tasks')
         ),
         getItemLinks(
             <Link to='/team'>My Team</Link>,
             '/team',
             <FaUsers />,
             undefined,
-            true // rootPath.includes('teams')
+            rootPath.includes('my team projects')
         ),
         getItemLinks(
             'System Settings',
