@@ -19,6 +19,7 @@ export interface ILeave {
         role_id: string
         updated_at: string
     }
+    cancel_reason?: string
     client_branch_id: string
     client_id: string
     created_at: string

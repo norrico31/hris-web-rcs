@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Divider } from 'antd'
+import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Divider, Popconfirm } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
+import { BiRefresh } from 'react-icons/bi'
 import { Form, Card, TabHeader, Table, Action } from '../../components'
 import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
@@ -283,7 +284,6 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
 }
 
 const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { handleEdit: (ot: ILeave) => void; handleDelete: (id: string) => void; handleRequestSelected: (ot: ILeave) => void; }): ColumnsType<ILeave> => [
-
     {
         title: 'Submitted On',
         key: 'created_at',
@@ -333,20 +333,22 @@ const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { ha
         dataIndex: 'action',
         align: 'center',
         render: (_, record: ILeave) => <Space direction='vertical'>
-            <Action
-                title='Tasks'
-                name={record?.user?.full_name}
-                onConfirm={() => handleDelete(record?.id!)}
-                onClick={() => handleEdit(record)}
-                isDisable={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected' || record?.status.toLowerCase() == 'canceled' || record?.status.toLowerCase() == 'cancelled'}
-            />
-            {record?.status.toLowerCase() == 'pending' && (
-                <Button
-                    className='btn-secondary'
-                    onClick={() => handleRequestSelected(record)}
-                    disabled={record?.status.toLowerCase() == 'approved' || record?.status.toLowerCase() == 'rejected'}
-                >
-                    Cancel Request
+            {record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' ? (
+                <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                    View
+                </Button>
+            ) : (
+                <Action
+                    title='Tasks'
+                    name={record?.user?.full_name}
+                    onConfirm={() => handleDelete(record?.id!)}
+                    onClick={() => handleEdit(record)}
+                // isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled'}
+                />
+            )}
+            {record?.status.toLowerCase() === 'pending' && (
+                <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                    {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
                 </Button>
             )}
         </Space>,
@@ -363,15 +365,16 @@ interface ModalCancelRequest {
         args?: IArguments | undefined;
         type?: string | undefined;
     }): void
+    restoreLeave?: (id: string) => Promise<boolean>
 }
 
-function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClose, fetchData }: ModalCancelRequest) {
+export function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClose, fetchData, restoreLeave }: ModalCancelRequest) {
     const [remarks, setRemarks] = useState('')
     const [messageApi, contextHolder] = useMessage()
     const [loading, setLoading] = useState(false)
     const key = 'error'
 
-    function onSubmit() {
+    function cancelRequest() {
         if (remarks == null || remarks == '') {
             messageApi.open({
                 key,
@@ -411,11 +414,34 @@ function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClo
         <Divider />
         <div style={{ textAlign: 'right' }}>
             <Space>
-                <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={onSubmit}>
-                    Cancel Request
-                </Button>
+                {selectedRequest?.status === 'PENDING' && (
+                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={cancelRequest}>
+                        Cancel Request
+                    </Button>
+                )}
+                {selectedRequest?.status === 'CANCELED' && (
+                    <Popconfirm
+                        title={`Restore Leave`}
+                        description={`Are you sure you want to restore?`}
+                        onConfirm={() => {
+                            setLoading(true)
+                            restoreLeave?.(selectedRequest.id)
+                                .then(handleClose)
+                                .finally(() => setLoading(false))
+                        }}
+                        okText="Restore"
+                        cancelText="Cancel"
+                    >
+                        <Button id='restore' type='primary' size='middle' onClick={() => null} loading={loading}>
+                            <Space>
+                                <BiRefresh />
+                                Restore
+                            </Space>
+                        </Button>
+                    </Popconfirm>
+                )}
                 <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
-                    Cancel
+                    Close
                 </Button>
             </Space>
         </div>
@@ -429,6 +455,7 @@ type LeaveDescriptionProps = {
 }
 
 export function LeaveDescription({ selectedRequest, remarks, setRemarks }: LeaveDescriptionProps) {
+    console.log(selectedRequest)
     return <>
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>
@@ -446,8 +473,10 @@ export function LeaveDescription({ selectedRequest, remarks, setRemarks }: Leave
         </Descriptions>
         <Divider />
         <Descriptions bordered>
-            <Descriptions.Item label="Remarks" >
-                <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
+            <Descriptions.Item label={selectedRequest?.cancel_reason ? 'Cancel Remarks' : "Remarks"} >
+                {selectedRequest?.remarks ? (selectedRequest?.remarks) : selectedRequest?.cancel_reason ? selectedRequest?.cancel_reason : (
+                    <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} disabled={selectedRequest?.status !== 'PENDING'} />
+                )}
             </Descriptions.Item>
         </Descriptions>
     </>

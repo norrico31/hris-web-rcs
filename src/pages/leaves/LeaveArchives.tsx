@@ -12,6 +12,7 @@ import { IArguments, ILeave, LeaveRes, TableParams } from '../../shared/interfac
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 import { BiRefresh } from 'react-icons/bi'
+import { ModalCancelRequest } from './MyLeave'
 
 const { GET } = useAxios()
 const [{ LEAVES }] = useEndpoints()
@@ -26,6 +27,8 @@ export default function LeaveArchives() {
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [isModalCancel, setIsModalCancel] = useState(false)
+    const [selectedData, setSelectedData] = useState<ILeave | undefined>(undefined)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -107,34 +110,21 @@ export default function LeaveArchives() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: ILeave) => <Popconfirm
-                title={`Restore Leave`}
-                description={`Are you sure you want to restore?`}
-                onConfirm={() => restoreArchive(record?.id)}
-                okText="Restore"
-                cancelText="Cancel"
-            >
-                <Button id='restore' type='primary' size='middle' onClick={() => null}>
-                    <Space>
-                        <BiRefresh />
-                        Restore
-                    </Space>
-                </Button>
-            </Popconfirm>,
+            render: (_, record: ILeave) => <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                View
+            </Button>,
             width: 150
         }
     ];
-    // (leaveType == 'all' || leaveType == 'approved' || leaveType == 'reject') && columns.push({
-    //     title: 'Approver',
-    //     key: 'approved_by',
-    //     dataIndex: 'approved_by',
-    //     render: (_: any, record: ILeave) => record.actioned_by?.full_name,
-    //     width: 150
-    // });
 
-    function restoreArchive(id: string) {
-        GET(LEAVES.RESTORE + id)
-            .then((res) => console.log(res))
+    function handleRequestSelected(overtime: ILeave) {
+        setSelectedData(overtime)
+        setIsModalCancel(true)
+    }
+
+    function restoreLeave(id: string) {
+        return GET(LEAVES.RESTORE + id)
+            .then(() => true)
             .finally(() => fetchData({ type: leaveType }))
     }
 
@@ -159,6 +149,10 @@ export default function LeaveArchives() {
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: leaveType })
 
+    function closeModal() {
+        setSelectedData(undefined)
+        setIsModalCancel(false)
+    }
     return (
         <>
             <TabHeader handleSearch={setSearch}>
@@ -188,6 +182,14 @@ export default function LeaveArchives() {
                     onChange={onChange}
                 />
             </Card>
+            <ModalCancelRequest
+                isModalOpen={isModalCancel}
+                selectedRequest={selectedData!}
+                handleClose={closeModal}
+                leaveType={leaveType}
+                fetchData={fetchData}
+                restoreLeave={restoreLeave}
+            />
         </>
     )
 }
