@@ -12,6 +12,7 @@ import { ROOTPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, IOvertime, OvertimeRes, TableParams } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
+import { ModalCancelRequest } from './MyOvertime'
 
 const { GET } = useAxios()
 const [{ OVERTIME }] = useEndpoints()
@@ -21,13 +22,13 @@ dayjs.extend(localizedFormat)
 export default function OvertimeArchives() {
     renderTitle('Overtime Archives')
     const { user, loading: loadingUser } = useAuthContext()
-    const [isModalOpen, setIsModalOpen] = useState(false)
     const [overtimeType, setOvertimeType] = useState('all')
     const [data, setData] = useState<IOvertime[]>([])
     const [selectedData, setSelectedData] = useState<IOvertime | undefined>(undefined)
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
+    const [isModalCancel, setIsModalCancel] = useState(false)
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -94,34 +95,21 @@ export default function OvertimeArchives() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: IOvertime) => <Popconfirm
-                title={`Restore Overtime`}
-                description={`Are you sure you want to restore - ?`}
-                onConfirm={() => restoreOvertime(record?.id)}
-                okText="Restore"
-                cancelText="Cancel"
-            >
-                <Button id='restore' type='primary' size='middle' onClick={() => null}>
-                    <Space>
-                        <BiRefresh />
-                        Restore
-                    </Space>
-                </Button>
-            </Popconfirm>,
+            render: (_, record: IOvertime) => <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                View
+            </Button>,
             width: 150
         }
     ];
-    // (overtimeType == 'all' || overtimeType == 'approved' || overtimeType == 'reject') && columns.push({
-    //     title: 'Approver',
-    //     key: 'approved_by',
-    //     dataIndex: 'approved_by',
-    //     render: (_: any, record: IOvertime) => record.actioned_by?.full_name,
-    //     width: 150
-    // });
+
+    function handleRequestSelected(overtime: IOvertime) {
+        setSelectedData(overtime)
+        setIsModalCancel(true)
+    }
 
     function restoreOvertime(id: string) {
-        GET(OVERTIME.RESTORE + id)
-            .then((res) => console.log(res))
+        return GET(OVERTIME.RESTORE + id)
+            .then(() => true)
             .finally(() => fetchData({ type: overtimeType }))
     }
 
@@ -145,9 +133,14 @@ export default function OvertimeArchives() {
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: overtimeType })
 
+    function closeModal() {
+        setSelectedData(undefined)
+        setIsModalCancel(false)
+    }
+
     return (
         <>
-            <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)} isRequest>
+            <TabHeader handleSearch={setSearch} isRequest>
                 <Select value={overtimeType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
                     setOvertimeType((str == undefined || str == '') ? 'all' : str)
                     fetchData({
@@ -174,6 +167,14 @@ export default function OvertimeArchives() {
                     onChange={onChange}
                 />
             </Card>
+            <ModalCancelRequest
+                isModalOpen={isModalCancel}
+                selectedRequest={selectedData!}
+                handleCancel={closeModal}
+                overtimeType={overtimeType}
+                fetchData={fetchData}
+                restoreOvertime={restoreOvertime}
+            />
         </>
     )
 }
