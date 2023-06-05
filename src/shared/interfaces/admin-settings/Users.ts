@@ -11,6 +11,7 @@ export interface IUser {
     date_hired: string | null | Dayjs
     deleted_at: string | null
     department: IDepartment
+    department_id: string | null
     email: string
     employee_code: string | null
     employee_clients: IEmployeeClients[]

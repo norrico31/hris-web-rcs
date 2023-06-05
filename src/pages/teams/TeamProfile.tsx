@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Col, Row, Input, Form as AntDForm, Button, Select } from 'antd'
 import { Card, Form } from '../../components'
-import { IArguments, IPosition, IUser, TableParams, UserRes } from '../../shared/interfaces'
+import { IArguments, IPosition, ITeam, IUser, TableParams, UserRes } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { useEndpoints } from "../../shared/constants"
 import axiosClient, { useAxios } from "../../shared/lib/axios"
@@ -10,21 +10,35 @@ import useMessage from 'antd/es/message/useMessage'
 
 const { useForm, Item } = AntDForm
 const { GET, DELETE, POST, PUT } = useAxios()
-const [{ SYSTEMSETTINGS: { HRSETTINGS: { POSITION } }, EMPLOYEE201: { USERPROFILE } }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { HRSETTINGS: { POSITION, TEAMS } }, EMPLOYEE201: { USERPROFILE } }] = useEndpoints()
 
 export default function TeamProfile() {
-    const { teamId, teamInfo } = useTeamCtx()
+    const { teamId, teamInfo, fetchData } = useTeamCtx()
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(false)
-    const [positions, setPositions] = useState<IPosition[]>([])
+    const [lists, setLists] = useState<{ position: IPosition[]; teams: ITeam[] }>({ position: [], teams: [] })
     const [messageApi, contextHolder] = useMessage()
 
     useEffect(() => {
-        form.setFieldsValue({ ...teamInfo, position_id: teamInfo?.position?.id })
+        form.setFieldsValue({
+            ...teamInfo,
+            position_id: teamInfo?.position?.id,
+            team_id: teamInfo?.teams.map((team) => team.id)
+        })
         const controller = new AbortController();
-        axiosClient(POSITION.LISTS, { signal: controller.signal })
-            .then((res) => setPositions(res?.data ?? []))
-            .catch((err) => err)
+
+        const positionPromise = axiosClient(POSITION.LISTS, { signal: controller.signal })
+        const teamPromise = axiosClient(TEAMS.LISTS, { signal: controller.signal })
+
+        Promise.allSettled([positionPromise, teamPromise])
+            .then(([positionRes, teamRes]: any) => {
+                setLists({
+                    position: positionRes?.status === 'fulfilled' ? positionRes?.value?.data : [],
+                    teams: teamRes?.status === 'fulfilled' ? teamRes?.value?.data : []
+                })
+            })
+        // .then((res) => setPositions(res?.data ?? []))
+        // .catch((err) => err)
         return () => {
             controller.abort()
         }
@@ -33,7 +47,12 @@ export default function TeamProfile() {
     const key = 'error'
     const onFinish = (val: IUser) => {
         setLoading(true)
-        PUT(USERPROFILE.PUT + teamId, val)
+        PUT(USERPROFILE.PUT + teamId, {
+            ...val,
+            department_id: teamInfo?.department_id,
+            employee_code: teamInfo?.employee_code,
+            role_id: teamInfo?.role_id,
+        })
             .then((res) => {
                 console.log(res)
             })
@@ -46,7 +65,10 @@ export default function TeamProfile() {
                 })
                 setLoading(false)
             })
-            .finally(() => setLoading(false))
+            .finally(() => {
+                setLoading(false)
+                fetchData()
+            })
     }
     return (
         <Card title={`Profile - ${teamInfo?.full_name}`}>
@@ -104,11 +126,36 @@ export default function TeamProfile() {
                                 showSearch
                                 optionFilterProp="children"
                             >
-                                {positions.map((pos) => (
+                                {lists.position.map((pos) => (
                                     <Select.Option value={pos.id} key={pos.id} style={{ color: '#777777' }}>{pos.name}</Select.Option>
                                 ))}
                             </Select>
                         </Item>
+                    </Col>
+                </Row>
+                <Row justify='center'>
+                    <Col>
+                        <Row justify='center'>
+                            <Item
+                                label="Team"
+                                name="team_id"
+                                required
+                                rules={[{ required: true, message: 'Required' }]}
+                            >
+                                <Select
+                                    placeholder='Select team...'
+                                    allowClear
+                                    showSearch
+                                    optionFilterProp="children"
+                                    mode='multiple'
+                                    style={{ width: 200 }}
+                                >
+                                    {lists.teams.map((team) => (
+                                        <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
+                                    ))}
+                                </Select>
+                            </Item>
+                        </Row>
                     </Col>
                 </Row>
                 <Row justify='end'>

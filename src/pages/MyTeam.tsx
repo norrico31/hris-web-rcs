@@ -14,6 +14,7 @@ import useMessage from 'antd/es/message/useMessage'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { ROOTPATHS } from '../shared/constants'
 import { useAuthContext } from '../shared/contexts/Auth'
+import { TeamModal } from './system-settings/hr-settings/Team'
 
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS, MYTEAMS }] = useEndpoints()
 const { GET, POST, DELETE } = useAxios()
@@ -148,7 +149,10 @@ export default function MyTeam() {
                 handleSearch={handleSearch}
             // handleCreate={() => setIsModalOpen(true)}
             // handleModalArchive={() => navigate('/team/archives')}
-            />
+
+            >
+                <Button type='primary' onClick={() => setIsModalOpen(true)}>Create Project</Button>
+            </TabHeader>
             <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} onChange={onChange} />
             {/* <EmployeeModal
                 title={selectedData != undefined ? 'Update' : 'Create'}
@@ -156,6 +160,13 @@ export default function MyTeam() {
                 handleCancel={handleCloseModal}
                 fetchData={fetchData}
             /> */}
+            <TeamModal
+                title='Create'
+                // selectedData={selectedData}
+                isModalOpen={isModalOpen}
+                handleCancel={handleCloseModal}
+                fetchData={fetchData}
+            />
         </>
     )
 }

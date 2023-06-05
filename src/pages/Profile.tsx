@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Col, Row, Input, Form as AntDForm, Button } from 'antd'
+import useMessage from 'antd/es/message/useMessage'
 import { Card, Form } from '../components'
 import { IUser } from '../shared/interfaces'
 import { useAuthContext } from '../shared/contexts/Auth'
@@ -14,23 +15,35 @@ export default function Profile() {
     const [form] = useForm<IUser>()
     const [loading, setLoading] = useState(false)
     const { user } = useAuthContext()
+    const [messageApi, contextHolder] = useMessage()
 
     useEffect(() => {
         form.setFieldsValue({ ...user })
     }, [])
 
+    const key = 'error'
     const onFinish = (val: IUser) => {
         setLoading(true)
         POST(UPDATEPROFILE, val)
             .then((res) => {
                 console.log(res)
-            }).finally(() => {
-                console.log('nice')
+            })
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err.response.data.message ?? err.response.data.error,
+                    duration: 5
+                })
+                setLoading(false)
+            })
+            .finally(() => {
                 setLoading(false)
             })
     }
     return (
         <Card title='Profile'>
+            {contextHolder}
             <Form form={form} onFinish={onFinish} disabled={loading}>
                 <Row justify='space-between'>
                     <Col xs={24} sm={24} md={11} lg={10} xl={10} >

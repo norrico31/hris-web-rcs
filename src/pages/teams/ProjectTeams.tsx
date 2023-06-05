@@ -10,6 +10,7 @@ import { IArguments, TableParams, ITeamProjects, IClient, IClientBranch, ISchedu
 import dayjs from 'dayjs';
 import useWindowSize from '../../shared/hooks/useWindowSize'
 import { useTeamCtx } from '../MyTeamEdit'
+import { AiOutlineEdit } from 'react-icons/ai'
 
 const { useForm, Item } = AntDForm
 
@@ -54,12 +55,10 @@ export default function ProjectTeams() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: ITeamProjects) => <Action
-                title='Tasks'
-                name={record?.teams[0]?.name}
-                onConfirm={() => handleDelete(record?.id!)}
-                onClick={() => handleEdit(record)}
-            />,
+            render: (_, record: ITeamProjects) => <Button id='edit' type='default' size='middle' onClick={() => handleEdit(record)} className='btn-edit'>
+                <AiOutlineEdit color='white' />
+            </Button>
+            ,
             width: 150
         },
     ]

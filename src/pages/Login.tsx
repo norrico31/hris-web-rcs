@@ -25,7 +25,6 @@ export default function Login() {
 
     const key = 'error'
     const onFinish = async (values: Record<string, string>) => {
-        console.log(values)
         try {
             let url = isForgotPassword ? FORGOTPASSWORD : LOGIN
             const res = await POST(url, values)

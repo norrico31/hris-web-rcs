@@ -39,7 +39,7 @@ export default function MyTeamTask() {
     const controller = new AbortController();
     useEffect(() => {
         GET<any>('tasks/team_task/users', controller.signal)
-            .then(setUsers);
+            .then((data) => setUsers(data ?? []));
         return () => {
             controller.abort()
         }
@@ -69,7 +69,9 @@ export default function MyTeamTask() {
 
     function fetchData(args?: IParams) {
         setLoading(true)
-        GET<TasksRes>(TASKS.TEAMTASKS, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize!, user: args?.user, date: args?.date })
+        console.log(args?.date)
+        const date = args?.date !== 'Invalid Date' && args?.date
+        GET<TasksRes>(TASKS.TEAMTASKS, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize!, user: args?.user, date })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -98,7 +100,7 @@ export default function MyTeamTask() {
             <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
             <Space>
                 <Select placeholder='Select Employee...' optionFilterProp="children" allowClear showSearch style={{ width: 150 }} value={selectedUser} onChange={setSelectedUser}>
-                    {users.map((user) => (
+                    {users?.map((user) => (
                         <Select.Option value={user} key={user} style={{ color: '#777777' }}>{user}</Select.Option>
                     ))}
                 </Select>

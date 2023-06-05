@@ -172,7 +172,7 @@ interface ModalProps {
 
 const { Item: FormItem, useForm } = AntDForm
 
-function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
+export function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }: ModalProps) {
     const [form] = useForm<ITeam>()
     const [departments, setDepartments] = useState<IDepartment[]>([])
     const [loading, setLoading] = useState(false)
@@ -205,7 +205,7 @@ function TeamModal({ title, selectedData, isModalOpen, fetchData, handleCancel }
         })
     }
 
-    return <Modal title={`${title} - Team`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Project / Team`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Team Name"
