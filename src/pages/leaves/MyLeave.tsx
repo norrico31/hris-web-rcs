@@ -333,7 +333,7 @@ const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { ha
         dataIndex: 'action',
         align: 'center',
         render: (_, record: ILeave) => <Space direction='vertical'>
-            {record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' ? (
+            {(record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled') ? (
                 <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
                     View
                 </Button>
@@ -419,7 +419,7 @@ export function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, ha
                         Cancel Request
                     </Button>
                 )}
-                {selectedRequest?.status === 'CANCELED' && (
+                {/* {selectedRequest?.status === 'CANCELED' && (
                     <Popconfirm
                         title={`Restore Leave`}
                         description={`Are you sure you want to restore?`}
@@ -439,7 +439,7 @@ export function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, ha
                             </Space>
                         </Button>
                     </Popconfirm>
-                )}
+                )} */}
                 <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
                     Close
                 </Button>

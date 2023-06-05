@@ -89,26 +89,29 @@ export default function MyOvertime() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: IOvertime) => <Space direction='vertical'>
-                {record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' ? (
-                    <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
-                        View
-                    </Button>
-                ) : (
-                    <Action
-                        title='Tasks'
-                        name={record?.user?.full_name}
-                        onConfirm={() => handleDelete(record?.id!)}
-                        onClick={() => handleEdit(record)}
-                    // isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled'}
-                    />
-                )}
-                {record?.status.toLowerCase() === 'pending' && (
-                    <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
-                        {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
-                    </Button>
-                )}
-            </Space>,
+            render: (_, record: IOvertime) => {
+                // if (record?.status.toLowerCase() === 'canceled') return
+                return <Space direction='vertical'>
+                    {(record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled') ? (
+                        <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                            View
+                        </Button>
+                    ) : (
+                        <Action
+                            title='Tasks'
+                            name={record?.user?.full_name}
+                            onConfirm={() => handleDelete(record?.id!)}
+                            onClick={() => handleEdit(record)}
+                        // isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled'}
+                        />
+                    )}
+                    {record?.status.toLowerCase() === 'pending' && (
+                        <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                            {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
+                        </Button>
+                    )}
+                </Space>
+            },
             width: 150
         },
     ]
@@ -395,7 +398,7 @@ export function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, ov
                         Cancel Request
                     </Button>
                 )}
-                {selectedRequest?.status === 'CANCELED' && (
+                {/* {selectedRequest?.status === 'CANCELED' && (
                     <Popconfirm
                         title={`Restore Overtime`}
                         description={`Are you sure you want to restore?`}
@@ -415,7 +418,7 @@ export function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, ov
                             </Space>
                         </Button>
                     </Popconfirm>
-                )}
+                )} */}
                 <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                     Close
                 </Button>
