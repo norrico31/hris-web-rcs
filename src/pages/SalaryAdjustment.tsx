@@ -221,7 +221,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         formData.append('is_active', values?.is_active)
         formData.append('remarks', values?.remarks)
         formData.append('expense_description', values?.expense_description ? values?.expense_description : '')
-        formData.append('receipt_attachment', values?.receipt_attachment ? values?.receipt_attachment[0]?.originFileObj : '')
+        formData.append('file', values?.file ? values?.file[0]?.originFileObj : '')
         let result = selectedData ? PUT(EXPENSE.PUT + selectedData.id!, formData) : POST(EXPENSE.POST, formData)
         result.then(() => {
             form.resetFields()
@@ -338,7 +338,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                     </FormItem>
                     <FormItem
                         label='Receipt File'
-                        name='receipt_attachment'
+                        name='file'
                         valuePropName="fileList"
                         getValueFromEvent={normFile}
                     >
