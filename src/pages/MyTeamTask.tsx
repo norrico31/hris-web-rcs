@@ -71,7 +71,7 @@ export default function MyTeamTask() {
         setLoading(true)
         console.log(args?.date)
         const date = args?.date !== 'Invalid Date' && args?.date
-        GET<TasksRes>(TASKS.TEAMTASKS, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize!, user: args?.user, date })
+        GET<TasksRes>(TASKS.TEAMTASKS, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize!, user: args?.user, date: date as string })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({

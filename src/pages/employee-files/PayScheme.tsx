@@ -7,7 +7,7 @@ import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { IBankDetails } from '../../shared/interfaces'
 
 const [{ EMPLOYEE201: { PAYSCHEME }, SYSTEMSETTINGS: { HRSETTINGS: { BANKDETAILS: { LISTS } } } }] = useEndpoints()
-const { PUT } = useAxios()
+const { PUT, POST } = useAxios()
 
 const { Item: Item, useForm } = AntDForm
 
@@ -19,9 +19,11 @@ export default function PayScheme() {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        form.setFieldsValue({
-            ...employeeInfo?.bank_detail
-        })
+        if (employeeInfo) {
+            form.setFieldsValue({
+                ...employeeInfo?.bank_detail
+            })
+        }
         const controller = new AbortController();
         axiosClient(LISTS, { signal: controller.signal })
             .then((res) => {
@@ -34,8 +36,8 @@ export default function PayScheme() {
 
     function onFinish(values: Record<string, any>) {
         setLoading(true)
-        PUT(PAYSCHEME.PUT + employeeInfo?.bank_detail?.id, { ...values, user_id: employeeInfo?.id })
-            .then(() => fetchData())
+        let result = employeeInfo.bank_detail?.id ? PUT(PAYSCHEME.PUT + employeeInfo?.bank_detail?.id, { ...values, user_id: employeeInfo?.id }) : POST(PAYSCHEME.PUT, values)
+        result.then(() => fetchData())
         setLoading(false)
     }
 

@@ -152,10 +152,9 @@ export default function OvertimeArchives() {
                         type: (str == undefined || str == '') ? 'all' : str
                     })
                 }} style={{ width: 150 }}>
-                    <Select.Option value='all'>All</Select.Option>
                     <Select.Option value='pending'>Pending</Select.Option>
-                    <Select.Option value='approved'>Approved</Select.Option>
-                    <Select.Option value='reject'>Rejected</Select.Option>
+                    <Select.Option value='canceled'>Canceled</Select.Option>
+                    <Select.Option value='rejected'>Rejected</Select.Option>
                 </Select>
             </TabHeader>
             <Card title={`Archives - ${firstLetterCapitalize(overtimeType)}`} level={5}>
