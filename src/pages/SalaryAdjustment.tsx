@@ -212,10 +212,11 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
     function onFinish(values: Record<string, any>) {
         setLoading(true)
         const formData = new FormData()
+        const expenseDate = dayjs(values?.expense_date).format('YYYY/MM/DD')
         formData.append('user_id', values?.user_id)
         formData.append('expense_type_id', values?.expense_type_id)
         formData.append('amount', values?.amount)
-        formData.append('expense_date', values?.expense_date ? dayjs(values?.expense_date, 'YYYY/MM/DD') + '' : '')
+        formData.append('expense_date', values?.expense_date ? expenseDate : '')
         formData.append('is_taxable', values?.is_taxable)
         formData.append('is_active', values?.is_active)
         formData.append('remarks', values?.remarks)
