@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback, memo, ReactNode, useTransition } from 'react'
+import { useState, useEffect, useMemo, useCallback, memo, ReactNode, startTransition } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider, Popconfirm, Skeleton } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
@@ -236,6 +236,14 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         setDataColumns(updateDateColumns)
     }, [dataColumns])
 
+    // const clearField = useCallback(function (idx: number) {
+    //     console.log('clearField', initDataColState()[0])
+    //     setDataColumns((prevCols) => {
+    //         const mappedCols = prevCols.map((c, i) => idx === i ? { ...initDataColState()[0] } : c)
+    //         return mappedCols
+    //     })
+    // }, [])
+
     return <>
         {contextHolder}
         <Title level={2}>My Tasks - {title}</Title>
@@ -342,10 +350,7 @@ function TaskList({ dataColumns, addRow, updateDataCols, initialTeams }: TaskLis
     //     setDataColumns([...dataColumns])
     // }, [dataColumns])
 
-    // const clearField = useCallback(function (idx: number) {
-    //     dataColumns[idx] = initDataColState()[0]
-    //     setDataColumns([...dataColumns])
-    // }, [dataColumns])
+
 
     // console.log(dataColumns)
 
@@ -442,6 +447,7 @@ function TaskList({ dataColumns, addRow, updateDataCols, initialTeams }: TaskLis
             isModalOpen={isModalSprints}
             handleCancel={() => setIsModalSprints(false)}
         />
+        <Divider style={{ margin: '10px 0' }} />
         <Space>
             {/* {(selectedRowIds.length > 0 && isMultipleDelete) ? (
                 <Button type='primary' onClick={() => removeMultipleRow(selectedRowIds)}>
@@ -480,15 +486,13 @@ interface TaskItem {
 
 const TaskItem = memo(function ({ dataColumn, dataIdx, initialTeams, teamId, updateDataColumns, activities, types, sprints, handleChange, handleOpenActivities, handleOpenTypes, handleOpenSprints }: TaskItem) {
     const [dataItem, setDataItem] = useState(dataColumn)
-    const [_, startTransition] = useTransition()
+    console.log('taskItem: ', dataColumn)
 
     useEffect(() => updateDataColumns(dataItem), [dataItem])
 
     const onChange = (id: string) => {
         if (id !== undefined) {
-            startTransition(() => {
-                handleChange(id)
-            })
+            startTransition(() => handleChange(id))
             setDataItem({
                 ...dataItem,
                 task_activity_id: undefined,
@@ -513,7 +517,6 @@ const TaskItem = memo(function ({ dataColumn, dataIdx, initialTeams, teamId, upd
                     optionFilterProp="children"
                     value={dataItem.team_id as string}
                     onChange={onChange}
-                    // onClick={() => setDataItem(initDataColState()[0])}
                     style={{ width: 200 }}
                 >
                     {initialTeams?.map((team) => <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>)}
@@ -611,30 +614,32 @@ const TaskItem = memo(function ({ dataColumn, dataIdx, initialTeams, teamId, upd
                     style={{ width: 250, height: 60 }}
                     value={dataItem.description!}
                     onChange={(evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+                        // try insert debounce to delay
                         dataItem.description = evt.target.value ?? null
                         setDataItem({ ...dataItem })
                     }}
                 />
             </Col>
             <Col>
-                <TaskTitle>Actions</TaskTitle>
+                <Title level={5} style={{ textAlign: 'center' }}>Actions</Title>
                 <Space>
-                    {/* <PopupConfirm
+                    <PopupConfirm
                         title='Clear Field'
                         description='Are you sure you want to clear this row field'
-                        onConfirm={() => null}
-                        onConfirm={() => clearField(dataIdx)}
+                        onConfirm={() => setDataItem({ ...initDataColState()[0], id: dataItem.id })}
                         okText="Clear"
-                    disabled={dataColumns?.length == 1}
+                        disabled={!teamId}
                     />
                     <PopupConfirm
                         title='Remove Row'
                         description='Are you sure you want to remove this row?'
-                        onConfirm={() => null}
-                        onConfirm={() => removeRow(record?.id, dataIdx)}
+                        onConfirm={() => {
+                            removeRow(record?.id, dataIdx)
+                            return null
+                        }}
                         okText="Remove"
-                    disabled={dataColumns?.length == 1}
-                    /> */}
+                        disabled={!teamId}
+                    />
                 </Space>
             </Col>
         </div>

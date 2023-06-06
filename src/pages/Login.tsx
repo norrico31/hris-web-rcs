@@ -15,16 +15,18 @@ const [{ AUTH: { LOGIN, FORGOTPASSWORD } }] = useEndpoints()
 
 export default function Login() {
     renderTitle('Login')
-    const { token, setToken, setUser, setLoading, loading } = useAuthContext()
+    const { token, setToken, setUser, setLoading } = useAuthContext()
     const { pathname } = useLocation()
     const [messageApi, contextHolder] = useMessage()
     const [form] = Form.useForm()
     const [isForgotPassword, setIsForgotPassword] = useState(false)
+    const [loginLoading, setLoginLoading] = useState(false)
 
     if (token != undefined) return <Navigate to='/' />
 
     const key = 'error'
     const onFinish = async (values: Record<string, string>) => {
+        setLoginLoading(true)
         try {
             let url = isForgotPassword ? FORGOTPASSWORD : LOGIN
             const res = await POST(url, values)
@@ -44,6 +46,8 @@ export default function Login() {
                 duration: 3
             })
             return error
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -53,7 +57,7 @@ export default function Login() {
             <img src={ImgBG} className='login-bg' />
             <Row justify='center' style={{ minHeight: '100vh', width: '100%', }} align='middle'>
                 <ColContainer xs={18} sm={18} md={18} lg={18} xl={11}>
-                    <Form form={form} autoComplete='off' layout='vertical' onFinish={onFinish}>
+                    <Form form={form} autoComplete='off' layout='vertical' onFinish={onFinish} disabled={loginLoading}>
                         <Row justify='center' align='middle'>
                             <Col>
                                 <div className='center' style={style}>
@@ -71,10 +75,10 @@ export default function Login() {
                             </Form.Item>
                         )}
                         <Form.Item style={{ textAlign: 'right' }}>
-                            <Link to='#' className='link-forgotpassword color-white' onClick={() => setIsForgotPassword(!isForgotPassword)}>{isForgotPassword ? 'Login' : 'Forgot Password'}</Link>
+                            {!loginLoading && <Link to='#' className='link-forgotpassword color-white' onClick={() => setIsForgotPassword(!isForgotPassword)}>{isForgotPassword ? 'Login' : 'Forgot Password'}</Link>}
                         </Form.Item>
                         <Form.Item style={{ textAlign: 'center' }}>
-                            <Button type="primary" htmlType="submit" className='btn-primary'>
+                            <Button type="primary" htmlType="submit" className='btn-primary' loading={loginLoading} disabled={loginLoading}>
                                 {isForgotPassword ? 'Send' : 'Login'}
                             </Button>
                         </Form.Item>

@@ -355,6 +355,9 @@ export const useEndpoints = () => {
             DELETE: '/tasks/',
             DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/report_service/api/tasks_report'
         },
+        TEAMTASKS: {
+            DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/report_service/api/tasks_report/team'
+        },
         MYTEAMS: {
             PROFILE: {
                 ARCHIVES: '/employees/manager/myteams/archives',
