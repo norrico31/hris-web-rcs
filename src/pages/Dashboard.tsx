@@ -19,10 +19,9 @@ import axiosClient, { useAxios } from '../shared/lib/axios'
 import { IHoliday } from '../shared/interfaces'
 import { useDarkMode } from '../shared/contexts/DarkMode'
 
-const { Paragraph, Title } = Typography
+const { Title } = Typography
 
 const [{ ANNOUNCEMENT, WHOSINOUT, LEAVES, EMPLOYEE201, SYSTEMSETTINGS: { HRSETTINGS: { HOLIDAYS } } }] = useEndpoints()
-const { GET } = useAxios()
 
 export default function Dashboard() {
     renderTitle('Dashboard')
@@ -123,14 +122,14 @@ export default function Dashboard() {
                     </Card>
                 </Col>
             </Row>
+            <Divider />
             <Row justify='space-between' wrap>
-                <Divider />
-                <Col xs={24} sm={24} md={22} lg={9} xl={9}>
+                <Col xs={24} sm={24} md={24} lg={9} xl={9} style={{ marginBottom: 15 }}>
                     <Card title='Announcements' style={{ minHeight: 500, maxHeight: 500 }} isDarkMode={isDarkMode}>
                         <AntDDivider />
                     </Card>
                 </Col>
-                <Col xs={24} sm={24} md={22} lg={14} xl={14}>
+                <Col xs={24} sm={24} md={24} lg={14} xl={14}>
                     <Card title='Holidays' isDarkMode={isDarkMode}>
                         <div style={{ overflow: 'auto' }}>
                             <FullCalendar

@@ -56,6 +56,13 @@ export default function WhosInOut() {
             dataIndex: 'time_keeping_time',
             width: 150
         },
+        {
+            title: 'Client Site',
+            key: 'is_client_site',
+            dataIndex: 'is_client_site',
+            render: (_, record) => record?.is_client_site === 1 ? 'Yes' : 'No',
+            width: 150
+        },
     ]
 
     const fetchData = ({ args, isIn }: { args?: IArguments; isIn?: boolean }) => {
@@ -94,7 +101,7 @@ export default function WhosInOut() {
             <Row justify='center'>
                 <Space align='center'>
                     <Typography.Title level={2} style={{ margin: 0 }}>In</Typography.Title>
-                    <Switch checked={isInOut} onChange={setIsInOut} />
+                    <Switch checkedChildren="Out" unCheckedChildren="In" checked={isInOut} onChange={setIsInOut} />
                     <Typography.Title level={2} style={{ margin: 0 }}>Out</Typography.Title>
                 </Space>
             </Row>

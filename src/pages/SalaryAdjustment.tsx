@@ -81,6 +81,7 @@ export default function SalaryAdjustment() {
             title: 'File',
             key: 'file_name',
             dataIndex: 'file_name',
+            render: (_, record) => record?.file_name ? <Button type='primary'>{record?.file_name}</Button> : 'No File',
             align: 'center',
             width: 200
         },

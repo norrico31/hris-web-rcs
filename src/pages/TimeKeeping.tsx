@@ -71,6 +71,13 @@ export default function TimeKeeping() {
             render: (_, record) => record?.type.split('_').join(' ') ?? '-',
             width: 150
         },
+        {
+            title: 'Client Site',
+            key: 'is_client_site',
+            dataIndex: 'is_client_site',
+            render: (_, record) => record?.is_client_site === 1 ? 'Yes':'No',
+            width: 150
+        },
     ]
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, pageSize: pagination?.pageSize! }, date: today })
@@ -163,7 +170,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
         const payload = {
             photo: imageSrc,
             location: coordinates,
-            clientSite: clientSite
+            is_client_site: clientSite
         }
         if (payload.photo == null) {
             setError('Please take a selfie photo')

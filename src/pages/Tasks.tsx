@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, ReactNode } from 'react'
+import { useState, useEffect, useMemo, ReactNode, startTransition } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider, Popconfirm, Skeleton } from 'antd'
+import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider, Popconfirm, Skeleton, FloatButton } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import axios from 'axios'
 import dayjs from 'dayjs'
@@ -262,7 +262,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         result.then(() => {
             form.resetFields()
             handleCancel()
-            // setDataRow(initDataColState)
+            setDataRow(initDataColState)
         }).catch((err) => {
             messageApi.open({
                 key,
@@ -341,6 +341,8 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                         ))}
                     </div>
                 </Row>
+                {/* TODO: refactor in width hooks */}
+                <FloatButton.BackTop style={{ insetInlineStart: '350px', insetBlockEnd: '88px' }} />
                 <Space>
                     {/* {(selectedRowIds.length > 0 && isMultipleDelete) ? (
                     <Button type='primary' onClick={() => removeMultipleRow(selectedRowIds)}>
@@ -428,9 +430,11 @@ function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities
                     optionFilterProp="children"
                     value={model.team_id as string}
                     onChange={(id: string) => {
-                        setTeamIds((prevIds: any) => {
-                            prevIds[index] = id
-                            return [...prevIds]
+                        startTransition(() => {
+                            setTeamIds((prevIds: any) => {
+                                prevIds[index] = id
+                                return [...prevIds]
+                            })
                         })
                         setModel({ ...model, team_id: id })
                         setCurrentIdx(index)

@@ -181,13 +181,14 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
     function onFinish(values: Record<string, any>) {
         setLoading(true)
         const formData = new FormData()
-        if (selectedData?.id) formData.append('_method', 'PUT')
         const publishDate = (values?.publish_date ? dayjs(values?.publish_date).format('YYYY-MM-DD') : '')
         formData.append('publish_date', publishDate)
         formData.append('posted_by', userId)
         formData.append('title', values.title)
         formData.append('content', values.content)
         formData.append('img', values?.img ? values?.img[0].originFileObj : '')
+        console.log(values?.img[0].originFileObj)
+        if (selectedData?.id) formData.append('_method', 'PUT')
         let result = selectedData != undefined ? PUT(ANNOUNCEMENT.PUT + selectedData.id!, formData) : POST(ANNOUNCEMENT.POST, formData)
         result.then(() => {
             form.resetFields()
@@ -200,8 +201,8 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
             })
             setLoading(false)
         }).finally(() => {
-            fetchData()
             setLoading(false)
+            fetchData()
         })
     }
 

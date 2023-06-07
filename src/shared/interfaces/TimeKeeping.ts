@@ -36,7 +36,8 @@ export interface ITimeKeeping {
     user: IUser
     user_id: string | null
     schedule_time?: string
-    schedule: ISchedules
+    schedule: ISchedules,
+    is_client_site: number
 }
 
 export type TimeKeepingRes = AxiosGetData<ITimeKeeping>
