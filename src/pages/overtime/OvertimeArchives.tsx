@@ -22,7 +22,7 @@ dayjs.extend(localizedFormat)
 export default function OvertimeArchives() {
     renderTitle('Overtime Archives')
     const { user, loading: loadingUser } = useAuthContext()
-    const [overtimeType, setOvertimeType] = useState('all')
+    const [overtimeType, setOvertimeType] = useState('canceled')
     const [data, setData] = useState<IOvertime[]>([])
     const [selectedData, setSelectedData] = useState<IOvertime | undefined>(undefined)
     const [search, setSearch] = useState('')
@@ -115,7 +115,7 @@ export default function OvertimeArchives() {
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        const status = (type !== 'all') ? `?status=${type?.toUpperCase()}` : ''
+        const status = `?status=${type?.toUpperCase()}`
         GET<OvertimeRes>(OVERTIME.ARCHIVES + status, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
@@ -142,17 +142,16 @@ export default function OvertimeArchives() {
         <>
             <TabHeader handleSearch={setSearch} isRequest>
                 <Select value={overtimeType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
-                    setOvertimeType((str == undefined || str == '') ? 'all' : str)
+                    setOvertimeType((str == undefined || str == '') ? 'canceled' : str)
                     fetchData({
                         args: {
                             search,
                             page: tableParams?.pagination?.current ?? 1,
                             pageSize: tableParams?.pagination?.pageSize
                         },
-                        type: (str == undefined || str == '') ? 'all' : str
+                        type: (str == undefined || str == '') ? 'canceled' : str
                     })
                 }} style={{ width: 150 }}>
-                    <Select.Option value='pending'>Pending</Select.Option>
                     <Select.Option value='canceled'>Canceled</Select.Option>
                     <Select.Option value='rejected'>Rejected</Select.Option>
                 </Select>

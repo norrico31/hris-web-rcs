@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, ReactNode } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider, Popconfirm, Skeleton } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
@@ -11,11 +11,11 @@ import useMessage from 'antd/es/message/useMessage'
 import { GrFormAdd } from 'react-icons/gr'
 import { useAuthContext } from '../shared/contexts/Auth'
 import { ITasksServices, useTasksServices } from '../shared/services/TasksSettings'
-import { Action, TabHeader, Table, Form, MainHeader, } from '../components'
+import { Action, TabHeader, Table, Form, MainHeader, Card, } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import axiosClient, { useAxios } from '../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../shared/constants'
-import { TableParams, ITasks, TasksRes, IArguments, ITeam } from '../shared/interfaces'
+import { TableParams, ITasks, TasksRes, IArguments, ITeam, ITaskActivities, ITaskTypes, ITaskSprint } from '../shared/interfaces'
 import { ActivityModal } from './system-settings/task-settings/TaskActivities'
 import { SprintModal } from './system-settings/task-settings/TaskSprint'
 import { TypesModal } from './system-settings/task-settings/TaskTypes'
@@ -39,7 +39,6 @@ export default function Tasks() {
     const [loading, setLoading] = useState(true)
 
     const columns = useMemo(() => renderColumns({ handleDelete, handleEdit }), [data])
-    data = useMemo(() => data, [data])
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -171,275 +170,89 @@ const initDataColState = () => [{
     task_type_id: undefined,
     sprint_id: undefined,
     manhours: undefined,
-    description: undefined
+    description: undefined,
 }]
+
+type SelectedRow = { id: string; idx: number }[]
 
 function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps) {
     const [form] = useForm<ITasks>()
+    const [loading, setLoading] = useState(false)
+    const [teams, setTeams] = useState<Array<ITeam[]>>([])
+    const [messageApi, contextHolder] = useMessage()
+    const initialTeams = useMemo(() => teams[0] ?? [], [teams[0]])
+    const [dataRow, setDataRow] = useState<DataRow[]>(initDataColState)
+
+    const [tasks, setTasks] = useState<Array<ITasksServices>>([{ activities: [], sprints: [], types: [] }])
+    const [teamIds, setTeamIds] = useState<Array<string>>([])
+    const [currentIdx, setCurrentIdx] = useState(0)
+
     const [isModalActivity, setIsModalActivity] = useState(false)
     const [isModalTypes, setIsModalTypes] = useState(false)
     const [isModalSprints, setIsModalSprints] = useState(false)
-    const [tasks, setTasks] = useState<Array<ITasksServices>>([{ activities: [], sprints: [], types: [] }])
-    const [teams, setTeams] = useState<Array<ITeam[]>>([])
-    const [loading, setLoading] = useState(false)
-    const [teamIds, setTeamIds] = useState<Array<string>>([])
-    const [dataColumns, setDataColumns] = useState<DataColumns>(initDataColState)
-    const [currentIdx, setCurrentIdx] = useState(0)
-    const [messageApi, contextHolder] = useMessage()
-    const [isMultipleDelete, setIsMultipleDelete] = useState(false)
-    const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
 
     const controller = new AbortController();
     useEffect(() => {
         axiosClient(HRSETTINGS.TEAMS.USERS_LISTS, { signal: controller.signal })
             .then((res) => setTeams([res?.data]));
         return () => controller.abort()
-    }, [handleCancel])
+    }, [])
 
     useEffect(() => {
-        if (teamIds[currentIdx]) {
-            fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + ('?team_id=' + teamIds[currentIdx]), 'activities', currentIdx);
-            fetchList(TASKSSETTINGS.TYPES.LISTS + ('?team_id=' + teamIds[currentIdx]), 'types', currentIdx);
-            fetchList(TASKSSETTINGS.SPRINT.LISTS + ('?team_id=' + teamIds[currentIdx]), 'sprints', currentIdx);
-        }
+        if (teamIds[currentIdx]) fetchTasks(teamIds[currentIdx])
     }, [currentIdx, teamIds])
 
-    const fetchList = useCallback(async function (url: string, key: 'activities' | 'types' | 'sprints', idx: number) {
+    const fetchList = async function (url: string, key: 'activities' | 'types' | 'sprints', idx: number) {
         const data = await getList(url)
         tasks[idx] = { ...tasks[idx], [key]: data ?? [] }
-        setTasks([...tasks])
-    }, [tasks])
+        setTasks(() => [...tasks])
+    }
 
-    const addRow = useCallback(function () {
-        setDataColumns(prevRow => [...prevRow, initDataColState()[0]])
-    }, [dataColumns])
-
-    const handleSelectChange = useCallback(function (id: string, idx: number, key: string) {
-        dataColumns[idx][key] = id ?? null
-        setDataColumns([...dataColumns])
-    }, [dataColumns])
-
-    const handleInputChange = useCallback(function (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, idx: number, key: string) {
-        dataColumns[idx][key] = evt.target.value ?? null
-        setDataColumns([...dataColumns])
-    }, [dataColumns])
-
-    const clearField = useCallback(function (idx: number) {
-        dataColumns[idx] = initDataColState()[0]
-        setDataColumns([...dataColumns])
-    }, [dataColumns])
-
-    const removeRow = useCallback(function (recordId: string, idx: number) {
-        const newDataCol = dataColumns.filter(c => c.id !== recordId)
-        const newTasks = tasks.splice(idx, 1)
-        setDataColumns(newDataCol)
-        setTasks(newTasks)
-        if (teamIds[idx]) {
-            const idxId = teamIds.indexOf(teamIds[idx])
-            if (idxId > -1) teamIds.splice(idx, 1)
-            setTeamIds([...teamIds])
+    const fetchTasks = async (id: string) => {
+        try {
+            const activitiesPromise = axiosClient.get(TASKSSETTINGS.ACTIVITIES.LISTS + '?team_id=' + id)
+            const typesPromise = axiosClient.get(TASKSSETTINGS.TYPES.LISTS + '?team_id=' + id)
+            const sprintsPromise = axiosClient.get(TASKSSETTINGS.SPRINT.LISTS + '?team_id=' + id)
+            const [activitiesRes, typesRes, sprintsRes] = await Promise.allSettled([activitiesPromise, typesPromise, sprintsPromise]) as any
+            tasks[currentIdx] = {
+                activities: activitiesRes?.status === 'fulfilled' ? activitiesRes?.value?.data : [],
+                types: typesRes?.status === 'fulfilled' ? typesRes?.value?.data : [],
+                sprints: sprintsRes?.status === 'fulfilled' ? sprintsRes?.value?.data : [],
+            }
+            setTasks([...tasks])
+        } catch (error) {
+            console.log(error)
         }
-    }, [dataColumns, tasks, teamIds])
+    }
 
-    const columns: ColumnsType<ITasks> = useMemo(() => [
-        {
-            title: 'Project / Team',
-            key: 'team_id',
-            dataIndex: 'team_id',
-            render: (_, __, idx) => <Select
-                placeholder='Select Project / Team'
-                allowClear
-                showSearch
-                optionFilterProp="children"
-                value={teamIds[idx]}
-                onChange={(id) => {
-                    teamIds[idx] = id
-                    setTeamIds([...teamIds])
-                    setCurrentIdx(idx)
-                    handleSelectChange(id, idx, 'team_id')
-                }}
-                style={{ width: 200 }}
-            >
-                {teams[0]?.map((team) => (
-                    <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>
-                )) ?? []}
-            </Select>,
-            width: 250,
-            align: 'center'
-        },
-        {
-            title: 'Task Activity',
-            key: 'task_activity_id',
-            dataIndex: 'task_activity_id',
-            render: (_, __, idx) => <Row justify='space-between' style={{ width: 210, alignItems: 'center' }}>
-                <Select
-                    placeholder='Select task activity'
-                    allowClear
-                    showSearch
-                    optionFilterProp="children"
-                    disabled={!teamIds[idx]}
-                    style={{ width: 150 }}
-                    value={dataColumns[idx].task_activity_id as string}
-                    onChange={(id: string) => handleSelectChange(id, idx, 'task_activity_id')}
-                >
-                    {tasks[idx]?.activities?.map((act) => (
-                        <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
-                    )) ?? []}
-                </Select>
-                <Button className='btn-secondary' onClick={() => setIsModalActivity(true)} disabled={!teamIds[idx]}>
-                    <GrFormAdd />
-                </Button>
-                <ActivityModal
-                    title='Create'
-                    teamId={teamIds[idx]}
-                    fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + teamIds[idx] ? (TASKSSETTINGS.ACTIVITIES.LISTS + '?team_id=' + teamIds[idx]) : '', 'activities', idx)}
-                    isModalOpen={isModalActivity}
-                    handleCancel={() => setIsModalActivity(false)}
-                />
-            </Row>,
-            width: 250,
-            align: 'center'
-        },
-        {
-            title: 'Task Type',
-            key: 'task_type_id',
-            dataIndex: 'task_type_id',
-            render: (_, __, idx) => <Row justify='space-between' align='middle' style={{ width: 210 }}>
-                <Select
-                    placeholder='Select task type'
-                    allowClear
-                    showSearch
-                    optionFilterProp="children"
-                    disabled={!teamIds[idx]}
-                    style={{ width: 150 }}
-                    value={dataColumns[idx].task_type_id as string}
-                    onChange={(id: string) => handleSelectChange(id, idx, 'task_type_id')}
-                >
-                    {tasks[idx]?.types?.map((act) => (
-                        <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
-                    )) ?? []}
-                </Select>
-                <Button className='btn-secondary' onClick={() => setIsModalTypes(true)} disabled={!teamIds[idx]}>
-                    <GrFormAdd />
-                </Button>
-                <TypesModal
-                    title='Create'
-                    teamId={teamIds[idx]}
-                    fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS + teamIds[idx] ? (TASKSSETTINGS.TYPES.LISTS + '?team_id=' + teamIds[idx]) : '', 'types', idx)}
-                    isModalOpen={isModalTypes}
-                    handleCancel={() => setIsModalTypes(false)}
-                />
-            </Row>,
-            align: 'center',
-            width: 200
-        },
-        {
-            title: 'Sprint',
-            key: 'sprint_id',
-            dataIndex: 'sprint_id',
-            render: (_, __, idx) => <Row justify='space-between' style={{ width: 210 }}>
-                <Select
-                    placeholder='Select sprint'
-                    allowClear
-                    showSearch
-                    optionFilterProp="children"
-                    disabled={!teamIds[idx]}
-                    style={{ width: 150 }}
-                    value={dataColumns[idx].sprint_id as string}
-                    onChange={(id: string) => handleSelectChange(id, idx, 'sprint_id')}
-                >
-                    {tasks[idx]?.sprints?.map((act) => (
-                        <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>
-                    )) ?? []}
-                </Select>
-                <Button className='btn-secondary' onClick={() => setIsModalSprints(true)} disabled={!teamIds[idx]}>
-                    <GrFormAdd />
-                </Button>
-                <SprintModal
-                    title='Create'
-                    teamId={teamIds[idx]}
-                    fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS + teamIds[idx] ? (TASKSSETTINGS.SPRINT.LISTS + '?team_id=' + teamIds[idx]) : '', 'sprints', idx)}
-                    isModalOpen={isModalSprints}
-                    handleCancel={() => setIsModalSprints(false)}
-                />
-            </Row>,
-            width: 250,
-            align: 'center'
-        },
-        {
-            title: 'Manhours',
-            key: 'manhours',
-            dataIndex: 'manhours',
-            render: (_, __, idx) => <Input
-                disabled={!teamIds}
-                type='number'
-                placeholder='Enter manhours...'
-                style={{ width: 100 }}
-                value={dataColumns[idx].manhours}
-                onChange={(evt) => handleInputChange(evt, idx, 'manhours')}
-            />,
-            width: 150,
-            align: 'center'
-        },
-        {
-            title: 'Description',
-            key: 'description',
-            dataIndex: 'description',
-            render: (_, __, idx) => <Input.TextArea
-                disabled={!teamIds}
-                placeholder='Enter description...'
-                style={{ width: 250, height: 80 }}
-                value={dataColumns[idx].description}
-                onChange={(evt) => handleInputChange(evt, idx, 'description')}
-            />,
-            width: 250,
-            align: 'center'
-        },
-    ], [
-        tasks,
-        teams,
-        teamIds,
-        dataColumns,
-        isModalActivity,
-        isModalTypes,
-        isModalSprints,
-        currentIdx,
-        isMultipleDelete
-    ])
-    !isMultipleDelete && columns.push({
-        title: 'Action',
-        key: 'action',
-        dataIndex: 'action',
-        render: (_, record, idx) => <Space key={record?.id}>
-            <PopupConfirm
-                title='Clear Field'
-                description='Are you sure you want to clear this row field'
-                onConfirm={() => clearField(idx)}
-                okText="Clear"
-                disabled={dataColumns?.length == 1}
-            />
-            <PopupConfirm
-                title='Remove Row'
-                description='Are you sure you want to remove this row?'
-                onConfirm={() => removeRow(record?.id, idx)}
-                okText="Remove"
-                disabled={dataColumns?.length == 1}
-            />
-        </Space>,
-        width: 250,
-        align: 'center'
-    })
+    const dataColsChange = (data: DataRow) => {
+        if (!data) return
+        const newDataCols = dataRow.map((d) => d.id === data.id ? { ...data } : d)
+        setDataRow(newDataCols)
+    }
+
+    const removeRow = (idx: number) => {
+        const newDataRow = [...dataRow] as DataRow[]
+        newDataRow.splice(idx, 1)
+        const newTasks = [...tasks] as Array<ITasksServices>
+        newTasks.splice(idx, 1)
+        const newTeamIds = [...teamIds] as Array<string>
+        newTeamIds.splice(idx, 1)
+        setDataRow(newDataRow)
+        setTasks(newTasks)
+        setTeamIds(newTeamIds)
+    }
 
     const key = 'error'
     function onFinish(values: ITasks) {
-        if (dataColumns.length < 1) return messageApi.open({
+        if (dataRow.length < 1) return messageApi.open({
             type: 'error',
             content: 'Please enter project / team for tasks',
             duration: 3
         })
         setLoading(true)
         const date = dayjs(values?.date).format('YYYY-MM-DD') as any
-        const tasks = filterTasks(dataColumns)
+        const tasks = filterTasks(dataRow) // ito gez
         let payload = {
             ...values,
             date,
@@ -449,7 +262,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         result.then(() => {
             form.resetFields()
             handleCancel()
-            setDataColumns(initDataColState)
+            // setDataRow(initDataColState)
         }).catch((err) => {
             messageApi.open({
                 key,
@@ -463,7 +276,20 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             setLoading(false)
         })
     }
-    console.log(selectedRowIds)
+
+    const handleOpenActivityModal = (idx: number) => {
+        setCurrentIdx(idx)
+        setIsModalActivity(true)
+    }
+    const handleOpenTypesModal = (idx: number) => {
+        setCurrentIdx(idx)
+        setIsModalTypes(true)
+    }
+    const handleOpenSprintsModal = (idx: number) => {
+        setCurrentIdx(idx)
+        setIsModalSprints(true)
+    }
+
     return <>
         {contextHolder}
         <Title level={2}>My Tasks - {title}</Title>
@@ -490,32 +316,50 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                     />
                 </FormItem>
             </Row>
-            <Table columns={columns} dataList={dataColumns} rowSelection={isMultipleDelete ? {
-                type: 'checkbox',
-                onChange: (_: React.Key[], selectedRows: { [key: string]: string | number | undefined; }[]) => {
-                    const rowIds = selectedRows.map((r) => r.id) as string[]
-                    setSelectedRowIds(rowIds)
-                },
-            } : null} />
-            <Divider style={{ border: 0 }} />
-            <Row justify='space-between'>
+            <Card>
+                <Row gutter={[24, 24]}>
+                    <div style={{ display: 'flex', overflowX: 'auto', flexDirection: 'column' }}>
+                        {dataRow.map((data, idx) => (
+                            <DataRowItem
+                                key={data.id}
+                                index={idx}
+                                data={data}
+                                dataColsChange={dataColsChange}
+                                removeRow={() => removeRow(idx)}
+                                initialTeams={initialTeams}
+                                activities={tasks[idx]?.activities}
+                                types={tasks[idx]?.types}
+                                sprints={tasks[idx]?.sprints}
+                                setCurrentIdx={setCurrentIdx}
+                                setTeamIds={setTeamIds}
+                                handleOpenActivityModal={() => handleOpenActivityModal(idx)}
+                                handleOpenTypesModal={() => handleOpenTypesModal(idx)}
+                                handleOpenSprintsModal={() => handleOpenSprintsModal(idx)}
+                                isDisableField={!teamIds[idx]}
+                                isDisableAction={dataRow.length == 1}
+                            />
+                        ))}
+                    </div>
+                </Row>
                 <Space>
-                    {/* {!selectedRowIds.length && (
-                        <Button type='primary' disabled={dataColumns.length < 2} onClick={() => setIsMultipleDelete(!isMultipleDelete)}>
-                            {isMultipleDelete ? 'Cancel Multiple Delete' : 'Multiple Delete'}
-                        </Button>
-                    )}
-                    {selectedRowIds.length > 0 && isMultipleDelete && (
-                        <Button type='primary' onClick={() => alert(selectedRowIds)}>
-                            Delete Selected
+                    {/* {(selectedRowIds.length > 0 && isMultipleDelete) ? (
+                    <Button type='primary' onClick={() => removeMultipleRow(selectedRowIds)}>
+                    Delete Selected
+                    </Button>
+                    ) : (
+                        <Button type='primary' disabled={dataRow.length < 2} onClick={() => setIsMultipleDelete(!isMultipleDelete)}>
+                        {isMultipleDelete ? 'Cancel Multiple Delete' : 'Multiple Delete'}
                         </Button>
                     )} */}
-                    <Button className='btn-secondary' disabled={!teamIds} onClick={addRow}>
-                        <Space>
-                            <BsBuildingFillAdd /> Add Entry
-                        </Space>
-                    </Button>
                 </Space>
+                <Button className='btn-secondary' disabled={!teamIds} onClick={() => setDataRow(prevDataCol => [...prevDataCol, initDataColState()[0]])}>
+                    <Space>
+                        <BsBuildingFillAdd /> Add Entry
+                    </Space>
+                </Button>
+            </Card>
+            <Divider style={{ border: 0 }} />
+            <Row justify='end'>
                 <Space>
                     <Button id='Create' type="primary" htmlType="submit" loading={loading} disabled={loading}>
                         Create
@@ -526,7 +370,184 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                 </Space>
             </Row>
         </Form>
+        <ActivityModal
+            title='Create'
+            teamId={teamIds[currentIdx]}
+            fetchData={() => fetchList(TASKSSETTINGS.ACTIVITIES.LISTS + teamIds[currentIdx] ? (TASKSSETTINGS.ACTIVITIES.LISTS + '?team_id=' + teamIds[currentIdx]) : '', 'activities', currentIdx)}
+            isModalOpen={isModalActivity}
+            handleCancel={() => setIsModalActivity(false)}
+        />
+        <TypesModal
+            title='Create'
+            teamId={teamIds[currentIdx]}
+            fetchData={() => fetchList(TASKSSETTINGS.TYPES.LISTS + teamIds[currentIdx] ? (TASKSSETTINGS.TYPES.LISTS + '?team_id=' + teamIds[currentIdx]) : '', 'types', currentIdx)}
+            isModalOpen={isModalTypes}
+            handleCancel={() => setIsModalTypes(false)}
+        />
+        <SprintModal
+            title='Create'
+            teamId={teamIds[currentIdx]}
+            fetchData={() => fetchList(TASKSSETTINGS.SPRINT.LISTS + teamIds[currentIdx] ? (TASKSSETTINGS.SPRINT.LISTS + '?team_id=' + teamIds[currentIdx]) : '', 'sprints', currentIdx)}
+            isModalOpen={isModalSprints}
+            handleCancel={() => setIsModalSprints(false)}
+        />
+        <Divider style={{ margin: '10px 0', border: 'none' }} />
+
     </>
+}
+
+interface DataRowItem {
+    data: DataRow
+    index: number
+    dataColsChange: (data: DataRow) => void
+    removeRow: () => void
+    initialTeams: ITeam[]
+    activities: ITaskActivities[]
+    types: ITaskTypes[]
+    sprints: ITaskSprint[]
+    setCurrentIdx: React.Dispatch<React.SetStateAction<number>>
+    setTeamIds: React.Dispatch<React.SetStateAction<string[]>>
+    handleOpenActivityModal: () => void
+    handleOpenTypesModal: () => void
+    handleOpenSprintsModal: () => void
+    isDisableField: boolean
+    isDisableAction: boolean
+}
+
+function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities, types, sprints, setCurrentIdx, index, setTeamIds, handleOpenActivityModal, handleOpenTypesModal, handleOpenSprintsModal, isDisableField, isDisableAction }: DataRowItem) {
+    const [model, setModel] = useState(data)
+    useEffect(() => dataColsChange(model), [model])
+    return <>
+        <div style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+            <Col>
+                <TaskTitle>Project / Team</TaskTitle>
+                <Select
+                    placeholder='Select Project / Team'
+                    allowClear
+                    showSearch
+                    optionFilterProp="children"
+                    value={model.team_id as string}
+                    onChange={(id: string) => {
+                        setTeamIds((prevIds: any) => {
+                            prevIds[index] = id
+                            return [...prevIds]
+                        })
+                        setModel({ ...model, team_id: id })
+                        setCurrentIdx(index)
+                    }}
+                    style={{ width: 200 }}
+                >
+                    {initialTeams?.map((team: any) => <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>)}
+                </Select>
+            </Col>
+            <Col>
+                <div>
+                    <TaskTitle>Task Activity</TaskTitle>
+                    <Row justify='space-between' style={{ width: 210, alignItems: 'center' }}>
+                        <Select
+                            placeholder='Select task activity'
+                            allowClear
+                            showSearch
+                            optionFilterProp="children"
+                            disabled={isDisableField}
+                            style={{ width: 150 }}
+                            value={model?.task_activity_id as string}
+                            onChange={(id: string) => setModel({ ...model, task_activity_id: id ?? null })}
+                        >
+                            {activities?.map((act: any) => <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>)}
+                        </Select>
+                        <Button className='btn-secondary' onClick={handleOpenActivityModal}>
+                            <GrFormAdd />
+                        </Button>
+                    </Row>
+                </div>
+            </Col>
+            <Col>
+                <div>
+                    <TaskTitle>Task Type</TaskTitle>
+                    <Row justify='space-between' align='middle' style={{ width: 210 }}>
+                        <Select
+                            placeholder='Select task type'
+                            allowClear
+                            showSearch
+                            optionFilterProp="children"
+                            disabled={isDisableField}
+                            style={{ width: 150 }}
+                            value={model['task_type_id'] as string}
+                            onChange={(id: string) => setModel({ ...model, task_type_id: id ?? null })}
+                        >
+                            {types?.map((act: any) => <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>)}
+                        </Select>
+                        <Button className='btn-secondary' onClick={handleOpenTypesModal}>
+                            <GrFormAdd />
+                        </Button>
+
+                    </Row>
+                </div>
+            </Col>
+            <Col>
+                <div>
+                    <TaskTitle>Sprint</TaskTitle>
+                    <Row justify='space-between' style={{ width: 210 }}>
+                        <Select
+                            placeholder='Select sprint'
+                            allowClear
+                            showSearch
+                            optionFilterProp="children"
+                            disabled={isDisableField}
+                            style={{ width: 150 }}
+                            value={model['sprint_id'] as string}
+                            onChange={(id: string) => setModel({ ...model, sprint_id: id ?? null })}
+                        >
+                            {sprints?.map((act: any) => <Select.Option value={act.id} key={act.id}>{act.name}</Select.Option>)}
+                        </Select>
+                        <Button className='btn-secondary' onClick={handleOpenSprintsModal}>
+                            <GrFormAdd />
+                        </Button>
+
+                    </Row>
+                </div>
+            </Col>
+            <Col>
+                <TaskTitle>Manhours</TaskTitle>
+                <Input
+                    disabled={isDisableField}
+                    type='number'
+                    placeholder='Enter manhours...'
+                    style={{ width: 130 }}
+                    value={model?.manhours}
+                    onChange={(evt) => setModel({ ...model, manhours: evt.target.value ?? null })}
+                />
+            </Col>
+            <Col>
+                <TaskTitle>Description</TaskTitle>
+                <Input.TextArea
+                    disabled={isDisableField}
+                    placeholder='Enter description...'
+                    style={{ width: 250, height: 60 }}
+                    value={model?.description!}
+                    onChange={(evt: React.ChangeEvent<HTMLTextAreaElement>) => setModel({ ...model, description: evt.target.value ?? null })}
+                />
+            </Col>
+            <Col>
+                <Title level={5} style={{ textAlign: 'center' }}>Actions</Title>
+                <Space>
+                    <PopupConfirm
+                        title='Remove Row'
+                        description='Are you sure you want to remove this row?'
+                        onConfirm={removeRow}
+                        okText="Remove"
+                        disabled={isDisableAction}
+                    />
+                </Space>
+            </Col>
+        </div>
+        <Divider />
+    </>
+}
+
+function TaskTitle({ children }: { children: ReactNode }) {
+    return <Title level={5} style={{ textAlign: 'left' }}>{children}</Title>
 }
 
 function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: UpdateInputProps) {
@@ -579,6 +600,7 @@ function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: Upd
         setTasks((prevTasks) => ({ ...prevTasks, [key]: data }))
     }
 
+    const key = 'error'
     function onFinish(values: ITasks) {
         setLoading(true)
         let { date, description, ...restValues } = values
@@ -588,11 +610,15 @@ function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: Upd
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).catch((err) => messageApi.open({
-            type: 'error',
-            content: err.response.data.message ?? err.response.data.error,
-            duration: 5
-        })).finally(() => {
+        }).catch((err) => {
+            messageApi.open({
+                key,
+                type: 'error',
+                content: err.response.data.message ?? err.response.data.error,
+                duration: 5
+            })
+            setLoading(false)
+        }).finally(() => {
             fetchData()
             setLoading(false)
         })
@@ -981,7 +1007,7 @@ function renderColumns({ handleDelete, handleEdit }: { handleDelete: (id: string
 
 const getList = (url: string) => axiosClient.get(url).then((res) => res?.data ?? [])
 
-function filterTasks(tasks: DataColumns) {
+function filterTasks(tasks: DataRow[]) {
     const filteredTasks = tasks.filter((task) => {
         const filteredTask: { [key: string]: any } = {};
         Object.keys(task).forEach((key) => {
@@ -998,6 +1024,17 @@ function filterTasks(tasks: DataColumns) {
     return filteredTasks;
 }
 
-type DataColumns = {
+function rowSeparatorIds(selectedRows: SelectedRow) {
+    const ids = [] as string[]
+    const idxs = [] as number[]
+    for (let i = 0; i < selectedRows.length; i++) {
+        const row = selectedRows[i]
+        ids.push(row.id)
+        idxs.push(row.idx)
+    }
+    return [ids, idxs] as const
+}
+
+type DataRow = {
     [key: string]: string | number | undefined;
-}[]
+}

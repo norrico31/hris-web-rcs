@@ -22,7 +22,7 @@ dayjs.extend(localizedFormat)
 export default function LeaveArchives() {
     renderTitle('Leave Archives')
     const { user, loading: loadingUser } = useAuthContext()
-    const [leaveType, setLeaveType] = useState('all')
+    const [leaveType, setLeaveType] = useState('canceled')
     const [data, setData] = useState<ILeave[]>([])
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
@@ -130,7 +130,7 @@ export default function LeaveArchives() {
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        const status = (type !== 'all') ? `?status=${type?.toUpperCase()}` : ''
+        const status = `?status=${type?.toUpperCase()}`
         const url = LEAVES.ARCHIVES + status
         GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
@@ -157,17 +157,16 @@ export default function LeaveArchives() {
         <>
             <TabHeader handleSearch={setSearch}>
                 <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
-                    setLeaveType((str == undefined || str == '') ? 'all' : str)
+                    setLeaveType((str == undefined || str == '') ? 'canceled' : str)
                     fetchData({
                         args: {
                             search,
                             page: tableParams?.pagination?.current ?? 1,
                             pageSize: tableParams?.pagination?.pageSize
                         },
-                        type: (str == undefined || str == '') ? 'all' : str
+                        type: (str == undefined || str == '') ? 'canceled' : str
                     })
                 }} style={{ width: 150 }}>
-                    <Select.Option value='pending'>Pending</Select.Option>
                     <Select.Option value='canceled'>Canceled</Select.Option>
                     <Select.Option value='rejected'>Rejected</Select.Option>
                 </Select>
