@@ -13,6 +13,7 @@ import { ROOTPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, ILeave, ILeaveType, LeaveRes, TableParams } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
+import { AiOutlineEdit } from 'react-icons/ai'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ LEAVES, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
@@ -276,7 +277,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
             </FormItem>
             <Row justify='end'>
                 <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                    Submit Request
+                    {selectedData ? 'Update' : 'Submit'} Request
                 </Button>
             </Row>
         </Form>
@@ -338,18 +339,16 @@ const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { ha
                     View
                 </Button>
             ) : (
-                <Action
-                    title='Tasks'
-                    name={record?.user?.full_name}
-                    onConfirm={() => handleDelete(record?.id!)}
-                    onClick={() => handleEdit(record)}
-                // isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled'}
-                />
-            )}
-            {record?.status.toLowerCase() === 'pending' && (
-                <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
-                    {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
-                </Button>
+                <Space>
+                    <Button id='edit' type='default' size='middle' onClick={() => handleEdit(record)} className='btn-edit' >
+                        <AiOutlineEdit color='white' />
+                    </Button>
+                    {record?.status.toLowerCase() === 'pending' && (
+                        <Button type='primary' onClick={() => handleRequestSelected(record)}>
+                            {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
+                        </Button>
+                    )}
+                </Space>
             )}
         </Space>,
         width: 150
@@ -419,27 +418,6 @@ export function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, ha
                         Cancel Request
                     </Button>
                 )}
-                {/* {selectedRequest?.status === 'CANCELED' && (
-                    <Popconfirm
-                        title={`Restore Leave`}
-                        description={`Are you sure you want to restore?`}
-                        onConfirm={() => {
-                            setLoading(true)
-                            restoreLeave?.(selectedRequest.id)
-                                .then(handleClose)
-                                .finally(() => setLoading(false))
-                        }}
-                        okText="Restore"
-                        cancelText="Cancel"
-                    >
-                        <Button id='restore' type='primary' size='middle' onClick={() => null} loading={loading}>
-                            <Space>
-                                <BiRefresh />
-                                Restore
-                            </Space>
-                        </Button>
-                    </Popconfirm>
-                )} */}
                 <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
                     Close
                 </Button>
@@ -455,7 +433,6 @@ type LeaveDescriptionProps = {
 }
 
 export function LeaveDescription({ selectedRequest, remarks, setRemarks }: LeaveDescriptionProps) {
-    console.log(selectedRequest)
     return <>
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>

@@ -47,6 +47,7 @@ export default function Login() {
             })
             return error
         } finally {
+            setLoginLoading(false)
             setLoading(false)
         }
     }

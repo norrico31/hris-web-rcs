@@ -13,6 +13,7 @@ import { IArguments, IOvertime, OvertimeRes, TableParams } from '../../shared/in
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 import { BiRefresh } from 'react-icons/bi'
+import { AiOutlineEdit } from 'react-icons/ai'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ OVERTIME }] = useEndpoints()
@@ -89,29 +90,24 @@ export default function MyOvertime() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: IOvertime) => {
-                // if (record?.status.toLowerCase() === 'canceled') return
-                return <Space direction='vertical'>
-                    {(record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled') ? (
-                        <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
-                            View
+            render: (_, record: IOvertime) => <Space direction='vertical'>
+                {(record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled') ? (
+                    <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                        View
+                    </Button>
+                ) : (
+                    <Space>
+                        <Button id='edit' type='default' size='middle' onClick={() => handleEdit(record)} className='btn-edit' >
+                            <AiOutlineEdit color='white' />
                         </Button>
-                    ) : (
-                        <Action
-                            title='Tasks'
-                            name={record?.user?.full_name}
-                            onConfirm={() => handleDelete(record?.id!)}
-                            onClick={() => handleEdit(record)}
-                        // isDisable={record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled'}
-                        />
-                    )}
-                    {record?.status.toLowerCase() === 'pending' && (
-                        <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
-                            {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
-                        </Button>
-                    )}
-                </Space>
-            },
+                        {record?.status.toLowerCase() === 'pending' && (
+                            <Button type='primary' onClick={() => handleRequestSelected(record)}>
+                                {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
+                            </Button>
+                        )}
+                    </Space>
+                )}
+            </Space>,
             width: 150
         },
     ]
@@ -321,7 +317,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
             <Row justify='end'>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
-                        Submit Request
+                        {selectedData ? 'Update' : 'Submit'} Request
                     </Button>
                 </Space>
             </Row>

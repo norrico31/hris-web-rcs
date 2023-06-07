@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Navigate } from "react-router-dom"
-import { Button, Col, Row, Modal, Space, Popconfirm, message, TablePaginationConfig, DatePicker, DatePickerProps, Skeleton } from "antd"
+import { Button, Col, Row, Modal, Space, Popconfirm, message, TablePaginationConfig, DatePicker, DatePickerProps, Skeleton, Switch } from "antd"
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
 import { RxEnter, RxExit } from 'react-icons/rx'
@@ -128,6 +128,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
     const [error, setError] = useState<string | null>(null)
     const [messageApi, contextHolder] = message.useMessage()
     const [loading, setLoading] = useState(false)
+    const [clientSite, setClientSite] = useState(false);
 
     useEffect(() => {
         const handleSuccess = (position: GeolocationPosition) => {
@@ -161,7 +162,8 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
         setLoading(true)
         const payload = {
             photo: imageSrc,
-            location: coordinates
+            location: coordinates,
+            clientSite: clientSite
         }
         if (payload.photo == null) {
             setError('Please take a selfie photo')
@@ -200,7 +202,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
             </Space>
         </Row>
         <Divider style={{ margin: 10 }} />
-        <Row justify='space-around' style={{ width: '80%', margin: 'auto' }}>
+        <Row justify='space-around' align='middle' style={{ width: '80%', margin: 'auto' }}>
             <Popconfirm
                 title={`Time In`}
                 description='Are you sure you want to time in?'
@@ -217,6 +219,9 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
                     Time In
                 </Button>
             </Popconfirm>
+           
+            <Switch checkedChildren="Client Site" unCheckedChildren="WFH" checked={clientSite} onChange={() => setClientSite(!clientSite)} />
+
             <Popconfirm
                 title={`Time Out`}
                 description='Are you sure you want to time out?'

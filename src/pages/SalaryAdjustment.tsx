@@ -3,9 +3,9 @@ import { Navigate, useNavigate } from "react-router-dom"
 import { useAuthContext } from "../shared/contexts/Auth"
 import { Button, Col, DatePicker, Form as AntDForm, Input, Modal, Select, Space, Upload, Row, Radio, Skeleton } from "antd"
 import dayjs from "dayjs"
-import { PlusOutlined } from '@ant-design/icons'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { AiOutlineCalendar } from 'react-icons/ai'
+import { UploadOutlined } from '@ant-design/icons'
 import useMessage from "antd/es/message/useMessage"
 import { Action, MainHeader, Table, Form, TabHeader } from "../components"
 import { renderTitle } from "../shared/utils/utilities"
@@ -186,7 +186,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         if (selectedData != undefined) {
             form.setFieldsValue({
                 ...selectedData,
-                expense_date: dayjs(selectedData.expense_date, 'YYYY/MM/DD') as any
+                expense_date: dayjs(selectedData.expense_date, 'YYYY/MM/DD') as any,
             })
         } else form.resetFields(undefined)
 
@@ -222,7 +222,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         formData.append('remarks', values?.remarks)
         formData.append('expense_description', values?.expense_description ? values?.expense_description : '')
         formData.append('file', values?.file ? values?.file[0]?.originFileObj : '')
-        let result = selectedData ? PUT(EXPENSE.PUT + selectedData.id!, formData) : POST(EXPENSE.POST, formData)
+        let result = selectedData ? POST(EXPENSE.PUT + selectedData.id!, formData) : POST(EXPENSE.POST, formData)
         result.then(() => {
             form.resetFields()
             handleCancel()
@@ -342,11 +342,8 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
                         valuePropName="fileList"
                         getValueFromEvent={normFile}
                     >
-                        <Upload listType="picture-card" beforeUpload={() => false} accept=".png,.jpeg,.jpg">
-                            <div>
-                                <PlusOutlined />
-                                <div style={{ marginTop: 8 }}>Upload</div>
-                            </div>
+                        <Upload beforeUpload={() => false} accept=".png,.jpeg,.jpg">
+                            <Button icon={<UploadOutlined />}>Click to Upload</Button>
                         </Upload>
                     </FormItem>
                     <FormItem style={{ textAlign: 'right' }}>

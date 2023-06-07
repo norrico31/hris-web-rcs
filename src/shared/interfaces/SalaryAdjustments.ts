@@ -9,6 +9,9 @@ export interface ISalaryAdjustment {
     expense_description: string
     expense_type: IExpenseType
     expense_type_id: string
+    file_name: string | null
+    file_path: string | null
+    file: string | null | string[]
     id: string
     is_active: string
     is_taxable: string
