@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import { useParams, Navigate, Outlet, useNavigate, useLocation, useOutletContext } from "react-router-dom"
 import { Tabs as AntDTabs, Button, Col, Row } from 'antd'
 import styled from "styled-components"
 import useWindowSize from '../shared/hooks/useWindowSize'
-import { MainHeader } from './../components'
 import { MYTEAMPATHS, useEndpoints } from "../shared/constants"
 import { renderTitle } from "../shared/utils/utilities"
 import { IArguments, IUser } from '../shared/interfaces'
@@ -17,7 +16,6 @@ export default function MyTeamEdit() {
     const { teamId } = useParams()
     let { pathname } = useLocation()
     const navigate = useNavigate()
-    // const { width } = useWindowSize()
     if (teamId == undefined) return <Navigate to='/employee' />
 
     const [data, setData] = useState<IUser | undefined>()
@@ -37,19 +35,14 @@ export default function MyTeamEdit() {
 
     const pathKey = pathname.split('/').pop()
     return <>
-        {/* <StyledRow justify='space-between' wrap align='middle' style={{
-            gap: width < 579 ? '.5rem' : 'initial',
-            textAlign: width < 579 ? 'center' : 'initial'
-        }}> */}
-        <StyledRow justify='space-between' wrap align='middle'>
+        <StyledWidthRow>
             <Col xs={24} sm={12} md={12} lg={12} xl={11}>
                 <h2 className='color-white'>Team Profile - {data?.full_name}</h2>
             </Col>
-            {/* <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}> */}
-            <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: 'right' }}>
+            <ColWidth>
                 <Button onClick={() => navigate('/team')}>Back to teams</Button>
-            </Col>
-        </StyledRow>
+            </ColWidth>
+        </StyledWidthRow>
         <Tabs
             destroyInactiveTabPane
             activeKey={'/' + pathKey}
@@ -67,6 +60,21 @@ export default function MyTeamEdit() {
             }))}
         />
     </>
+}
+
+export function StyledWidthRow({ children }: { children: ReactNode }) {
+    const { width } = useWindowSize()
+    return <StyledRow justify='space-between' wrap align='middle' style={{
+        gap: width < 579 ? '.5rem' : 'initial',
+        textAlign: width < 579 ? 'center' : 'initial'
+    }}>{children}</StyledRow>
+}
+
+function ColWidth({ children }: { children: ReactNode }) {
+    const { width } = useWindowSize()
+    return <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}>
+        {children}
+    </Col>
 }
 
 export const StyledRow = styled(Row)`

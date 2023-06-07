@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react'
-import { Form as AntDForm, Row, Col, DatePicker, Button, Select, Modal, Space } from 'antd'
+import { Form as AntDForm, Col, DatePicker, Button, Select, Modal, Space } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
-import { Action, Card, TabHeader, Table } from '../../components'
-import { useEmployeeCtx } from '../EmployeeEdit'
+import { Action, Card, Table } from '../../components'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, IEmployeeClients, IClient, IClientBranch, ISchedules, EmployeeClientsRes } from '../../shared/interfaces'
 import dayjs from 'dayjs';
-import useWindowSize from '../../shared/hooks/useWindowSize'
 import { useTeamCtx } from '../MyTeamEdit'
+import { WidthRow } from '../employee-files/ClientSchedule'
 
 const { useForm, Item } = AntDForm
 
@@ -149,7 +148,6 @@ function ClientScheduleModal(props: ModalProps) {
     const { title, employeeId, isModalOpen, selectedData, handleClose, fetchData } = props
     const [form] = useForm()
     const [loading, setLoading] = useState(false)
-    const { width } = useWindowSize()
     const [list, setList] = useState<{ clients: Array<IClient>; schedules: Array<ISchedules> }>({ clients: [], schedules: [] })
     const [clientId, setClientId] = useState('')
     const [clientBranches, setClientBranches] = useState<Array<IClientBranch>>([])
@@ -212,7 +210,7 @@ function ClientScheduleModal(props: ModalProps) {
     return (
         <Modal title={`Client and Schedule - ${title}`} open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
             <Form form={form} onFinish={onFinish} disabled={loading}>
-                <Row justify={width >= 991 ? 'space-between' : 'center'}>
+                <WidthRow>
                     <Col xs={24} sm={24} md={22} lg={10} xl={10} >
                         <Item
                             label="Client"
@@ -261,8 +259,8 @@ function ClientScheduleModal(props: ModalProps) {
                             </Select>
                         </Item>
                     </Col>
-                </Row>
-                <Row justify={width >= 991 ? 'space-between' : 'center'} wrap>
+                </WidthRow>
+                <WidthRow>
                     <Col xs={24} sm={24} md={22} lg={10} xl={10} >
                         <Item
                             label="Effectivity Start Schedule"
@@ -281,8 +279,8 @@ function ClientScheduleModal(props: ModalProps) {
                             <DatePicker style={{ width: '100%' }} />
                         </Item>
                     </Col>
-                </Row>
-                <Row justify={width >= 991 ? 'space-between' : 'center'} wrap>
+                </WidthRow>
+                <WidthRow>
                     <Col xs={24} sm={24} md={22} lg={10} xl={10} >
                         <Item
                             label="Status"
@@ -317,7 +315,7 @@ function ClientScheduleModal(props: ModalProps) {
                             </Select>
                         </Item>
                     </Col>
-                </Row>
+                </WidthRow>
                 <Item style={{ textAlign: 'right' }}>
                     <Space>
                         <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>

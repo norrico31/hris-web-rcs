@@ -4,9 +4,8 @@ import { Tabs as AntDTabs, Col, } from 'antd'
 import { renderTitle } from '../shared/utils/utilities'
 import { useAuthContext } from '../shared/contexts/Auth'
 import styled from 'styled-components'
-import { StyledRow } from './EmployeeEdit'
-import useWindowSize from '../shared/hooks/useWindowSize'
 import { filterCodes } from '../components/layouts/Sidebar'
+import { StyledWidthRow } from './MyTeamEdit'
 
 export default function Overtime() {
     renderTitle('Overtime')
@@ -14,7 +13,6 @@ export default function Overtime() {
     let { pathname } = useLocation()
     const navigate = useNavigate()
     const pathKey = pathname.split('/').pop()
-    const { width } = useWindowSize()
     const codes = filterCodes(user?.role?.permissions)
 
     const items = [
@@ -37,14 +35,11 @@ export default function Overtime() {
     }, [])
 
     return <>
-        <StyledRow justify='space-between' wrap align='middle' style={{
-            gap: width < 579 ? '.5rem' : 'initial',
-            textAlign: width < 579 ? 'center' : 'initial'
-        }}>
+        <StyledWidthRow>
             <Col xs={24} sm={12} md={12} lg={12} xl={11}>
                 <h1 className='color-white'>Overtime</h1>
             </Col>
-        </StyledRow>
+        </StyledWidthRow>
         <Tabs
             destroyInactiveTabPane
             activeKey={'/' + pathKey}

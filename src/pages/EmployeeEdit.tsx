@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import { useParams, Navigate, Outlet, useNavigate, useLocation, useOutletContext } from "react-router-dom"
 import { Tabs as AntDTabs, Button, Col, Row } from 'antd'
 import styled from "styled-components"
 import useWindowSize from '../shared/hooks/useWindowSize'
-import { MainHeader } from './../components'
 import { EMPLOYEEPATHS, useEndpoints } from "../shared/constants"
 import { renderTitle } from "../shared/utils/utilities"
 import { IArguments, IUser } from '../shared/interfaces'
 import { useAxios } from '../shared/lib/axios'
+import { StyledWidthRow } from './MyTeamEdit'
 
 const [{ EMPLOYEE201: { USERPROFILE } }] = useEndpoints()
 const { GET } = useAxios()
@@ -17,7 +17,6 @@ export default function EmployeeEdit() {
     const { employeeId } = useParams()
     let { pathname } = useLocation()
     const navigate = useNavigate()
-    const { width } = useWindowSize()
     if (employeeId == undefined) return <Navigate to='/employee' />
 
     const [data, setData] = useState<IUser | undefined>()
@@ -37,17 +36,14 @@ export default function EmployeeEdit() {
 
     const pathKey = pathname.split('/').pop()
     return <>
-        <StyledRow justify='space-between' wrap align='middle' style={{
-            gap: width < 579 ? '.5rem' : 'initial',
-            textAlign: width < 579 ? 'center' : 'initial'
-        }}>
+        <StyledWidthRow>
             <Col xs={24} sm={12} md={12} lg={12} xl={11}>
                 <h2 className='color-white'>Employee Update - {data?.full_name}</h2>
             </Col>
-            <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}>
+            <ColWidth>
                 <Button onClick={() => navigate('/employee')}>Back to employees</Button>
-            </Col>
-        </StyledRow>
+            </ColWidth>
+        </StyledWidthRow>
         <Tabs
             destroyInactiveTabPane
             activeKey={'/' + pathKey}
@@ -65,6 +61,14 @@ export default function EmployeeEdit() {
             }))}
         />
     </>
+}
+
+
+function ColWidth({ children }: { children: ReactNode }) {
+    const { width } = useWindowSize()
+    return <Col xs={24} sm={12} md={12} lg={12} xl={11} style={{ textAlign: width < 579 ? 'center' : 'right' }}>
+        {children}
+    </Col>
 }
 
 export const StyledRow = styled(Row)`

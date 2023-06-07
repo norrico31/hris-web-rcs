@@ -18,6 +18,7 @@ import useWindowSize from '../../shared/hooks/useWindowSize'
 import { OvertimeDescription, OvertimeModal } from './MyOvertime'
 import { AxiosResponse } from 'axios'
 import useMessage from 'antd/es/message/useMessage'
+import { DividerWidth } from '../leaves/LeaveApproval'
 
 const { GET, PUT } = useAxios()
 const [{ OVERTIME }] = useEndpoints()
@@ -193,7 +194,7 @@ export default function OvertimeApproval() {
                         <Select.Option value={opt.toLocaleLowerCase()} key={opt}>{opt}</Select.Option>
                     ))}
                 </Select>
-                {width < 978 && <Divider />}
+                <DividerWidth />
                 <Col>
                     <Space>
                         <DatePicker.RangePicker onChange={(d: any) => {

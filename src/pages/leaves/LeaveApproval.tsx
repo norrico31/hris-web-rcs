@@ -237,7 +237,7 @@ export default function LeaveApproval() {
 }
 const selectOptions = ['Pending', 'Approved', 'Rejected']
 
-function DividerWidth() {
+export function DividerWidth() {
     const { width } = useWindowSize()
     return width < 978 ? <Divider /> : null
 }

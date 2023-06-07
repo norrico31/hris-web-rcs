@@ -78,6 +78,13 @@ export default function SalaryAdjustment() {
             width: 200
         },
         {
+            title: 'File',
+            key: 'file_name',
+            dataIndex: 'file_name',
+            align: 'center',
+            width: 200
+        },
+        {
             title: 'Action',
             key: 'action',
             dataIndex: 'action',

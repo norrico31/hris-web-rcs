@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { Outlet, useLocation, useNavigate, Navigate } from 'react-router-dom'
+import { useEffect, ReactNode } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Tabs as AntDTabs, Col } from 'antd'
 import { renderTitle } from '../shared/utils/utilities'
 import styled from 'styled-components'
@@ -14,7 +14,6 @@ export default function Leave() {
     let { pathname } = useLocation()
     const navigate = useNavigate()
     const pathKey = pathname.split('/').pop()
-    const { width } = useWindowSize()
     const codes = filterCodes(user?.role?.permissions)
 
     const items = [
@@ -37,14 +36,11 @@ export default function Leave() {
     }, [])
 
     return <>
-        <StyledRow justify='space-between' wrap align='middle' style={{
-            gap: width < 579 ? '.5rem' : 'initial',
-            textAlign: width < 579 ? 'center' : 'initial'
-        }}>
+        <StyledWidthRow>
             <Col xs={24} sm={12} md={12} lg={12} xl={11}>
                 <h1 className='color-white'>Leaves</h1>
             </Col>
-        </StyledRow>
+        </StyledWidthRow>
         <Tabs
             destroyInactiveTabPane
             activeKey={'/' + pathKey}
@@ -62,6 +58,14 @@ export default function Leave() {
             }))}
         />
     </>
+}
+
+function StyledWidthRow({ children }: { children: ReactNode }) {
+    const { width } = useWindowSize()
+    return <StyledRow justify='space-between' wrap align='middle' style={{
+        gap: width < 579 ? '.5rem' : 'initial',
+        textAlign: width < 579 ? 'center' : 'initial'
+    }}>{children}</StyledRow>
 }
 
 const Tabs = styled(AntDTabs)`

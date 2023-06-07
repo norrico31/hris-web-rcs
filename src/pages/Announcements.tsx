@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
 import { useAuthContext } from "../shared/contexts/Auth"
-import { Button, Col, Form as AntDForm, Input, Modal, Upload, Skeleton, Space } from "antd"
-import { PlusOutlined } from '@ant-design/icons'
+import { Button, Col, Form as AntDForm, Input, Modal, Upload, Skeleton, Space, DatePicker } from "antd"
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { AiOutlineCalendar } from 'react-icons/ai'
 import useMessage from "antd/es/message/useMessage"
@@ -12,6 +11,8 @@ import { useAxios } from "../shared/lib/axios"
 import { ROOTPATHS, useEndpoints } from "../shared/constants"
 import { AnnouncementRes, IAnnouncements, IArguments, TableParams } from "../shared/interfaces"
 import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
+import dayjs from "dayjs"
+import { UploadOutlined } from '@ant-design/icons'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ ANNOUNCEMENT }] = useEndpoints()
@@ -181,7 +182,9 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
         setLoading(true)
         const formData = new FormData()
         if (selectedData?.id) formData.append('_method', 'PUT')
-        formData.append('post_by', userId)
+        const publishDate = (values?.publish_date ? dayjs(values?.publish_date).format('YYYY-MM-DD') : '')
+        formData.append('publish_date', publishDate)
+        formData.append('posted_by', userId)
         formData.append('title', values.title)
         formData.append('content', values.content)
         formData.append('img', values?.img ? values?.img[0].originFileObj : '')
@@ -189,11 +192,14 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).catch((err) => messageApi.open({
-            type: 'error',
-            content: err.response.data.message ?? err.response.data.error,
-            duration: 5
-        })).finally(() => {
+        }).catch((err) => {
+            messageApi.open({
+                type: 'error',
+                content: err.response.data.message ?? err.response.data.error,
+                duration: 3
+            })
+            setLoading(false)
+        }).finally(() => {
             fetchData()
             setLoading(false)
         })
@@ -218,21 +224,27 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
             >
                 <Input.TextArea placeholder='Enter content...' />
             </FormItem>
+            <FormItem
+                label="Publish Date"
+                name="publish_date"
+            >
+                <DatePicker
+                    format='YYYY/MM/DD'
+                    style={{ width: '100%' }}
+                />
+            </FormItem>
             <FormItem label="Image"
                 name='img'
                 valuePropName="fileList" getValueFromEvent={normFile}
             >
-                <Upload listType="picture-card" beforeUpload={() => false} accept=".png,.jpeg,.jpg" >
-                    <div>
-                        <PlusOutlined />
-                        <div style={{ marginTop: 8 }}>Upload</div>
-                    </div>
+                <Upload beforeUpload={() => false} accept=".png,.jpeg,.jpg">
+                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
                 </Upload>
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button id={selectedData != undefined ? 'Update' : 'Create'} type="primary" htmlType="submit" loading={loading}>
-                        {selectedData != undefined ? 'Edit' : 'Create'}
+                        {selectedData != undefined ? 'Edit' : 'Submit'}
                     </Button>
                     <Button id='cancel' type="primary" onClick={handleCancel} loading={loading}>
                         Cancel
