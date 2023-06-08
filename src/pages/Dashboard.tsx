@@ -124,7 +124,7 @@ export default function Dashboard() {
             </Row>
             <Divider />
             <Row justify='space-between' wrap>
-                <Col xs={24} sm={24} md={24} lg={14} xl={14}>
+                <Col xs={24} sm={24} md={24} lg={14} xl={14} style={{ marginBottom: 15 }}>
                     <Card title='Announcements' style={{ overflowX: 'auto' }} isDarkMode={isDarkMode}>
                         <div>
                             <List
@@ -142,9 +142,9 @@ export default function Dashboard() {
                         </div>
                     </Card>
                 </Col>
-                <Col xs={24} sm={24} md={24} lg={9} xl={9} style={{ marginBottom: 15 }}>
+                <Col xs={24} sm={24} md={24} lg={9} xl={9} >
                     <Card title='Holidays' isDarkMode={isDarkMode}>
-                        <div style={{ overflow: 'auto', height: 450 }}>
+                        <div style={{ overflow: 'auto' }}>
                             <FullCalendar
                                 plugins={[
                                     dayGridPlugin,

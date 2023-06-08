@@ -27,7 +27,6 @@ export default function MyTeam() {
     const [selectedData, setSelectedData] = useState<IEmployee | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
-    const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -134,12 +133,6 @@ export default function MyTeam() {
         DELETE(EMPLOYEE201.DELETE, id)
             .finally(fetchData)
     }
-
-    function handleCloseModal() {
-        setSelectedData(undefined)
-        setIsModalOpen(false)
-    }
-
     return (
         <>
             <MainHeader>
@@ -147,12 +140,7 @@ export default function MyTeam() {
             </MainHeader>
             <TabHeader
                 handleSearch={handleSearch}
-            // handleCreate={() => setIsModalOpen(true)}
-            // handleModalArchive={() => navigate('/team/archives')}
-
-            >
-                <Button type='primary' onClick={() => setIsModalOpen(true)}>Create Project</Button>
-            </TabHeader>
+            />
             <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} onChange={onChange} />
             {/* <EmployeeModal
                 title={selectedData != undefined ? 'Update' : 'Create'}
@@ -160,13 +148,7 @@ export default function MyTeam() {
                 handleCancel={handleCloseModal}
                 fetchData={fetchData}
             /> */}
-            <TeamModal
-                title='Create'
-                // selectedData={selectedData}
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-                fetchData={fetchData}
-            />
+
         </>
     )
 }

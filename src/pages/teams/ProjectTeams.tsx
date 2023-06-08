@@ -1,36 +1,46 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Form as AntDForm, Row, Col, DatePicker, Button, Select, Modal, Space } from 'antd'
+import { Form as AntDForm, Row, Col, DatePicker, Button, Select, Modal, Space, Checkbox } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
-import { Action, Card, TabHeader, Table } from '../../components'
+import { Action, Card, Divider, TabHeader, Table } from '../../components'
 import { useEmployeeCtx } from '../EmployeeEdit'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { IArguments, TableParams, ITeamProjects, IClient, IClientBranch, ISchedules, EmployeeClientsRes, ITeam } from '../../shared/interfaces'
 import dayjs from 'dayjs';
-import useWindowSize from '../../shared/hooks/useWindowSize'
 import { useTeamCtx } from '../MyTeamEdit'
 import { AiOutlineEdit } from 'react-icons/ai'
+import { TeamModal } from '../system-settings/hr-settings/Team'
+import { CheckboxChangeEvent } from 'antd/es/checkbox'
 
 const { useForm, Item } = AntDForm
 
-const [{ SYSTEMSETTINGS: { HRSETTINGS, CLIENTSETTINGS }, EMPLOYEE201, TASKS }] = useEndpoints()
+const [{ SYSTEMSETTINGS: { HRSETTINGS, CLIENTSETTINGS }, EMPLOYEE201: { USERPROFILE }, TASKS }] = useEndpoints()
 const { GET, PUT, POST, DELETE } = useAxios()
 
 export default function ProjectTeams() {
-    const { teamInfo } = useTeamCtx()
+    const { teamId, teamInfo, fetchData } = useTeamCtx()
     const [selectedData, setSelectedData] = useState<ITeamProjects | undefined>(undefined)
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [data, setData] = useState<ITeamProjects | undefined>()
+    const [data, setData] = useState<ITeam | undefined>()
     const [loading, setLoading] = useState(false)
+
+    const memoizedTeams = useMemo(() => {
+        const newTeam = new Map(teamInfo?.teams?.map((team) => [team.id, team]))
+        return newTeam
+    }, [teamInfo])
+
+    console.log(memoizedTeams)
 
     useEffect(function fetch() {
         const controller = new AbortController();
-        teamInfo && fetchData({ signal: controller.signal })
+        fetchTeams({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [teamInfo])
+    }, [])
+
+    console.log(memoizedTeams)
 
     const dataList = useMemo(() => data, [data])
     // const dataList = useMemo(() => data?.teams?.map((d: any) => d?.teams?.map((itm: any) => itm)).flat(), [data])
@@ -47,31 +57,43 @@ export default function ProjectTeams() {
             title: 'Project / Team',
             key: 'name',
             dataIndex: 'name',
-            render: (_, record) => record?.teams[0]?.name,
             width: 130
         },
         {
-            title: 'Action',
+            title: 'Assign Project',
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: ITeamProjects) => <Button id='edit' type='default' size='middle' onClick={() => handleEdit(record)} className='btn-edit'>
-                <AiOutlineEdit color='white' />
-            </Button>
-            ,
-            width: 150
+            render: (_, record: ITeamProjects) => <Checkbox value={record.id} checked={memoizedTeams?.has(record.id)} onChange={onChangeCheckBox} />,
+            width: 200
         },
     ]
 
-    function fetchData(args?: IArguments) {
-        setLoading(true)
-        GET<any>(TASKS.TEAMTASKSPROJECTS + teamInfo?.id, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
-            .then((data) => setData(data ?? [])).finally(() => setLoading(false))
+    function onChangeCheckBox(evt: CheckboxChangeEvent) {
+        updateTeam(evt.target.value)
     }
 
-    function handleDelete(id: string) {
-        DELETE(EMPLOYEE201.CLIENTSCHEDULE.DELETE, id)
-            .finally(fetchData)
+    function fetchTeams(args?: IArguments) {
+        setLoading(true)
+        axiosClient.get<any>(HRSETTINGS.TEAMS.LISTS)
+            .then(({ data }) => setData(data ?? [])).finally(() => setLoading(false))
+    }
+
+    function updateTeam(id: string) {
+        setLoading(true)
+        PUT(USERPROFILE.PUT + teamId, {
+            first_name: teamInfo.first_name,
+            last_name: teamInfo.last_name,
+            email: teamInfo.email,
+            department_id: teamInfo?.department_id,
+            employee_code: teamInfo?.employee_code,
+            role_id: teamInfo?.role_id,
+            team_id: [...Array.from(memoizedTeams.keys()), id]
+        })
+            .finally(() => {
+                fetchData()
+                setLoading(false)
+            })
     }
 
     function handleEdit(data: ITeamProjects) {
@@ -86,10 +108,14 @@ export default function ProjectTeams() {
 
     return (
         <Card title={`Project / Teams - ${teamInfo?.full_name}`}>
+            <Row justify='end'>
+                <Button type='primary' onClick={() => setIsModalOpen(true)}>Create Project</Button>
+            </Row>
+            <Divider />
             <Table
                 loading={loading}
                 columns={columns}
-                dataList={dataList}
+                dataList={data}
             />
             <ProjectTeamsModal
                 title={selectedData ? 'Update' : 'Submit'}
@@ -97,6 +123,13 @@ export default function ProjectTeams() {
                 selectedData={selectedData}
                 fetchData={fetchData}
                 handleClose={handleCloseModal}
+            />
+            <TeamModal
+                title='Create'
+                // selectedData={selectedData}
+                isModalOpen={isModalOpen}
+                handleCancel={handleCloseModal}
+                fetchData={fetchData}
             />
         </Card>
     )
