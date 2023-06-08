@@ -51,11 +51,6 @@ export default function Announcements() {
             dataIndex: 'title',
             width: 150
         },
-        // {
-        //     title: 'Image',
-        //     key: 'img',
-        //     dataIndex: 'img',
-        // },
         {
             title: 'Content',
             key: 'content',
@@ -196,8 +191,8 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
         formData.append('posted_by', userId)
         formData.append('title', values.title)
         formData.append('content', values.content)
-        formData.append('img', values?.img ? values?.img[0].originFileObj : '')
-        console.log(values?.img[0].originFileObj)
+        formData.append('file', values?.file ? values?.file[0].originFileObj : '')
+        console.log(values?.file[0].originFileObj)
         if (selectedData?.id) formData.append('_method', 'PUT')
         let result = selectedData != undefined ? POST(ANNOUNCEMENT.PUT + selectedData.id!, formData) : POST(ANNOUNCEMENT.POST, formData)
         result.then(() => {
@@ -245,7 +240,7 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
                 />
             </FormItem>
             <FormItem label="Image"
-                name='img'
+                name='file'
                 valuePropName="fileList" getValueFromEvent={normFile}
             >
                 <Upload beforeUpload={() => false} accept=".png,.jpeg,.jpg">

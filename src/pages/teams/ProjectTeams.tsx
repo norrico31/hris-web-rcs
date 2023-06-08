@@ -1,22 +1,19 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Form as AntDForm, Row, Col, DatePicker, Button, Select, Modal, Space, Checkbox } from 'antd'
-import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
-import { Action, Card, Divider, TabHeader, Table } from '../../components'
-import { useEmployeeCtx } from '../EmployeeEdit'
+import { Form as AntDForm, Row, Col, Button, Select, Modal, Space, Checkbox } from 'antd'
+import { ColumnsType } from 'antd/es/table'
+import { Card, Divider, Table } from '../../components'
 import { Form } from '../../components'
 import { useEndpoints } from '../../shared/constants'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
-import { IArguments, TableParams, ITeamProjects, IClient, IClientBranch, ISchedules, EmployeeClientsRes, ITeam } from '../../shared/interfaces'
-import dayjs from 'dayjs';
+import { IArguments, ITeamProjects, ITeam } from '../../shared/interfaces'
 import { useTeamCtx } from '../MyTeamEdit'
-import { AiOutlineEdit } from 'react-icons/ai'
 import { TeamModal } from '../system-settings/hr-settings/Team'
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
 
 const { useForm, Item } = AntDForm
 
-const [{ SYSTEMSETTINGS: { HRSETTINGS, CLIENTSETTINGS }, EMPLOYEE201: { USERPROFILE }, TASKS }] = useEndpoints()
-const { GET, PUT, POST, DELETE } = useAxios()
+const [{ SYSTEMSETTINGS: { HRSETTINGS }, EMPLOYEE201: { USERPROFILE }, TASKS }] = useEndpoints()
+const { PUT } = useAxios()
 
 export default function ProjectTeams() {
     const { teamId, teamInfo, fetchData } = useTeamCtx()
@@ -26,11 +23,9 @@ export default function ProjectTeams() {
     const [loading, setLoading] = useState(false)
 
     const memoizedTeams = useMemo(() => {
-        const newTeam = new Map(teamInfo?.teams?.map((team) => [team.id, team]))
+        const newTeam = new Map(teamInfo?.teams?.map((team) => [team.id, team.id]))
         return newTeam
-    }, [teamInfo])
-
-    console.log(memoizedTeams)
+    }, [teamInfo, fetchData])
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -40,19 +35,7 @@ export default function ProjectTeams() {
         }
     }, [])
 
-    console.log(memoizedTeams)
-
-    const dataList = useMemo(() => data, [data])
-    // const dataList = useMemo(() => data?.teams?.map((d: any) => d?.teams?.map((itm: any) => itm)).flat(), [data])
-
     const columns: ColumnsType<ITeamProjects> = [
-        // {
-        //     title: 'Department',
-        //     key: 'department.name',
-        //     dataIndex: 'department.name',
-        //     render: (_, record) => record?.department?.name,
-        //     width: 130
-        // },
         {
             title: 'Project / Team',
             key: 'name',
@@ -81,6 +64,10 @@ export default function ProjectTeams() {
 
     function updateTeam(id: string) {
         setLoading(true)
+        const newMappedTeam = new Map(memoizedTeams)
+        if (newMappedTeam.has(id)) newMappedTeam.delete(id)
+        else newMappedTeam.set(id, id)
+        const teamIds = Array.from(newMappedTeam.keys())
         PUT(USERPROFILE.PUT + teamId, {
             first_name: teamInfo.first_name,
             last_name: teamInfo.last_name,
@@ -88,17 +75,13 @@ export default function ProjectTeams() {
             department_id: teamInfo?.department_id,
             employee_code: teamInfo?.employee_code,
             role_id: teamInfo?.role_id,
-            team_id: [...Array.from(memoizedTeams.keys()), id]
+            team_id: teamIds
         })
+            .then((res) => res)
             .finally(() => {
                 fetchData()
                 setLoading(false)
             })
-    }
-
-    function handleEdit(data: ITeamProjects) {
-        setIsModalOpen(true)
-        setSelectedData(data)
     }
 
     function handleCloseModal() {
@@ -126,10 +109,9 @@ export default function ProjectTeams() {
             />
             <TeamModal
                 title='Create'
-                // selectedData={selectedData}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCloseModal}
-                fetchData={fetchData}
+                fetchData={fetchTeams}
             />
         </Card>
     )

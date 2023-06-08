@@ -30,6 +30,9 @@ export default function Dashboard() {
     const codes = filterCodes(user?.role?.permissions)
     const [lists, setLists] = useState<{ whosIn: number; whosOut: number; announcements: IAnnouncements[]; leaves: number; employees: number; holidays: IHoliday[] }>({ whosIn: 0, whosOut: 0, announcements: [], leaves: 0, employees: 0, holidays: [] })
     const [loading, setLoading] = useState(true)
+    const [isModalAnnouncement, setIsModalAnnouncement] = useState(false)
+    const [selectedAnnouncement, setSelectedAnnouncement] = useState<IAnnouncements | undefined>(undefined)
+    const holidayEvents = useMemo(() => lists?.holidays?.map((holiday) => ({ title: holiday?.name!, date: holiday?.holiday_date! })), [lists?.holidays])
 
     useEffect(() => {
         const controller = new AbortController();
@@ -83,10 +86,6 @@ export default function Dashboard() {
     const handleEventClick = (selected: EventClickArg) => {
         alert(selected.event.title)
     }
-    const holidayEvents = useMemo(() => lists?.holidays?.map((holiday) => ({ title: holiday?.name!, date: holiday?.holiday_date! })), [lists?.holidays])
-
-    const [isModalAnnouncement, setIsModalAnnouncement] = useState(false)
-    const [selectedAnnouncement, setSelectedAnnouncement] = useState<IAnnouncements | undefined>(undefined)
 
     function selectAnnouncement(announcement: IAnnouncements) {
         setIsModalAnnouncement(true)
@@ -196,7 +195,6 @@ export default function Dashboard() {
 }
 
 function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement }: any) {
-    console.log(selectedAnnouncement)
     return <Modal title='Announcement' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Title" span={2}>{selectedAnnouncement?.title}</Descriptions.Item>
