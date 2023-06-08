@@ -55,7 +55,8 @@ export default function Announcements() {
             title: 'Content',
             key: 'content',
             dataIndex: 'content',
-            width: 200
+            render: (_, record) => record.content.length > 20 ? record.content.slice(0, 20) + '...' : record.content,
+            width: 150
         },
         {
             title: 'Publish Date',
@@ -173,11 +174,11 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
     const [messageApi, contextHolder] = useMessage()
 
     useEffect(() => {
-        if (selectedData != undefined) {
+        if (selectedData) {
             console.log(selectedData)
             form.setFieldsValue({
                 ...selectedData,
-                img: [],
+                file: [],
                 publish_date: selectedData?.publish_date ? dayjs(selectedData?.publish_date, 'YYYY-MM-DD') : null
             })
         } else form.resetFields(undefined)

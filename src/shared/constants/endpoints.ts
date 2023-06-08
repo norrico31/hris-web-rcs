@@ -42,6 +42,9 @@ export const useEndpoints = () => {
             PUT: '/leaves/',
             DELETE: '/leaves/',
         },
+        HRREPORTS: {
+            OVERTIME: 'https://staging-hrportal.redcoresolutions.com/report_service/api/time_keepings/download-report'
+        },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
                 ACTIVITIES: {

@@ -6,7 +6,7 @@ export interface IAnnouncements {
     created_at: string
     deleted_at: string | null
     id: string
-    img: string | null | string[]
+    file: string | null | string[]
     posted_by: string
     title: string
     updated_at: string
