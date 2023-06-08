@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton, Divider as AntDDivider, Badge, BadgeProps, List, Tag } from 'antd'
+import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton, Divider as AntDDivider, Badge, BadgeProps, List, Tag, Space, Button, Modal, Descriptions } from 'antd'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -16,7 +16,7 @@ import { useAuthContext } from '../shared/contexts/Auth'
 import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import axiosClient, { useAxios } from '../shared/lib/axios'
-import { IHoliday } from '../shared/interfaces'
+import { IAnnouncements, IHoliday } from '../shared/interfaces'
 import { useDarkMode } from '../shared/contexts/DarkMode'
 
 const { Title } = Typography
@@ -28,7 +28,7 @@ export default function Dashboard() {
     const { user, loading: loadingUser } = useAuthContext()
     const { isDarkMode } = useDarkMode()
     const codes = filterCodes(user?.role?.permissions)
-    const [lists, setLists] = useState<{ whosIn: number; whosOut: number; announcements: any[]; leaves: number; employees: number; holidays: IHoliday[] }>({ whosIn: 0, whosOut: 0, announcements: [], leaves: 0, employees: 0, holidays: [] })
+    const [lists, setLists] = useState<{ whosIn: number; whosOut: number; announcements: IAnnouncements[]; leaves: number; employees: number; holidays: IHoliday[] }>({ whosIn: 0, whosOut: 0, announcements: [], leaves: 0, employees: 0, holidays: [] })
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -83,7 +83,20 @@ export default function Dashboard() {
     const handleEventClick = (selected: EventClickArg) => {
         alert(selected.event.title)
     }
-    const holidayEvents = lists?.holidays?.map((holiday) => ({ title: holiday?.name!, date: holiday?.holiday_date! }))
+    const holidayEvents = useMemo(() => lists?.holidays?.map((holiday) => ({ title: holiday?.name!, date: holiday?.holiday_date! })), [lists?.holidays])
+
+    const [isModalAnnouncement, setIsModalAnnouncement] = useState(false)
+    const [selectedAnnouncement, setSelectedAnnouncement] = useState<IAnnouncements | undefined>(undefined)
+
+    function selectAnnouncement(announcement: IAnnouncements) {
+        setIsModalAnnouncement(true)
+        setSelectedAnnouncement(announcement)
+    }
+
+    function closeAnnouncementModal() {
+        setSelectedAnnouncement(undefined)
+        setIsModalAnnouncement(false)
+    }
 
     return loading ? <Skeleton /> : (
         <>
@@ -128,16 +141,24 @@ export default function Dashboard() {
                     <Card title='Announcements' style={{ overflowX: 'auto' }} isDarkMode={isDarkMode}>
                         <div>
                             <List
-                                dataSource={dataList}
-                                renderItem={(item) => <>
+                                dataSource={lists.announcements}
+                                renderItem={(item: IAnnouncements) => <>
                                     <List.Item key={item?.content}>
                                         <List.Item.Meta
                                             title={<Tag color="#9b3423">{item.title}</Tag>}
                                             description={item.content.slice(0, 30) + '...'}
                                         />
-                                        <div>{new Date(item.date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                                        <Space direction='vertical' align='center'>
+                                            <div>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                                            <Button type='primary' size='small' onClick={() => selectAnnouncement(item)}>View</Button>
+                                        </Space>
                                     </List.Item>
                                 </>}
+                            />
+                            <AnnouncementViewModal
+                                isModalOpen={isModalAnnouncement}
+                                handleClose={closeAnnouncementModal}
+                                selectedAnnouncement={selectedAnnouncement}
                             />
                         </div>
                     </Card>
@@ -172,6 +193,28 @@ export default function Dashboard() {
             </Row>
         </>
     )
+}
+
+function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement }: any) {
+    console.log(selectedAnnouncement)
+    return <Modal title='Announcement' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
+        <Descriptions bordered column={2}>
+            <Descriptions.Item label="Title" span={2}>{selectedAnnouncement?.title}</Descriptions.Item>
+            <Descriptions.Item label="Publish by" span={2}>{selectedAnnouncement?.posted_by?.name}</Descriptions.Item>
+            <Descriptions.Item label="Date" span={2}>{new Date(selectedAnnouncement?.publish_date!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Descriptions bordered layout='vertical'>
+            <Descriptions.Item label="Content" style={{ textAlign: 'center' }}>{selectedAnnouncement?.content}</Descriptions.Item>
+        </Descriptions>
+        <Divider />
+        <Divider />
+        <div style={{ textAlign: 'right' }}>
+            <Button type="primary" onClick={handleClose}>
+                Close
+            </Button>
+        </div>
+    </Modal>
 }
 
 const dataList = [

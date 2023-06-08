@@ -204,30 +204,8 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         return () => controller.abort()
     }, [])
 
-
     useEffect(() => {
         if (teamIds[currentIdx]) fetchTasks(teamIds[currentIdx])
-
-        // for (let i = 0; i < teamIds.length; i++) {
-        //     if ()
-        // }
-
-        // const currentTeamId = teamIds[currentIdx]
-        // for (let i = 0; i < teamIds.length; i++) {
-        //     const existingTeamId = teamIds[i]
-        //     if (currentTeamId !== existingTeamId) {
-        //         if (checkID(teamIds, existingTeamId)) {
-        //             console.log('wala pa')
-        //             break
-        //         } else {
-        //             console.log('meron na')
-        //             break;
-        //         }
-        //     } else {
-        //         console.log('meron na')
-        //         break
-        //     }
-        // }
     }, [teamIds, currentIdx])
 
     const fetchList = async function (url: string, key: 'activities' | 'types' | 'sprints', idx: number) {
@@ -452,6 +430,17 @@ function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities
     const handleInputChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => setModel({ ...model, manhours: evt.target.value ?? null }), [model?.manhours])
     const handleTextAreaChange = useCallback((evt: React.ChangeEvent<HTMLTextAreaElement>) => setModel({ ...model, description: evt.target.value ?? null }), [model?.description])
 
+    const handleSelectChange = useCallback((id: string) => {
+        startTransition(() => {
+            setTeamIds((prevIds: any) => {
+                prevIds[index] = id
+                return [...prevIds]
+            })
+            setCurrentIdx(index)
+        })
+        setModel({ ...model, team_id: id })
+    }, [setTeamIds, setCurrentIdx, model?.team_id])
+
     return <>
         <div style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
             <Col>
@@ -462,16 +451,7 @@ function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities
                     showSearch
                     optionFilterProp="children"
                     value={model.team_id as string}
-                    onChange={(id: string) => {
-                        startTransition(() => {
-                            setTeamIds((prevIds: any) => {
-                                prevIds[index] = id
-                                return [...prevIds]
-                            })
-                        })
-                        setCurrentIdx(index)
-                        setModel({ ...model, team_id: id })
-                    }}
+                    onChange={handleSelectChange}
                     style={{ width: 200 }}
                 >
                     {initialTeams?.map((team: any) => <Select.Option value={team.id} key={team.id} style={{ color: '#777777' }}>{team.name}</Select.Option>)}

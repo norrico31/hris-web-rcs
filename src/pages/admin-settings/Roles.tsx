@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavigateFunction, useNavigate } from 'react-router-dom'
-import { Space, Button, Input, Form as AntDForm, Popconfirm, Row, Modal } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Popconfirm, Row, Modal, Checkbox } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { BiRefresh } from 'react-icons/bi'
 import { Table, Card, TabHeader, Form } from "../../components"
@@ -220,6 +220,12 @@ function RoleModal({ title, isModalOpen, handleCancel, fetchData, navigate }: Ro
             >
                 <Input placeholder='Enter Description...' />
             </FormItem>
+            <FormItem style={{ display: 'flex', alignItems: 'center' }}>
+                <FormItem name="can_approve" valuePropName="checked" noStyle>
+                <Checkbox />
+                </FormItem>
+                <span style={{ marginLeft: 8 }}>Can Approve</span>
+            </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>
@@ -273,6 +279,12 @@ export function RoleInputs({ selectedData, fetchData, handleCancel }: RoleInputP
             label="Description"
         >
             <Input placeholder='Enter Description...' />
+        </FormItem>
+        <FormItem style={{ display: 'flex', alignItems: 'center' }}>
+                <FormItem name="can_approve" valuePropName="checked" noStyle>
+                <Checkbox />
+                </FormItem>
+                <span style={{ marginLeft: 8 }}>Can Approve</span>
         </FormItem>
         <FormItem style={{ textAlign: 'right' }}>
             <Space>

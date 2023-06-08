@@ -4,6 +4,7 @@ export interface IRole {
   id: string;
   name: string;
   description: string;
+  can_approve: string | null;
   create_at: string
   updated_at: string
   deleted_at: string | null
