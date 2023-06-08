@@ -159,7 +159,7 @@ function filterMenu(user: IUser) {
             '/hrreports',
             <TbReportAnalytics />,
             undefined,
-            true // rootPath.includes('my team projects')
+            false // rootPath.includes('my team projects')
         ),
         getItemLinks(
             'System Settings',

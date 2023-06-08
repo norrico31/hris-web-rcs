@@ -175,6 +175,12 @@ const initDataColState = () => [{
 
 type SelectedRow = { id: string; idx: number }[]
 
+function checkID(array: string[], id: string): boolean {
+    if (array.length === 0) return false
+    if (array[0] === id) return true
+    return checkID(array.slice(1), id)
+}
+
 function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps) {
     const [form] = useForm<ITasks>()
     const [loading, setLoading] = useState(false)
@@ -183,7 +189,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
     const initialTeams = useMemo(() => teams[0] ?? [], [teams[0]])
     const [dataRow, setDataRow] = useState<DataRow[]>(initDataColState)
 
-    const [tasks, setTasks] = useState<Array<ITasksServices>>([{ activities: [], sprints: [], types: [] }])
+    const [tasks, setTasks] = useState<Array<ITasksServices>>([])
     const [teamIds, setTeamIds] = useState<Array<string>>([])
     const [currentIdx, setCurrentIdx] = useState(0)
 
@@ -198,9 +204,31 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         return () => controller.abort()
     }, [])
 
+
     useEffect(() => {
         if (teamIds[currentIdx]) fetchTasks(teamIds[currentIdx])
-    }, [currentIdx, teamIds])
+
+        // for (let i = 0; i < teamIds.length; i++) {
+        //     if ()
+        // }
+
+        // const currentTeamId = teamIds[currentIdx]
+        // for (let i = 0; i < teamIds.length; i++) {
+        //     const existingTeamId = teamIds[i]
+        //     if (currentTeamId !== existingTeamId) {
+        //         if (checkID(teamIds, existingTeamId)) {
+        //             console.log('wala pa')
+        //             break
+        //         } else {
+        //             console.log('meron na')
+        //             break;
+        //         }
+        //     } else {
+        //         console.log('meron na')
+        //         break
+        //     }
+        // }
+    }, [teamIds, currentIdx])
 
     const fetchList = async function (url: string, key: 'activities' | 'types' | 'sprints', idx: number) {
         const data = await getList(url)
@@ -208,7 +236,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         setTasks(() => [...tasks])
     }
 
-    const fetchTasks = async (id: string) => {
+    const fetchTasks = useCallback(async (id: string) => {
         try {
             const activitiesPromise = axiosClient.get(TASKSSETTINGS.ACTIVITIES.LISTS + '?team_id=' + id)
             const typesPromise = axiosClient.get(TASKSSETTINGS.TYPES.LISTS + '?team_id=' + id)
@@ -223,7 +251,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         } catch (error) {
             console.log(error)
         }
-    }
+    }, [tasks])
 
     const dataColsChange = (data: DataRow) => {
         if (!data) return
@@ -354,6 +382,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
                         </Button>
                     )} */}
                 </Space>
+                <Divider style={{ border: 0, margin: '5px 0' }} />
                 <Button className='btn-secondary' disabled={!teamIds} onClick={() => setDataRow(prevDataCol => [...prevDataCol, initDataColState()[0]])}>
                     <Space>
                         <BsBuildingFillAdd /> Add Entry
@@ -440,8 +469,8 @@ function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities
                                 return [...prevIds]
                             })
                         })
-                        setModel({ ...model, team_id: id })
                         setCurrentIdx(index)
+                        setModel({ ...model, team_id: id })
                     }}
                     style={{ width: 200 }}
                 >

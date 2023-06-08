@@ -28,13 +28,14 @@ export default function HrReports() {
                 <h1 className='color-white'>HR Reports</h1>
             </Col>
         </StyledWidthRow>
-        <Table
+        <h2>Work in progress</h2>
+        {/* <Table
             loading={loading}
             columns={renderColumns({ downloadReport: () => null })}
             dataList={dataList}
-        // tableParams={tableParams}
-        // onChange={onChange}
-        />
+        tableParams={tableParams}
+        onChange={onChange}
+        /> */}
     </>
 }
 
