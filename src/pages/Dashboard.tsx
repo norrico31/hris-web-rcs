@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton, Divider as AntDDivider, Badge, BadgeProps } from 'antd'
+import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton, Divider as AntDDivider, Badge, BadgeProps, List, Tag } from 'antd'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -45,7 +45,7 @@ export default function Dashboard() {
                 setLists({
                     whosIn: whosInRes?.value?.data?.data?.total ?? 0,
                     whosOut: whosOutRes?.value?.data?.data?.total ?? 0,
-                    announcements: announcementRes?.value?.data?.data?.data ?? [],
+                    announcements: announcementRes?.value?.data ?? [],
                     leaves: leaveTodayRes?.value?.data?.data?.total ?? 0,
                     employees: employeeRes?.value?.data?.length ?? 0,
                     holidays: holidayRes?.value?.data?.data?.data ?? []
@@ -124,14 +124,27 @@ export default function Dashboard() {
             </Row>
             <Divider />
             <Row justify='space-between' wrap>
-                <Col xs={24} sm={24} md={24} lg={9} xl={9} style={{ marginBottom: 15 }}>
-                    <Card title='Announcements' style={{ minHeight: 500, maxHeight: 500 }} isDarkMode={isDarkMode}>
-                        <AntDDivider />
+                <Col xs={24} sm={24} md={24} lg={14} xl={14}>
+                    <Card title='Announcements' style={{ overflowX: 'auto' }} isDarkMode={isDarkMode}>
+                        <div>
+                            <List
+                                dataSource={dataList}
+                                renderItem={(item) => <>
+                                    <List.Item key={item?.content}>
+                                        <List.Item.Meta
+                                            title={<Tag color="#9b3423">{item.title}</Tag>}
+                                            description={item.content.slice(0, 30) + '...'}
+                                        />
+                                        <div>{new Date(item.date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                                    </List.Item>
+                                </>}
+                            />
+                        </div>
                     </Card>
                 </Col>
-                <Col xs={24} sm={24} md={24} lg={14} xl={14}>
+                <Col xs={24} sm={24} md={24} lg={9} xl={9} style={{ marginBottom: 15 }}>
                     <Card title='Holidays' isDarkMode={isDarkMode}>
-                        <div style={{ overflow: 'auto' }}>
+                        <div style={{ overflow: 'auto', height: 450 }}>
                             <FullCalendar
                                 plugins={[
                                     dayGridPlugin,
@@ -160,3 +173,42 @@ export default function Dashboard() {
         </>
     )
 }
+
+const dataList = [
+    {
+        id: '1',
+        title: 'Title 1',
+        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
+        date: '2023-06-07'
+    },
+    {
+        id: '2',
+        title: 'Title 2',
+        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
+        date: '2023-06-07'
+    },
+    {
+        id: '3',
+        title: 'Title 3',
+        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
+        date: '2023-06-07'
+    },
+    {
+        id: '1',
+        title: 'Title 1',
+        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
+        date: '2023-06-07'
+    },
+    {
+        id: '2',
+        title: 'Title 2',
+        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
+        date: '2023-06-07'
+    },
+    {
+        id: '3',
+        title: 'Title 3',
+        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
+        date: '2023-06-07'
+    },
+]

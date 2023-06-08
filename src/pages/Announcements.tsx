@@ -49,16 +49,24 @@ export default function Announcements() {
             title: 'Title',
             key: 'title',
             dataIndex: 'title',
+            width: 150
         },
-        {
-            title: 'Image',
-            key: 'img',
-            dataIndex: 'img',
-        },
+        // {
+        //     title: 'Image',
+        //     key: 'img',
+        //     dataIndex: 'img',
+        // },
         {
             title: 'Content',
             key: 'content',
             dataIndex: 'content',
+            width: 200
+        },
+        {
+            title: 'Publish Date',
+            key: 'publish_date',
+            dataIndex: 'publish_date',
+            width: 120
         },
         {
             title: 'Action',
@@ -70,7 +78,8 @@ export default function Announcements() {
                 name={record?.title}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => handleEdit(record)}
-            />
+            />,
+            width: 200
         },
     ]
 
@@ -173,7 +182,8 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
             console.log(selectedData)
             form.setFieldsValue({
                 ...selectedData,
-                img: null
+                img: [],
+                publish_date: selectedData?.publish_date ? dayjs(selectedData?.publish_date, 'YYYY-MM-DD') : null
             })
         } else form.resetFields(undefined)
     }, [selectedData])
@@ -189,7 +199,7 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
         formData.append('img', values?.img ? values?.img[0].originFileObj : '')
         console.log(values?.img[0].originFileObj)
         if (selectedData?.id) formData.append('_method', 'PUT')
-        let result = selectedData != undefined ? PUT(ANNOUNCEMENT.PUT + selectedData.id!, formData) : POST(ANNOUNCEMENT.POST, formData)
+        let result = selectedData != undefined ? POST(ANNOUNCEMENT.PUT + selectedData.id!, formData) : POST(ANNOUNCEMENT.POST, formData)
         result.then(() => {
             form.resetFields()
             handleCancel()

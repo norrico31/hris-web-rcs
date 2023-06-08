@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, ReactNode, startTransition } from 'react'
+import { useState, useEffect, useMemo, ReactNode, startTransition, useCallback } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Typography, Form as AntDForm, Input, DatePicker, Space, Button, Select, Row, Col, Modal, Divider, Popconfirm, Skeleton, FloatButton } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
@@ -419,6 +419,10 @@ interface DataRowItem {
 function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities, types, sprints, setCurrentIdx, index, setTeamIds, handleOpenActivityModal, handleOpenTypesModal, handleOpenSprintsModal, isDisableField, isDisableAction }: DataRowItem) {
     const [model, setModel] = useState(data)
     useEffect(() => dataColsChange(model), [model])
+
+    const handleInputChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => setModel({ ...model, manhours: evt.target.value ?? null }), [model?.manhours])
+    const handleTextAreaChange = useCallback((evt: React.ChangeEvent<HTMLTextAreaElement>) => setModel({ ...model, description: evt.target.value ?? null }), [model?.description])
+
     return <>
         <div style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
             <Col>
@@ -520,7 +524,7 @@ function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities
                     placeholder='Enter manhours...'
                     style={{ width: 130 }}
                     value={model?.manhours}
-                    onChange={(evt) => setModel({ ...model, manhours: evt.target.value ?? null })}
+                    onChange={handleInputChange}
                 />
             </Col>
             <Col>
@@ -530,7 +534,7 @@ function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities
                     placeholder='Enter description...'
                     style={{ width: 250, height: 60 }}
                     value={model?.description!}
-                    onChange={(evt: React.ChangeEvent<HTMLTextAreaElement>) => setModel({ ...model, description: evt.target.value ?? null })}
+                    onChange={handleTextAreaChange}
                 />
             </Col>
             <Col>

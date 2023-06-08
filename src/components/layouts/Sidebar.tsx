@@ -10,10 +10,10 @@ import { BiTimeFive, BiTimer, BiUserCheck } from 'react-icons/bi'
 import { IoIosPeople } from 'react-icons/io'
 import { SiExpensify } from 'react-icons/si'
 import { TfiAnnouncement } from 'react-icons/tfi'
+import { TbReportAnalytics } from 'react-icons/tb'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { IRolePermission, IUser } from '../../shared/interfaces'
 import { ADMINSETTINGSPATHS, CLIENTSETTINGSPATHS, HRSETTINGSPATHS, ROOTPATHS, TASKSETTINGSPATHS } from '../../shared/constants'
-import { GrDocumentUser } from 'react-icons/gr'
 
 type Props = {
     onSelect: () => void
@@ -153,6 +153,13 @@ function filterMenu(user: IUser) {
             <FaUsers />,
             undefined,
             rootPath.includes('my team projects')
+        ),
+        getItemLinks(
+            <Link to='/hrreports'>Hr Reports</Link>,
+            '/hrreports',
+            <TbReportAnalytics />,
+            undefined,
+            true // rootPath.includes('my team projects')
         ),
         getItemLinks(
             'System Settings',

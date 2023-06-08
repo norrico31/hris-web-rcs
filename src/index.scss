@@ -3,6 +3,21 @@
     padding: 0;
     box-sizing: border-box;
 }
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #9B3423;
+    box-shadow: inset 0 0 6px #d26a5a;
+}
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: #e0d2cf;
+    box-shadow: inset 0 0 6px rgba(0,0,0,.4);
+}
+
 .center {
     display: grid;
     place-items: center;
@@ -184,4 +199,8 @@ h1 {
     &:active {
         border: none;
     }
+}
+
+:where(.css-dev-only-do-not-override-1u5jhrq).ant-list-split .ant-list-item {
+    border-block-end: 1px solid #ccc;
 }

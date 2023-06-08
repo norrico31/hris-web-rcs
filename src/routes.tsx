@@ -24,6 +24,7 @@ const SalaryAdjustmentArchives = lazy(() => import('./pages/SalaryAdjustmentArch
 const WhosInOut = lazy(() => import('./pages/WhosInOut'))
 const Announcements = lazy(() => import('./pages/Announcements'))
 const AnnouncementsArchives = lazy(() => import('./pages/AnnouncementArchives'))
+const HrReports = lazy(() => import('./pages/HrReports'))
 const Profile = lazy(() => import('./pages/Profile'))
 
 // My Team Task
@@ -167,6 +168,11 @@ export const routes = createBrowserRouter([
             {
                 path: 'tasks',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Tasks /></Suspense>,
+
+            },
+            {
+                path: 'hrreports',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><HrReports /></Suspense>,
 
             },
             {

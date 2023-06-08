@@ -81,7 +81,7 @@ export default function SalaryAdjustment() {
             title: 'File',
             key: 'file_name',
             dataIndex: 'file_name',
-            render: (_, record) => record?.file_name ? <Button type='primary'>{record?.file_name}</Button> : 'No File',
+            render: (_, record) => record?.file_name ? <Button type='primary'>{record?.file_name}</Button> : 'No File', // download endpoint: /backend/download/file/receipt/{id}
             align: 'center',
             width: 200
         },
@@ -230,6 +230,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         formData.append('remarks', values?.remarks)
         formData.append('expense_description', values?.expense_description ? values?.expense_description : '')
         formData.append('file', values?.file ? values?.file[0]?.originFileObj : '')
+        if (selectedData?.id) formData.append('_method', 'PUT')
         let result = selectedData ? POST(EXPENSE.PUT + selectedData.id!, formData) : POST(EXPENSE.POST, formData)
         result.then(() => {
             form.resetFields()
