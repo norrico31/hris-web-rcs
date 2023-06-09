@@ -81,7 +81,12 @@ export default function SalaryAdjustment() {
             title: 'File',
             key: 'file_name',
             dataIndex: 'file_name',
-            render: (_, record) => record?.file_name ? <Button type='primary'>{record?.file_name}</Button> : 'No File', // download endpoint: /backend/download/file/receipt/{id}
+            render: (_, record) => record?.file_name ? <Button type='primary' onClick={function handleDownload() {
+                const link = document.createElement('a');
+                link.href = EXPENSE.DOWNLOAD + `${record?.id}`;
+                link.target = '_blank';
+                link.click();
+            }}>Download</Button> : 'No File',
             align: 'center',
             width: 200
         },

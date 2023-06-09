@@ -430,16 +430,14 @@ function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities
     const handleInputChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => setModel({ ...model, manhours: evt.target.value ?? null }), [model?.manhours])
     const handleTextAreaChange = useCallback((evt: React.ChangeEvent<HTMLTextAreaElement>) => setModel({ ...model, description: evt.target.value ?? null }), [model?.description])
 
-    const handleSelectChange = useCallback((id: string) => {
-        startTransition(() => {
-            setTeamIds((prevIds: any) => {
-                prevIds[index] = id
-                return [...prevIds]
-            })
-            setCurrentIdx(index)
+    const handleSelectChange = useCallback((id: string) => startTransition(() => {
+        setTeamIds((prevIds: any) => {
+            prevIds[index] = id
+            return [...prevIds]
         })
+        setCurrentIdx(index)
         setModel({ ...model, team_id: id })
-    }, [setTeamIds, setCurrentIdx, model?.team_id])
+    }), [setTeamIds, setCurrentIdx, model?.team_id])
 
     return <>
         <div style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>

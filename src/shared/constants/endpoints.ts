@@ -216,7 +216,8 @@ export const useEndpoints = () => {
                     GET: '/expenses',
                     POST: '/expenses/',
                     PUT: '/expenses/',
-                    DELETE: '/expenses/'
+                    DELETE: '/expenses/',
+                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/receipt/'
 
                 },
                 EXPENSETYPE: {
