@@ -39,6 +39,18 @@ export default function HrReports() {
 
     // experiment shit
 
+    function handleDownload(url: string) {
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.click();
+    }
+
+    function closeModal() {
+        setIsModalOpen(initModalState)
+        setSelectedReport(undefined)
+    }
+
     return <>
         <StyledWidthRow>
             <Col xs={24} sm={12} md={12} lg={12} xl={11}>
@@ -53,7 +65,28 @@ export default function HrReports() {
                     const key = report.reports
                     const modal: { [k: string]: Function } = {
                         'Attendance Reports': () => setIsModalOpen({ ...isModalOpen, isModalWODate: true }),
-                        'Client Billing Reports': () => setIsModalOpen({ ...isModalOpen, isModalWODate: true }),
+                        'Client Billing Reports': () => {
+                            axios.get(HRREPORTS.CLIENTBILLING, {
+                                headers: {
+                                    'Content-Disposition': "attachment; filename=task_report.xlsx",
+                                    "Content-Type": "application/json",
+                                },
+                                responseType: 'arraybuffer'
+                            })
+                                .then((res: any) => {
+                                    Alert.success('Download Success', 'Client Billing Reports Download Successfully!')
+                                    const url = window.URL.createObjectURL(new Blob([res.data]))
+                                    const link = document.createElement('a')
+                                    link.href = url
+                                    link.setAttribute('download', `Client Billing Report ${dayjs().format('YYYY-MM-DD')} - ${dayjs().format('YYYY-MM-DD')}.xlsx`)
+                                    document.body.appendChild(link)
+                                    link.click()
+                                    closeModal()
+                                })
+                                .catch(err => {
+                                    console.log('error to: ', err)
+                                })
+                        },
                         'Daily Task Reports': () => setIsModalOpen({ ...isModalOpen, isModalWODate: true }),
                         'Overtime Reports': () => setIsModalOpen({ ...isModalOpen, isModalWithDate: true }),
                     }
@@ -67,7 +100,7 @@ export default function HrReports() {
         />
         <ModalDownload
             isModalOpen={isModalOpen.isModalWithDate}
-            handleClose={() => setIsModalOpen(initModalState)}
+            handleClose={closeModal}
             selectedReport={selectedReport}
         />
     </>
@@ -94,10 +127,8 @@ function ModalDownload({ selectedReport, isModalOpen, handleClose }: { isModalOp
         setLoading(true)
         const start_date = dayjs(date[0]).format('YYYY-MM-DD')
         const end_date = dayjs(date[1]).format('YYYY-MM-DD')
-        axios.post(HRREPORTS.OVERTIME, JSON.stringify({ // URL must change
-            start_date,
-            end_date,
-        }), {
+        const url = `${HRREPORTS.OVERTIME}?start_date=${start_date}&end_date=${end_date}`
+        axios.get(url, {
             headers: {
                 'Content-Disposition': "attachment; filename=task_report.xlsx",
                 "Content-Type": "application/json",
@@ -109,7 +140,7 @@ function ModalDownload({ selectedReport, isModalOpen, handleClose }: { isModalOp
                 const url = window.URL.createObjectURL(new Blob([res.data]))
                 const link = document.createElement('a')
                 link.href = url
-                link.setAttribute('download', `Tasks ${dayjs(start_date).format('YYYY-MM-DD')} - ${dayjs(end_date).format('YYYY-MM-DD')}.xlsx`)
+                link.setAttribute('download', `Overtime Reports ${dayjs(start_date).format('YYYY-MM-DD')} - ${dayjs(end_date).format('YYYY-MM-DD')}.xlsx`)
                 document.body.appendChild(link)
                 link.click()
                 handleClose()

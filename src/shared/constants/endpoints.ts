@@ -43,7 +43,8 @@ export const useEndpoints = () => {
             DELETE: '/leaves/',
         },
         HRREPORTS: {
-            OVERTIME: 'https://staging-hrportal.redcoresolutions.com/report_service/api/time_keepings/download-report'
+            OVERTIME: 'https://staging-hrportal.redcoresolutions.com/report_service/api/time_keepings/download-report',
+            CLIENTBILLING: 'https://staging-hrportal.redcoresolutions.com/report_service/api/billing_report',
         },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {

@@ -22,7 +22,7 @@ export default function GovernmentDocs() {
     const philHealth = employeeInfo?.philhealth.philhealth_number
     const sss = employeeInfo?.sss.sss_number
     const tin = employeeInfo?.tin.tin_number
-    // DOWNLOAD FUNC
+
     return (
         <Card title='Government Docs'>
             <Row gutter={[24, 24]} wrap>
