@@ -257,7 +257,8 @@ export const useEndpoints = () => {
                 MODULES: '/modules'
             },
             AUDITLOGS: {
-                GET: '/audit_logs'
+                GET: '/audit_logs',
+                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/report/api/audit_log_report'
             },
             ISSUELOGS: {
                 GET: '/laravel_logs'

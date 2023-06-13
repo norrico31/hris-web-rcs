@@ -75,7 +75,7 @@ export default function TimeKeeping() {
             title: 'Client Site',
             key: 'is_client_site',
             dataIndex: 'is_client_site',
-            render: (_, record) => record?.is_client_site === 1 ? 'Yes':'No',
+            render: (_, record) => record?.is_client_site === 1 ? 'Yes' : 'No',
             width: 150
         },
     ]
@@ -93,7 +93,6 @@ export default function TimeKeeping() {
                 <Row wrap justify='space-between'>
                     <DatePicker format='YYYY-MM-DD' defaultValue={dayjs()} onChange={handleDatePickerChange} />
                     <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={data.length > 1 || selectedDate != today}>
-                        {/* <RxEnter /> */}
                         {(data[0] == undefined) ? 'Time In' : 'Time Out'}
                     </Button>
                 </Row>
@@ -226,7 +225,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
                     Time In
                 </Button>
             </Popconfirm>
-           
+
             <Switch checkedChildren="Client Site" unCheckedChildren="WFH" checked={clientSite} onChange={() => setClientSite(!clientSite)} />
 
             <Popconfirm
@@ -235,11 +234,11 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
                 icon={<RxExit />}
                 onConfirm={() => postTimeInOut('timeout')}
                 okText='Time Out'
-                disabled={!!mediaError || !!error || loading || !imageSrc || data.length == 2}
+                disabled={!!mediaError || !!error || loading || !imageSrc || data.length == 2 || data?.length == 0}
             >
                 <Button
                     type='primary'
-                    disabled={!!mediaError || !!error || loading || !imageSrc || data.length == 2}
+                    disabled={!!mediaError || !!error || loading || !imageSrc || data.length == 2 || data?.length == 0}
                     loading={loading}
                 >
                     Time Out

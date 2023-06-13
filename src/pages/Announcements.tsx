@@ -186,14 +186,14 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
 
     function onFinish(values: Record<string, any>) {
         setLoading(true)
+        console.log(values?.file)
         const formData = new FormData()
         const publishDate = (values?.publish_date ? dayjs(values?.publish_date).format('YYYY-MM-DD') : '')
         formData.append('publish_date', publishDate)
         formData.append('posted_by', userId)
         formData.append('title', values.title)
         formData.append('content', values.content)
-        formData.append('file', values?.file ? values?.file[0].originFileObj : '')
-        console.log(values?.file[0].originFileObj)
+        formData.append('file', values?.file !== undefined ? values?.file[0].originFileObj : '')
         if (selectedData?.id) formData.append('_method', 'PUT')
         let result = selectedData != undefined ? POST(ANNOUNCEMENT.PUT + selectedData.id!, formData) : POST(ANNOUNCEMENT.POST, formData)
         result.then(() => {

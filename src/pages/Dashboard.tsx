@@ -67,25 +67,25 @@ export default function Dashboard() {
         return <Navigate to='/profile' />
     }
 
-    const handleDateClick = (selected: any) => {
-        const title = prompt('Please enter a new title for your event')
-        const calendarApi = selected.view.calendar
-        calendarApi.unselect()
+    // const handleDateClick = (selected: any) => {
+    //     const title = prompt('Please enter a new title for your event')
+    //     const calendarApi = selected.view.calendar
+    //     calendarApi.unselect()
 
-        if (title) {
-            calendarApi.addEvent({
-                id: `${selected.dateStr}-${selected.title}`,
-                title,
-                start: selected.startStr,
-                end: selected.endStr,
-                allDay: selected.allday
-            })
-        }
-    }
+    //     if (title) {
+    //         calendarApi.addEvent({
+    //             id: `${selected.dateStr}-${selected.title}`,
+    //             title,
+    //             start: selected.startStr,
+    //             end: selected.endStr,
+    //             allDay: selected.allday
+    //         })
+    //     }
+    // }
 
-    const handleEventClick = (selected: EventClickArg) => {
-        alert(selected.event.title)
-    }
+    // const handleEventClick = (selected: EventClickArg) => {
+    //     alert(selected.event.title)
+    // }
 
     function selectAnnouncement(announcement: IAnnouncements) {
         setIsModalAnnouncement(true)
@@ -182,8 +182,8 @@ export default function Dashboard() {
                                 selectable={true}
                                 selectMirror={true}
                                 dayMaxEvents={true}
-                                select={handleDateClick}
-                                eventClick={handleEventClick}
+                                // select={handleDateClick}
+                                // eventClick={handleEventClick}
                                 events={holidayEvents as any}
                             />
                         </div>
@@ -197,13 +197,17 @@ export default function Dashboard() {
 function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement }: any) {
     return <Modal title='Announcement' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
         <Descriptions bordered column={2}>
-            <Descriptions.Item label="Title" span={2}>{selectedAnnouncement?.title}</Descriptions.Item>
-            <Descriptions.Item label="Publish by" span={2}>{selectedAnnouncement?.posted_by?.name}</Descriptions.Item>
-            <Descriptions.Item label="Date" span={2}>{new Date(selectedAnnouncement?.publish_date!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+            <Descriptions.Item label="Title" span={2} style={{ color: '#626262' }}>{selectedAnnouncement?.title}</Descriptions.Item>
+            {/* <Descriptions.Item label="Publish by" span={2} style={{ color: '#626262' }}>{selectedAnnouncement?.posted_by?.name}</Descriptions.Item> */}
+            <Descriptions.Item label="Date" span={2} style={{ color: '#626262' }}>{new Date(selectedAnnouncement?.publish_date!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
         </Descriptions>
         <Divider />
         <Descriptions bordered layout='vertical'>
-            <Descriptions.Item label="Content" style={{ textAlign: 'center' }}>{selectedAnnouncement?.content}</Descriptions.Item>
+            <Descriptions.Item label="Content" style={{ textAlign: 'center', color: '#626262' }}>
+                <div style={{ textAlign: 'left' }}>
+                    {selectedAnnouncement?.content}
+                </div>
+            </Descriptions.Item>
         </Descriptions>
         <Divider />
         <Divider />
