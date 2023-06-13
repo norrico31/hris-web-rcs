@@ -200,8 +200,6 @@ function ContractsModal({ title, employeeId, selectedData, isModalOpen, handleCa
     }
 
     function handleDownload() {
-        // TODO: Logic to retrieve the file URL or data
-
         // Create a temporary link element
         const link = document.createElement('a');
         link.href = EMPLOYEE201.CONTRACTS.DOWNLOAD + `${selectedData?.id}`; // Replace 'your_file_url' with the actual file URL or data URL

@@ -24,6 +24,7 @@ const SalaryAdjustmentArchives = lazy(() => import('./pages/SalaryAdjustmentArch
 const WhosInOut = lazy(() => import('./pages/WhosInOut'))
 const Announcements = lazy(() => import('./pages/Announcements'))
 const AnnouncementsArchives = lazy(() => import('./pages/AnnouncementArchives'))
+const _HrReports = lazy(() => import('./pages/_HrReports'))
 const HrReports = lazy(() => import('./pages/HrReports'))
 const Profile = lazy(() => import('./pages/Profile'))
 

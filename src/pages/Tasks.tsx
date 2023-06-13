@@ -427,8 +427,8 @@ function DataRowItem({ data, dataColsChange, removeRow, initialTeams, activities
     const [model, setModel] = useState(data)
     useEffect(() => dataColsChange(model), [model])
 
-    const handleInputChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => setModel({ ...model, manhours: evt.target.value ?? null }), [model?.manhours])
-    const handleTextAreaChange = useCallback((evt: React.ChangeEvent<HTMLTextAreaElement>) => setModel({ ...model, description: evt.target.value ?? null }), [model?.description])
+    const handleInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => setModel({ ...model, manhours: evt.target.value ?? null })
+    const handleTextAreaChange = (evt: React.ChangeEvent<HTMLTextAreaElement>) => setModel({ ...model, description: evt.target.value ?? null })
 
     const handleSelectChange = useCallback((id: string) => startTransition(() => {
         setTeamIds((prevIds: any) => {

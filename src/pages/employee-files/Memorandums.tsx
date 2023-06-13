@@ -163,8 +163,6 @@ function MemorandumModal({ title, employeeId, fetchData, selectedData, isModalOp
     }
 
     function handleDownload() {
-        // TODO: Logic to retrieve the file URL or data
-
         // Create a temporary link element
         const link = document.createElement('a');
         link.href = MEMORANDUM.DOWNLOAD + `${selectedData?.id}`; // Replace 'your_file_url' with the actual file URL or data URL
