@@ -48,60 +48,6 @@ export default function TimeKeeping() {
             .then((res) => setData(res?.data ?? [])).finally(() => setLoading(false))
     }
 
-    const columns: ColumnsType<ITimeKeeping> = [
-        {
-            title: 'Date',
-            key: 'time_keeping_date',
-            dataIndex: 'time_keeping_date',
-            width: 150
-        },
-        {
-            title: 'Schedule',
-            key: 'schedule',
-            dataIndex: 'schedule',
-            width: 150,
-            render: (_, record) => record?.schedule?.name
-        },
-        {
-            title: 'Time',
-            key: 'time_keeping_time',
-            dataIndex: 'time_keeping_time',
-            width: 150
-        },
-        {
-            title: 'Time Type',
-            key: 'type',
-            dataIndex: 'type',
-            render: (_, record) => record?.type.split('_').join(' ') ?? '-',
-            width: 150
-        },
-        {
-            title: 'Client Site',
-            key: 'is_client_site',
-            dataIndex: 'is_client_site',
-            render: (_, record) => record?.is_client_site === 1 ? 'Yes' : 'No',
-            width: 150
-        },
-    ]
-
-    const mobileCol: ColumnsType<ITimeKeeping> = [
-        {
-            title: 'Date',
-            key: 'time_keeping_date',
-            dataIndex: 'time_keeping_date',
-            width: 150,
-            align: width > 500 ? 'left' : 'center'
-        },
-        {
-            title: 'Time',
-            key: 'time_keeping_time',
-            dataIndex: 'time_keeping_time',
-            width: 150,
-            align: width > 500 ? 'left' : 'center'
-        },
-    ]
-
-
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, pageSize: pagination?.pageSize! }, date: today })
 
     const handleDatePickerChange: DatePickerProps['onChange'] = (date, dateString) => {
@@ -364,3 +310,57 @@ export const Col2 = styled(Col) <ICol>`
     border-radius: 8px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.09), 0 6px 6px rgba(0,0,0,0.15);
 `
+
+const columns: ColumnsType<ITimeKeeping> = [
+    {
+        title: 'Date',
+        key: 'time_keeping_date',
+        dataIndex: 'time_keeping_date',
+        width: 150
+    },
+    {
+        title: 'Schedule',
+        key: 'schedule',
+        dataIndex: 'schedule',
+        width: 150,
+        render: (_, record) => record?.schedule?.name
+    },
+    {
+        title: 'Time',
+        key: 'time_keeping_time',
+        dataIndex: 'time_keeping_time',
+        width: 150
+    },
+    {
+        title: 'Time Type',
+        key: 'type',
+        dataIndex: 'type',
+        render: (_, record) => record?.type.split('_').join(' ') ?? '-',
+        width: 150
+    },
+    {
+        title: 'Client Site',
+        key: 'is_client_site',
+        dataIndex: 'is_client_site',
+        render: (_, record) => record?.is_client_site === 1 ? 'Yes' : 'No',
+        width: 150
+    },
+]
+
+const mobileCol: ColumnsType<ITimeKeeping> = [
+    {
+        title: 'Date',
+        key: 'time_keeping_date',
+        dataIndex: 'time_keeping_date',
+        width: 150,
+        align: 'center'
+    },
+    {
+        title: 'Time',
+        key: 'time_keeping_time',
+        dataIndex: 'time_keeping_time',
+        width: 150,
+        align: 'center'
+    },
+]
+

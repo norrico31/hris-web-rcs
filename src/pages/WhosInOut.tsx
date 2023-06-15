@@ -11,6 +11,7 @@ import { IArguments, ITimeKeeping, TableParams, TimeKeepingRes } from '../shared
 
 const [{ WHOSINOUT }] = useEndpoints()
 const { GET } = useAxios()
+const { Title } = Typography
 
 export default function WhosInOut() {
     renderTitle("Who's In and Out")
@@ -29,67 +30,6 @@ export default function WhosInOut() {
             controller.abort()
         }
     }, [isInOut])
-
-    const columns: ColumnsType<ITimeKeeping> = [
-        {
-            title: 'Name',
-            key: 'full_name',
-            dataIndex: 'full_name',
-            width: 150,
-            render: (_, record) => record?.user?.full_name
-        },
-        {
-            title: 'Schedule',
-            key: 'client_schedule',
-            dataIndex: 'client_schedule',
-            width: 150,
-            render: (_, record) => record?.schedule?.name
-        },
-        {
-            title: 'Department',
-            key: 'department',
-            dataIndex: 'department',
-            width: 150,
-            render: (_, record) => record?.user?.department?.name
-        },
-        {
-            title: !isInOut ? 'Time In' : 'Time Out',
-            key: 'time_keeping_time',
-            dataIndex: 'time_keeping_time',
-            width: 150
-        },
-        {
-            title: 'Client Site',
-            key: 'is_client_site',
-            dataIndex: 'is_client_site',
-            render: (_, record) => record?.is_client_site === 1 ? 'Yes' : 'No',
-            width: 150
-        },
-    ]
-
-    const mobileCol: ColumnsType<ITimeKeeping> = [
-        {
-            title: 'Name',
-            key: 'full_name',
-            dataIndex: 'full_name',
-            width: 150,
-            render: (_, record) => record?.user?.full_name
-        },
-        {
-            title: 'Date',
-            key: 'time_keeping_date',
-            dataIndex: 'time_keeping_date',
-            width: 150,
-            align: 'center'
-        },
-        {
-            title: 'Time',
-            key: 'time_keeping_time',
-            dataIndex: 'time_keeping_time',
-            width: 150,
-            align: 'center'
-        },
-    ]
 
     const fetchData = ({ args, isIn }: { args?: IArguments; isIn?: boolean }) => {
         setLoading(true)
@@ -140,7 +80,7 @@ export default function WhosInOut() {
             />
             <Table
                 loading={loading}
-                columns={width > 500 ? columns : mobileCol}
+                columns={width > 500 ? renderColumns(isInOut) : mobileCol}
                 dataList={Object.values(data)}
                 tableParams={tableParams}
                 onChange={onChange}
@@ -149,4 +89,57 @@ export default function WhosInOut() {
     )
 }
 
-const { Title } = Typography
+const renderColumns = (isInOut: boolean): ColumnsType<ITimeKeeping> => [
+    {
+        title: 'Name',
+        key: 'full_name',
+        dataIndex: 'full_name',
+        width: 150,
+        render: (_, record) => record?.user?.full_name
+    },
+    {
+        title: 'Schedule',
+        key: 'client_schedule',
+        dataIndex: 'client_schedule',
+        width: 150,
+        render: (_, record) => record?.schedule?.name
+    },
+    {
+        title: 'Department',
+        key: 'department',
+        dataIndex: 'department',
+        width: 150,
+        render: (_, record) => record?.user?.department?.name
+    },
+    {
+        title: !isInOut ? 'Time In' : 'Time Out',
+        key: 'time_keeping_time',
+        dataIndex: 'time_keeping_time',
+        width: 150
+    },
+    {
+        title: 'Client Site',
+        key: 'is_client_site',
+        dataIndex: 'is_client_site',
+        render: (_, record) => record?.is_client_site === 1 ? 'Yes' : 'No',
+        width: 150
+    },
+]
+
+const mobileCol: ColumnsType<ITimeKeeping> = [
+    {
+        title: 'Name',
+        key: 'full_name',
+        dataIndex: 'full_name',
+        width: 150,
+        render: (_, record) => record?.user?.full_name,
+        align: 'center'
+    },
+    {
+        title: 'Time',
+        key: 'time_keeping_time',
+        dataIndex: 'time_keeping_time',
+        width: 150,
+        align: 'center'
+    },
+]

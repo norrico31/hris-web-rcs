@@ -123,7 +123,7 @@ export default function Tasks() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleModalArchive={() => navigate('/tasks/archives')}
             >
-                <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
+                {/* <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button> */}
             </TabHeader>
             <Table
                 loading={loading}
@@ -804,17 +804,21 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
         setLoading(true)
         const start_date = dayjs(date[0]).format('YYYY-MM-DD')
         const end_date = dayjs(date[1]).format('YYYY-MM-DD')
-        axios.post(TASKS.DOWNLOAD, JSON.stringify({
+        const requestData = {
             start_date,
             end_date,
             user_id: userId
-        }), {
+          };
+        
+          const requestOptions = {
             headers: {
-                'Content-Disposition': "attachment; filename=task_report.xlsx",
-                "Content-Type": "application/json",
+              'Content-Disposition': 'attachment; filename=task_report.xlsx',
+              'Content-Type': 'application/json'
             },
             responseType: 'arraybuffer'
-        })
+          };
+        
+          POST(TASKS.DOWNLOAD, requestData, requestOptions)
             .then((res: any) => {
                 Alert.success('Download Success', 'Tasks Download Successfully!')
                 const url = window.URL.createObjectURL(new Blob([res.data]))

@@ -230,7 +230,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCanc
                     required
                     rules={[{ required: true, message: 'Required' }]}
                 >
-                    <TimePicker />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
                 </FormItem>
                 <FormItem
                     label="Time Out"
@@ -238,7 +238,7 @@ function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCanc
                     required
                     rules={[{ required: true, message: 'Required' }]}
                 >
-                    <TimePicker />
+                    <TimePicker value={dayjs('00:00:00', 'HH:mm')} format="h:mm A" />
                 </FormItem>
             </Row>
             <FormItem name="description" label="Description">

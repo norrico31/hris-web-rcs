@@ -1,5 +1,7 @@
 export const useEndpoints = () => {
     const BASE_URL = import.meta.env.VITE_BASE_URL_PASSTHRU;
+    const BASE_URL_BACKEND = import.meta.env.VITE_BASE_URL_BACKEND;
+    const BASE_URL_REPORT = import.meta.env.VITE_BASE_URL_REPORT;
     const ENDPOINTS = {
         AUTH: {
             USER: '/auth-user',
@@ -14,7 +16,7 @@ export const useEndpoints = () => {
             POST: '/announcements/',
             PUT: '/announcements/',
             DELETE: '/announcements/',
-            DOWNLOAD: `${BASE_URL}/backend/download/file/announcement/`,
+            DOWNLOAD: `${BASE_URL_BACKEND}/download/file/announcement/`,
         },
         TIMEKEEPING: {
             TIMEIN: '/time_keepings/time_in',
@@ -220,7 +222,7 @@ export const useEndpoints = () => {
                     POST: '/expenses/',
                     PUT: '/expenses/',
                     DELETE: '/expenses/',
-                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/receipt/'
+                    DOWNLOAD: `${BASE_URL_BACKEND}/download/file/receipt/`,
 
                 },
                 EXPENSETYPE: {
@@ -285,7 +287,7 @@ export const useEndpoints = () => {
                 POST: '/employee_contracts/',
                 PUT: '/employee_contracts/',
                 DELETE: '/employee_contracts/',
-                DOWNLOAD: `${BASE_URL}/backend/download/file/contract/`,
+                DOWNLOAD: `${BASE_URL_BACKEND}/download/file/contract/`,
             },
             USERPROFILE: {
                 GET: '/employees',
@@ -304,38 +306,38 @@ export const useEndpoints = () => {
                 POST: '/employee_evaluations/',
                 PUT: '/employee_evaluations/',
                 DELETE: '/employee_evaluations/',
-                DOWNLOAD: `${BASE_URL}/backend/download/file/evaluation/`,
+                DOWNLOAD: `${BASE_URL_BACKEND}/download/file/evaluation/`,
             },
             EMPLOYEEDOCUMENT: {
                 GET: '/employee_documents',
                 POST: '/employee_documents/',
                 PUT: '/employee_documents/',
                 DELETE: '/employee_documents/',
-                DOWNLOAD: `${BASE_URL}/backend/download/file/document/`,
+                DOWNLOAD: `${BASE_URL_BACKEND}/download/file/document/`,
             },
             MEMORANDUM: {
                 GET: '/employee_memos',
                 POST: '/employee_memos/',
                 PUT: '/employee_memos/',
                 DELETE: '/employee_memos/',
-                DOWNLOAD: `${BASE_URL}/backend/download/file/memo/`,
+                DOWNLOAD: `${BASE_URL_BACKEND}/download/file/memo/`,
             },
             GOVERNMENTDOCS: {
                 PAGIBIG: {
                     PUT: '/employee_pagibigs/',
-                    DOWNLOAD: `${BASE_URL}/backend/download/file/pagibig/`,
+                    DOWNLOAD: `${BASE_URL_BACKEND}/download/file/pagibig/`,
                 },
                 PHILHEALTH: {
                     PUT: '/employee_philhealths/',
-                    DOWNLOAD: `${BASE_URL}/backend/download/file/philhealth/`,
+                    DOWNLOAD: `${BASE_URL_BACKEND}/download/file/philhealth/`,
                 },
                 TIN: {
                     PUT: '/employee_tins/',
-                    DOWNLOAD: `${BASE_URL}/backend/download/file/tin/`,
+                    DOWNLOAD: `${BASE_URL_BACKEND}/download/file/tin/`,
                 },
                 SSS: {
                     PUT: '/employee_sss/',
-                    DOWNLOAD: `${BASE_URL}/backend/download/file/sss/`,
+                    DOWNLOAD: `${BASE_URL_BACKEND}/download/file/sss/`,
                 },
             },
             EMPLOYEESALARY: {
@@ -361,10 +363,10 @@ export const useEndpoints = () => {
             POST: '/tasks/',
             PUT: '/tasks/',
             DELETE: '/tasks/',
-            DOWNLOAD: `${BASE_URL}/report/tasks_report`,
+            DOWNLOAD: `${BASE_URL_REPORT}/tasks_report`,
         },
         TEAMTASKS: {
-            DOWNLOAD: `${BASE_URL}/report/tasks_report/team`,
+            DOWNLOAD: `${BASE_URL_REPORT}/tasks_report/team`,
         },
         MYTEAMS: {
             PROFILE: {
