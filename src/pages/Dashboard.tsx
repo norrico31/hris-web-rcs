@@ -146,7 +146,7 @@ export default function Dashboard() {
                                         <List.Item key={item?.content}>
                                             <List.Item.Meta
                                                 title={<Tag color="#9b3423">{item.title}</Tag>}
-                                                description={item.content.length > 20 ? item.content.slice(0, 20) + '...' : item.content}
+                                                description={<div dangerouslySetInnerHTML={{ __html: item?.content }} />}
                                             />
                                             <Space direction='vertical' align='center'>
                                                 <div>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>

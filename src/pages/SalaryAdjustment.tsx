@@ -234,7 +234,7 @@ function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, ha
         formData.append('is_active', values?.is_active)
         formData.append('remarks', values?.remarks)
         formData.append('expense_description', values?.expense_description ? values?.expense_description : '')
-        formData.append('file', values?.file ? values?.file[0]?.originFileObj : '')
+        formData.append('file', (values?.file !== undefined && values?.file.length > 0) ? values?.file[0]?.originFileObj : '')
         if (selectedData?.id) formData.append('_method', 'PUT')
         let result = selectedData ? POST(EXPENSE.PUT + selectedData.id!, formData) : POST(EXPENSE.POST, formData)
         result.then(() => {
