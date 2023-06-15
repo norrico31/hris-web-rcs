@@ -13,6 +13,7 @@ import { AnnouncementRes, IAnnouncements, IArguments, TableParams } from "../sha
 import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 import dayjs from "dayjs"
 import { UploadOutlined } from '@ant-design/icons'
+import TextEditor from "../components/TextEditor"
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ ANNOUNCEMENT }] = useEndpoints()
@@ -55,7 +56,7 @@ export default function Announcements() {
             title: 'Content',
             key: 'content',
             dataIndex: 'content',
-            render: (_, record) => record.content.length > 20 ? record.content.slice(0, 20) + '...' : record.content,
+            render: (_, record) => <div dangerouslySetInnerHTML={{ __html: record?.content }} />,
             width: 150
         },
         {
@@ -154,6 +155,7 @@ export default function Announcements() {
                 fetchData={fetchData}
                 handleCancel={handleCloseModal}
             />
+
         </>
     )
 }
@@ -171,39 +173,54 @@ const { Item: FormItem, useForm } = AntDForm
 function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpen, handleCancel }: ModalProps) {
     const [form] = useForm<IAnnouncements>()
     const [loading, setLoading] = useState(false)
+    const [textFromEditor, setTextFromEditor] = useState('')
     const [messageApi, contextHolder] = useMessage()
 
     useEffect(() => {
         if (selectedData) {
-            console.log(selectedData)
             form.setFieldsValue({
                 ...selectedData,
                 file: [],
                 publish_date: selectedData?.publish_date ? dayjs(selectedData?.publish_date, 'YYYY-MM-DD') : null
             })
-        } else form.resetFields(undefined)
+            setTextFromEditor(selectedData.content)
+        } else {
+            form.resetFields(undefined)
+            setTextFromEditor('')
+        }
     }, [selectedData])
 
+    const key = 'error'
     function onFinish(values: Record<string, any>) {
+        if (textFromEditor.length < 5) {
+            return messageApi.open({
+                key,
+                type: 'error',
+                content: 'Please enter content!',
+                duration: 3,
+            })
+        }
         setLoading(true)
-        console.log(values?.file)
         const formData = new FormData()
         const publishDate = (values?.publish_date ? dayjs(values?.publish_date).format('YYYY-MM-DD') : '')
+        console.log(values.file)
         formData.append('publish_date', publishDate)
         formData.append('posted_by', userId)
         formData.append('title', values.title)
-        formData.append('content', values.content)
-        formData.append('file', values?.file !== undefined ? values?.file[0].originFileObj : '')
+        formData.append('content', textFromEditor)
+        formData.append('file', (values?.file !== undefined && values?.file.length > 0) ? values?.file[0].originFileObj : '')
         if (selectedData?.id) formData.append('_method', 'PUT')
         let result = selectedData != undefined ? POST(ANNOUNCEMENT.PUT + selectedData.id!, formData) : POST(ANNOUNCEMENT.POST, formData)
         result.then(() => {
             form.resetFields()
+            setTextFromEditor('')
             handleCancel()
         }).catch((err) => {
             messageApi.open({
                 type: 'error',
                 content: err.response.data.message ?? err.response.data.error,
-                duration: 3
+                duration: 3,
+                key
             })
             setLoading(false)
         }).finally(() => {
@@ -223,13 +240,23 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
             >
                 <Input placeholder='Enter title...' />
             </FormItem>
-            <FormItem
+            {/* <FormItem
                 label="Content"
                 name="content"
                 required
                 rules={[{ required: true, message: 'Required' }]}
-            >
+                >
                 <Input.TextArea placeholder='Enter content...' />
+            </FormItem> */}
+            <FormItem
+                label="Content"
+                required
+                rules={[{ required: true, message: 'Required' }]}
+            >
+                <TextEditor
+                    textFromEditor={textFromEditor}
+                    setTextFromEditor={setTextFromEditor}
+                />
             </FormItem>
             <FormItem
                 label="Publish Date"

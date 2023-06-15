@@ -92,9 +92,6 @@ type MenuItem = Required<MenuProps>['items'][number]
 function filterMenu(user: IUser) {
     const modules = user?.role?.permissions ?? []
     const moduleCodes = filterCodes(modules)
-    modules.forEach(mod => {
-        console.log(mod.code, mod.description) // TODO: hr reports code
-    })
     const rootPath = filterPaths(user?.role?.permissions!, ROOTPATHS)
     const taskSystemSettingsPaths = filterPaths(user?.role?.permissions!, TASKSETTINGSPATHS)
     const hrPaths = filterPaths(user?.role?.permissions!, HRSETTINGSPATHS)
@@ -162,7 +159,7 @@ function filterMenu(user: IUser) {
             '/hrreports',
             <TbReportAnalytics />,
             undefined,
-            false // rootPath.includes('my team projects')
+            rootPath.includes('hr reports') // rootPath.includes('my team projects')
         ),
         getItemLinks(
             'System Settings',

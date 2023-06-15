@@ -146,6 +146,8 @@ export const ROOTPATHS = {
     'f06': 'overtime',
     'md01': 'my team tasks',
     'mb01': 'my team projects',
+    'n01': 'hr reports',
+    'n02': 'hr reports',
     ...TASKSPATHS,
     ...EMPLOYEEFILESPATHS,
     ...LEAVESPATHS,
