@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Navigate } from "react-router-dom"
-import { Button, Col, Row, Modal, Space, Popconfirm, message, TablePaginationConfig, DatePicker, DatePickerProps, Skeleton, Switch } from "antd"
+import { Button, Col, Row, Modal, Space, Popconfirm, message, TablePaginationConfig, DatePicker, DatePickerProps, Skeleton, Switch, Typography } from "antd"
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
 import { RxEnter, RxExit } from 'react-icons/rx'
 import { ColumnsType } from "antd/es/table"
-import { Divider, Table, Card } from "../components"
+import useWindowSize from "../shared/hooks/useWindowSize";
+import { Divider, Table } from "../components"
 import AvatarPng from '../shared/assets/default_avatar.png'
 import { renderTitle } from "../shared/utils/utilities"
 import { MessageInstance } from "antd/es/message/interface"
@@ -18,6 +19,8 @@ import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 const [{ TIMEKEEPING }] = useEndpoints()
 const { GET, POST } = useAxios()
 
+const { Title } = Typography
+
 export default function TimeKeeping() {
     renderTitle('Timekeeping')
     const { user, loading: loadingUser } = useAuthContext()
@@ -26,6 +29,7 @@ export default function TimeKeeping() {
     const [loading, setLoading] = useState(true)
     const [today] = useState(dayjs().format('YYYY-MM-DD'))
     const [selectedDate, setSelectedDate] = useState(today)
+    const { width } = useWindowSize()
 
     useEffect(() => {
         const controller = new AbortController();
@@ -80,6 +84,24 @@ export default function TimeKeeping() {
         },
     ]
 
+    const mobileCol: ColumnsType<ITimeKeeping> = [
+        {
+            title: 'Date',
+            key: 'time_keeping_date',
+            dataIndex: 'time_keeping_date',
+            width: 150,
+            align: width > 500 ? 'left' : 'center'
+        },
+        {
+            title: 'Time',
+            key: 'time_keeping_time',
+            dataIndex: 'time_keeping_time',
+            width: 150,
+            align: width > 500 ? 'left' : 'center'
+        },
+    ]
+
+
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, pageSize: pagination?.pageSize! }, date: today })
 
     const handleDatePickerChange: DatePickerProps['onChange'] = (date, dateString) => {
@@ -89,29 +111,28 @@ export default function TimeKeeping() {
 
     return (
         <>
-            <Card title='Timekeeping'>
-                <Row wrap justify='space-between'>
-                    <DatePicker format='YYYY-MM-DD' defaultValue={dayjs()} onChange={handleDatePickerChange} />
-                    <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={data.length > 1 || selectedDate != today}>
-                        {(data[0] == undefined) ? 'Time In' : 'Time Out'}
-                    </Button>
-                </Row>
-                <Divider />
-                <Table
-                    loading={loading}
-                    columns={columns}
-                    dataList={data}
-                    isSizeChanger={false}
-                    onChange={onChange}
+            <Title level={2} style={{ textAlign: width < 500 ? 'center' : 'initial' }}>Timekeeping</Title>
+            <Row wrap justify='space-between'>
+                <DatePicker format='YYYY-MM-DD' defaultValue={dayjs()} onChange={handleDatePickerChange} />
+                <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={data.length > 1 || selectedDate != today}>
+                    {(data[0] == undefined) ? 'Time In' : 'Time Out'}
+                </Button>
+            </Row>
+            <Divider />
+            <Table
+                loading={loading}
+                columns={width > 500 ? columns : mobileCol}
+                dataList={data}
+                isSizeChanger={false}
+                onChange={onChange}
 
-                />
-                <TimeKeepingModal
-                    data={data}
-                    fetchData={fetchData}
-                    isModalOpen={isModalOpen}
-                    handleClose={() => setIsModalOpen(false)}
-                />
-            </Card>
+            />
+            <TimeKeepingModal
+                data={data}
+                fetchData={fetchData}
+                isModalOpen={isModalOpen}
+                handleClose={() => setIsModalOpen(false)}
+            />
         </>
     )
 }

@@ -139,21 +139,23 @@ export default function Dashboard() {
                 <Col xs={24} sm={24} md={24} lg={14} xl={14} style={{ marginBottom: 15 }}>
                     <Card title='Announcements' style={{ overflowX: 'auto', height: 500 }} isDarkMode={isDarkMode}>
                         <div>
-                            <List
-                                dataSource={lists.announcements}
-                                renderItem={(item: IAnnouncements) => <>
-                                    <List.Item key={item?.content}>
-                                        <List.Item.Meta
-                                            title={<Tag color="#9b3423">{item.title}</Tag>}
-                                            description={item.content.length > 20 ? item.content.slice(0, 20) + '...' : item.content}
-                                        />
-                                        <Space direction='vertical' align='center'>
-                                            <div>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                                            <Button type='primary' size='small' onClick={() => selectAnnouncement(item)}>View</Button>
-                                        </Space>
-                                    </List.Item>
-                                </>}
-                            />
+                            {lists.announcements.length > 0 ? (
+                                <List
+                                    dataSource={lists.announcements}
+                                    renderItem={(item: IAnnouncements) => <>
+                                        <List.Item key={item?.content}>
+                                            <List.Item.Meta
+                                                title={<Tag color="#9b3423">{item.title}</Tag>}
+                                                description={item.content.length > 20 ? item.content.slice(0, 20) + '...' : item.content}
+                                            />
+                                            <Space direction='vertical' align='center'>
+                                                <div>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                                                <Button type='primary' size='small' onClick={() => selectAnnouncement(item)}>View</Button>
+                                            </Space>
+                                        </List.Item>
+                                    </>}
+                                />
+                            ) : <i>No announcements posted</i>}
                             <AnnouncementViewModal
                                 isModalOpen={isModalAnnouncement}
                                 handleClose={closeAnnouncementModal}

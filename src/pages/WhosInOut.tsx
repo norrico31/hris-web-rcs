@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { Row, Space, Switch, Typography } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import dayjs from 'dayjs'
-import { Card, TabHeader, Table } from '../components'
+import useWindowSize from '../shared/hooks/useWindowSize'
+import { TabHeader, Table } from '../components'
 import { useEndpoints } from '../shared/constants'
 import { useAxios } from '../shared/lib/axios'
 import { renderTitle } from '../shared/utils/utilities'
@@ -19,6 +20,7 @@ export default function WhosInOut() {
     const [loading, setLoading] = useState(true)
     const [today] = useState(dayjs().format('YYYY-MM-DD'))
     const [isInOut, setIsInOut] = useState(false)
+    const { width } = useWindowSize()
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -65,6 +67,30 @@ export default function WhosInOut() {
         },
     ]
 
+    const mobileCol: ColumnsType<ITimeKeeping> = [
+        {
+            title: 'Name',
+            key: 'full_name',
+            dataIndex: 'full_name',
+            width: 150,
+            render: (_, record) => record?.user?.full_name
+        },
+        {
+            title: 'Date',
+            key: 'time_keeping_date',
+            dataIndex: 'time_keeping_date',
+            width: 150,
+            align: 'center'
+        },
+        {
+            title: 'Time',
+            key: 'time_keeping_time',
+            dataIndex: 'time_keeping_time',
+            width: 150,
+            align: 'center'
+        },
+    ]
+
     const fetchData = ({ args, isIn }: { args?: IArguments; isIn?: boolean }) => {
         setLoading(true)
         const url = !isIn ? WHOSINOUT.IN : WHOSINOUT.OUT
@@ -97,7 +123,8 @@ export default function WhosInOut() {
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, isIn: isInOut })
 
     return (
-        <Card title="Who's In and Out">
+        <>
+            <Title level={2} style={{ textAlign: width < 500 ? 'center' : 'initial' }}>Who's In / Out</Title>
             <Row justify='center'>
                 <Space align='center'>
                     <Typography.Title level={2} style={{ margin: 0 }}>In</Typography.Title>
@@ -113,11 +140,13 @@ export default function WhosInOut() {
             />
             <Table
                 loading={loading}
-                columns={columns}
+                columns={width > 500 ? columns : mobileCol}
                 dataList={Object.values(data)}
                 tableParams={tableParams}
                 onChange={onChange}
             />
-        </Card>
+        </>
     )
 }
+
+const { Title } = Typography

@@ -1,4 +1,5 @@
 export const useEndpoints = () => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL_PASSTHRU;
     const ENDPOINTS = {
         AUTH: {
             USER: '/auth-user',
@@ -13,6 +14,7 @@ export const useEndpoints = () => {
             POST: '/announcements/',
             PUT: '/announcements/',
             DELETE: '/announcements/',
+            DOWNLOAD: `${BASE_URL}/backend/download/file/announcement/`,
         },
         TIMEKEEPING: {
             TIMEIN: '/time_keepings/time_in',
@@ -43,8 +45,8 @@ export const useEndpoints = () => {
             DELETE: '/leaves/',
         },
         HRREPORTS: {
-            OVERTIME: 'https://staging-hrportal.redcoresolutions.com/report_service/api/time_keepings/download-report',
-            CLIENTBILLING: 'https://staging-hrportal.redcoresolutions.com/report_service/api/billing_report',
+            OVERTIME: `${BASE_URL}/report/time_keepings/download-report`,
+            CLIENTBILLING: `${BASE_URL}/report/billing_report`,
         },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
@@ -258,7 +260,7 @@ export const useEndpoints = () => {
             },
             AUDITLOGS: {
                 GET: '/audit_logs',
-                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/report/api/audit_log_report'
+                DOWNLOAD: `${BASE_URL}/report/audit_log_report`,
             },
             ISSUELOGS: {
                 GET: '/laravel_logs'
@@ -283,7 +285,7 @@ export const useEndpoints = () => {
                 POST: '/employee_contracts/',
                 PUT: '/employee_contracts/',
                 DELETE: '/employee_contracts/',
-                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/contract/'
+                DOWNLOAD: `${BASE_URL}/backend/download/file/contract/`,
             },
             USERPROFILE: {
                 GET: '/employees',
@@ -302,38 +304,38 @@ export const useEndpoints = () => {
                 POST: '/employee_evaluations/',
                 PUT: '/employee_evaluations/',
                 DELETE: '/employee_evaluations/',
-                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/evaluation/'
+                DOWNLOAD: `${BASE_URL}/backend/download/file/evaluation/`,
             },
             EMPLOYEEDOCUMENT: {
                 GET: '/employee_documents',
                 POST: '/employee_documents/',
                 PUT: '/employee_documents/',
                 DELETE: '/employee_documents/',
-                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/document/'
+                DOWNLOAD: `${BASE_URL}/backend/download/file/document/`,
             },
             MEMORANDUM: {
                 GET: '/employee_memos',
                 POST: '/employee_memos/',
                 PUT: '/employee_memos/',
                 DELETE: '/employee_memos/',
-                DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/memo/'
+                DOWNLOAD: `${BASE_URL}/backend/download/file/memo/`,
             },
             GOVERNMENTDOCS: {
                 PAGIBIG: {
                     PUT: '/employee_pagibigs/',
-                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/pagibig/'
+                    DOWNLOAD: `${BASE_URL}/backend/download/file/pagibig/`,
                 },
                 PHILHEALTH: {
                     PUT: '/employee_philhealths/',
-                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/philhealth/'
+                    DOWNLOAD: `${BASE_URL}/backend/download/file/philhealth/`,
                 },
                 TIN: {
                     PUT: '/employee_tins/',
-                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/tin/'
+                    DOWNLOAD: `${BASE_URL}/backend/download/file/tin/`,
                 },
                 SSS: {
                     PUT: '/employee_sss/',
-                    DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/backend/download/file/sss/'
+                    DOWNLOAD: `${BASE_URL}/backend/download/file/sss/`,
                 },
             },
             EMPLOYEESALARY: {
@@ -359,10 +361,10 @@ export const useEndpoints = () => {
             POST: '/tasks/',
             PUT: '/tasks/',
             DELETE: '/tasks/',
-            DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/report_service/api/tasks_report'
+            DOWNLOAD: `${BASE_URL}/report/tasks_report`,
         },
         TEAMTASKS: {
-            DOWNLOAD: 'https://staging-hrportal.redcoresolutions.com/report_service/api/tasks_report/team'
+            DOWNLOAD: `${BASE_URL}/report/tasks_report/team`,
         },
         MYTEAMS: {
             PROFILE: {
