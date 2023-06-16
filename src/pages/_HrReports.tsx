@@ -128,7 +128,7 @@ function ModalDownload({ selectedReport, isModalOpen, handleClose }: { isModalOp
         const start_date = dayjs(date[0]).format('YYYY-MM-DD')
         const end_date = dayjs(date[1]).format('YYYY-MM-DD')
         const url = `${HRREPORTS.HRREPORTS}?start_date=${start_date}&end_date=${end_date}`
-        axiosClient.get(url, {
+        axios.get(url, {
             headers: {
                 'Content-Disposition': "attachment; filename=task_report.xlsx",
                 "Content-Type": "application/json",

@@ -48,8 +48,8 @@ export const useEndpoints = () => {
             DELETE: '/leaves/',
         },
         HRREPORTS: {
-            HRREPORTS: `/report/time_keepings/download-report`, // 4 modules (HR Reports)
-            CLIENTBILLING: `/report/billing_report`,
+            HRREPORTS: `${BASE_URL}/report/time_keepings/download-report`, // 4 modules (HR Reports)
+            CLIENTBILLING: `${BASE_URL}/report/billing_report`,
         },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {
