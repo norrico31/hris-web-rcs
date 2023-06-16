@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Col, Row, Card as AntDCard, Typography, Calendar, Skeleton, Divider as AntDDivider, Badge, BadgeProps, List, Tag, Space, Button, Modal, Descriptions } from 'antd'
+import { Col, Row, Typography, Skeleton, List, Tag, Space, Button, Modal, Descriptions } from 'antd'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -8,14 +8,13 @@ import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 import { MdExitToApp, MdMoreTime } from 'react-icons/md'
 import { FaUsers } from 'react-icons/fa'
-import { EventClickArg } from '@fullcalendar/core'
 import { AiOutlineCalendar } from 'react-icons/ai'
 import { renderTitle } from "../shared/utils/utilities"
 import { Card, Divider } from '../components'
 import { useAuthContext } from '../shared/contexts/Auth'
 import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
-import axiosClient, { useAxios } from '../shared/lib/axios'
+import axiosClient from '../shared/lib/axios'
 import { IAnnouncements, IHoliday } from '../shared/interfaces'
 import { useDarkMode } from '../shared/contexts/DarkMode'
 
@@ -37,27 +36,32 @@ export default function Dashboard() {
     useEffect(() => {
         const controller = new AbortController();
         (async () => {
-            try {
-                const whosInPromise = axiosClient(WHOSINOUT.IN, { signal: controller.signal })
-                const whosOutPromise = axiosClient(WHOSINOUT.OUT, { signal: controller.signal })
-                const announcementPromise = axiosClient(ANNOUNCEMENT.LISTS, { signal: controller.signal })
-                const leaveTodayPromise = axiosClient(LEAVES.LISTS, { signal: controller.signal }) // add date today
-                const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal })
-                const holidayPromise = axiosClient(HOLIDAYS.GET, { signal: controller.signal })
-                const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
-                setLists({
-                    whosIn: whosInRes?.value?.data?.data?.total ?? 0,
-                    whosOut: whosOutRes?.value?.data?.data?.total ?? 0,
-                    announcements: announcementRes?.value?.data ?? [],
-                    leaves: leaveTodayRes?.value?.data?.data?.total ?? 0,
-                    employees: employeeRes?.value?.data?.length ?? 0,
-                    holidays: holidayRes?.value?.data?.data?.data ?? []
-                })
-                setLoading(false)
-            } catch (error) {
-                console.error('error fetching clients: ', error)
+            if (user) {
+                try {
+                    const whosInPromise = axiosClient(WHOSINOUT.IN, { signal: controller.signal })
+                    const whosOutPromise = axiosClient(WHOSINOUT.OUT, { signal: controller.signal })
+                    const announcementPromise = axiosClient(ANNOUNCEMENT.LISTS, { signal: controller.signal })
+                    const leaveTodayPromise = axiosClient(LEAVES.LISTS, { signal: controller.signal }) // add date today
+                    const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal })
+                    const holidayPromise = axiosClient(HOLIDAYS.GET, { signal: controller.signal })
+                    const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
+                    setLists({
+                        whosIn: whosInRes?.value?.data?.data?.total ?? 0,
+                        whosOut: whosOutRes?.value?.data?.data?.total ?? 0,
+                        announcements: announcementRes?.value?.data ?? [],
+                        leaves: leaveTodayRes?.value?.data?.data?.total ?? 0,
+                        employees: employeeRes?.value?.data?.length ?? 0,
+                        holidays: holidayRes?.value?.data?.data?.data ?? []
+                    })
+                    setLoading(false)
+                } catch (error) {
+                    console.error('error fetching clients: ', error)
+                }
             }
         })()
+        return () => {
+            controller.abort()
+        }
     }, [])
 
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
@@ -66,26 +70,6 @@ export default function Dashboard() {
         if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
         return <Navigate to='/profile' />
     }
-
-    // const handleDateClick = (selected: any) => {
-    //     const title = prompt('Please enter a new title for your event')
-    //     const calendarApi = selected.view.calendar
-    //     calendarApi.unselect()
-
-    //     if (title) {
-    //         calendarApi.addEvent({
-    //             id: `${selected.dateStr}-${selected.title}`,
-    //             title,
-    //             start: selected.startStr,
-    //             end: selected.endStr,
-    //             allDay: selected.allday
-    //         })
-    //     }
-    // }
-
-    // const handleEventClick = (selected: EventClickArg) => {
-    //     alert(selected.event.title)
-    // }
 
     function selectAnnouncement(announcement: IAnnouncements) {
         setIsModalAnnouncement(true)
@@ -146,7 +130,7 @@ export default function Dashboard() {
                                         <List.Item key={item?.content}>
                                             <List.Item.Meta
                                                 title={<Tag color="#9b3423">{item.title}</Tag>}
-                                                description={<div dangerouslySetInnerHTML={{ __html: item?.content }} />}
+                                                description={<div dangerouslySetInnerHTML={{ __html: item?.content.slice(0, 20) + '...' }} />}
                                             />
                                             <Space direction='vertical' align='center'>
                                                 <div>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
@@ -197,6 +181,18 @@ export default function Dashboard() {
 }
 
 function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement }: any) {
+    const [imgSrc, setImgSrc] = useState('')
+
+    useEffect(() => {
+        if (selectedAnnouncement) {
+            axiosClient.get(ANNOUNCEMENT.GET + '/' + selectedAnnouncement?.id)
+                .then((res: any) => {
+                    // setImgSrc(res?.data ?? '')
+                    console.log(res)
+                })
+        }
+    }, [selectedAnnouncement])
+
     return <Modal title='Announcement' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Title" span={2} style={{ color: '#626262' }}>{selectedAnnouncement?.title}</Descriptions.Item>
@@ -207,7 +203,7 @@ function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement 
         <Descriptions bordered layout='vertical'>
             <Descriptions.Item label="Content" style={{ textAlign: 'center', color: '#626262' }}>
                 <div style={{ textAlign: 'left' }}>
-                    {selectedAnnouncement?.content}
+                    <div dangerouslySetInnerHTML={{ __html: selectedAnnouncement?.content }} />
                 </div>
             </Descriptions.Item>
         </Descriptions>
@@ -220,42 +216,3 @@ function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement 
         </div>
     </Modal>
 }
-
-const dataList = [
-    {
-        id: '1',
-        title: 'Title 1',
-        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
-        date: '2023-06-07'
-    },
-    {
-        id: '2',
-        title: 'Title 2',
-        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
-        date: '2023-06-07'
-    },
-    {
-        id: '3',
-        title: 'Title 3',
-        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
-        date: '2023-06-07'
-    },
-    {
-        id: '1',
-        title: 'Title 1',
-        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
-        date: '2023-06-07'
-    },
-    {
-        id: '2',
-        title: 'Title 2',
-        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
-        date: '2023-06-07'
-    },
-    {
-        id: '3',
-        title: 'Title 3',
-        content: 'norricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.comnorricobiason31@gmail.com',
-        date: '2023-06-07'
-    },
-]

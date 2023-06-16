@@ -12,10 +12,10 @@ import { ROOTPATHS, useEndpoints } from "../shared/constants"
 import { AnnouncementRes, IAnnouncements, IArguments, TableParams } from "../shared/interfaces"
 import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
 import dayjs from "dayjs"
-import { UploadOutlined } from '@ant-design/icons'
+import { InboxOutlined } from '@ant-design/icons'
 import TextEditor from "../components/TextEditor"
 
-const { GET, POST, PUT, DELETE } = useAxios()
+const { GET, POST, DELETE } = useAxios()
 const [{ ANNOUNCEMENT }] = useEndpoints()
 
 export default function Announcements() {
@@ -180,10 +180,11 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
         if (selectedData) {
             form.setFieldsValue({
                 ...selectedData,
-                file: [],
+                file_path: [],
                 publish_date: selectedData?.publish_date ? dayjs(selectedData?.publish_date, 'YYYY-MM-DD') : null
             })
             setTextFromEditor(selectedData.content)
+
         } else {
             form.resetFields(undefined)
             setTextFromEditor('')
@@ -229,6 +230,18 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
         })
     }
 
+    function handleDownload() {
+        // TODO: Logic to retrieve the file URL or data
+
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = ANNOUNCEMENT.DOWNLOAD + `${selectedData?.id}`; // Replace 'your_file_url' with the actual file URL or data URL
+        link.target = '_blank';
+
+        // Trigger the download
+        link.click();
+    }
+
     return <Modal title={`${title} - Announcement`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
@@ -267,14 +280,28 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
                     style={{ width: '100%' }}
                 />
             </FormItem>
-            <FormItem label="Image"
-                name='file'
-                valuePropName="fileList" getValueFromEvent={normFile}
-            >
-                <Upload beforeUpload={() => false} accept=".png,.jpeg,.jpg">
-                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                </Upload>
+            <FormItem label="Image">
+                <FormItem name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
+                    <Upload.Dragger name="files" beforeUpload={() => false} accept=".png,.jpeg,.jpg">
+                        <p className="ant-upload-drag-icon">
+                            <InboxOutlined />
+                        </p>
+                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                    </Upload.Dragger>
+                </FormItem>
             </FormItem>
+            {selectedData && selectedData.file_name && (
+                <FormItem>
+                    <div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ marginBottom: 8 }}>Download</span>
+                            <a href={selectedData.file_name} onClick={(e) => { e.preventDefault(); handleDownload(); }}>
+                                {selectedData.file_name}
+                            </a>
+                        </div>
+                    </div>
+                </FormItem>
+            )}
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button id={selectedData != undefined ? 'Update' : 'Create'} type="primary" htmlType="submit" loading={loading}>
