@@ -56,7 +56,7 @@ export default function Announcements() {
             title: 'Content',
             key: 'content',
             dataIndex: 'content',
-            render: (_, record) => <div dangerouslySetInnerHTML={{ __html: record?.content }} />,
+            render: (_, record) => <div dangerouslySetInnerHTML={{ __html: record?.content.slice(0, 20) + '...' }} />,
             width: 150
         },
         {
@@ -242,7 +242,7 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
         link.click();
     }
 
-    return <Modal title={`${title} - Announcement`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title={`${title} - Announcement`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender width={1000}>
         {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
@@ -280,9 +280,9 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
                     style={{ width: '100%' }}
                 />
             </FormItem>
-            <FormItem label="Image">
+            <FormItem label="Attachment">
                 <FormItem name="file" valuePropName="fileList" getValueFromEvent={normFile} noStyle>
-                    <Upload.Dragger name="files" beforeUpload={() => false} accept=".png,.jpeg,.jpg">
+                    <Upload.Dragger name="files" beforeUpload={() => false}>
                         <p className="ant-upload-drag-icon">
                             <InboxOutlined />
                         </p>

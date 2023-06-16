@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Space, Button, Input, Form as AntDForm, Select, Popconfirm } from 'antd'
+import { Space, Button, Input, Form as AntDForm, Select, Popconfirm, Typography } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { BiRefresh } from 'react-icons/bi'
@@ -11,6 +11,7 @@ import useMessage from 'antd/es/message/useMessage'
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
+const { Title } = Typography
 
 export default function Users() {
     const [data, setData] = useState<IUser[]>([])
@@ -157,7 +158,8 @@ export default function Users() {
     }
 
     return (
-        <Card title={`Users ${isArchive ? '- Archives' : ''}`}>
+        <>
+            <Title level={2}>Users</Title>
             <TabHeader
                 handleSearch={setSearch}
                 handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}
@@ -189,7 +191,7 @@ export default function Users() {
                 tableParams={tableParams}
                 onChange={onChange}
             />)}
-        </Card>
+        </>
     )
 }
 

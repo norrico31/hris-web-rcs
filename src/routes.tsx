@@ -173,7 +173,7 @@ export const routes = createBrowserRouter([
             },
             {
                 path: 'hrreports',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><HrReports /></Suspense>,
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><_HrReports /></Suspense>,
 
             },
             {

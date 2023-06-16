@@ -12,7 +12,8 @@ import { useAuthContext } from '../shared/contexts/Auth'
 import { filterCodes } from '../components/layouts/Sidebar'
 import { Table } from '../components'
 import { Alert } from '../shared/lib/alert'
-import { useEndpoints } from '../shared/constants'
+import { BASE_URL, useEndpoints } from '../shared/constants'
+import axiosClient, { useAxios } from '../shared/lib/axios'
 
 type Report = { id: string; reports: string }
 
@@ -21,9 +22,10 @@ const initModalState = {
     isModalWODate: false
 }
 const [{ HRREPORTS }] = useEndpoints()
+const { GET, POST, DELETE } = useAxios()
 
 export default function HrReports() {
-    renderTitle('HR Reports')
+    renderTitle('Reports')
     const { user, loading } = useAuthContext()
     let { pathname } = useLocation()
     const navigate = useNavigate()
@@ -54,7 +56,7 @@ export default function HrReports() {
     return <>
         <StyledWidthRow>
             <Col xs={24} sm={12} md={12} lg={12} xl={11}>
-                <h1 className='color-white'>HR Reports</h1>
+                <h1 className='color-white'>Reports</h1>
             </Col>
         </StyledWidthRow>
         {/* <h2>Work in progress</h2> */}
@@ -64,9 +66,9 @@ export default function HrReports() {
                 downloadReport(report: Report) {
                     const key = report.reports
                     const modal: { [k: string]: Function } = {
-                        'Attendance Reports': () => setIsModalOpen({ ...isModalOpen, isModalWODate: true }),
+                        'HR Reports': () => setIsModalOpen({ ...isModalOpen, isModalWithDate: true }),
                         'Client Billing Reports': () => {
-                            axios.get(HRREPORTS.CLIENTBILLING, {
+                            POST(HRREPORTS.CLIENTBILLING, {}, {
                                 headers: {
                                     'Content-Disposition': "attachment; filename=task_report.xlsx",
                                     "Content-Type": "application/json",
@@ -87,8 +89,6 @@ export default function HrReports() {
                                     console.log('error to: ', err)
                                 })
                         },
-                        'Daily Task Reports': () => setIsModalOpen({ ...isModalOpen, isModalWODate: true }),
-                        'Overtime Reports': () => setIsModalOpen({ ...isModalOpen, isModalWithDate: true }),
                     }
                     setSelectedReport(report)
                     return modal[key]()
@@ -127,8 +127,8 @@ function ModalDownload({ selectedReport, isModalOpen, handleClose }: { isModalOp
         setLoading(true)
         const start_date = dayjs(date[0]).format('YYYY-MM-DD')
         const end_date = dayjs(date[1]).format('YYYY-MM-DD')
-        const url = `${HRREPORTS.OVERTIME}?start_date=${start_date}&end_date=${end_date}`
-        axios.get(url, {
+        const url = `${HRREPORTS.HRREPORTS}?start_date=${start_date}&end_date=${end_date}`
+        axiosClient.get(url, {
             headers: {
                 'Content-Disposition': "attachment; filename=task_report.xlsx",
                 "Content-Type": "application/json",
@@ -201,18 +201,10 @@ const renderColumns = ({ downloadReport }: { downloadReport: (report: Report) =>
 const dataList = [
     {
         id: '1',
-        reports: 'Attendance Reports'
+        reports: 'HR Reports'
     },
     {
         id: '2',
         reports: 'Client Billing Reports'
-    },
-    {
-        id: '3',
-        reports: 'Daily Task Reports'
-    },
-    {
-        id: '4',
-        reports: 'Overtime Reports'
     },
 ]

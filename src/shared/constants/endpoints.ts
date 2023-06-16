@@ -1,7 +1,8 @@
+export const BASE_URL = import.meta.env.VITE_BASE_URL_PASSTHRU;
+export const BASE_URL_BACKEND = import.meta.env.VITE_BASE_URL_BACKEND;
+export const BASE_URL_REPORT = import.meta.env.VITE_BASE_URL_REPORT;
+
 export const useEndpoints = () => {
-    const BASE_URL = import.meta.env.VITE_BASE_URL_PASSTHRU;
-    const BASE_URL_BACKEND = import.meta.env.VITE_BASE_URL_BACKEND;
-    const BASE_URL_REPORT = import.meta.env.VITE_BASE_URL_REPORT;
     const ENDPOINTS = {
         AUTH: {
             USER: '/auth-user',
@@ -47,8 +48,8 @@ export const useEndpoints = () => {
             DELETE: '/leaves/',
         },
         HRREPORTS: {
-            OVERTIME: `${BASE_URL}/report/time_keepings/download-report`,
-            CLIENTBILLING: `${BASE_URL}/report/billing_report`,
+            HRREPORTS: `/report/time_keepings/download-report`, // 4 modules (HR Reports)
+            CLIENTBILLING: `/report/billing_report`,
         },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {

@@ -5,9 +5,12 @@ export default function TextEditor({ setTextFromEditor, textFromEditor }: { text
     return <CKEditor
         editor={ClassicEditor}
         data={textFromEditor}
-        onChange={(_, editor) => {
+        onChange={(evt, editor) => {
             const data = editor.getData()
             setTextFromEditor(data)
+            console.log('text editor editor: ', editor)
+            console.log('text editor evt: ', evt)
+            console.log('text editor data: ', data)
         }}
     />
 }

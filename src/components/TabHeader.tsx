@@ -23,9 +23,9 @@ export default function TabHeader({ isRequest, handleSearch, handleCreate, handl
 
     return (
         <>
-            <Row justify={children ? 'space-between' : 'end'} align='middle'>
+            <Row justify={children ? 'space-between' : 'end'} align='middle' wrap>
                 {children}
-                <Space>
+                <Space wrap>
                     <Input.Search placeholder='Search...' value={searchTerm} onChange={onChange} />
                     {handleModalArchive && (
                         <Button type='primary' onClick={handleModalArchive}>View Archives</Button>
