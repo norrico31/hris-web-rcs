@@ -237,7 +237,7 @@ export default function OvertimeApproval() {
     )
 }
 
-const selectOptions = ['Pending', 'Approved', 'Rejected']
+const selectOptions = ['Pending', 'Approved']
 
 type Payload = {
     remarks: string

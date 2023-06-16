@@ -222,7 +222,7 @@ function MemorandumModal({ title, employeeId, fetchData, selectedData, isModalOp
                     </Upload.Dragger>
                 </Item>
             </Item>
-            {/* {selectedData && selectedData.file_name && (
+            {selectedData && selectedData.file_name && (
                 <Item>
                     <div>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -233,7 +233,7 @@ function MemorandumModal({ title, employeeId, fetchData, selectedData, isModalOp
                         </div>
                     </div>
                 </Item>
-            )} */}
+            )}
             <Item
                 label="Status"
                 name="is_active"

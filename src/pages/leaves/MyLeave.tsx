@@ -142,7 +142,7 @@ export default function MyLeave() {
     )
 }
 
-const selectOptions = ['All', 'Pending', 'Approved', 'Rejected']
+const selectOptions = ['All', 'Pending', 'Approved']
 
 type ModalProps = {
     leaveType: string

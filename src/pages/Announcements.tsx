@@ -19,7 +19,7 @@ const { GET, POST, DELETE } = useAxios()
 const [{ ANNOUNCEMENT }] = useEndpoints()
 
 export default function Announcements() {
-    renderTitle('Salary Adjustment')
+    renderTitle('Announcements')
     const { user, loading: loadingUser } = useAuthContext()
     const navigate = useNavigate()
     const [data, setData] = useState<IAnnouncements[]>([])

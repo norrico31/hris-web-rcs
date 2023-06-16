@@ -8,26 +8,30 @@ type ActionProps = {
     isDisable?: boolean
     onConfirm: () => void
     onClick: () => void
+    hasDelete?: boolean
 }
 
-export default function Action({ title, name, isDisable, onConfirm, onClick }: ActionProps) {
+export default function Action({ title, name, isDisable, onConfirm, onClick, hasDelete }: ActionProps) {
     return (
         <Space>
             <Button id='edit' type='default' size='middle' onClick={onClick} className='btn-edit' disabled={isDisable}>
                 <AiOutlineEdit color='white' />
             </Button>
-            <Popconfirm
-                title={`Delete the ${title}`}
-                description={`Are you sure you want to delete ${name}?`}
-                onConfirm={onConfirm}
-                okText="Delete"
-                cancelText="Cancel"
-                disabled={isDisable}
-            >
-                <Button id='delete' type='primary' size='middle' onClick={() => null} disabled={isDisable}>
-                    <BsFillTrashFill />
-                </Button>
-            </Popconfirm>
+            {!hasDelete && (
+
+                <Popconfirm
+                    title={`Delete the ${title}`}
+                    description={`Are you sure you want to delete ${name}?`}
+                    onConfirm={onConfirm}
+                    okText="Delete"
+                    cancelText="Cancel"
+                    disabled={isDisable}
+                >
+                    <Button id='delete' type='primary' size='middle' onClick={() => null} disabled={isDisable}>
+                        <BsFillTrashFill />
+                    </Button>
+                </Popconfirm>
+            )}
         </Space>
     )
 }

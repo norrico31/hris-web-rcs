@@ -199,7 +199,7 @@ export default function MyOvertime() {
     )
 }
 
-const selectOptions = ['All', 'Pending', 'Approved', 'Rejected']
+const selectOptions = ['All', 'Pending', 'Approved']
 
 type ModalProps = {
     overtimeType: string

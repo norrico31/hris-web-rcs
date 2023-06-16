@@ -211,7 +211,7 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
                     </Upload.Dragger>
                 </FormItem>
             </FormItem>
-            {/* {selectedData && selectedData.file_name && (
+            {selectedData && selectedData.file_name && (
                 <FormItem>
                     <div>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -222,7 +222,7 @@ function PagibigUpdateModal({ title, url, userId, keyProp, selectedData, isModal
                         </div>
                     </div>
                 </FormItem>
-            )} */}
+            )}
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading} disabled={loading}>

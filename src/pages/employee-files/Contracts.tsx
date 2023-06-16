@@ -230,7 +230,7 @@ function ContractsModal({ title, employeeId, selectedData, isModalOpen, handleCa
                     </Upload.Dragger>
                 </Item>
             </Item>
-            {/* {selectedData && selectedData.file_name && (
+            {selectedData && selectedData.file_name && (
                 <Item>
                     <div>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -241,7 +241,7 @@ function ContractsModal({ title, employeeId, selectedData, isModalOpen, handleCa
                         </div>
                     </div>
                 </Item>
-            )} */}
+            )}
             <Item
                 label="Status"
                 name="is_active"

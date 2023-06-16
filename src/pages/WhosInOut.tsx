@@ -8,6 +8,7 @@ import { useEndpoints } from '../shared/constants'
 import { useAxios } from '../shared/lib/axios'
 import { renderTitle } from '../shared/utils/utilities'
 import { IArguments, ITimeKeeping, TableParams, TimeKeepingRes } from '../shared/interfaces'
+import { useSearchDebounce } from '../shared/hooks/useDebounce'
 
 const [{ WHOSINOUT }] = useEndpoints()
 const { GET } = useAxios()
@@ -21,15 +22,23 @@ export default function WhosInOut() {
     const [loading, setLoading] = useState(true)
     const [today] = useState(dayjs().format('YYYY-MM-DD'))
     const [isInOut, setIsInOut] = useState(false)
+    const debounceSearch = useSearchDebounce(search, 300)
     const { width } = useWindowSize()
 
     useEffect(function fetch() {
         const controller = new AbortController();
-        fetchData({ args: { signal: controller.signal }, isIn: isInOut })
+        fetchData({
+            args: {
+                signal: controller.signal,
+                search: debounceSearch,
+                page: tableParams?.pagination?.current,
+                pageSize: tableParams?.pagination?.pageSize!
+            }, isIn: isInOut
+        })
         return () => {
             controller.abort()
         }
-    }, [isInOut])
+    }, [isInOut, debounceSearch])
 
     const fetchData = ({ args, isIn }: { args?: IArguments; isIn?: boolean }) => {
         setLoading(true)
@@ -49,17 +58,6 @@ export default function WhosInOut() {
             }).finally(() => setLoading(false))
     }
 
-    const handleSearch = (str: string) => {
-        setSearch(str)
-        fetchData({
-            args: {
-                search: str,
-                page: tableParams?.pagination?.current ?? 1,
-                pageSize: tableParams?.pagination?.pageSize
-            }, isIn: isInOut
-        })
-    }
-
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, isIn: isInOut })
 
     return (
@@ -76,7 +74,7 @@ export default function WhosInOut() {
                 <Typography.Title level={4}>{dayjs(today).format('MMMM') + ''} {dayjs(today).format('D') + ''}, {dayjs(today).format('YYYY') + ''} - {dayjs(today).format('dddd')}</Typography.Title>
             </Row>
             <TabHeader
-                handleSearch={handleSearch}
+                handleSearch={setSearch}
             />
             <Table
                 loading={loading}

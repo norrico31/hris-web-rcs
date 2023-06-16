@@ -123,7 +123,7 @@ export default function Tasks() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleModalArchive={() => navigate('/tasks/archives')}
             >
-                {/* <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button> */}
+                <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
             </TabHeader>
             <Table
                 loading={loading}
@@ -229,7 +229,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
         } catch (error) {
             console.log(error)
         }
-    }, [tasks])
+    }, [tasks, currentIdx])
 
     const dataColsChange = (data: DataRow) => {
         if (!data) return
@@ -808,17 +808,17 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
             start_date,
             end_date,
             user_id: userId
-          };
-        
-          const requestOptions = {
+        };
+
+        const requestOptions = {
             headers: {
-              'Content-Disposition': 'attachment; filename=task_report.xlsx',
-              'Content-Type': 'application/json'
+                'Content-Disposition': 'attachment; filename=task_report.xlsx',
+                'Content-Type': 'application/json'
             },
             responseType: 'arraybuffer'
-          };
-        
-          POST(TASKS.DOWNLOAD, requestData, requestOptions)
+        };
+
+        POST(TASKS.DOWNLOAD, requestData, requestOptions)
             .then((res: any) => {
                 Alert.success('Download Success', 'Tasks Download Successfully!')
                 const url = window.URL.createObjectURL(new Blob([res.data]))

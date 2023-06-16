@@ -97,6 +97,7 @@ export default function MyTeam() {
                 name={record.employee_name}
                 onConfirm={() => handleDelete(record?.id!)}
                 onClick={() => navigate('/team/edit/' + record.id + '/profile')}
+                hasDelete
             />,
             width: 200
         },

@@ -62,7 +62,7 @@ export default function Dashboard() {
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
 
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />

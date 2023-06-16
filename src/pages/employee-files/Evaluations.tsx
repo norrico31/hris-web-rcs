@@ -236,7 +236,7 @@ function EvaluationsModal({ title, employeeId, selectedData, isModalOpen, handle
                     </Upload.Dragger>
                 </Item>
             </Item>
-            {/* {selectedData && selectedData.file_name && (
+            {selectedData && selectedData.file_name && (
                 <Item>
                     <div>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -247,7 +247,7 @@ function EvaluationsModal({ title, employeeId, selectedData, isModalOpen, handle
                         </div>
                     </div>
                 </Item>
-            )} */}
+            )}
             <Item
                 label="Status"
                 name="is_active"

@@ -98,7 +98,7 @@ export default function MyTeamTask() {
             <h1 className='color-white'>My Team Tasks</h1>
         </StyledRow>
         <Row justify='space-between'>
-            {/* <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button> */}
+            <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
             <Space>
                 <Select placeholder='Select Employee...' optionFilterProp="children" allowClear showSearch style={{ width: 150 }} value={selectedUser} onChange={setSelectedUser}>
                     {users?.map((user) => (
