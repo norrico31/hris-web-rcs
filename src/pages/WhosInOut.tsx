@@ -58,7 +58,7 @@ export default function WhosInOut() {
             }).finally(() => setLoading(false))
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, isIn: isInOut })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search: debounceSearch, pageSize: pagination?.pageSize! }, isIn: isInOut })
 
     return (
         <>

@@ -180,41 +180,61 @@ export default function Dashboard() {
     )
 }
 
-// TODO
+interface AnnouncementModalProps { isModalOpen: boolean; handleClose: () => void; selectedAnnouncement?: IAnnouncements }
 
-function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement }: any) {
-    const [imgSrc, setImgSrc] = useState('')
+function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement }: AnnouncementModalProps) {
+    const [announcement, setAnnouncement] = useState<IAnnouncements | undefined>()
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         if (selectedAnnouncement) {
-            axiosClient.get(ANNOUNCEMENT.GET + '/' + selectedAnnouncement?.id)
+            setLoading(true)
+            axiosClient.get(ANNOUNCEMENT.GET + '/' + selectedAnnouncement.id)
                 .then((res: any) => {
-                    // setImgSrc(res?.data ?? '')
-                    console.log(res)
+                    const announcement = res?.data.data as IAnnouncements
+                    setAnnouncement(announcement)
                 })
+                .finally(() => setLoading(false))
         }
     }, [selectedAnnouncement])
 
     return <Modal title='Announcement' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
-        <Descriptions bordered column={2}>
-            <Descriptions.Item label="Title" span={2} style={{ color: '#626262' }}>{selectedAnnouncement?.title}</Descriptions.Item>
-            {/* <Descriptions.Item label="Publish by" span={2} style={{ color: '#626262' }}>{selectedAnnouncement?.posted_by?.name}</Descriptions.Item> */}
-            <Descriptions.Item label="Date" span={2} style={{ color: '#626262' }}>{new Date(selectedAnnouncement?.publish_date!).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
-        </Descriptions>
-        <Divider />
-        <Descriptions bordered layout='vertical'>
-            <Descriptions.Item label="Content" style={{ textAlign: 'center', color: '#626262' }}>
-                <div style={{ textAlign: 'left' }}>
-                    <div dangerouslySetInnerHTML={{ __html: selectedAnnouncement?.content }} />
+        {loading ? <Skeleton /> : (
+            <>
+                <Descriptions bordered column={2}>
+                    <Descriptions.Item label="Title" span={2} style={{ color: '#626262' }}>{announcement?.title}</Descriptions.Item>
+                    <Descriptions.Item label="Date" span={2} style={{ color: '#626262' }}>{new Date(announcement?.publish_date! + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
+                </Descriptions>
+                <Divider />
+                <Descriptions bordered layout='vertical'>
+                    <Descriptions.Item label="File" style={{ textAlign: 'center', color: '#626262' }}>
+                        {announcement?.external_link ?
+                            <img src={announcement.external_link} alt={announcement.file_name!} style={{ width: '100%', height: 'auto', cursor: 'pointer' }}
+                                onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = ANNOUNCEMENT.DOWNLOAD + `${announcement.id}`;
+                                    link.target = '_blank';
+                                    link.click();
+                                }}
+                            />
+                            : <i style={{ color: '#9B3423' }}>No attachment file</i>}
+                    </Descriptions.Item>
+                </Descriptions>
+                <Descriptions bordered layout='vertical'>
+                    <Descriptions.Item label="Content" style={{ textAlign: 'center', color: '#626262' }}>
+                        <div style={{ textAlign: 'left' }}>
+                            <div dangerouslySetInnerHTML={{ __html: announcement?.content! }} />
+                        </div>
+                    </Descriptions.Item>
+                </Descriptions>
+                <Divider />
+                <Divider />
+                <div style={{ textAlign: 'right' }}>
+                    <Button type="primary" onClick={handleClose}>
+                        Close
+                    </Button>
                 </div>
-            </Descriptions.Item>
-        </Descriptions>
-        <Divider />
-        <Divider />
-        <div style={{ textAlign: 'right' }}>
-            <Button type="primary" onClick={handleClose}>
-                Close
-            </Button>
-        </div>
+            </>
+        )}
     </Modal>
 }
