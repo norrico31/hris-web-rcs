@@ -228,8 +228,8 @@ function filterMenu(user: IUser) {
                     adminPaths.includes('leave management')
                 ),
                 getItemLinks(
-                    <Link to='/admin/overtime'>Overtime Management</Link>,
-                    '/admin/overtime',
+                    <Link to='/admin/overtimes'>Overtime Management</Link>,
+                    '/admin/overtimes',
                     <AiOutlineFieldTime />,
                     undefined,
                     adminPaths.includes('overtime management')

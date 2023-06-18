@@ -99,7 +99,8 @@ export default function LeaveManagement() {
     return (
         <>
             <Title level={2}>Leave Management</Title>
-            <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)} isRequest>
+            <TabHeader handleSearch={setSearch} isRequest>
+                <Button className='btn-secondary' onClick={() => setIsModalOpen(true)}>File Employee Leave</Button>
                 {/* <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
                     setLeaveType((str == undefined || str == '') ? 'all' : str)
                     fetchData({

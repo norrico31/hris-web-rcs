@@ -86,6 +86,7 @@ const AuditLogs = lazy(() => import('./pages/admin-settings/AuditLogs'))
 const Permissions = lazy(() => import('./pages/admin-settings/Permissions'))
 const IssueLogs = lazy(() => import('./pages/admin-settings/IssueLogs'))
 const LeaveManagement = lazy(() => import('./pages/admin-settings/LeaveManagement'))
+const OvertimeManagement = lazy(() => import('./pages/admin-settings/OvertimeManagement'))
 
 // Employee Files (201)
 const EmployeeBenefits = lazy(() => import('./pages/employee-files/EmployeeBenefits'))
@@ -158,6 +159,10 @@ export const routes = createBrowserRouter([
             {
                 path: 'admin/leaves',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><LeaveManagement /></Suspense>
+            },
+            {
+                path: 'admin/overtimes',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><OvertimeManagement /></Suspense>
             },
             {
                 path: 'profile',
