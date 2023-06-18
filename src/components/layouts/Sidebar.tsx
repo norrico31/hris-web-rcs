@@ -49,8 +49,8 @@ export default function Sidebar({ onSelect }: Props) {
             setLocationKey('/systemsettings/expensesettings/expense')
         } else if (location?.pathname.includes('/roles')) {
             setLocationKey('/roles')
-        } else if (location?.pathname.includes('/leave')) {
-            setLocationKey('/leave')
+        } else if (location?.pathname.includes('/leave/')) {
+            setLocationKey('/leave/')
         } else setLocationKey(location?.pathname)
     }, [location.pathname])
 
@@ -91,7 +91,11 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 function filterMenu(user: IUser) {
     const modules = user?.role?.permissions ?? []
+    // modules.forEach((mod) => {
+    //     console.log(mod.code, mod.description)
+    // })
     const moduleCodes = filterCodes(modules)
+    console.log(moduleCodes)
     const rootPath = filterPaths(user?.role?.permissions!, ROOTPATHS)
     const taskSystemSettingsPaths = filterPaths(user?.role?.permissions!, TASKSETTINGSPATHS)
     const hrPaths = filterPaths(user?.role?.permissions!, HRSETTINGSPATHS)
@@ -217,6 +221,27 @@ function filterMenu(user: IUser) {
                     adminPaths.includes('roles')
                 ),
                 getItemLinks(
+                    <Link to='/admin/leaves'>Leave Management</Link>,
+                    '/admin/leaves',
+                    <AiOutlineCalendar />,
+                    undefined,
+                    adminPaths.includes('leave management')
+                ),
+                getItemLinks(
+                    <Link to='/admin/overtime'>Overtime Management</Link>,
+                    '/admin/overtime',
+                    <AiOutlineFieldTime />,
+                    undefined,
+                    adminPaths.includes('overtime management')
+                ),
+                getItemLinks(
+                    <Link to='/admin/timekeeping'>Timekeeping Management</Link>,
+                    '/admin/timekeeping',
+                    <BiTimeFive />,
+                    undefined,
+                    adminPaths.includes('timekeeping management')
+                ),
+                getItemLinks(
                     <Link to='/auditlogs'>Audit Logs</Link>,
                     '/auditlogs',
                     <AiOutlineAudit />,
@@ -242,7 +267,7 @@ function filterMenu(user: IUser) {
         ),
         getItemLinks(
             <Link to='/leave/myleaves'>Leaves</Link>,
-            '/leave',
+            '/leave/',
             <AiOutlineCalendar />,
             undefined,
             rootPath.includes('leave')

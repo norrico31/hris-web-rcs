@@ -99,6 +99,9 @@ export const ADMINSETTINGSPATHS = {
     'id02': 'systemlogs',
     'id03': 'systemlogs',
     'id04': 'systemlogs',
+    'r01': 'timekeeping management',
+    'p01': 'leave management',
+    'q01': 'overtime management',
 }
 
 export const EMPLOYEEFILESPATHS = {
@@ -148,6 +151,7 @@ export const ROOTPATHS = {
     'mb01': 'my team projects',
     'n01': 'hr reports',
     'n02': 'hr reports',
+
     ...TASKSPATHS,
     ...EMPLOYEEFILESPATHS,
     ...LEAVESPATHS,

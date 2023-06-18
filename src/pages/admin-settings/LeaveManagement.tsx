@@ -1,27 +1,27 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Divider, Popconfirm } from 'antd'
+import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Divider, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import { BiRefresh } from 'react-icons/bi'
-import { Form, Card, TabHeader, Table, Action } from '../../components'
-import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
+import { Form, TabHeader, Table } from '../../components'
+import { renderTitle } from '../../shared/utils/utilities'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../../shared/constants'
-import { IArguments, ILeave, ILeaveType, LeaveRes, TableParams } from '../../shared/interfaces'
+import { IArguments, ILeave, ILeaveType, IUser, LeaveRes, TableParams } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 import { AiOutlineEdit } from 'react-icons/ai'
 
 const { GET, POST, PUT, DELETE } = useAxios()
-const [{ LEAVES, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
+const [{ LEAVES, SYSTEMSETTINGS: { HRSETTINGS }, ADMINSETTINGS: { USERS } }] = useEndpoints()
 
-dayjs.extend(localizedFormat)
+dayjs.extend(localizedFormat);
+const { Title } = Typography
 
-export default function MyLeave() {
-    renderTitle('Leave')
+export default function LeaveManagement() {
+    renderTitle('Leave Management')
     const { user, loading: loadingUser } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [leaveType, setLeaveType] = useState('all')
@@ -50,7 +50,7 @@ export default function MyLeave() {
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
-    if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
+    if (!loadingUser && !codes['p01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<ILeave> = renderColumns({ handleEdit, handleDelete, handleRequestSelected })
 
@@ -98,8 +98,9 @@ export default function MyLeave() {
 
     return (
         <>
+            <Title level={2}>Leave Management</Title>
             <TabHeader handleSearch={setSearch} handleCreate={() => setIsModalOpen(true)} isRequest>
-                <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
+                {/* <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
                     setLeaveType((str == undefined || str == '') ? 'all' : str)
                     fetchData({
                         args: {
@@ -113,7 +114,7 @@ export default function MyLeave() {
                     {selectOptions.map((opt) => (
                         <Select.Option value={opt.toLocaleLowerCase()} key={opt}>{opt}</Select.Option>
                     ))}
-                </Select>
+                </Select> */}
             </TabHeader>
             <Table
                 loading={loading}
@@ -140,7 +141,7 @@ export default function MyLeave() {
     )
 }
 
-const selectOptions = ['All', 'Pending', 'Approved']
+// const selectOptions = ['All', 'Pending', 'Approved']
 
 type ModalProps = {
     leaveType: string
@@ -157,7 +158,7 @@ const { Item: FormItem, useForm } = AntDForm
 export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<ILeave>()
     const [loading, setLoading] = useState(false)
-    const [lists, setLists] = useState<ILeaveType[]>([])
+    const [lists, setLists] = useState<{ leaveTypes: ILeaveType[]; users: IUser[] }>({ leaveTypes: [], users: [] })
     const [messageApi, contextHolder] = useMessage()
     const key = 'error'
 
@@ -173,8 +174,15 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         } else form.resetFields()
 
         const controller = new AbortController();
-        axiosClient(HRSETTINGS.LEAVETYPE.LISTS, { signal: controller.signal })
-            .then((res) => setLists(res?.data ?? []))
+        const leaveTypePromises = axiosClient(HRSETTINGS.LEAVETYPE.LISTS, { signal: controller.signal })
+        const usersPromises = axiosClient(USERS.LISTS, { signal: controller.signal })
+        Promise.allSettled([leaveTypePromises, usersPromises])
+            .then(([leaveTypeRes, usersRes]) => {
+                setLists({
+                    leaveTypes: leaveTypeRes.status == 'fulfilled' ? leaveTypeRes.value.data : [],
+                    users: usersRes.status == 'fulfilled' ? usersRes.value.data : []
+                })
+            })
         return () => {
             controller.abort()
         }
@@ -207,9 +215,21 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         }
     }
 
-    return <Modal title='Request a Leave' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title='Submit Leave' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
+            <FormItem
+                label="User"
+                name="user_id"
+                required
+                rules={[{ required: true, message: 'Required' }]}
+            >
+                <Select placeholder='Select leave type...' optionFilterProp="children" allowClear showSearch>
+                    {lists.users.map((user) => (
+                        <Select.Option value={user.id} key={user.id} style={{ color: '#777777' }}>{user?.full_name}</Select.Option>
+                    ))}
+                </Select>
+            </FormItem>
             <FormItem
                 label="Leave Type"
                 name="leave_type_id"
@@ -217,7 +237,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                 rules={[{ required: true, message: 'Required' }]}
             >
                 <Select placeholder='Select leave type...' optionFilterProp="children" allowClear showSearch>
-                    {lists.map((leave) => (
+                    {lists.leaveTypes.map((leave) => (
                         <Select.Option value={leave.id} key={leave.id} style={{ color: '#777777' }}>{leave?.type}</Select.Option>
                     ))}
                 </Select>
@@ -284,11 +304,19 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
 
 const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { handleEdit: (ot: ILeave) => void; handleDelete: (id: string) => void; handleRequestSelected: (ot: ILeave) => void; }): ColumnsType<ILeave> => [
     {
+        title: 'User',
+        key: 'user',
+        dataIndex: 'user',
+        render: (_, record) => record?.user.full_name,
+        width: 150,
+        align: 'center'
+    },
+    {
         title: 'Submitted On',
         key: 'created_at',
         dataIndex: 'created_at',
         render: (_, record) => new Date(record.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }),
-        width: 150,
+        width: 200,
         align: 'center'
     },
     {

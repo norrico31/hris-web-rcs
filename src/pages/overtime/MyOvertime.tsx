@@ -172,15 +172,13 @@ export default function MyOvertime() {
                     ))}
                 </Select>
             </TabHeader>
-            <Card title={`My Overtimes - ${firstLetterCapitalize(overtimeType)}`} level={5}>
-                <Table
-                    loading={loading}
-                    columns={columns}
-                    dataList={data}
-                    tableParams={tableParams}
-                    onChange={onChange}
-                />
-            </Card>
+            <Table
+                loading={loading}
+                columns={columns}
+                dataList={data}
+                tableParams={tableParams}
+                onChange={onChange}
+            />
             <OvertimeModal
                 selectedData={selectedData}
                 overtimeType={overtimeType}
