@@ -123,7 +123,7 @@ export default function Tasks() {
                 handleCreate={() => setIsModalOpen(true)}
                 handleModalArchive={() => navigate('/tasks/archives')}
             >
-                <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
+                {/* <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button> */}
             </TabHeader>
             <Table
                 loading={loading}

@@ -127,7 +127,7 @@ export default function AuditLogs() {
             <TabHeader
                 handleSearch={handleSearch}
             >
-                <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button>
+                {/* <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button> */}
             </TabHeader>
             <Table
                 loading={loading}

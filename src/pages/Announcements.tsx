@@ -5,15 +5,16 @@ import { Button, Col, Form as AntDForm, Input, Modal, Upload, Skeleton, Space, D
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { AiOutlineCalendar } from 'react-icons/ai'
 import useMessage from "antd/es/message/useMessage"
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
+import { InboxOutlined } from '@ant-design/icons'
+import dayjs from "dayjs"
 import { Action, MainHeader, Table, Form, TabHeader } from "../components"
 import { renderTitle } from "../shared/utils/utilities"
 import { useAxios } from "../shared/lib/axios"
 import { ROOTPATHS, useEndpoints } from "../shared/constants"
 import { AnnouncementRes, IAnnouncements, IArguments, TableParams } from "../shared/interfaces"
 import { filterCodes, filterPaths } from "../components/layouts/Sidebar"
-import dayjs from "dayjs"
-import { InboxOutlined } from '@ant-design/icons'
-import TextEditor from "../components/TextEditor"
 
 const { GET, POST, DELETE } = useAxios()
 const [{ ANNOUNCEMENT }] = useEndpoints()
@@ -253,23 +254,12 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
             >
                 <Input placeholder='Enter title...' />
             </FormItem>
-            {/* <FormItem
-                label="Content"
-                name="content"
-                required
-                rules={[{ required: true, message: 'Required' }]}
-                >
-                <Input.TextArea placeholder='Enter content...' />
-            </FormItem> */}
             <FormItem
                 label="Content"
                 required
                 rules={[{ required: true, message: 'Required' }]}
             >
-                <TextEditor
-                    textFromEditor={textFromEditor}
-                    setTextFromEditor={setTextFromEditor}
-                />
+                <ReactQuill theme="snow" value={textFromEditor} onChange={setTextFromEditor} />
             </FormItem>
             <FormItem
                 label="Publish Date"
