@@ -106,9 +106,9 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 function filterMenu(user: IUser, collapsed: boolean) {
     const modules = user?.role?.permissions ?? []
-    modules.forEach((mod) => {
-        console.log(mod.code, mod.description)
-    })
+    // modules.forEach((mod) => {
+    //     console.log(mod.code, mod.description)
+    // })
     const moduleCodes = filterCodes(modules)
     const rootPath = filterPaths(user?.role?.permissions!, ROOTPATHS)
     const taskSystemSettingsPaths = filterPaths(user?.role?.permissions!, TASKSETTINGSPATHS)
