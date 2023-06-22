@@ -35,23 +35,22 @@ export default function OvertimeManagement() {
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
-    if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['q01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function fetch() {
+        if (!loadingUser && !codes['q01']) return
         const controller = new AbortController();
-        if (user != undefined) fetchData({
-            args: {
-                signal: controller.signal, search,
-                page: tableParams?.pagination?.current,
-                pageSize: tableParams?.pagination?.pageSize,
-            },
-            type: overtimeType
+        if (user !== undefined) fetchData({
+            signal: controller.signal, search,
+            page: tableParams?.pagination?.current,
+            pageSize: tableParams?.pagination?.pageSize,
         })
         return () => {
             controller.abort()
         }
-    }, [user, search])
+    }, [user, search, loadingUser])
+
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['q01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<IOvertime> = [
         {
@@ -118,11 +117,9 @@ export default function OvertimeManagement() {
         },
     ]
 
-    function fetchData({ type, args }: { args?: IArguments; type?: string }) {
+    function fetchData(args?: IArguments) {
         setLoading(true)
-        // const status = (type !== |'all') ? `&status=${type?.toUpperCase()}` : ''
-        // const url = OVERTIME.HRMANAGEMENTLISTS + 'false' + status
-        GET<OvertimeRes>(OVERTIME.GET + '/list-am', args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<OvertimeRes>('/overtimes/list-am', args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -139,7 +136,7 @@ export default function OvertimeManagement() {
 
     function handleDelete(id: string) {
         DELETE(OVERTIME.DELETE, id)
-            .finally(() => fetchData({ type: overtimeType }))
+            .finally(fetchData)
     }
 
     function handleEdit(data: IOvertime) {
@@ -147,7 +144,7 @@ export default function OvertimeManagement() {
         setSelectedData(data)
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: overtimeType })
+    const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize! })
 
     function closeModal() {
         setIsModalOpen(false)
@@ -205,10 +202,7 @@ export default function OvertimeManagement() {
 
 type ModalProps = {
     overtimeType: string
-    fetchData({ type, args }: {
-        args?: IArguments | undefined;
-        type?: string | undefined;
-    }): void
+    fetchData(args?: IArguments): void
     selectedData?: IOvertime
     isModalOpen: boolean
     handleCancel: () => void
@@ -263,7 +257,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
             })
             setLoading(false)
         } finally {
-            fetchData({ type: overtimeType })
+            fetchData()
             setLoading(false)
         }
     }
@@ -350,10 +344,7 @@ type ModalCancelRequestProps = {
     handleCancel: () => void
     selectedRequest: IOvertime
     overtimeType: string
-    fetchData({ type, args }: {
-        args?: IArguments | undefined;
-        type?: string | undefined;
-    }): void
+    fetchData(args?: IArguments): void
     restoreOvertime?: (id: string) => Promise<boolean>
 }
 
@@ -395,7 +386,7 @@ export function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, ov
                 setLoading(false)
             })
             .finally(() => {
-                fetchData({ type: overtimeType })
+                fetchData()
                 setLoading(false)
             })
     }

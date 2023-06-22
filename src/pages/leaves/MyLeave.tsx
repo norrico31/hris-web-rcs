@@ -31,6 +31,8 @@ export default function MyLeave() {
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [isModalCancel, setIsModalCancel] = useState(false)
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     useEffect(function fetch() {
         const controller = new AbortController();
@@ -47,10 +49,8 @@ export default function MyLeave() {
         }
     }, [user, search])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
-    if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
+    if (!loadingUser && !codes['c01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<ILeave> = renderColumns({ handleEdit, handleDelete, handleRequestSelected })
 

@@ -26,16 +26,18 @@ export default function EmployeeEdit() {
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
-    if (loading) return <Skeleton />
-    if (!loading && !codes['g01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function fetchUserInfo() {
+        if (!loading && !codes['g01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        user && fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
+
+    if (loading) return <Skeleton />
+    if (!loading && !codes['g01']) return <Navigate to={'/' + paths[0]} />
 
     function fetchData(args?: IArguments) {
         GET(USERPROFILE.GET + `/${employeeId}`, args?.signal!)

@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo, ReactNode } from 'react'
-import { Outlet, useLocation, useNavigate, Navigate } from 'react-router-dom'
-import { Tabs as AntDTabs, Col, Button, Typography, Modal, Divider, Row, Select, DatePicker, Space, Skeleton } from 'antd'
+import { useState, useMemo, ReactNode } from 'react'
+import { Navigate } from 'react-router-dom'
+import { Col, Button, Typography, Modal, Divider, Row, DatePicker, Space, Skeleton } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import axios from 'axios'
-import styled from 'styled-components'
 import { renderTitle } from '../shared/utils/utilities'
 import { StyledRow } from './EmployeeEdit'
 import useWindowSize from '../shared/hooks/useWindowSize'
@@ -13,7 +12,7 @@ import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { Table } from '../components'
 import { Alert } from '../shared/lib/alert'
 import { ROOTPATHS, useEndpoints } from '../shared/constants'
-import axiosClient, { useAxios } from '../shared/lib/axios'
+import { useAxios } from '../shared/lib/axios'
 
 type Report = { id: string; reports: string }
 
@@ -22,14 +21,11 @@ const initModalState = {
     isModalWODate: false
 }
 const [{ HRREPORTS }] = useEndpoints()
-const { GET, POST, DELETE } = useAxios()
+const { POST } = useAxios()
 
 export default function HrReports() {
     renderTitle('Reports')
     const { user, loading } = useAuthContext()
-    let { pathname } = useLocation()
-    const navigate = useNavigate()
-    const pathKey = pathname.split('/').pop()
 
     const [selectedReport, setSelectedReport] = useState<Report | undefined>(undefined)
     const [isModalOpen, setIsModalOpen] = useState(initModalState)
@@ -57,7 +53,6 @@ export default function HrReports() {
                 <h1 className='color-white'>Reports</h1>
             </Col>
         </StyledWidthRow>
-        {/* <h2>Work in progress</h2> */}
         <Table
             loading={loading}
             columns={renderColumns({
@@ -93,8 +88,6 @@ export default function HrReports() {
                 }
             })}
             dataList={dataList}
-        // tableParams={tableParams}
-        // onChange={onChange}
         />
         <ModalDownload
             isModalOpen={isModalOpen.isModalWithDate}

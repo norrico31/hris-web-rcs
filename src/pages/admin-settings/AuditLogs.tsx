@@ -24,16 +24,17 @@ export default function AuditLogs() {
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
-    if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['ic01']) return <Navigate to={'/' + paths[0]} />
-
     useEffect(function () {
+        if (!loadingUser && !codes['ic01']) return
         const controller = new AbortController();
         fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [loadingUser, codes])
+
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['ic01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<IAuditLogs> = [
         {

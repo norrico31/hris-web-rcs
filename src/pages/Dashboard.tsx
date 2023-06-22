@@ -27,14 +27,17 @@ export default function Dashboard() {
     renderTitle('Dashboard')
     const { user, loading: loadingUser } = useAuthContext()
     const { isDarkMode } = useDarkMode()
-    const codes = filterCodes(user?.role?.permissions)
     const [lists, setLists] = useState<{ whosIn: number; whosOut: number; announcements: IAnnouncements[]; leaves: number; employees: number; holidays: IHoliday[] }>({ whosIn: 0, whosOut: 0, announcements: [], leaves: 0, employees: 0, holidays: [] })
     const [loading, setLoading] = useState(true)
     const [isModalAnnouncement, setIsModalAnnouncement] = useState(false)
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<IAnnouncements | undefined>(undefined)
     const holidayEvents = useMemo(() => lists?.holidays?.map((holiday) => ({ title: holiday?.name!, date: holiday?.holiday_date! })), [lists?.holidays])
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+
     useEffect(() => {
+        if (!loadingUser && !codes['a01']) return
         const controller = new AbortController();
         (async () => {
             if (user) {
@@ -46,7 +49,6 @@ export default function Dashboard() {
                     const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal })
                     const holidayPromise = axiosClient(HOLIDAYS.GET, { signal: controller.signal })
                     const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
-                    console.log(leaveTodayRes?.value?.data)
                     setLists({
                         whosIn: whosInRes?.value?.data?.data?.total ?? 0,
                         whosOut: whosOutRes?.value?.data?.data?.total ?? 0,
@@ -66,7 +68,6 @@ export default function Dashboard() {
         }
     }, [user])
 
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && !codes['a01']) {
         if (paths.length > 0) return <Navigate to={'/' + paths[0]} />

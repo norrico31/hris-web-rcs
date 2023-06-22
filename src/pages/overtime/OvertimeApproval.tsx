@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import { Button, Col, DatePicker, Input, Modal, Row, Select, Skeleton, Space } from 'antd'
 import { Navigate } from 'react-router-dom'
 import dayjs from 'dayjs'
+import { FcApproval } from 'react-icons/fc'
+import { RxCross2 } from 'react-icons/rx'
+import useMessage from 'antd/es/message/useMessage'
+import { AxiosResponse } from 'axios'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { useSearchDebounce } from '../../shared/hooks/useDebounce'
@@ -12,12 +16,7 @@ import { useEndpoints } from '../../shared/constants'
 import { IArguments, IOvertime, OvertimeRes, TableParams } from '../../shared/interfaces'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes } from '../../components/layouts/Sidebar'
-import { FcApproval } from 'react-icons/fc'
-import { RxCross2 } from 'react-icons/rx'
-import useWindowSize from '../../shared/hooks/useWindowSize'
 import { OvertimeDescription, OvertimeModal } from './MyOvertime'
-import { AxiosResponse } from 'axios'
-import useMessage from 'antd/es/message/useMessage'
 import { DividerWidth } from '../leaves/LeaveApproval'
 
 const { GET, PUT } = useAxios()
@@ -36,14 +35,14 @@ export default function OvertimeApproval() {
     const searchDebounce = useSearchDebounce(search)
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
-    const { width } = useWindowSize()
     const [isModalRequest, setIsModalRequest] = useState(false)
     const [isApproved, setIsApproved] = useState(false)
     const [{ start_date, end_date }, setDate] = useState<{ start_date?: string; end_date?: string }>({ start_date: undefined, end_date: undefined })
 
     useEffect(function fetch() {
+        if (!loadingUser && !codes['f06']) return
         const controller = new AbortController();
-        if (user != undefined) fetchData({
+        user && fetchData({
             args: {
                 search: searchDebounce,
                 signal: controller.signal,
@@ -61,7 +60,7 @@ export default function OvertimeApproval() {
 
     const codes = filterCodes(user?.role?.permissions)
     if (loadingUser) return <Skeleton />
-    if (!loadingUser && ['f06'].every((c) => !codes[c])) return <Navigate to='/overtime/myovertime' />
+    if (!loadingUser && !codes['f06']) return <Navigate to='/overtime/myovertime' />
 
     const columns: ColumnsType<IOvertime> = [
         {

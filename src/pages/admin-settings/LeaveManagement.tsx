@@ -34,12 +34,11 @@ export default function LeaveManagement() {
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
-    if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['p01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function fetch() {
+        if (!loadingUser && !codes['p01']) return
         const controller = new AbortController();
-        if (user != undefined) fetchData({
+        if (user !== undefined) fetchData({
             args: {
                 signal: controller.signal, search,
                 page: tableParams?.pagination?.current,
@@ -50,7 +49,10 @@ export default function LeaveManagement() {
         return () => {
             controller.abort()
         }
-    }, [user, search])
+    }, [user, search, loadingUser])
+
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['p01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<ILeave> = renderColumns({ handleEdit, handleDelete, handleRequestSelected })
 

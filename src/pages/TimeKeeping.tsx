@@ -31,13 +31,15 @@ export default function TimeKeeping() {
     const [selectedDate, setSelectedDate] = useState(today)
     const { width } = useWindowSize()
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+
     useEffect(() => {
+        if (!loadingUser && !codes['b01']) return
         const controller = new AbortController();
         if (user) fetchData({ date: today, args: { signal: controller.signal } })
     }, [user, today])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && !codes['b01']) return <Navigate to={'/' + paths[0]} />
 

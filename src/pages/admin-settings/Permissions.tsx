@@ -24,14 +24,16 @@ export default function Permissions() {
 
 	const codes = filterCodes(user?.role?.permissions)
 	const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
+
+	useEffect(() => {
+		if (!loadingUser && !codes['ib01']) return
+		if (roleId) fetchPermissionByRoleId(roleId)
+	}, [roleId, loadingUser])
+
 	if (loadingUser) return <Skeleton />
 	if (!loadingUser && !codes['ib01']) return <Navigate to={'/' + paths[0]} />
 
-	useEffect(() => {
-		if (roleId !== undefined) fetchPermissionByRoleId(roleId)
-	}, [roleId])
-
-	const fetchPermissionByRoleId = (roleId: string) => {
+	function fetchPermissionByRoleId(roleId: string) {
 		GET<IRole>(`${ADMINSETTINGS.PERMISSIONS.SHOW}${roleId}`)
 			.then(setData)
 			.finally(() => setLoading(false))
@@ -77,6 +79,7 @@ export default function Permissions() {
 			key: "add",
 			render: (add: IPermissionStatus) => add?.enabled != undefined ? (
 				<ToggleSwitch
+					key={add.id}
 					loading={loadingPermission}
 					enabled={add.enabled}
 					onToggle={() => toggleChange(add.id)}
@@ -90,6 +93,7 @@ export default function Permissions() {
 			key: "edit",
 			render: (edit: IPermissionStatus) => edit?.enabled != undefined ? (
 				<ToggleSwitch
+					key={edit.id}
 					loading={loadingPermission}
 					enabled={edit.enabled}
 					onToggle={() => toggleChange(edit.id)}
@@ -102,6 +106,7 @@ export default function Permissions() {
 			dataIndex: "delete",
 			key: "delete",
 			render: (del: IPermissionStatus) => del?.enabled != undefined ? <ToggleSwitch
+				key={del.id}
 				loading={loadingPermission}
 				enabled={del.enabled}
 				onToggle={() => toggleChange(del.id)}
@@ -114,6 +119,7 @@ export default function Permissions() {
 			key: "view",
 			render: (view: IPermissionStatus) => view?.enabled != undefined ? (
 				<ToggleSwitch
+					key={view.id}
 					loading={loadingPermission}
 					enabled={view.enabled}
 					onToggle={() => toggleChange(view.id)}
@@ -125,10 +131,11 @@ export default function Permissions() {
 			title: "Additional Toggles",
 			dataIndex: "additional_toggles",
 			key: "additional_toggles",
-			render: (record: IPermissionToggle[] | []) => !record.length ? null : record.map((toggle) => <div className="additional-toggles-container" key={toggle.id}>
+			render: (record: IPermissionToggle[] | []) => !record.length ? null : record.map((toggle) => <div key={toggle.id} className="additional-toggles-container">
 				<div className="toggle-item">
 					<span className="toggle-name">{firstLetterCapitalize(toggle.name.split('_').join(' '))}:</span>
 					<ToggleSwitch
+						key={toggle.id}
 						loading={loadingPermission}
 						enabled={toggle.enabled}
 						onToggle={() => toggleChange(toggle.id)}

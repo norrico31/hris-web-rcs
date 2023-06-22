@@ -252,7 +252,14 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 required
                 rules={[{ required: true, message: 'Required' }]}
             >
-                <Input type='number' placeholder='Enter contact number...' />
+                <Input type='text' 
+                placeholder='0916XXXXXXX' 
+                pattern="[0-9]{11}" 
+                title="Please enter a 11-digit phone number"
+                onInput={(e) => {
+                    const input = e.target as HTMLInputElement;
+                    input.value = input.value.slice(0, 11); // Limit input to 11 characters
+                }} />
             </FormItem>
             <FormItem
                 label="Contact Person"

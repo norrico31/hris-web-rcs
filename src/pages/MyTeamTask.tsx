@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useState, useEffect, useMemo } from 'react'
+import { Navigate } from 'react-router-dom'
 import { DatePicker, Space, Button, Select, Row, Skeleton, Input, DatePickerProps, Modal, Typography } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import axios from 'axios'
@@ -12,7 +12,7 @@ import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { TableParams, ITasks, TasksRes, IArguments } from '../shared/interfaces'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { StyledRow } from './EmployeeEdit'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import { Alert } from '../shared/lib/alert'
 
 const { GET } = useAxios()
@@ -37,15 +37,18 @@ export default function MyTeamTask() {
     const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined)
 
     const columns = useMemo(renderColumns, [data])
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     const controller = new AbortController();
     useEffect(() => {
-        GET<any>('tasks/team_task/users', controller.signal)
+        if (!loadingUser && !codes['md01']) return
+        if (user) GET<any>('tasks/team_task/users', controller.signal)
             .then((data) => setUsers(data ?? []));
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
 
     useEffect(function fetch() {
         fetchData({
@@ -61,8 +64,6 @@ export default function MyTeamTask() {
         }
     }, [selectedDate, selectedUser, debounceSearch])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && !codes['md01']) {
         if (paths?.length > 0) return <Navigate to={'/' + paths[0]} />
@@ -98,7 +99,6 @@ export default function MyTeamTask() {
             <h1 className='color-white'>My Team Tasks</h1>
         </StyledRow>
         <Row justify='space-between'>
-            {/* <Button type='primary' onClick={() => setIsModalDownload(true)}>Download</Button> */}
             <Space>
                 <Select placeholder='Select Employee...' optionFilterProp="children" allowClear showSearch style={{ width: 150 }} value={selectedUser} onChange={setSelectedUser}>
                     {users?.map((user) => (

@@ -23,17 +23,18 @@ export default function EmployeeFiles() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     useEffect(() => {
+        if (!loadingUser && !codes['g01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        user && fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['g01', 'g02', 'g03', 'g04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 

@@ -40,18 +40,20 @@ export default function Tasks() {
 
     const columns = useMemo(() => renderColumns({ handleDelete, handleEdit }), [data])
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+
     useEffect(function fetch() {
+        if (!loadingUser && !codes['e01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        user && fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
-    if (!loadingUser && ['e01', 'e02', 'e03', 'e04'].every((c) => !codes[c])) {
+    if (!loadingUser && !codes['e01']) {
         if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
         return <Navigate to='/profile' />
     }
@@ -172,8 +174,6 @@ const initDataColState = () => [{
     manhours: undefined,
     description: undefined,
 }]
-
-type SelectedRow = { id: string; idx: number }[]
 
 function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps) {
     const [form] = useForm<ITasks>()

@@ -5,8 +5,8 @@ import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import useMessage from 'antd/es/message/useMessage'
-import { Form, Card, TabHeader, Table, Action, Divider } from '../../components'
-import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
+import { Form, TabHeader, Table, Divider } from '../../components'
+import { renderTitle } from '../../shared/utils/utilities'
 import { useAxios } from '../../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, IOvertime, OvertimeRes, TableParams } from '../../shared/interfaces'
@@ -31,7 +31,11 @@ export default function MyOvertime() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [isModalCancel, setIsModalCancel] = useState(false)
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+
     useEffect(function fetch() {
+        if (!loadingUser && !codes['f01']) return
         const controller = new AbortController();
         if (user != undefined) fetchData({
             args: {
@@ -44,10 +48,8 @@ export default function MyOvertime() {
         return () => {
             controller.abort()
         }
-    }, [user, search])
+    }, [user, search, loadingUser])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['f01', 'f02', 'f03', 'f04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
@@ -57,7 +59,6 @@ export default function MyOvertime() {
             key: 'date_start',
             dataIndex: 'date_start',
             width: 200,
-            // render: (_, record) => `${dayjs(record?.date_start).format('MMMM')} ${dayjs(record?.date_start).format('D')}, ${dayjs(record?.date_start).format('YYYY')}`
         },
         {
             title: 'Time Start',
@@ -70,7 +71,6 @@ export default function MyOvertime() {
             key: 'date_end',
             dataIndex: 'date_end',
             width: 200,
-            // render: (_, record) => `${dayjs(record?.date_end).format('MMMM')} ${dayjs(record?.date_end).format('D')}, ${dayjs(record?.date_end).format('YYYY')}`
         },
         {
             title: 'Time End',
@@ -240,7 +240,6 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         try {
             let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, date_start, date_end, id: selectedData.id, planned_ot_start, planned_ot_end, manager: 0 }) : POST(OVERTIME.POST, { ...restProps, date_start, date_end, planned_ot_start, planned_ot_end, manager: 0 })
             const res = await result
-            console.log(res)
             form.resetFields()
             handleCancel()
         } catch (err: any) {
@@ -391,27 +390,6 @@ export function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, ov
                         Cancel Request
                     </Button>
                 )}
-                {/* {selectedRequest?.status === 'CANCELED' && (
-                    <Popconfirm
-                        title={`Restore Overtime`}
-                        description={`Are you sure you want to restore?`}
-                        onConfirm={() => {
-                            setLoading(true)
-                            restoreOvertime?.(selectedRequest.id)
-                                .then(handleCancel)
-                                .finally(() => setLoading(false))
-                        }}
-                        okText="Restore"
-                        cancelText="Cancel"
-                    >
-                        <Button id='restore' type='primary' size='middle' onClick={() => null} loading={loading}>
-                            <Space>
-                                <BiRefresh />
-                                Restore
-                            </Space>
-                        </Button>
-                    </Popconfirm>
-                )} */}
                 <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
                     Close
                 </Button>
@@ -427,7 +405,6 @@ type OvertimeDescriptionProps = {
 }
 
 export function OvertimeDescription({ selectedRequest, remarks, setRemarks }: OvertimeDescriptionProps) {
-    console.log(selectedRequest)
     return <>
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>

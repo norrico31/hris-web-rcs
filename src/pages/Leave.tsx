@@ -1,12 +1,13 @@
-import { useEffect, ReactNode } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Tabs as AntDTabs, Col } from 'antd'
+import { useEffect, ReactNode, useMemo } from 'react'
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Tabs as AntDTabs, Col, Skeleton } from 'antd'
 import { renderTitle } from '../shared/utils/utilities'
 import styled from 'styled-components'
 import { StyledRow } from './EmployeeEdit'
 import useWindowSize from '../shared/hooks/useWindowSize'
 import { useAuthContext } from '../shared/contexts/Auth'
-import { filterCodes } from '../components/layouts/Sidebar'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
+import { ROOTPATHS } from '../shared/constants'
 
 export default function Leave() {
     renderTitle('Leave')
@@ -30,10 +31,14 @@ export default function Leave() {
         label: 'For Approval',
         key: '/approval',
     },)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     useEffect(() => {
         if (pathname == '/leave/approval' && !codes['c06']) return navigate('/leave/myleaves')
     }, [])
+
+    if (loading) return <Skeleton />
+    if (!loading && !codes['c01']) return <Navigate to={'/' + paths[0]} />
 
     return <>
         <StyledWidthRow>

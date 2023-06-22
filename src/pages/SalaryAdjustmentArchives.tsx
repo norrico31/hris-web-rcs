@@ -22,18 +22,19 @@ export default function SalaryAdjustmentArchives() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     useEffect(function getData() {
+        if (!loadingUser && !codes['h01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        user && fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+    }, [user])
     if (loadingUser) return <Skeleton />
-    if (!loadingUser && ['h01', 'h02', 'h03', 'h04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
+    if (!loadingUser && !codes['h01']) return <Navigate to={'/' + paths[0]} />
 
 
     const columns: ColumnsType<ISalaryAdjustment> = [

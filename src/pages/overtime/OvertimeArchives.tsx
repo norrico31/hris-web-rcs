@@ -30,9 +30,13 @@ export default function OvertimeArchives() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [isModalCancel, setIsModalCancel] = useState(false)
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+
     useEffect(function fetch() {
+        if (!loadingUser && !codes['c01']) return
         const controller = new AbortController();
-        if (user != undefined) fetchData({
+        user && fetchData({
             args: {
                 signal: controller.signal, search,
                 page: tableParams?.pagination?.current,
@@ -45,10 +49,8 @@ export default function OvertimeArchives() {
         }
     }, [user, search])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
-    if (!loadingUser && ['c01', 'c02', 'c03', 'c04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
+    if (!loadingUser && !codes['c01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<IOvertime> = [
         {

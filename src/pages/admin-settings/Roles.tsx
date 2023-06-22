@@ -30,10 +30,9 @@ export default function Roles() {
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
-    if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['ib01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function () {
+        if (!loadingUser && !codes['ib01']) return
         const controller = new AbortController();
         fetchData({
             signal: controller.signal,
@@ -45,7 +44,10 @@ export default function Roles() {
         return () => {
             controller.abort()
         }
-    }, [isArchive, search])
+    }, [isArchive, search, loadingUser])
+
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['ib01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<IRole> = [
         {
@@ -63,7 +65,7 @@ export default function Roles() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_: any, record: IRole) => !isArchive ? <Space>
+            render: (_: any, record: IRole) => !isArchive ? <Space key={record.id}>
                 <Button
                     id='edit'
                     type='default'

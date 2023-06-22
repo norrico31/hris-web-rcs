@@ -1,32 +1,41 @@
-import { useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect, ReactNode, useMemo } from 'react'
 import { useParams, Navigate, Outlet, useNavigate, useLocation, useOutletContext } from "react-router-dom"
-import { Tabs as AntDTabs, Button, Col, Row } from 'antd'
+import { Tabs as AntDTabs, Button, Col, Row, Skeleton } from 'antd'
 import styled from "styled-components"
+import { useAuthContext } from '../shared/contexts/Auth'
 import useWindowSize from '../shared/hooks/useWindowSize'
-import { MYTEAMPATHS, useEndpoints } from "../shared/constants"
+import { MYTEAMPATHS, ROOTPATHS, useEndpoints } from "../shared/constants"
 import { renderTitle } from "../shared/utils/utilities"
 import { IArguments, IUser } from '../shared/interfaces'
 import { useAxios } from '../shared/lib/axios'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 
 const [{ EMPLOYEE201: { USERPROFILE } }] = useEndpoints()
 const { GET } = useAxios()
 
 export default function MyTeamEdit() {
     renderTitle('My Team Edit')
+    const { user, loading } = useAuthContext()
     const { teamId } = useParams()
     let { pathname } = useLocation()
     const navigate = useNavigate()
     if (teamId == undefined) return <Navigate to='/employee' />
 
     const [data, setData] = useState<IUser | undefined>()
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     useEffect(function fetchUserInfo() {
+        if (!loading && !codes['mb01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        if (user) fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
+
+    if (loading) return <Skeleton />
+    if (!loading && !codes['mb01']) return <Navigate to={'/' + paths[0]} />
 
     function fetchData(args?: IArguments) {
         GET(USERPROFILE.GET + `/${teamId}`, args?.signal!)

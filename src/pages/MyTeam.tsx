@@ -1,44 +1,39 @@
-import { useState, useEffect, ReactNode, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
-import { Form as AntDForm, Input, DatePicker, Space, Button, Select, Steps, Row, Col, Divider, Skeleton } from 'antd'
-import { LoadingOutlined, UserOutlined, CreditCardOutlined, UsergroupAddOutlined } from '@ant-design/icons'
+import { Skeleton } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
-import Modal from 'antd/es/modal/Modal'
-import dayjs, { Dayjs } from 'dayjs'
 import { Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useEndpoints } from './../shared/constants/endpoints'
-import axiosClient, { useAxios } from './../shared/lib/axios'
-import { IArguments, TableParams, IEmployee, Employee201Res, IClient, IClientBranch, IEmployeeStatus, IPosition, IRole, IDepartment, ISalaryRates, ILineManager, ITeam, IBankDetails, IUser } from '../shared/interfaces'
-import useMessage from 'antd/es/message/useMessage'
+import { useAxios } from './../shared/lib/axios'
+import { IArguments, TableParams, IEmployee, Employee201Res, IUser } from '../shared/interfaces'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { ROOTPATHS } from '../shared/constants'
 import { useAuthContext } from '../shared/contexts/Auth'
-import { TeamModal } from './system-settings/hr-settings/Team'
 
-const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS, MYTEAMS }] = useEndpoints()
-const { GET, POST, DELETE } = useAxios()
+const [{ EMPLOYEE201, MYTEAMS }] = useEndpoints()
+const { GET, DELETE } = useAxios()
 
 export default function MyTeam() {
     renderTitle('My Team')
     const navigate = useNavigate()
     const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<IUser[]>([])
-    const [selectedData, setSelectedData] = useState<IEmployee | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     useEffect(() => {
+        if (!loadingUser && !codes['mb01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        user && fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && !codes['mb01']) return <Navigate to={'/' + paths[0]} />
 
@@ -72,13 +67,6 @@ export default function MyTeam() {
             width: 130,
             render: (_, record) => record.department?.name ?? '-'
         },
-        // {
-        //     title: 'Date Hired',
-        //     key: 'date_hired',
-        //     dataIndex: 'date_hired',
-        //     align: 'center',
-        //     width: 110,
-        // },
         {
             title: 'Status',
             key: 'is_active',
@@ -134,6 +122,7 @@ export default function MyTeam() {
         DELETE(EMPLOYEE201.DELETE, id)
             .finally(fetchData)
     }
+
     return (
         <>
             <MainHeader>
@@ -143,13 +132,6 @@ export default function MyTeam() {
                 handleSearch={handleSearch}
             />
             <Table loading={loading} tableParams={tableParams} columns={columns} dataList={data} onChange={onChange} />
-            {/* <EmployeeModal
-                title={selectedData != undefined ? 'Update' : 'Create'}
-                isModalOpen={isModalOpen}
-                handleCancel={handleCloseModal}
-                fetchData={fetchData}
-            /> */}
-
         </>
     )
 }

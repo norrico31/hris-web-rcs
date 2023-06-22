@@ -30,10 +30,9 @@ export default function Users() {
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
-    if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['ia01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function () {
+        if (!loadingUser && !codes['ia01']) return
         const controller = new AbortController();
         fetchData({
             signal: controller.signal,
@@ -45,7 +44,10 @@ export default function Users() {
         return () => {
             controller.abort()
         }
-    }, [isArchive, search])
+    }, [isArchive, search, loadingUser])
+
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['ia01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<IUser> = [
         {
@@ -70,18 +72,18 @@ export default function Users() {
             dataIndex: 'department',
             render: (_, record) => record?.department?.name ?? '-'
         },
-        {
-            title: 'Action',
-            key: 'action',
-            dataIndex: 'action',
-            align: 'center',
-            render: (_: any, record: IUser) => <Action
-                title='User'
-                name={record.full_name}
-                onConfirm={() => handleDelete(record.id)}
-                onClick={() => handleEdit(record)}
-            />
-        },
+        // {
+        //     title: 'Action',
+        //     key: 'action',
+        //     dataIndex: 'action',
+        //     align: 'center',
+        //     render: (_: any, record: IUser) => <Action
+        //         title='User'
+        //         name={record.full_name}
+        //         onConfirm={() => handleDelete(record.id)}
+        //         onClick={() => handleEdit(record)}
+        //     />
+        // },
         {
             title: 'Activation',
             key: 'activation',

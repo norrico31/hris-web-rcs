@@ -35,13 +35,15 @@ export default function TimeKeeping() {
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
-    if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['r01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(() => {
+        if (!loadingUser && !codes['r01']) return
         const controller = new AbortController();
         if (user) fetchData({ date: today, args: { signal: controller.signal } })
     }, [user, today])
+
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['r01']) return <Navigate to={'/' + paths[0]} />
 
     const fetchData = ({ args, date = dayjs().format('YYYY-MM-DD') }: { args?: IArguments; date?: Dayjs | string }) => {
         setLoading(true)

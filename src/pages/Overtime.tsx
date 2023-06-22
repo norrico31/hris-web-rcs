@@ -1,19 +1,21 @@
-import { useEffect } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Tabs as AntDTabs, Col, } from 'antd'
+import { useEffect, useMemo } from 'react'
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Tabs as AntDTabs, Col, Skeleton, } from 'antd'
+import styled from 'styled-components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useAuthContext } from '../shared/contexts/Auth'
-import styled from 'styled-components'
-import { filterCodes } from '../components/layouts/Sidebar'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { StyledWidthRow } from './MyTeamEdit'
+import { ROOTPATHS } from '../shared/constants'
 
 export default function Overtime() {
     renderTitle('Overtime')
-    const { user } = useAuthContext()
+    const { user, loading } = useAuthContext()
     let { pathname } = useLocation()
     const navigate = useNavigate()
     const pathKey = pathname.split('/').pop()
     const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     const items = [
         {
@@ -33,6 +35,9 @@ export default function Overtime() {
     useEffect(() => {
         if (pathname == '/overtime/approval' && !codes['c06']) return navigate('/overtime/myovertime')
     }, [])
+
+    if (loading) return <Skeleton />
+    if (!loading && !codes['f01']) return <Navigate to={'/' + paths[0]} />
 
     return <>
         <StyledWidthRow>

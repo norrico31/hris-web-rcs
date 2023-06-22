@@ -30,18 +30,20 @@ export default function Announcements() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+
     useEffect(function getData() {
+        if (!loadingUser && !codes['d01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        user && fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
-    if (!loadingUser && ['d01', 'd02', 'd03', 'd04'].every((c) => !codes[c])) {
+    if (!loadingUser && !codes['d01']) {
         if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
         return <Navigate to='/profile' />
     }

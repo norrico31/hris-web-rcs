@@ -26,22 +26,23 @@ export default function Announcements() {
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     useEffect(function getData() {
+        if (!loadingUser && !codes['d01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        user && fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
-    // if (!loadingUser && !codes['a01']) { d01 - d04
-    //     if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
-    //     return <Navigate to='/profile' />
-    // }
+    if (!loadingUser && !codes['d01']) {
+        if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
+        return <Navigate to='/profile' />
+    }
 
     const columns: ColumnsType<IAnnouncements> = [
         {

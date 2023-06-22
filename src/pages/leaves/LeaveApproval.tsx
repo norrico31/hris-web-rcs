@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Space, Skeleton, Popconfirm, Row, Col, DatePicker, Input, Select, Descriptions, Modal } from 'antd'
+import { Button, Space, Skeleton, Row, Col, DatePicker, Input, Select, Descriptions, Modal } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { FcApproval } from 'react-icons/fc'
@@ -40,8 +40,9 @@ export default function LeaveApproval() {
     const [{ date_start, date_end }, setDate] = useState<{ date_start?: string; date_end?: string }>({ date_start: undefined, date_end: undefined })
 
     useEffect(function fetch() {
+        if (!loadingUser && !codes['c06']) return
         const controller = new AbortController();
-        if (user != undefined) fetchData({
+        user && fetchData({
             args: {
                 search: searchDebounce,
                 signal: controller.signal,
@@ -172,7 +173,7 @@ export default function LeaveApproval() {
         setIsModalRequest(false)
         setIsApproved(false)
     }
-    console.log('aha')
+
     return (
         <>
             <Row justify='space-between' wrap>

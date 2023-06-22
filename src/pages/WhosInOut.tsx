@@ -1,14 +1,17 @@
-import { useState, useEffect } from 'react'
-import { Row, Space, Switch, Typography } from 'antd'
+import { useState, useEffect, useMemo } from 'react'
+import { Row, Skeleton, Space, Switch, Typography } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import dayjs from 'dayjs'
+import { useAuthContext } from '../shared/contexts/Auth'
+import { useSearchDebounce } from '../shared/hooks/useDebounce'
 import useWindowSize from '../shared/hooks/useWindowSize'
 import { TabHeader, Table } from '../components'
-import { useEndpoints } from '../shared/constants'
+import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { useAxios } from '../shared/lib/axios'
 import { renderTitle } from '../shared/utils/utilities'
 import { IArguments, ITimeKeeping, TableParams, TimeKeepingRes } from '../shared/interfaces'
-import { useSearchDebounce } from '../shared/hooks/useDebounce'
+import { Navigate } from 'react-router-dom'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 
 const [{ WHOSINOUT }] = useEndpoints()
 const { GET } = useAxios()
@@ -16,6 +19,7 @@ const { Title } = Typography
 
 export default function WhosInOut() {
     renderTitle("Who's In and Out")
+    const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<Array<ITimeKeeping>>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
@@ -25,9 +29,13 @@ export default function WhosInOut() {
     const debounceSearch = useSearchDebounce(search, 300)
     const { width } = useWindowSize()
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+
     useEffect(function fetch() {
+        if (!loadingUser && !codes['b01']) return
         const controller = new AbortController();
-        fetchData({
+        user && fetchData({
             args: {
                 signal: controller.signal,
                 search: debounceSearch,
@@ -38,7 +46,10 @@ export default function WhosInOut() {
         return () => {
             controller.abort()
         }
-    }, [isInOut, debounceSearch])
+    }, [user, isInOut, debounceSearch])
+
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['b01']) return <Navigate to={'/' + paths[0]} />
 
     const fetchData = ({ args, isIn }: { args?: IArguments; isIn?: boolean }) => {
         setLoading(true)

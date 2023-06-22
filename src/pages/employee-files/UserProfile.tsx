@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Form as AntDForm, Input, Row, Col, Radio, DatePicker, Button, Select } from 'antd'
 import dayjs from 'dayjs'
 import { Card } from '../../components'
@@ -26,6 +26,8 @@ export default function UserProfileEmployee() {
         teams: []
     })
     const [messageApi, contextHolder] = useMessage()
+    const [teamIds, setTeamIds] = useState<string[]>([])
+    const memoizedTeamIds = useMemo(() => employeeInfo.teams.map((t) => t.id), [employeeInfo.teams])
 
     useEffect(() => {
         const controller = new AbortController();
@@ -66,7 +68,13 @@ export default function UserProfileEmployee() {
             position_id: employeeInfo?.position?.id,
             team_id: employeeInfo?.teams?.map((team) => team.id)
         })
+        setTeamIds(employeeInfo.teams.map((t) => t.id))
     }, [employeeInfo])
+
+    useEffect(() => {
+        if (memoizedTeamIds.length === teamIds.length) return
+        const removedIds = memoizedTeamIds.filter((id) => !teamIds.includes(id)) // pass this to endpoint
+    }, [teamIds])
 
     function onFinish(val: IUser) {
         setLoading(true)
@@ -87,6 +95,7 @@ export default function UserProfileEmployee() {
                 setLoading(false)
             })
     }
+
     return (
         <Card title='Personal Information'>
             {contextHolder}
@@ -199,7 +208,14 @@ export default function UserProfileEmployee() {
                             label="Contact #1"
                             name="mobile_number1"
                         >
-                            <Input type='number' placeholder='Enter contact number...' />
+                            <Input type='text'
+                                placeholder='0916XXXXXXX'
+                                pattern="[0-9]{11}"
+                                title="Please enter a 11-digit phone number"
+                                onInput={(e) => {
+                                    const input = e.target as HTMLInputElement;
+                                    input.value = input.value.slice(0, 11); // Limit input to 11 characters
+                                }} />
                         </Item>
                     </Col>
                     <Col xs={24} sm={24} md={11} lg={7} xl={7} >
@@ -207,7 +223,14 @@ export default function UserProfileEmployee() {
                             label="Contact #2"
                             name="mobile_number2"
                         >
-                            <Input type='number' placeholder='Enter contact number...' />
+                            <Input type='text'
+                                placeholder='0916XXXXXXX'
+                                pattern="[0-9]{11}"
+                                title="Please enter a 11-digit phone number"
+                                onInput={(e) => {
+                                    const input = e.target as HTMLInputElement;
+                                    input.value = input.value.slice(0, 11); // Limit input to 11 characters
+                                }} />
                         </Item>
                     </Col>
                     <Col xs={24} sm={24} md={11} lg={7} xl={7} >
@@ -284,6 +307,8 @@ export default function UserProfileEmployee() {
                             optionFilterProp="children"
                             mode='multiple'
                             style={{ width: 200 }}
+                            value={teamIds}
+                            onChange={setTeamIds}
                         >
                             {lists?.teams.map((role) => (
                                 <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.name}</Select.Option>

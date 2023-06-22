@@ -1,32 +1,45 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Space, Button, Popconfirm } from 'antd'
+import { useState, useEffect, useMemo } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { Space, Button, Popconfirm, Skeleton } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { BiRefresh } from 'react-icons/bi'
+import { useAuthContext } from '../shared/contexts/Auth'
 import { TabHeader, Table, MainHeader, } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useAxios } from '../shared/lib/axios'
-import { useEndpoints } from '../shared/constants'
+import { ROOTPATHS, useEndpoints } from '../shared/constants'
 import { TableParams, ITasks, TasksRes, IArguments } from '../shared/interfaces'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 
 const { GET } = useAxios()
 const [{ TASKS }] = useEndpoints()
 
 export default function MyTaskArvhices() {
     renderTitle('My Tasks - Archives')
+    const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<ITasks[]>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     useEffect(function fetch() {
+        if (!loadingUser && !codes['e01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        user && fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
+
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['e01']) {
+        if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
+        return <Navigate to='/profile' />
+    }
+
 
     const columns: ColumnsType<ITasks> = [
         {

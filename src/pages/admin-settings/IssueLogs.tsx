@@ -21,16 +21,17 @@ export default function IssueLogs() {
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
-    if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['id01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function () {
+        if (!loadingUser && !codes['id01']) return
         const controller = new AbortController();
         fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [loadingUser])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['id01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<IIssueLogs> = [
         {

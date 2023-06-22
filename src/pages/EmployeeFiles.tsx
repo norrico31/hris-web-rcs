@@ -15,7 +15,6 @@ import useMessage from 'antd/es/message/useMessage'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { ROOTPATHS } from '../shared/constants'
 import { useAuthContext } from '../shared/contexts/Auth'
-import styled from 'styled-components'
 
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
 const { GET, POST, DELETE } = useAxios()
@@ -30,17 +29,18 @@ export default function EmployeeFiles() {
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     useEffect(() => {
+        if (!loadingUser && !codes['g01']) return
         const controller = new AbortController();
-        fetchData({ signal: controller.signal })
+        user && fetchData({ signal: controller.signal })
         return () => {
             controller.abort()
         }
-    }, [])
+    }, [user])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
     if (loadingUser) return <Skeleton />
     if (!loadingUser && ['g01', 'g02', 'g03', 'g04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
 
@@ -362,7 +362,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
             })
             .finally(() => setIsLoading({ ...isLoading, isEmail: false }))
     }, [debounceEmail])
-    console.log(hasValid)
 
     useEffect(() => {
         const controller = new AbortController();
@@ -504,13 +503,27 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     label="Contact Number"
                     name="mobile_number1"
                 >
-                    <Input type='number' placeholder='Enter contact number...' />
+                    <Input type='text'
+                        placeholder='0916XXXXXXX'
+                        pattern="[0-9]{11}"
+                        title="Please enter a 11-digit phone number"
+                        onInput={(e) => {
+                            const input = e.target as HTMLInputElement;
+                            input.value = input.value.slice(0, 11); // Limit input to 11 characters
+                        }} />
                 </FormItem>
                 <FormItem
                     label="Contact Number 2"
                     name="mobile_number2"
                 >
-                    <Input type='number' placeholder='Enter contact number...' />
+                    <Input type='text'
+                        placeholder='0916XXXXXXX'
+                        pattern="[0-9]{11}"
+                        title="Please enter a 11-digit phone number"
+                        onInput={(e) => {
+                            const input = e.target as HTMLInputElement;
+                            input.value = input.value.slice(0, 11); // Limit input to 11 characters
+                        }} />
                 </FormItem>
 
                 <FormItem
