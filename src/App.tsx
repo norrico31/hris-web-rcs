@@ -1,5 +1,4 @@
 import { ConfigProvider } from 'antd'
-import React from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { routes } from './routes'
 import { useDarkMode } from './shared/contexts/DarkMode'
@@ -9,7 +8,7 @@ export default function App() {
     return (
         <ConfigProvider theme={{
             token: {
-                colorText: isDarkMode ? '#fff' : '#9B3423',
+                colorText: isDarkMode ? '#fff' : '#747474',
                 colorPrimaryTextActive: '#fff',
                 colorPrimary: isDarkMode ? '#fff' : '#9B3423',
                 controlOutline: isDarkMode ? '#ccc' : '#9B3423',

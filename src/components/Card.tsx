@@ -22,6 +22,6 @@ export default function Card({ level = 3, title, isDarkMode, style, children }: 
 }
 
 const Container = styled.div<{ isDarkMode?: boolean }>`
-    box-shadow: 0 0 5px ${({ isDarkMode }) => isDarkMode ? 'rgba(255, 0, 0, 0.50)' : 'rgba(0,0,0,0.05)'}, 0 0 10px ${({ isDarkMode }) => isDarkMode ? 'rgba(255, 0, 0, 0.30)' : 'rgba(0,0,0,0.15)'} ;
+    box-shadow: 0 0 5px ${({ isDarkMode }) => isDarkMode ? 'rgba(255, 0, 0, 0.20)' : 'rgba(0,0,0,0.02)'}, 0 0 10px ${({ isDarkMode }) => isDarkMode ? 'rgba(255, 0, 0, 0.20)' : 'rgba(0,0,0,0.10)'} ;
     padding: 2rem;
 `

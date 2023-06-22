@@ -339,7 +339,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     }, [departmentId])
 
     useEffect(() => {
-        // if (!debounceEmployeeCode) return
+        if (!debounceEmployeeCode) return
         setIsLoading({ ...isLoading, isEmployeeCode: true })
         POST(EMPLOYEE201.POST + '/validate-employee-code', { employee_code: debounceEmployeeCode })
             .then((res) => {
@@ -351,7 +351,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     }, [debounceEmployeeCode])
 
     useEffect(() => {
-        // if (!debounceEmail) return
+        if (!debounceEmail) return
         setIsLoading({ ...isLoading, isEmail: true })
         POST(EMPLOYEE201.POST + '/validate-email', { email: debounceEmail })
             .then((res) => {
@@ -363,6 +363,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
             .finally(() => setIsLoading({ ...isLoading, isEmail: false }))
     }, [debounceEmail])
     console.log(hasValid)
+
     useEffect(() => {
         const controller = new AbortController();
         (async () => {
@@ -410,7 +411,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
         <Row justify='space-around' gutter={[20, 20]} wrap>
             <Col span={8}>
                 <FormItem
-                    style={{ color: 'black' }}
                     key='employee_code'
                     label="Employee No."
                     name="employee_code"
