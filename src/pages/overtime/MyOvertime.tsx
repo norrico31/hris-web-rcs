@@ -238,7 +238,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         restProps = { ...restProps } as any
         setLoading(true)
         try {
-            let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, date_start, date_end, id: selectedData.id, planned_ot_start, planned_ot_end }) : POST(OVERTIME.POST, { ...restProps, date_start, date_end, planned_ot_start, planned_ot_end })
+            let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, date_start, date_end, id: selectedData.id, planned_ot_start, planned_ot_end, manager: 0 }) : POST(OVERTIME.POST, { ...restProps, date_start, date_end, planned_ot_start, planned_ot_end, manager: 0 })
             const res = await result
             console.log(res)
             form.resetFields()

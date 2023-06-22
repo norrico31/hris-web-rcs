@@ -1,33 +1,44 @@
-import { useState, useEffect } from 'react'
-import { NavigateFunction, useNavigate } from 'react-router-dom'
-import { Space, Button, Input, Form as AntDForm, Popconfirm, Row, Modal, Checkbox } from 'antd'
+import { useState, useEffect, useMemo } from 'react'
+import { Navigate, NavigateFunction, useNavigate } from 'react-router-dom'
+import { Space, Button, Input, Form as AntDForm, Popconfirm, Row, Modal, Checkbox, Typography, Skeleton } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { BiRefresh } from 'react-icons/bi'
-import { Table, Card, TabHeader, Form } from "../../components"
-import { useAxios } from '../../shared/lib/axios'
-import { useEndpoints } from '../../shared/constants'
-import { IArguments, IRole, RoleRes, TableParams } from '../../shared/interfaces'
 import { BsFillTrashFill, BsEye } from 'react-icons/bs'
+import useMessage from 'antd/es/message/useMessage'
+import { useAuthContext } from '../../shared/contexts/Auth'
+import { Table, TabHeader, Form } from "../../components"
+import { useAxios } from '../../shared/lib/axios'
+import { ADMINSETTINGSPATHS, useEndpoints } from '../../shared/constants'
+import { IArguments, IRole, RoleRes, TableParams } from '../../shared/interfaces'
+import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
+const { Title } = Typography
 
 export default function Roles() {
+    const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<IRole[]>([])
     const navigate = useNavigate()
-    const [selectedData, setSelectedData] = useState<IRole | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [isArchive, setIsArchive] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['ib01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function () {
         const controller = new AbortController();
         fetchData({
             signal: controller.signal,
             search,
-            page: tableParams?.pagination?.current ?? 1,
+            page: isArchive ? 1 : (tableParams?.pagination?.current ?? 1),
             pageSize: tableParams?.pagination?.pageSize,
             isArchive
         })
@@ -124,7 +135,20 @@ export default function Roles() {
 
     function handleDelete(id: string) {
         DELETE(ADMINSETTINGS.ROLES.DELETE, id)
-            .finally(fetchData)
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 3
+                })
+            })
+            .finally(() => fetchData({
+                search,
+                page: tableParams?.pagination?.current ?? 1,
+                pageSize: tableParams?.pagination?.pageSize,
+                isArchive
+            }))
     }
 
     function handleCloseModal() {
@@ -132,7 +156,9 @@ export default function Roles() {
     }
 
     return (
-        <Card title={`Roles ${isArchive ? '- Archives' : ''}`}>
+        <>
+            {contextHolder}
+            <Title level={2}>Roles</Title>
             <TabHeader
                 handleSearch={setSearch}
                 handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}
@@ -150,7 +176,6 @@ export default function Roles() {
                         onChange={onChange}
                     />
                     <RoleModal
-                        title={selectedData != undefined ? 'Update' : 'Create'}
                         isModalOpen={isModalOpen}
                         handleCancel={handleCloseModal}
                         fetchData={fetchData}
@@ -164,7 +189,7 @@ export default function Roles() {
                 tableParams={tableParams}
                 onChange={onChange}
             />)}
-        </Card>
+        </>
     )
 }
 
@@ -178,14 +203,13 @@ interface RoleInputProps {
 const { Item: FormItem, useForm } = AntDForm
 
 interface RoleModalProps {
-    title: string
     isModalOpen: boolean
     handleCancel: () => void
     fetchData(args?: IArguments): void
     navigate: NavigateFunction
 }
 
-function RoleModal({ title, isModalOpen, handleCancel, fetchData, navigate }: RoleModalProps) {
+function RoleModal({ isModalOpen, handleCancel, fetchData, navigate }: RoleModalProps) {
     const [form] = useForm<IRole>()
     const [loading, setLoading] = useState(false)
 
@@ -204,7 +228,7 @@ function RoleModal({ title, isModalOpen, handleCancel, fetchData, navigate }: Ro
             })
     }
 
-    return <Modal title={`${title} - Role`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title='Create - Role' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Role Name"
@@ -222,7 +246,7 @@ function RoleModal({ title, isModalOpen, handleCancel, fetchData, navigate }: Ro
             </FormItem>
             <FormItem style={{ display: 'flex', alignItems: 'center' }}>
                 <FormItem name="can_approve" valuePropName="checked" noStyle>
-                <Checkbox />
+                    <Checkbox />
                 </FormItem>
                 <span style={{ marginLeft: 8 }}>Can Approve</span>
             </FormItem>
@@ -281,10 +305,10 @@ export function RoleInputs({ selectedData, fetchData, handleCancel }: RoleInputP
             <Input placeholder='Enter Description...' />
         </FormItem>
         <FormItem style={{ display: 'flex', alignItems: 'center' }}>
-                <FormItem name="can_approve" valuePropName="checked" noStyle>
+            <FormItem name="can_approve" valuePropName="checked" noStyle>
                 <Checkbox />
-                </FormItem>
-                <span style={{ marginLeft: 8 }}>Can Approve</span>
+            </FormItem>
+            <span style={{ marginLeft: 8 }}>Can Approve</span>
         </FormItem>
         <FormItem style={{ textAlign: 'right' }}>
             <Space>

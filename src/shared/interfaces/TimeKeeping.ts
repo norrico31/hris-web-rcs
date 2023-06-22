@@ -29,6 +29,7 @@ export interface ITimeKeeping {
     time_in: string | null
     time_in_location: string | null
     time_keeping_date: string | null
+    time_keeping_time: string | null
     time_keeping_status: string | null
     time_out: string | null
     time_out_location: string | null

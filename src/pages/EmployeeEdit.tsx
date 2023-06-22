@@ -1,25 +1,33 @@
-import { useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect, useMemo, ReactNode } from 'react'
 import { useParams, Navigate, Outlet, useNavigate, useLocation, useOutletContext } from "react-router-dom"
-import { Tabs as AntDTabs, Button, Col, Row } from 'antd'
+import { Tabs as AntDTabs, Button, Col, Row, Skeleton } from 'antd'
 import styled from "styled-components"
 import useWindowSize from '../shared/hooks/useWindowSize'
-import { EMPLOYEEPATHS, useEndpoints } from "../shared/constants"
+import { EMPLOYEEPATHS, ROOTPATHS, useEndpoints } from "../shared/constants"
 import { renderTitle } from "../shared/utils/utilities"
 import { IArguments, IUser } from '../shared/interfaces'
 import { useAxios } from '../shared/lib/axios'
 import { StyledWidthRow } from './MyTeamEdit'
+import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
+import { useAuthContext } from '../shared/contexts/Auth'
 
 const [{ EMPLOYEE201: { USERPROFILE } }] = useEndpoints()
 const { GET } = useAxios()
 
 export default function EmployeeEdit() {
     renderTitle('Employee Update')
+    const { user, loading } = useAuthContext()
     const { employeeId } = useParams()
     let { pathname } = useLocation()
     const navigate = useNavigate()
     if (employeeId == undefined) return <Navigate to='/employee' />
 
     const [data, setData] = useState<IUser | undefined>()
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+    if (loading) return <Skeleton />
+    if (!loading && !codes['g01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function fetchUserInfo() {
         const controller = new AbortController();

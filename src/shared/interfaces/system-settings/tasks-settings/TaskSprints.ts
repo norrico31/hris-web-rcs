@@ -8,7 +8,6 @@ export interface ITaskSprint {
     end_date: string
     team_id: string
     team: ITeam
-    description?: string
+    description: string
 }
-
 export type TaskSprintRes = AxiosGetData<ITaskSprint>

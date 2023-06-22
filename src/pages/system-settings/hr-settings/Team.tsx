@@ -3,6 +3,7 @@ import { Space, Button, Input, Form as AntDForm, Select, Popconfirm } from 'antd
 import Modal from 'antd/es/modal/Modal'
 import { BiRefresh } from 'react-icons/bi'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
+import useMessage from 'antd/es/message/useMessage'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import axiosClient, { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
@@ -26,7 +27,7 @@ export default function Team() {
         fetchData({
             signal: controller.signal,
             search,
-            page: tableParams?.pagination?.current ?? 1,
+            page: isArchive ? 1 : (tableParams?.pagination?.current ?? 1),
             pageSize: tableParams?.pagination?.pageSize,
             isArchive
         })
@@ -112,7 +113,12 @@ export default function Team() {
     function handleDelete(id: string) {
         DELETE(TEAMS.DELETE, id)
             .catch(err => Alert.warning('Delete Unsuccessful', err?.response?.data?.message))
-            .finally(fetchData)
+            .finally(() => fetchData({
+                search,
+                page: tableParams?.pagination?.current ?? 1,
+                pageSize: tableParams?.pagination?.pageSize,
+                isArchive
+            }))
     }
 
     function handleEdit(data: ITeam) {

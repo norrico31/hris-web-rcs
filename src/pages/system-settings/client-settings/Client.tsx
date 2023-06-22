@@ -3,6 +3,7 @@ import { Space, Button, Input, Form as AntDForm, Popconfirm } from 'antd'
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { BiRefresh } from 'react-icons/bi'
+import useMessage from 'antd/es/message/useMessage'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useAxios } from '../../../shared/lib/axios'
 import { useEndpoints } from '../../../shared/constants'
@@ -19,13 +20,15 @@ export default function Client() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [isArchive, setIsArchive] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
 
     useEffect(function () {
         const controller = new AbortController();
         fetchData({
             signal: controller.signal,
             search,
-            page: tableParams?.pagination?.current ?? 1,
+            page: isArchive ? 1 : (tableParams?.pagination?.current ?? 1),
             pageSize: tableParams?.pagination?.pageSize,
             isArchive
         })
@@ -124,7 +127,20 @@ export default function Client() {
 
     function handleDelete(id: string) {
         DELETE(CLIENTSETTINGS.CLIENT.DELETE, id)
-            .finally(fetchData)
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 3
+                })
+            })
+            .finally(() => fetchData({
+                search,
+                page: tableParams?.pagination?.current ?? 1,
+                pageSize: tableParams?.pagination?.pageSize,
+                isArchive
+            }))
     }
 
     function handleEdit(data: IClient) {
@@ -139,6 +155,7 @@ export default function Client() {
 
     return (
         <Card title={`Clients ${isArchive ? '- Archives' : ''}`}>
+            {contextHolder}
             <TabHeader
                 handleSearch={setSearch}
                 handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}

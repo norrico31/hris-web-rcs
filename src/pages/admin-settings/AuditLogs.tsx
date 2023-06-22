@@ -1,25 +1,31 @@
-import { useState, useEffect } from 'react'
-import { Tag } from 'antd'
+import { useState, useEffect, useMemo } from 'react'
+import { Navigate } from 'react-router-dom'
+import { Button, Modal, Divider, Row, Typography, Form as AntDForm, Space, DatePicker, Skeleton, Tag } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
+import dayjs from 'dayjs'
+import { useAuthContext } from '../../shared/contexts/Auth'
 import { Table, Card, TabHeader } from "../../components"
 import { useAxios } from '../../shared/lib/axios'
-import { useEndpoints } from '../../shared/constants'
+import { ADMINSETTINGSPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, IAuditLogs, AuditLogsRes, TableParams } from '../../shared/interfaces'
 import { firstLetterCapitalize } from '../../shared/utils/utilities'
-import { Button, Modal, Divider, Row, Typography, Form as AntDForm, Space, DatePicker } from 'antd'
-import axios from 'axios'
-import dayjs from 'dayjs'
-import { Alert } from '../../shared/lib/alert'
+import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 
-const { GET, DELETE, POST, PUT } = useAxios()
+const { GET } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
 
 export default function AuditLogs() {
+    const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<IAuditLogs[]>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [isModalDownload, setIsModalDownload] = useState(false)
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['ic01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function () {
         const controller = new AbortController();

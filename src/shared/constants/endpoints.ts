@@ -1,6 +1,4 @@
-export const BASE_URL = import.meta.env.VITE_BASE_URL_PASSTHRU;
-export const BASE_URL_BACKEND = import.meta.env.VITE_BASE_URL_BACKEND;
-export const BASE_URL_REPORT = import.meta.env.VITE_BASE_URL_REPORT;
+import { BASE_URL, BASE_URL_BACKEND, BASE_URL_REPORT } from "../config"
 
 export const useEndpoints = () => {
     const ENDPOINTS = {
@@ -22,7 +20,11 @@ export const useEndpoints = () => {
         TIMEKEEPING: {
             TIMEIN: '/time_keepings/time_in',
             TIMEOUT: '/time_keepings/time_out',
-            GET: '/time_keepings'
+            GET: '/time_keepings',
+            HRMANAGEMENTLISTS: '/time_keeping_management',
+            HRMANAGEMENTPOST: '/time_keeping_management',
+            HRMANAGEMENTPUT: '/time_keeping_management/',
+            HRMANAGEMENTDELETE: '/time_keeping_management/',
         },
         OVERTIME: {
             CANCEL: '/overtimes/cancel-overtime/',
@@ -32,6 +34,8 @@ export const useEndpoints = () => {
             POST: '/overtimes/',
             PUT: '/overtimes/',
             DELETE: '/overtimes/',
+            HRMANAGEMENTPOST: '/overtimes/store-am',
+            HRMANAGEMENTPUT: '/overtimes/update-am/',
         },
         WHOSINOUT: {
             IN: '/time_keepings/whos/in',
@@ -46,9 +50,10 @@ export const useEndpoints = () => {
             POST: '/leaves/',
             PUT: '/leaves/',
             DELETE: '/leaves/',
+            HRMANAGEMENTGET: '/leaves/status/manager/preview'
         },
         HRREPORTS: {
-            HRREPORTS: `${BASE_URL}/report/time_keepings/download-report`, // 4 modules (HR Reports)
+            HRREPORTS: `${BASE_URL}/report/time_keepings/download-report`,
             CLIENTBILLING: `${BASE_URL}/report/billing_report`,
         },
         SYSTEMSETTINGS: {

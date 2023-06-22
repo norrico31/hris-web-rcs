@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { MenuProps, Menu as AntdMenu, Skeleton } from 'antd'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import { AiFillAppstore, AiOutlineSetting, AiOutlineDollarCircle, AiOutlineCalendar, AiOutlineAudit, AiOutlineFieldTime } from 'react-icons/ai'
 import { MdAdminPanelSettings } from 'react-icons/md'
@@ -70,7 +70,21 @@ export default function Sidebar({ onSelect }: Props) {
 const MenuContainer = styled(AntdMenu)`
     background-color: #9B3423;
     color: #fff;
-
+    
+    .menu-item-main {
+        color: rgb(250, 228, 149) !important;
+        &:hover {
+            color: #9B3423 !important;
+        }
+        &:active {
+            color: #9B3423 !important;
+        }
+    }
+    
+    .menu-item-main.active, .menu-item-main.active > * {
+        color: #9B3423 !important;
+    }
+   
     .ant-menu-title-content a {
         display: block;
     }
@@ -91,11 +105,10 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 function filterMenu(user: IUser) {
     const modules = user?.role?.permissions ?? []
-    // modules.forEach((mod) => {
-    //     console.log(mod.code, mod.description)
-    // })
+    modules.forEach((mod) => {
+        console.log(mod.code, mod.description)
+    })
     const moduleCodes = filterCodes(modules)
-    console.log(moduleCodes)
     const rootPath = filterPaths(user?.role?.permissions!, ROOTPATHS)
     const taskSystemSettingsPaths = filterPaths(user?.role?.permissions!, TASKSETTINGSPATHS)
     const hrPaths = filterPaths(user?.role?.permissions!, HRSETTINGSPATHS)
@@ -117,18 +130,25 @@ function filterMenu(user: IUser) {
             rootPath.includes('announcements')
         ),
         getItemLinks(
-            <Link to='/timekeeping' id='timekeeping'>Timekeeping</Link>,
+            <NavLink to='/timekeeping' id='timekeeping' className={`main-link menu-item-main ${({ isActive }: { isActive: boolean }) => isActive ? 'active' : ''}`}><BiTimeFive size={20} style={{ marginRight: 8 }} /> Timekeeping</NavLink>,
             '/timekeeping',
-            <BiTimeFive />,
+            null,
             undefined,
             rootPath.includes('timekeeping')
         ),
         getItemLinks(
-            <Link to='/overtime/myovertime' id='overtime'>Overtime</Link>,
+            <NavLink to='/overtime/myovertime' id='overtime' className='main-link menu-item-main'><AiOutlineFieldTime size={20} style={{ marginRight: 8 }} /> Overtime</NavLink>,
             '/overtime',
-            <AiOutlineFieldTime />,
+            null,
             undefined,
             rootPath.includes('overtime')
+        ),
+        getItemLinks(
+            <NavLink to='/leave/myleaves' className='main-link menu-item-main'><AiOutlineCalendar size={20} style={{ marginRight: 10 }} />Leaves</NavLink>,
+            '/leave/',
+            null,
+            undefined,
+            rootPath.includes('leave')
         ),
         getItemLinks(
             <Link to='/whosinout' id='whosinout'>Who's In/Out</Link>,
@@ -163,7 +183,7 @@ function filterMenu(user: IUser) {
             '/hrreports',
             <TbReportAnalytics />,
             undefined,
-            rootPath.includes('hr reports') // rootPath.includes('my team projects')
+            rootPath.includes('hr reports')
         ),
         getItemLinks(
             'System Settings',
@@ -235,8 +255,8 @@ function filterMenu(user: IUser) {
                     adminPaths.includes('overtime management')
                 ),
                 getItemLinks(
-                    <Link to='/admin/timekeeping'>Timekeeping Management</Link>,
-                    '/admin/timekeeping',
+                    <Link to='/admin/timekeepings'>Timekeeping Management</Link>,
+                    '/admin/timekeepings',
                     <BiTimeFive />,
                     undefined,
                     adminPaths.includes('timekeeping management')
@@ -265,13 +285,7 @@ function filterMenu(user: IUser) {
             undefined,
             rootPath.includes('employee')
         ),
-        getItemLinks(
-            <Link to='/leave/myleaves'>Leaves</Link>,
-            '/leave/',
-            <AiOutlineCalendar />,
-            undefined,
-            rootPath.includes('leave')
-        ),
+
         getItemLinks(
             <Link to='/salaryadjustments'>Salary Adjustments</Link>,
             '/salaryadjustments',

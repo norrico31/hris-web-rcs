@@ -204,3 +204,29 @@ h1 {
 :where(.css-dev-only-do-not-override-1u5jhrq).ant-list-split .ant-list-item {
     border-block-end: 1px solid #ccc;
 }
+
+.ant-menu-title-content a {
+    display: flex !important;
+    align-items: center !important;
+}
+
+@media only screen and (max-width: 600px) {
+    #calendar {
+      font-size: 12px;
+    }
+  
+    .fc-dayGridMonth-button,
+    .fc-timeGridWeek-button,
+    .fc-listMonth-button {
+      display: none !important;
+    }
+  
+    .fc-event-time,
+    .fc-event-title {
+      font-size: 12px;
+    }
+    
+    .fc .fc-button {
+        padding: 0;
+    }
+  }

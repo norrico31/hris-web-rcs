@@ -294,8 +294,8 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
             )}
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>
-                    <Button id={selectedData != undefined ? 'Update' : 'Create'} type="primary" htmlType="submit" loading={loading}>
-                        {selectedData != undefined ? 'Edit' : 'Submit'}
+                    <Button id={selectedData != undefined ? 'Edit' : 'Create'} type="primary" htmlType="submit" loading={loading}>
+                        {selectedData != undefined ? 'Save' : 'Submit'}
                     </Button>
                     <Button id='cancel' type="primary" onClick={handleCancel} loading={loading}>
                         Cancel

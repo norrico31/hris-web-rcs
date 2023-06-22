@@ -6,11 +6,13 @@ import axiosClient, { useAxios } from '../../../shared/lib/axios'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useEndpoints } from '../../../shared/constants'
 import { IArguments, TableParams, TasksActivitiesRes, ITaskActivities, ITeam, TeamRes } from '../../../shared/interfaces'
+import { renderTitle } from '../../../shared/utils/utilities'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS } }] = useEndpoints()
 
 export default function TaskActivities() {
+    renderTitle('Task Activities')
     const [data, setData] = useState<ITaskActivities[]>([])
     const [selectedData, setSelectedData] = useState<ITaskActivities | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()

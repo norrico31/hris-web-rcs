@@ -1,19 +1,23 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Space, Button, Input, Form as AntDForm, Select, Popconfirm, Typography } from 'antd'
+import { Navigate } from 'react-router-dom'
+import { Space, Button, Input, Form as AntDForm, Select, Popconfirm, Typography, Skeleton } from 'antd'
 import Modal from 'antd/es/modal/Modal'
+import useMessage from 'antd/es/message/useMessage'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { BiRefresh } from 'react-icons/bi'
-import { Action, Table, Card, TabHeader, Form } from "../../components"
+import { useAuthContext } from '../../shared/contexts/Auth'
+import { Action, Table, TabHeader, Form } from "../../components"
 import axiosClient, { useAxios } from '../../shared/lib/axios'
-import { useEndpoints } from '../../shared/constants'
+import { ROOTPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, IUser, UserRes, TableParams, IRole, IDepartment, ILineManager } from '../../shared/interfaces'
-import useMessage from 'antd/es/message/useMessage'
+import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 
 const { GET, DELETE, POST, PUT } = useAxios()
 const [{ ADMINSETTINGS, SYSTEMSETTINGS: { HRSETTINGS } }] = useEndpoints()
 const { Title } = Typography
 
 export default function Users() {
+    const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<IUser[]>([])
     const [selectedData, setSelectedData] = useState<IUser | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -21,13 +25,20 @@ export default function Users() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [isArchive, setIsArchive] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['ia01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function () {
         const controller = new AbortController();
         fetchData({
             signal: controller.signal,
             search,
-            page: tableParams?.pagination?.current ?? 1,
+            page: isArchive ? 1 : (tableParams?.pagination?.current ?? 1),
             pageSize: tableParams?.pagination?.pageSize,
             isArchive
         })
@@ -131,7 +142,6 @@ export default function Users() {
             }).finally(() => setLoading(false))
     }
 
-
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search, pageSize: pagination?.pageSize!, isArchive })
 
     function userActivation(url: string, id: string) {
@@ -144,7 +154,20 @@ export default function Users() {
 
     function handleDelete(id: string) {
         DELETE(ADMINSETTINGS.USERS.DELETE, id)
-            .finally(fetchData)
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 3
+                })
+            })
+            .finally(() => fetchData({
+                search,
+                page: tableParams?.pagination?.current ?? 1,
+                pageSize: tableParams?.pagination?.pageSize,
+                isArchive
+            }))
     }
 
     function handleEdit(data: IUser) {
@@ -159,6 +182,7 @@ export default function Users() {
 
     return (
         <>
+            {contextHolder}
             <Title level={2}>Users</Title>
             <TabHeader
                 handleSearch={setSearch}

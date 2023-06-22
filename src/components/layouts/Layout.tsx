@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
 import { Layout as AntdLayout } from 'antd'
 import styled from 'styled-components'
@@ -11,6 +11,7 @@ import Header from './Header'
 import { useEndpoints } from '../../shared/constants'
 import { AuthUserRes } from '../../shared/interfaces'
 import { useDarkMode } from '../../shared/contexts/DarkMode'
+import useWindowSize from '../../shared/hooks/useWindowSize'
 
 const { Sider, Content: AntDContent } = AntdLayout
 const [{ AUTH: { USER, LOGIN } }] = useEndpoints()
@@ -71,12 +72,20 @@ export default function Layout() {
             </Sider>
             <AntdLayout style={{ backgroundColor: isDarkMode ? '#424242' : '#fff' }}>
                 <Header collapsed={collapsed} setCollapsed={setCollapsed} />
-                <Content className={isDarkMode ? 'bg-dark' : 'bg-light'}>
+                <MainContent isDarkMode={isDarkMode}>
                     <Outlet />
-                </Content>
+                </MainContent>
             </AntdLayout>
         </StyledLayout>
     );
+}
+
+function MainContent({ isDarkMode, children }: { isDarkMode: boolean; children: ReactNode }) {
+    const { width } = useWindowSize()
+    return <Content
+        // className={isDarkMode ? 'bg-dark' : 'bg-light'}
+        style={{ padding: width > 420 ? 24 : 10 }}
+    >{children}</Content>
 }
 
 const StyledLayout = styled(AntdLayout)`

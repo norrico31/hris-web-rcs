@@ -3,6 +3,7 @@ import { Space, Button, Input, Form as AntDForm, Switch, Popconfirm } from 'antd
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { BiRefresh } from 'react-icons/bi'
+import useMessage from 'antd/es/message/useMessage'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { DailyRateRes, IArguments, IDailyRate, TableParams } from '../../../shared/interfaces'
 import { useAxios } from '../../../shared/lib/axios'
@@ -19,13 +20,15 @@ export default function DailyRate() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [isArchive, setIsArchive] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
 
     useEffect(function () {
         const controller = new AbortController();
         fetchData({
             signal: controller.signal,
             search,
-            page: tableParams?.pagination?.current ?? 1,
+            page: isArchive ? 1 : (tableParams?.pagination?.current ?? 1),
             pageSize: tableParams?.pagination?.pageSize,
             isArchive
         })
@@ -143,7 +146,20 @@ export default function DailyRate() {
 
     function handleDelete(id: string) {
         DELETE(HRSETTINGS.DAILYRATE.DELETE, id)
-            .finally(fetchData)
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 3
+                })
+            })
+            .finally(() => fetchData({
+                search,
+                page: tableParams?.pagination?.current ?? 1,
+                pageSize: tableParams?.pagination?.pageSize,
+                isArchive
+            }))
     }
 
     function handleEdit(data: IDailyRate) {
@@ -158,6 +174,7 @@ export default function DailyRate() {
 
     return (
         <Card title={`Daily Rates ${isArchive ? '- Archives' : ''}`}>
+            {contextHolder}
             <TabHeader
                 handleSearch={setSearch}
                 handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}

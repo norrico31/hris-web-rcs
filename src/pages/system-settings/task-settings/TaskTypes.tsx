@@ -6,11 +6,13 @@ import axiosClient, { useAxios } from '../../../shared/lib/axios'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
 import { useEndpoints } from '../../../shared/constants'
 import { IArguments, TableParams, ITaskTypes, TaskTypesRes, ITeam, TeamRes } from '../../../shared/interfaces'
+import { renderTitle } from '../../../shared/utils/utilities'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ SYSTEMSETTINGS: { TASKSSETTINGS, HRSETTINGS } }] = useEndpoints()
 
 export default function TaskTypes() {
+    renderTitle('Sprints')
     const [data, setData] = useState<ITaskTypes[]>([])
     const [selectedData, setSelectedData] = useState<ITaskTypes | undefined>(undefined)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()

@@ -37,10 +37,10 @@ export default function MyTeam() {
         }
     }, [])
 
-    // const codes = filterCodes(user?.role?.permissions)
-    // const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
-    // if (loadingUser) return <Skeleton />
-    // if (!loadingUser && ['g01', 'g02', 'g03', 'g04'].every((c) => !codes[c])) return <Navigate to={'/' + paths[0]} />
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['mb01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<IEmployee> = [
         {

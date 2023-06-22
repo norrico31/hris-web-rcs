@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom"
 import { Table, Switch, Skeleton, Col, Button, FloatButton } from "antd";
+import { useAuthContext } from "../../shared/contexts/Auth";
 import { useAxios } from "../../shared/lib/axios"
-import { useEndpoints } from "../../shared/constants"
-import { IRole, IRolePermission, IPermissionStatus, IPermissionToggle } from "../../shared/interfaces"
+import { ADMINSETTINGSPATHS, useEndpoints } from "../../shared/constants"
+import { IRole, IPermissionStatus, IPermissionToggle } from "../../shared/interfaces"
 import { StyledRow } from "../EmployeeEdit"
 import { RoleInputs } from "./Roles"
 import { firstLetterCapitalize } from "../../shared/utils/utilities";
+import { filterCodes, filterPaths } from "../../components/layouts/Sidebar";
 
 export default function Permissions() {
+	const { user, loading: loadingUser } = useAuthContext()
 	const { roleId } = useParams()
 	const navigate = useNavigate()
 	const [{ ADMINSETTINGS }] = useEndpoints()
@@ -18,6 +21,11 @@ export default function Permissions() {
 	const [loadingPermission, setLoadingPermission] = useState(false)
 
 	if (!roleId) return <Navigate to='/roles' />
+
+	const codes = filterCodes(user?.role?.permissions)
+	const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
+	if (loadingUser) return <Skeleton />
+	if (!loadingUser && !codes['ib01']) return <Navigate to={'/' + paths[0]} />
 
 	useEffect(() => {
 		if (roleId !== undefined) fetchPermissionByRoleId(roleId)

@@ -9,7 +9,6 @@ export interface ITaskTypes {
     team_id: string
     team: ITeam
     updated_at: string
-    description?: string
+    description: string
 }
-
 export type TaskTypesRes = AxiosGetData<ITaskTypes>

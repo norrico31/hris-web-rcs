@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Button, Calendar, Col, Form as AntDForm, Row, Divider as AntDDivider, Modal, Space, Input, TimePicker, Select, DatePicker, Switch, Popconfirm } from "antd"
-import { MdOutlineHolidayVillage } from 'react-icons/md'
+import { Button, Col, Form as AntDForm, Row, Modal, Space, Input, Select, DatePicker, Switch, Popconfirm } from "antd"
 import styled from "styled-components"
 import dayjs from "dayjs"
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { BiRefresh } from "react-icons/bi"
+import useMessage from "antd/es/message/useMessage"
 import { Form, Action, TabHeader, Card, Table } from "../../../components"
 import axiosClient, { useAxios } from "../../../shared/lib/axios"
 import { renderTitle } from "../../../shared/utils/utilities"
@@ -23,13 +23,15 @@ export default function Holidays() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isArchive, setIsArchive] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [messageApi, contextHolder] = useMessage()
+    const key = 'error'
 
     useEffect(function () {
         const controller = new AbortController();
         fetchData({
             signal: controller.signal,
             search,
-            page: tableParams?.pagination?.current ?? 1,
+            page: isArchive ? 1 : (tableParams?.pagination?.current ?? 1),
             pageSize: tableParams?.pagination?.pageSize,
             isArchive
         })
@@ -130,7 +132,20 @@ export default function Holidays() {
 
     function handleDelete(id: string) {
         DELETE(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYS.DELETE, id)
-            .finally(fetchData)
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 3
+                })
+            })
+            .finally(() => fetchData({
+                search,
+                page: tableParams?.pagination?.current ?? 1,
+                pageSize: tableParams?.pagination?.pageSize,
+                isArchive
+            }))
     }
 
     function handleEdit(data: IHoliday) {
@@ -145,6 +160,7 @@ export default function Holidays() {
 
     return (
         <Card title={`Holidays ${isArchive ? '- Archives' : ''}`}>
+            {contextHolder}
             <TabHeader
                 handleSearch={setSearch}
                 handleCreate={!isArchive ? () => setIsModalOpen(true) : undefined}

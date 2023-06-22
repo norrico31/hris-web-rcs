@@ -4,6 +4,7 @@ export interface ILeaveType {
     id: string;
     name: string;
     description: string;
-    type: string
+    type: string;
+    date_period: number | null
 }
 export type LeaveTypeRes = AxiosGetData<ILeaveType>

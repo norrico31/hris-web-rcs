@@ -1,20 +1,28 @@
-import { useState, useEffect } from 'react'
-import { Tag } from 'antd'
+import { useState, useEffect, useMemo } from 'react'
+import { Navigate } from 'react-router-dom'
+import { Skeleton } from 'antd'
+import { useAuthContext } from '../../shared/contexts/Auth'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { Table, Card, TabHeader } from "../../components"
 import { useAxios } from '../../shared/lib/axios'
-import { useEndpoints } from '../../shared/constants'
+import { ADMINSETTINGSPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, IIssueLogs, IssueLogsRes, TableParams } from '../../shared/interfaces'
-import { firstLetterCapitalize } from '../../shared/utils/utilities'
+import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
 
-const { GET, DELETE, POST, PUT } = useAxios()
+const { GET } = useAxios()
 const [{ ADMINSETTINGS }] = useEndpoints()
 
 export default function IssueLogs() {
+    const { user, loading: loadingUser } = useAuthContext()
     const [data, setData] = useState<IIssueLogs[]>([])
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
+
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['id01']) return <Navigate to={'/' + paths[0]} />
 
     useEffect(function () {
         const controller = new AbortController();

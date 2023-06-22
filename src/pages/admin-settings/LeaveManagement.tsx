@@ -1,18 +1,18 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Divider, Typography } from 'antd'
-import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
+import { AiOutlineEdit } from 'react-icons/ai'
+import dayjs from 'dayjs'
+import { useAuthContext } from '../../shared/contexts/Auth'
 import { Form, TabHeader, Table } from '../../components'
 import { renderTitle } from '../../shared/utils/utilities'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
-import { ROOTPATHS, useEndpoints } from '../../shared/constants'
+import { ADMINSETTINGSPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, ILeave, ILeaveType, IUser, LeaveRes, TableParams } from '../../shared/interfaces'
-import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
-import { AiOutlineEdit } from 'react-icons/ai'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ LEAVES, SYSTEMSETTINGS: { HRSETTINGS }, ADMINSETTINGS: { USERS } }] = useEndpoints()
@@ -32,6 +32,11 @@ export default function LeaveManagement() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [isModalCancel, setIsModalCancel] = useState(false)
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['p01']) return <Navigate to={'/' + paths[0]} />
+
     useEffect(function fetch() {
         const controller = new AbortController();
         if (user != undefined) fetchData({
@@ -47,18 +52,13 @@ export default function LeaveManagement() {
         }
     }, [user, search])
 
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
-    if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['p01']) return <Navigate to={'/' + paths[0]} />
-
     const columns: ColumnsType<ILeave> = renderColumns({ handleEdit, handleDelete, handleRequestSelected })
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
-        const url = LEAVES.GET + 'false' + status
-        GET<LeaveRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        // const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
+        // const url = LEAVES.GET + 'false' + status
+        GET<LeaveRes>(LEAVES.HRMANAGEMENTGET, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -197,7 +197,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         time_end = dayjs(time_end).format('LT')
         restProps = { ...restProps, date_start, date_end, time_start, time_end } as any
         try {
-            let result = selectedData ? PUT(LEAVES.PUT + selectedData?.id, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
+            let result = selectedData ? PUT(LEAVES.PUT, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
             const res = await result
             console.log(res)
             form.resetFields()
@@ -220,12 +220,12 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
-                label="User"
+                label="Employee"
                 name="user_id"
                 required
                 rules={[{ required: true, message: 'Required' }]}
             >
-                <Select placeholder='Select leave type...' optionFilterProp="children" allowClear showSearch>
+                <Select placeholder='Select employee...' optionFilterProp="children" allowClear showSearch>
                     {lists.users.map((user) => (
                         <Select.Option value={user.id} key={user.id} style={{ color: '#777777' }}>{user?.full_name}</Select.Option>
                     ))}

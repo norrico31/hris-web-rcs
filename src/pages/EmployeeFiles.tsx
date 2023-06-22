@@ -5,6 +5,7 @@ import { LoadingOutlined, UserOutlined, CreditCardOutlined, UsergroupAddOutlined
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import Modal from 'antd/es/modal/Modal'
 import dayjs, { Dayjs } from 'dayjs'
+import { useSearchDebounce } from '../shared/hooks/useDebounce'
 import { Action, TabHeader, Table, Form, MainHeader } from '../components'
 import { renderTitle } from '../shared/utils/utilities'
 import { useEndpoints } from './../shared/constants/endpoints'
@@ -14,6 +15,7 @@ import useMessage from 'antd/es/message/useMessage'
 import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { ROOTPATHS } from '../shared/constants'
 import { useAuthContext } from '../shared/contexts/Auth'
+import styled from 'styled-components'
 
 const [{ EMPLOYEE201, SYSTEMSETTINGS: { CLIENTSETTINGS, HRSETTINGS }, ADMINSETTINGS }] = useEndpoints()
 const { GET, POST, DELETE } = useAxios()
@@ -142,7 +144,7 @@ export default function EmployeeFiles() {
     return (
         <>
             <MainHeader>
-                <h1 className='color-white'>Employees 201 Files</h1>
+                <h1 className='color-white'>Employee 201 Files</h1>
             </MainHeader>
             <TabHeader
                 handleSearch={handleSearch}
@@ -281,7 +283,8 @@ interface IStepOne {
     manager_id: string | null
     date_hired: string | Dayjs | null
     resignation_date: string | Dayjs | null
-    team_id: string[]
+    team_id: ITeam[]
+    email: string
 }
 
 interface IStepOneProps {
@@ -289,6 +292,9 @@ interface IStepOneProps {
     setStepOneInputs: React.Dispatch<React.SetStateAction<IStepOne | undefined>>
     stepOne(): void
 }
+
+const initHasValidState = { hasEmployeeCode: '', hasEmail: '' }
+const initIsLoadingState = { isEmployeeCode: false, isEmail: false }
 
 function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     const [form] = useForm<IStepOne>()
@@ -302,11 +308,61 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     const [departmentId, setDepartmentId] = useState('')
     const [teams, setTeams] = useState<ITeam[]>([])
 
+    const [employeeCode, setEmployeeCode] = useState('')
+    const [email, setEmail] = useState('')
+    const [hasValid, setHasValid] = useState(initHasValidState)
+    const [isLoading, setIsLoading] = useState(initIsLoadingState)
+
+    const debounceEmployeeCode = useSearchDebounce(employeeCode, 800)
+    const debounceEmail = useSearchDebounce(email, 800)
+
     useEffect(() => {
-        if (stepOneInputs) form.setFieldsValue({ ...stepOneInputs })
+        if (stepOneInputs) {
+            form.setFieldsValue({ ...stepOneInputs })
+            setDepartmentId(stepOneInputs?.department_id!)
+            setTeams([...stepOneInputs.team_id])
+            setEmployeeCode(stepOneInputs.employee_code)
+            setEmail(stepOneInputs.email)
+        }
     }, [stepOneInputs])
 
+    useEffect(() => {
+        (async () => {
+            try {
+                if (departmentId === undefined || departmentId === '') return
+                const res = await axiosClient.get(HRSETTINGS.TEAMS.LISTS + '?department_id=' + departmentId)
+                setTeams(res?.data ?? [])
+            } catch (error) {
+                return Promise.reject(error)
+            }
+        })()
+    }, [departmentId])
 
+    useEffect(() => {
+        // if (!debounceEmployeeCode) return
+        setIsLoading({ ...isLoading, isEmployeeCode: true })
+        POST(EMPLOYEE201.POST + '/validate-employee-code', { employee_code: debounceEmployeeCode })
+            .then((res) => {
+                setHasValid(prevValid => ({ ...prevValid, hasEmployeeCode: 'success' }))
+            })
+            .catch((err) => {
+                setHasValid(prevValid => ({ ...prevValid, hasEmployeeCode: 'error' }))
+            }).finally(() => setIsLoading({ ...isLoading, isEmployeeCode: false }))
+    }, [debounceEmployeeCode])
+
+    useEffect(() => {
+        // if (!debounceEmail) return
+        setIsLoading({ ...isLoading, isEmail: true })
+        POST(EMPLOYEE201.POST + '/validate-email', { email: debounceEmail })
+            .then((res) => {
+                setHasValid(prevValid => ({ ...prevValid, hasEmail: 'success' }))
+            })
+            .catch((err) => {
+                setHasValid(prevValid => ({ ...prevValid, hasEmail: 'error' }))
+            })
+            .finally(() => setIsLoading({ ...isLoading, isEmail: false }))
+    }, [debounceEmail])
+    console.log(hasValid)
     useEffect(() => {
         const controller = new AbortController();
         (async () => {
@@ -336,36 +392,55 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     }, [])
 
     async function onChange(id: string) {
-        if (id == '' || id == undefined) {
-            setDepartmentId('')
-            setTeams([])
-        } else {
-            setDepartmentId(id)
-            try {
-                if (id == null || id == undefined || id == '') return
-                const res = await axiosClient.get(HRSETTINGS.TEAMS.LISTS + '?department_id=' + id)
-                setTeams(res?.data ?? [])
-            } catch (error) {
-                return Promise.reject(error)
-            }
-        }
+        setTeams([])
+        form.setFieldsValue({ ...form.getFieldsValue(), team_id: undefined })
+        setDepartmentId(id === undefined ? '' : id)
     }
 
     function onFinish(values: Record<string, any>) {
         setStepOneInputs(formValues(values) as IStepOne)
+        setHasValid(initHasValidState)
+        setIsLoading(initIsLoadingState)
+        setEmployeeCode('')
+        setEmail('')
         stepOne()
     }
 
-    return <Form form={form} onFinish={onFinish}>
+    return <Form form={form} onFinish={onFinish} key='stepOne'>
         <Row justify='space-around' gutter={[20, 20]} wrap>
             <Col span={8}>
                 <FormItem
+                    style={{ color: 'black' }}
+                    key='employee_code'
                     label="Employee No."
                     name="employee_code"
                     required
                     rules={[{ required: true, message: 'Required' }]}
+                    validateStatus={(isLoading.isEmployeeCode || employeeCode !== debounceEmployeeCode) ? 'validating' : hasValid.hasEmployeeCode as ''}
+                    help={hasValid.hasEmployeeCode !== "" ? (hasValid.hasEmployeeCode === 'sucess' ? null : 'Employee code already exists!') : null} // TODO: error must change
+                    hasFeedback
                 >
-                    <Input placeholder='Enter employee no...' />
+                    <Input type='number' placeholder='Enter employee no...' value={employeeCode} onChange={(e) => {
+                        if (e.target.value === '') setHasValid({ ...hasValid, hasEmployeeCode: '' })
+                        setEmployeeCode(e.target.value)
+                    }} />
+                </FormItem>
+                <FormItem
+                    key='email'
+                    name='email'
+                    label="Email Address"
+                    required rules={[{ required: true, message: 'Required' }]}
+                    validateStatus={(isLoading.isEmail || email !== debounceEmail) ? 'validating' : hasValid.hasEmail as ''}
+                    hasFeedback
+                    help={hasValid.hasEmail !== "" ? (hasValid.hasEmail === 'success' ? null : 'Email already exists!') : null} // TODO: error must change
+
+                >
+                    <Input type='email' placeholder='Enter email address...'
+                        // style={{ border: email === staleEmail ? '1px solid green' : '1px solid red' }}
+                        value={email} onChange={(e) => {
+                            if (e.target.value === '') setHasValid({ ...hasValid, hasEmail: '' })
+                            setEmail(e.target.value)
+                        }} />
                 </FormItem>
                 <FormItem
                     label="First Name"
@@ -395,8 +470,8 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         allowClear
                         showSearch
                     >
-                        <Select.Option value="male">Male</Select.Option>
-                        <Select.Option value="female">Female</Select.Option>
+                        <Select.Option value="male" key='male'>Male</Select.Option>
+                        <Select.Option value="female" key='female'>Female</Select.Option>
                     </Select>
                 </FormItem>
                 <FormItem
@@ -406,13 +481,15 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     <Select
                         placeholder='Select marital status...'
                     >
-                        <Select.Option value="single">Single</Select.Option>
-                        <Select.Option value="married">Married</Select.Option>
-                        <Select.Option value="annulled">Annulled</Select.Option>
-                        <Select.Option value="separated">Separated</Select.Option>
-                        <Select.Option value="widow">Widow</Select.Option>
+                        <Select.Option value="single" key='single'>Single</Select.Option>
+                        <Select.Option value="married" key='mmarried'>Married</Select.Option>
+                        <Select.Option value="annulled" key="annulled">Annulled</Select.Option>
+                        <Select.Option value="separated" key="separated">Separated</Select.Option>
+                        <Select.Option value="widow" key="widow">Widow</Select.Option>
                     </Select>
                 </FormItem>
+            </Col>
+            <Col span={8}>
                 <FormItem
                     label="Date of Birth"
                     name="birthday"
@@ -423,8 +500,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                         placeholder='Select date of birth'
                     />
                 </FormItem>
-            </Col>
-            <Col span={8}>
                 <FormItem
                     label="Contact Number"
                     name="mobile_number1"
@@ -437,9 +512,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                 >
                     <Input type='number' placeholder='Enter contact number...' />
                 </FormItem>
-                <FormItem name='email' label="Email Address" required rules={[{ required: true, message: 'Required' }]}>
-                    <Input type='email' placeholder='Enter email address...' />
-                </FormItem>
+
                 <FormItem
                     label="Employee Status"
                     name="employee_status_id"
@@ -565,7 +638,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
         <FormItem style={{ textAlign: 'right' }}>
             <Space>
                 <Button type="primary" htmlType="submit">
-                    Next
+                    Next Step
                 </Button>
             </Space>
         </FormItem>
@@ -698,7 +771,7 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                     Previous Step
                 </Button>
                 <Button type="primary" htmlType="submit">
-                    Submit
+                    Next Step
                 </Button>
             </Space>
         </FormItem>
@@ -767,7 +840,7 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
                     Previous Step
                 </Button>
                 <Button type="primary" htmlType="submit">
-                    Submit
+                    Next Step
                 </Button>
             </Space>
         </FormItem>

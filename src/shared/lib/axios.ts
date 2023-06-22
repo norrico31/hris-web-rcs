@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { AxiosError, AxiosGet } from '../interfaces'
 import { Alert } from './alert'
+import { BASE_URL } from './../config';
 
-const axiosClient = axios.create({ baseURL: import.meta.env.VITE_BASE_URL })
+const axiosClient = axios.create({ baseURL: BASE_URL })
 
 axiosClient.interceptors.request.use((req) => {
     let token = localStorage.getItem('t')

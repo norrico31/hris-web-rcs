@@ -17,6 +17,7 @@ import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import axiosClient from '../shared/lib/axios'
 import { IAnnouncements, IHoliday } from '../shared/interfaces'
 import { useDarkMode } from '../shared/contexts/DarkMode'
+import useWindowSize from '../shared/hooks/useWindowSize'
 
 const { Title } = Typography
 
@@ -126,18 +127,7 @@ export default function Dashboard() {
                             {lists.announcements.length > 0 ? (
                                 <List
                                     dataSource={lists.announcements}
-                                    renderItem={(item: IAnnouncements) => <>
-                                        <List.Item key={item?.content}>
-                                            <List.Item.Meta
-                                                title={<Tag color="#9b3423">{item.title}</Tag>}
-                                                description={<div dangerouslySetInnerHTML={{ __html: item?.content.slice(0, 20) + '...' }} />}
-                                            />
-                                            <Space direction='vertical' align='center'>
-                                                <div>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                                                <Button type='primary' size='small' onClick={() => selectAnnouncement(item)}>View</Button>
-                                            </Space>
-                                        </List.Item>
-                                    </>}
+                                    renderItem={(item: IAnnouncements) => <ListItem key={item.id} item={item} selectAnnouncement={selectAnnouncement} />}
                                 />
                             ) : <i>No announcements posted</i>}
                             <AnnouncementViewModal
@@ -148,36 +138,51 @@ export default function Dashboard() {
                         </div>
                     </Card>
                 </Col>
-                <Col xs={24} sm={24} md={24} lg={9} xl={9} >
-                    <Card title='Holidays' isDarkMode={isDarkMode}>
-                        <div style={{ overflow: 'auto' }}>
-                            <FullCalendar
-                                plugins={[
-                                    dayGridPlugin,
-                                    timeGridPlugin,
-                                    interactionPlugin,
-                                    listPlugin,
-                                ]}
-                                headerToolbar={{
-                                    left: "prev,next today",
-                                    center: "title",
-                                    right: "dayGridMonth,timeGridWeek,listMonth",
-                                }}
-                                initialView="dayGridMonth"
-                                editable={true}
-                                selectable={true}
-                                selectMirror={true}
-                                dayMaxEvents={true}
-                                // select={handleDateClick}
-                                // eventClick={handleEventClick}
-                                events={holidayEvents as any}
-                            />
-                        </div>
-                    </Card>
+                <Col xs={24} sm={24} md={24} lg={9} xl={9} style={{ border: '1px solid #ccc', padding: '.3rem' }}>
+                    <Title level={2}>Holidays</Title>
+                    <div style={{ overflow: 'auto' }}>
+                        <FullCalendar
+                            plugins={[
+                                dayGridPlugin,
+                                timeGridPlugin,
+                                interactionPlugin,
+                                listPlugin,
+                            ]}
+                            headerToolbar={{
+                                left: "prev,next today",
+                                center: "title",
+                                right: "dayGridMonth,timeGridWeek,listMonth",
+                            }}
+                            initialView="dayGridMonth"
+                            editable={true}
+                            selectable={true}
+                            selectMirror={true}
+                            dayMaxEvents={true}
+                            // select={handleDateClick}
+                            // eventClick={handleEventClick}
+                            events={holidayEvents as any}
+                        />
+                    </div>
                 </Col>
             </Row>
         </>
     )
+}
+
+function ListItem({ item, selectAnnouncement }: { item: IAnnouncements; selectAnnouncement(announcement: IAnnouncements): void }) {
+    const { width } = useWindowSize()
+    return <>
+        <List.Item key={item?.content}>
+            <List.Item.Meta
+                title={<Tag color="#9b3423">{width > 430 ? item.title.slice(0, 30) : item.title.slice(0, 10)}</Tag>}
+                description={width > 430 ? <div dangerouslySetInnerHTML={{ __html: item?.content.slice(0, 20) + '...' }} /> : null}
+            />
+            <Space direction='vertical' align='center'>
+                <div>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                <Button type='primary' size='small' onClick={() => selectAnnouncement(item)}>View</Button>
+            </Space>
+        </List.Item>
+    </>
 }
 
 interface AnnouncementModalProps { isModalOpen: boolean; handleClose: () => void; selectedAnnouncement?: IAnnouncements }
@@ -198,7 +203,7 @@ function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement 
         }
     }, [selectedAnnouncement])
 
-    return <Modal title='Announcement' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
+    return <Modal title='Announcement' open={isModalOpen} onCancel={handleClose} footer={null} forceRender width={1500}>
         {loading ? <Skeleton /> : (
             <>
                 <Descriptions bordered column={2}>

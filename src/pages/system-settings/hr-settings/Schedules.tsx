@@ -3,6 +3,7 @@ import { Space, Button, Input, Form as AntDForm, TimePicker, Row, Popconfirm } f
 import Modal from 'antd/es/modal/Modal'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { BiRefresh } from 'react-icons/bi'
+import useMessage from 'antd/es/message/useMessage'
 import dayjs from 'dayjs'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import { Action, Table, Card, TabHeader, Form } from "../../../components"
@@ -28,7 +29,7 @@ export default function Schedules() {
         fetchData({
             signal: controller.signal,
             search,
-            page: tableParams?.pagination?.current ?? 1,
+            page: isArchive ? 1 : (tableParams?.pagination?.current ?? 1),
             pageSize: tableParams?.pagination?.pageSize,
             isArchive
         })
@@ -118,7 +119,12 @@ export default function Schedules() {
     function handleDelete(id: string) {
         DELETE(SCHEDULES.DELETE, id)
             .catch(err => Alert.warning('Delete Unsuccessful', err?.response?.data?.message))
-            .finally(fetchData)
+            .finally(() => fetchData({
+                search,
+                page: tableParams?.pagination?.current ?? 1,
+                pageSize: tableParams?.pagination?.pageSize,
+                isArchive
+            }))
     }
 
     function handleEdit(data: ISchedules) {

@@ -1,18 +1,19 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Typography } from 'antd'
-import dayjs from 'dayjs'
+import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Typography, Popconfirm } from 'antd'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import useMessage from 'antd/es/message/useMessage'
+import { AiOutlineEdit } from 'react-icons/ai'
+import { BsFillTrashFill } from 'react-icons/bs'
+import dayjs from 'dayjs'
+import { useAuthContext } from '../../shared/contexts/Auth'
 import { Form, TabHeader, Table, Divider } from '../../components'
 import { renderTitle } from '../../shared/utils/utilities'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
-import { ROOTPATHS, useEndpoints } from '../../shared/constants'
+import { ADMINSETTINGSPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, IOvertime, IUser, OvertimeRes, TableParams } from '../../shared/interfaces'
-import { useAuthContext } from '../../shared/contexts/Auth'
 import { filterCodes, filterPaths } from '../../components/layouts/Sidebar'
-import { AiOutlineEdit } from 'react-icons/ai'
 
 const { GET, POST, PUT, DELETE } = useAxios()
 const [{ OVERTIME, ADMINSETTINGS: { USERS } }] = useEndpoints()
@@ -32,6 +33,11 @@ export default function OvertimeManagement() {
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
     const [isModalCancel, setIsModalCancel] = useState(false)
 
+    const codes = filterCodes(user?.role?.permissions)
+    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ADMINSETTINGSPATHS), [user])
+    if (loadingUser) return <Skeleton />
+    if (!loadingUser && !codes['q01']) return <Navigate to={'/' + paths[0]} />
+
     useEffect(function fetch() {
         const controller = new AbortController();
         if (user != undefined) fetchData({
@@ -46,11 +52,6 @@ export default function OvertimeManagement() {
             controller.abort()
         }
     }, [user, search])
-
-    const codes = filterCodes(user?.role?.permissions)
-    const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
-    if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['q01']) return <Navigate to={'/' + paths[0]} />
 
     const columns: ColumnsType<IOvertime> = [
         {
@@ -97,23 +98,21 @@ export default function OvertimeManagement() {
             key: 'action',
             dataIndex: 'action',
             align: 'center',
-            render: (_, record: IOvertime) => <Space direction='vertical'>
-                {(record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled') ? (
-                    <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
-                        View
+            render: (_, record: IOvertime) => <Space>
+                <Button id='edit' type='default' size='middle' onClick={() => handleEdit(record)} className='btn-edit' >
+                    <AiOutlineEdit color='white' />
+                </Button>
+                <Popconfirm
+                    title='Delete the selected data?'
+                    description={`Are you sure you want to delete ${record.reason}?`}
+                    onConfirm={() => handleDelete(record.id!)}
+                    okText="Delete"
+                    cancelText="Cancel"
+                >
+                    <Button id='delete' type='primary' size='middle' onClick={() => null}>
+                        <BsFillTrashFill />
                     </Button>
-                ) : (
-                    <Space>
-                        <Button id='edit' type='default' size='middle' onClick={() => handleEdit(record)} className='btn-edit' >
-                            <AiOutlineEdit color='white' />
-                        </Button>
-                        {record?.status.toLowerCase() === 'pending' && (
-                            <Button type='primary' onClick={() => handleRequestSelected(record)}>
-                                {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
-                            </Button>
-                        )}
-                    </Space>
-                )}
+                </Popconfirm>
             </Space>,
             width: 150
         },
@@ -121,9 +120,9 @@ export default function OvertimeManagement() {
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
-        const status = (type !== 'all') ? `&status=${type?.toUpperCase()}` : ''
-        const url = OVERTIME.GET + 'false' + status
-        GET<OvertimeRes>(url, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        // const status = (type !== |'all') ? `&status=${type?.toUpperCase()}` : ''
+        // const url = OVERTIME.HRMANAGEMENTLISTS + 'false' + status
+        GET<OvertimeRes>(OVERTIME.GET + '/list-am', args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
                 setData(res?.data ?? [])
                 setTableParams({
@@ -149,11 +148,6 @@ export default function OvertimeManagement() {
     }
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search, pageSize: pagination?.pageSize! }, type: overtimeType })
-
-    function handleRequestSelected(overtime: IOvertime) {
-        setSelectedData(overtime)
-        setIsModalCancel(true)
-    }
 
     function closeModal() {
         setIsModalOpen(false)
@@ -255,7 +249,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         restProps = { ...restProps } as any
         setLoading(true)
         try {
-            let result = selectedData ? PUT(OVERTIME.PUT + selectedData?.id, { ...restProps, date_start, date_end, id: selectedData.id, planned_ot_start, planned_ot_end }) : POST(OVERTIME.POST, { ...restProps, date_start, date_end, planned_ot_start, planned_ot_end })
+            let result = selectedData ? PUT(OVERTIME.HRMANAGEMENTPUT + selectedData.id, { ...restProps, date_start, date_end, id: selectedData.id, planned_ot_start, planned_ot_end, manager: 1 }) : POST(OVERTIME.HRMANAGEMENTPOST, { ...restProps, date_start, date_end, planned_ot_start, planned_ot_end, manager: 1 })
             const res = await result
             console.log(res)
             form.resetFields()
@@ -278,12 +272,12 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
-                label="User"
+                label="Employee"
                 name="user_id"
                 required
                 rules={[{ required: true, message: 'Required' }]}
             >
-                <Select placeholder='Select leave type...' optionFilterProp="children" allowClear showSearch>
+                <Select placeholder='Select employee...' optionFilterProp="children" allowClear showSearch>
                     {users.map((user) => (
                         <Select.Option value={user.id} key={user.id} style={{ color: '#777777' }}>{user?.full_name}</Select.Option>
                     ))}

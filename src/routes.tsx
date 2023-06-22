@@ -24,8 +24,8 @@ const SalaryAdjustmentArchives = lazy(() => import('./pages/SalaryAdjustmentArch
 const WhosInOut = lazy(() => import('./pages/WhosInOut'))
 const Announcements = lazy(() => import('./pages/Announcements'))
 const AnnouncementsArchives = lazy(() => import('./pages/AnnouncementArchives'))
-const _HrReports = lazy(() => import('./pages/_HrReports'))
 const HrReports = lazy(() => import('./pages/HrReports'))
+// const HrReports = lazy(() => import('./pages/HrReports'))
 const Profile = lazy(() => import('./pages/Profile'))
 
 // My Team Task
@@ -87,6 +87,7 @@ const Permissions = lazy(() => import('./pages/admin-settings/Permissions'))
 const IssueLogs = lazy(() => import('./pages/admin-settings/IssueLogs'))
 const LeaveManagement = lazy(() => import('./pages/admin-settings/LeaveManagement'))
 const OvertimeManagement = lazy(() => import('./pages/admin-settings/OvertimeManagement'))
+const TimekeepingManagement = lazy(() => import('./pages/admin-settings/TimekeepingManagement'))
 
 // Employee Files (201)
 const EmployeeBenefits = lazy(() => import('./pages/employee-files/EmployeeBenefits'))
@@ -165,6 +166,10 @@ export const routes = createBrowserRouter([
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><OvertimeManagement /></Suspense>
             },
             {
+                path: 'admin/timekeepings',
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><TimekeepingManagement /></Suspense>
+            },
+            {
                 path: 'profile',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Profile /></Suspense>
             },
@@ -183,7 +188,7 @@ export const routes = createBrowserRouter([
             },
             {
                 path: 'hrreports',
-                element: <Suspense fallback={<Content><Skeleton /></Content>}><_HrReports /></Suspense>,
+                element: <Suspense fallback={<Content><Skeleton /></Content>}><HrReports /></Suspense>,
 
             },
             {
