@@ -706,7 +706,12 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
     return <Form form={form} onFinish={onFinish}>
         <Row justify='space-around' style={{ margin: 'auto', width: '80%' }}>
             <Col span={8}>
-                <FormItem name='client_id' label="Client" >
+                <FormItem
+                    name='client_id'
+                    label="Client"
+                    required
+                    rules={[{ required: true, message: 'Required' }]}
+                >
                     <Select
                         placeholder='Select client...'
                         allowClear
@@ -725,6 +730,8 @@ function StepTwo({ setStepTwoInputs, stepTwoInputs, stepTwo, previousStep }: ISt
                 <FormItem
                     name='client_branch_id'
                     label="Client Branch"
+                    required
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Select
                         placeholder='Select client branch...'

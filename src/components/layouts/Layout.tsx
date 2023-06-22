@@ -68,7 +68,7 @@ export default function Layout() {
                 <div style={{ height: 64, padding: '.3rem', background: isDarkMode ? '#313131' : '#fff', display: 'grid', placeItems: 'center' }}>
                     <Logo collapsed={collapsed} isDarkMode={isDarkMode} />
                 </div>
-                <Sidebar onSelect={handleSelect} />
+                <Sidebar onSelect={handleSelect} collapsed={collapsed} />
             </Sider>
             <AntdLayout style={{ backgroundColor: isDarkMode ? '#424242' : '#fff' }}>
                 <Header collapsed={collapsed} setCollapsed={setCollapsed} />

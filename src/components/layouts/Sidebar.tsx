@@ -17,9 +17,10 @@ import { ADMINSETTINGSPATHS, CLIENTSETTINGSPATHS, HRSETTINGSPATHS, ROOTPATHS, TA
 
 type Props = {
     onSelect: () => void
+    collapsed: boolean
 }
 
-export default function Sidebar({ onSelect }: Props) {
+export default function Sidebar({ onSelect, collapsed }: Props) {
     const location = useLocation()
     const [locationKey, setLocationKey] = useState('')
     const { user, loading } = useAuthContext()
@@ -62,7 +63,7 @@ export default function Sidebar({ onSelect }: Props) {
             selectedKeys={[locationKey]}
             defaultSelectedKeys={[location.pathname]}
             onSelect={onSelect}
-            items={filterMenu(user!)}
+            items={filterMenu(user!, collapsed)}
         />
 
 }
@@ -103,7 +104,7 @@ const MenuContainer = styled(AntdMenu)`
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-function filterMenu(user: IUser) {
+function filterMenu(user: IUser, collapsed: boolean) {
     const modules = user?.role?.permissions ?? []
     modules.forEach((mod) => {
         console.log(mod.code, mod.description)
@@ -130,23 +131,23 @@ function filterMenu(user: IUser) {
             rootPath.includes('announcements')
         ),
         getItemLinks(
-            <NavLink to='/timekeeping' id='timekeeping' className={`main-link menu-item-main ${({ isActive }: { isActive: boolean }) => isActive ? 'active' : ''}`}><BiTimeFive size={20} style={{ marginRight: 8 }} /> Timekeeping</NavLink>,
+            <NavLink to='/timekeeping' id='timekeeping' className={`main-link menu-item-main ${({ isActive }: { isActive: boolean }) => isActive ? 'active' : ''}`}>{!collapsed && <BiTimeFive size={20} style={{ marginRight: 8 }} />} Timekeeping</NavLink>,
             '/timekeeping',
-            null,
+            collapsed ? <BiTimeFive className='menu-item-main' /> : null,
             undefined,
             rootPath.includes('timekeeping')
         ),
         getItemLinks(
-            <NavLink to='/overtime/myovertime' id='overtime' className='main-link menu-item-main'><AiOutlineFieldTime size={20} style={{ marginRight: 8 }} /> Overtime</NavLink>,
+            <NavLink to='/overtime/myovertime' id='overtime' className='main-link menu-item-main'>{!collapsed && <AiOutlineFieldTime size={20} style={{ marginRight: 8 }} />} Overtime</NavLink>,
             '/overtime',
-            null,
+            collapsed ? <AiOutlineFieldTime className='menu-item-main' /> : null,
             undefined,
             rootPath.includes('overtime')
         ),
         getItemLinks(
-            <NavLink to='/leave/myleaves' className='main-link menu-item-main'><AiOutlineCalendar size={20} style={{ marginRight: 10 }} />Leaves</NavLink>,
+            <NavLink to='/leave/myleaves' className='main-link menu-item-main'>{!collapsed && <AiOutlineCalendar size={20} style={{ marginRight: 10 }} />} Leaves</NavLink>,
             '/leave/',
-            null,
+            collapsed ? <AiOutlineCalendar className='menu-item-main' /> : null,
             undefined,
             rootPath.includes('leave')
         ),
