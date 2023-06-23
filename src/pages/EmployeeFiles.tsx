@@ -327,21 +327,25 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     }, [stepOneInputs])
 
     useEffect(() => {
+        let flag = false;
         (async () => {
             try {
                 if (departmentId === undefined || departmentId === '') return
                 const res = await axiosClient.get(HRSETTINGS.TEAMS.LISTS + '?department_id=' + departmentId)
-                setTeams(res?.data ?? [])
+                if (!flag) setTeams(res?.data ?? [])
             } catch (error) {
                 return Promise.reject(error)
             }
         })()
+        return function () {
+            flag = true
+        }
     }, [departmentId])
 
     useEffect(() => {
         if (!debounceEmployeeCode) return
         setIsLoading({ ...isLoading, isEmployeeCode: true })
-        POST(EMPLOYEE201.POST + '/validate-employee-code', { employee_code: debounceEmployeeCode })
+        POST(EMPLOYEE201.POST + '/validate-code', { employee_code: debounceEmployeeCode })
             .then((res) => {
                 setHasValid(prevValid => ({ ...prevValid, hasEmployeeCode: 'success' }))
             })
@@ -435,7 +439,6 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
 
                 >
                     <Input type='email' placeholder='Enter email address...'
-                        // style={{ border: email === staleEmail ? '1px solid green' : '1px solid red' }}
                         value={email} onChange={(e) => {
                             if (e.target.value === '') setHasValid({ ...hasValid, hasEmail: '' })
                             setEmail(e.target.value)

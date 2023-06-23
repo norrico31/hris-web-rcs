@@ -46,15 +46,17 @@ export default function Dashboard() {
                     const whosOutPromise = axiosClient(WHOSINOUT.OUT, { signal: controller.signal })
                     const announcementPromise = axiosClient(ANNOUNCEMENT.LISTS, { signal: controller.signal })
                     const leaveTodayPromise = axiosClient(LEAVES.LISTS, { signal: controller.signal }) // add date today
-                    const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal })
+                    // const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal }) // must change
                     const holidayPromise = axiosClient(HOLIDAYS.GET, { signal: controller.signal })
-                    const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
+                    // const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
+                    const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, holidayPromise]) as any
                     setLists({
                         whosIn: whosInRes?.value?.data?.data?.total ?? 0,
                         whosOut: whosOutRes?.value?.data?.data?.total ?? 0,
                         announcements: announcementRes?.value?.data ?? [],
                         leaves: leaveTodayRes?.value?.data.length ?? 0,
-                        employees: employeeRes?.value?.data?.length ?? 0,
+                        employees: 0,
+                        // employees: employeeRes?.value?.data?.length ?? 0,
                         holidays: holidayRes?.value?.data?.data?.data ?? []
                     })
                     setLoading(false)
@@ -68,7 +70,6 @@ export default function Dashboard() {
         }
     }, [user])
 
-    if (loadingUser) return <Skeleton />
     if (!loadingUser && !codes['a01']) {
         if (paths.length > 0) return <Navigate to={'/' + paths[0]} />
         return <Navigate to='/profile' />

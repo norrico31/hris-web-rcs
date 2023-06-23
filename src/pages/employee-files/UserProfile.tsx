@@ -27,7 +27,7 @@ export default function UserProfileEmployee() {
     })
     const [messageApi, contextHolder] = useMessage()
     const [teamIds, setTeamIds] = useState<string[]>([])
-    const memoizedTeamIds = useMemo(() => employeeInfo.teams.map((t) => t.id), [employeeInfo.teams])
+    const memoizedTeamIds = useMemo(() => employeeInfo?.teams.map((t) => t.id) ?? [], [employeeInfo?.teams])
 
     useEffect(() => {
         const controller = new AbortController();
@@ -68,12 +68,18 @@ export default function UserProfileEmployee() {
             position_id: employeeInfo?.position?.id,
             team_id: employeeInfo?.teams?.map((team) => team.id)
         })
-        setTeamIds(employeeInfo.teams.map((t) => t.id))
+        setTeamIds(employeeInfo?.teams.map((t) => t.id) ?? [])
     }, [employeeInfo])
 
     useEffect(() => {
         if (memoizedTeamIds.length === teamIds.length) return
-        const removedIds = memoizedTeamIds.filter((id) => !teamIds.includes(id)) // pass this to endpoint
+        const removedIds = memoizedTeamIds.filter((id) => !teamIds.includes(id)).join() // /teams/check-user-team
+        const userId = employeeId
+        const payload = {
+            user_id: userId,
+            team_id: removedIds
+        }
+        console.log(payload)
     }, [teamIds])
 
     function onFinish(val: IUser) {
