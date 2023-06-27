@@ -45,6 +45,7 @@ export const useAxios = () => {
                 Alert.information('Forgot Password Success', res?.data?.data)
                 return Promise.resolve(res?.data)
             }
+            if (res?.data?.data === 'Code is unique' || res?.data?.data === 'Email is unique') return Promise.resolve(res)
             if (res?.data?.message == 'Login Successful') return Promise.resolve(res)
             if (data instanceof FormData) {
                 Alert.information('Update Success', res.data.message)

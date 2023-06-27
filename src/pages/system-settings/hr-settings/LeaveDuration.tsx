@@ -221,7 +221,7 @@ function LeaveDurationModal({ title, selectedData, isModalOpen, handleCancel, fe
                 name="description"
                 label="Description"
             >
-                <Input placeholder='Enter Description...' />
+                <Input.TextArea placeholder='Enter Description...' />
             </FormItem>
             <FormItem style={{ textAlign: 'right' }}>
                 <Space>

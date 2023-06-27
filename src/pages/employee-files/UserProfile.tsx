@@ -26,8 +26,6 @@ export default function UserProfileEmployee() {
         teams: []
     })
     const [messageApi, contextHolder] = useMessage()
-    const [teamIds, setTeamIds] = useState<string[]>([])
-    const memoizedTeamIds = useMemo(() => employeeInfo?.teams.map((t) => t.id) ?? [], [employeeInfo?.teams])
 
     useEffect(() => {
         const controller = new AbortController();
@@ -68,19 +66,7 @@ export default function UserProfileEmployee() {
             position_id: employeeInfo?.position?.id,
             team_id: employeeInfo?.teams?.map((team) => team.id)
         })
-        setTeamIds(employeeInfo?.teams.map((t) => t.id) ?? [])
     }, [employeeInfo])
-
-    useEffect(() => {
-        if (memoizedTeamIds.length === teamIds.length) return
-        const removedIds = memoizedTeamIds.filter((id) => !teamIds.includes(id)).join() // /teams/check-user-team
-        const userId = employeeId
-        const payload = {
-            user_id: userId,
-            team_id: removedIds
-        }
-        console.log(payload)
-    }, [teamIds])
 
     function onFinish(val: IUser) {
         setLoading(true)
@@ -89,6 +75,7 @@ export default function UserProfileEmployee() {
             birthday: val?.birthday ? dayjs(val?.birthday).format('YYYY-MM-DD') : null,
             date_hired: val?.date_hired ? dayjs(val?.date_hired).format('YYYY-MM-DD') : null,
             resignation_date: val?.resignation_date ? dayjs(val?.resignation_date).format('YYYY-MM-DD') : null,
+            user_id: employeeInfo?.id
         };
         PUT(EMPLOYEE201.PUT + employeeId, payload)
             .catch((err) => messageApi.open({
@@ -313,8 +300,6 @@ export default function UserProfileEmployee() {
                             optionFilterProp="children"
                             mode='multiple'
                             style={{ width: 200 }}
-                            value={teamIds}
-                            onChange={setTeamIds}
                         >
                             {lists?.teams.map((role) => (
                                 <Select.Option value={role.id} key={role.id} style={{ color: '#777777' }}>{role.name}</Select.Option>

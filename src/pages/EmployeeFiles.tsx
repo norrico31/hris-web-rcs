@@ -295,6 +295,7 @@ interface IStepOneProps {
 
 const initHasValidState = { hasEmployeeCode: '', hasEmail: '' }
 const initIsLoadingState = { isEmployeeCode: false, isEmail: false }
+const initErrorState = { codeError: undefined, emailError: undefined }
 
 function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     const [form] = useForm<IStepOne>()
@@ -312,6 +313,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
     const [email, setEmail] = useState('')
     const [hasValid, setHasValid] = useState(initHasValidState)
     const [isLoading, setIsLoading] = useState(initIsLoadingState)
+    const [errorMessage, setErrorMessage] = useState(initErrorState)
 
     const debounceEmployeeCode = useSearchDebounce(employeeCode, 800)
     const debounceEmail = useSearchDebounce(email, 800)
@@ -348,9 +350,11 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
         POST(EMPLOYEE201.POST + '/validate-code', { employee_code: debounceEmployeeCode })
             .then((res) => {
                 setHasValid(prevValid => ({ ...prevValid, hasEmployeeCode: 'success' }))
+                setErrorMessage((p) => ({ ...p, codeError: undefined }))
             })
             .catch((err) => {
                 setHasValid(prevValid => ({ ...prevValid, hasEmployeeCode: 'error' }))
+                setErrorMessage((p) => ({ ...p, codeError: err?.response?.data?.message }))
             }).finally(() => setIsLoading({ ...isLoading, isEmployeeCode: false }))
     }, [debounceEmployeeCode])
 
@@ -360,9 +364,11 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
         POST(EMPLOYEE201.POST + '/validate-email', { email: debounceEmail })
             .then((res) => {
                 setHasValid(prevValid => ({ ...prevValid, hasEmail: 'success' }))
+                setErrorMessage((p) => ({ ...p, emailError: undefined }))
             })
             .catch((err) => {
                 setHasValid(prevValid => ({ ...prevValid, hasEmail: 'error' }))
+                setErrorMessage((p) => ({ ...p, emailError: err?.response?.data?.message }))
             })
             .finally(() => setIsLoading({ ...isLoading, isEmail: false }))
     }, [debounceEmail])
@@ -420,7 +426,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     required
                     rules={[{ required: true, message: 'Required' }]}
                     validateStatus={(isLoading.isEmployeeCode || employeeCode !== debounceEmployeeCode) ? 'validating' : hasValid.hasEmployeeCode as ''}
-                    help={hasValid.hasEmployeeCode !== "" ? (hasValid.hasEmployeeCode === 'sucess' ? null : 'Employee code already exists!') : null} // TODO: error must change
+                    help={hasValid.hasEmployeeCode !== "" ? (hasValid.hasEmployeeCode === 'success' ? null : errorMessage.codeError) : null} // TODO: error must change
                     hasFeedback
                 >
                     <Input type='number' placeholder='Enter employee no...' value={employeeCode} onChange={(e) => {
@@ -435,7 +441,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
                     required rules={[{ required: true, message: 'Required' }]}
                     validateStatus={(isLoading.isEmail || email !== debounceEmail) ? 'validating' : hasValid.hasEmail as ''}
                     hasFeedback
-                    help={hasValid.hasEmail !== "" ? (hasValid.hasEmail === 'success' ? null : 'Email already exists!') : null} // TODO: error must change
+                    help={hasValid.hasEmail !== "" ? (hasValid.hasEmail === 'success' ? null : errorMessage.emailError) : null} // TODO: error must change
 
                 >
                     <Input type='email' placeholder='Enter email address...'
@@ -840,6 +846,8 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
                 <FormItem
                     name='salary_rate_id'
                     label="Salary Rate"
+                    required
+                    rules={[{ required: true, message: 'Required' }]}
                 >
                     <Select
                         placeholder='Select salary rate...'
@@ -852,7 +860,7 @@ function StepThree({ setStepThreeInputs, stepThreeInputs, stepThree, previousSte
                         ))}
                     </Select>
                 </FormItem>
-                <FormItem name='basic_rate' label="Basic Rate">
+                <FormItem name='basic_rate' label="Basic Rate" required rules={[{ required: true, message: 'Required' }]}>
                     <Input type='number' placeholder='Enter basic rate...' />
                 </FormItem>
             </Col>

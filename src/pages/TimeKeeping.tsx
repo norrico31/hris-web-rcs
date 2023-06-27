@@ -28,7 +28,7 @@ export default function TimeKeeping() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [today] = useState(dayjs().format('YYYY-MM-DD'))
-    const [selectedDate, setSelectedDate] = useState(today)
+    const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined)
     const { width } = useWindowSize()
 
     const codes = filterCodes(user?.role?.permissions)
@@ -37,15 +37,17 @@ export default function TimeKeeping() {
     useEffect(() => {
         if (!loadingUser && !codes['b01']) return
         const controller = new AbortController();
-        if (user) fetchData({ date: today, args: { signal: controller.signal } })
-    }, [user, today])
+        if (user) fetchData({ args: { signal: controller.signal } })
+    }, [user])
 
     if (loadingUser) return <Skeleton />
     if (!loadingUser && !codes['b01']) return <Navigate to={'/' + paths[0]} />
 
-    const fetchData = ({ args, date = dayjs().format('YYYY-MM-DD') }: { args?: IArguments; date?: Dayjs | string }) => {
+    const fetchData = ({ args, date }: { args?: IArguments; date?: Dayjs | string }) => {
         setLoading(true)
-        const query = '?from=' + date + '&to=' + date + '&user_id=' + user?.id
+        date = (date === null || date === 'Invalid Date') ? '' : date
+        const query = '?user_id=' + user?.id + (date ? ('&date=' + date) : '')
+        console.log(query)
         GET<TimeKeepingRes>(TIMEKEEPING.GET + query, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => setData(res?.data ?? [])).finally(() => setLoading(false))
     }
@@ -62,7 +64,7 @@ export default function TimeKeeping() {
             <Title level={2} style={{ textAlign: width < 500 ? 'center' : 'initial' }}>Timekeeping</Title>
             <Row wrap justify='space-between'>
                 <DatePicker format='YYYY-MM-DD' defaultValue={dayjs()} onChange={handleDatePickerChange} />
-                <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={data.length > 1 || selectedDate != today}>
+                <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={data.length > 1 || (selectedDate != undefined || (selectedDate !== today && !data.length))}>
                     {(data[0] == undefined) ? 'Time In' : 'Time Out'}
                 </Button>
             </Row>
@@ -77,7 +79,9 @@ export default function TimeKeeping() {
             />
             <TimeKeepingModal
                 data={data}
+                today={today}
                 fetchData={fetchData}
+                selectedDate={selectedDate}
                 isModalOpen={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
             />
@@ -87,6 +91,8 @@ export default function TimeKeeping() {
 
 type ModalProps = {
     isModalOpen: boolean
+    selectedDate?: string
+    today: string
     fetchData: ({ args, date }: {
         args?: IArguments | undefined;
         date?: string | dayjs.Dayjs | undefined;
@@ -95,7 +101,7 @@ type ModalProps = {
     data: ITimeKeeping[]
 }
 
-function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalProps) {
+function TimeKeepingModal({ fetchData, today, selectedDate, data, isModalOpen, handleClose }: ModalProps) {
     const [isModalVideoOpen, setIsModalVideoOpen] = useState(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
     const [mediaError, setMediaError] = useState('')
@@ -138,7 +144,8 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
         const payload = {
             photo: imageSrc,
             location: coordinates,
-            is_client_site: clientSite
+            is_client_site: clientSite,
+            date: selectedDate !== today ? selectedDate : today
         }
         if (payload.photo == null) {
             setError('Please take a selfie photo')
@@ -146,7 +153,7 @@ function TimeKeepingModal({ fetchData, data, isModalOpen, handleClose }: ModalPr
         }
         POST(method == 'timein' ? TIMEKEEPING.TIMEIN : TIMEKEEPING.TIMEOUT, payload)
             .then((res) => {
-                fetchData({})
+                fetchData({ date: selectedDate !== today ? selectedDate : today })
                 setImageSrc(null)
                 handleClose()
             }).finally(() => {

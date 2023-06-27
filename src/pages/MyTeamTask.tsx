@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { DatePicker, Space, Button, Select, Row, Skeleton, Input, DatePickerProps, Modal, Typography } from 'antd'
+import { DatePicker, Space, Button, Select, Row, Skeleton, Input, DatePickerProps, Modal, Typography, Col } from 'antd'
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import axios from 'axios'
 import { useAuthContext } from '../shared/contexts/Auth'
@@ -98,16 +98,20 @@ export default function MyTeamTask() {
         <StyledRow justify='space-between' wrap align='middle'>
             <h1 className='color-white'>My Team Tasks</h1>
         </StyledRow>
-        <Row justify='space-between'>
-            <Space>
-                <Select placeholder='Select Employee...' optionFilterProp="children" allowClear showSearch style={{ width: 150 }} value={selectedUser} onChange={setSelectedUser}>
-                    {users?.map((user) => (
-                        <Select.Option value={user.full_name} key={user.id} style={{ color: '#777777' }}>{user.full_name}</Select.Option>
-                    ))}
-                </Select>
-                <DatePicker format='YYYY-MM-DD' onChange={handleDatePickerChange} />
+        <Row justify='space-between' gutter={[0, 12]}>
+            <Col>
+                <Space>
+                    <Select placeholder='Select Employee...' optionFilterProp="children" allowClear showSearch style={{ width: 150 }} value={selectedUser} onChange={setSelectedUser}>
+                        {users?.map((user) => (
+                            <Select.Option value={user.full_name} key={user.id} style={{ color: '#777777' }}>{user.full_name}</Select.Option>
+                        ))}
+                    </Select>
+                    <DatePicker format='YYYY-MM-DD' onChange={handleDatePickerChange} />
+                </Space>
+            </Col>
+            <Col>
                 <Input.Search placeholder='Search...' value={search} onChange={(evt) => setSearch(evt.target.value)} />
-            </Space>
+            </Col>
         </Row>
         <Divider />
         <Table

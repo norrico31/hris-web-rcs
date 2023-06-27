@@ -44,13 +44,20 @@ export const Divider = styled(AntDDivider)`
 `
 
 export function debounce(cb: (...search: string[]) => void, delay: number) {
-    let timerId: NodeJS.Timeout
+    let timerId: ReturnType<typeof setTimeout>
     return (...args: string[]) => {
         if (timerId) {
-            clearTimeout(timerId)
+            clearTimeout(timerId);
         }
         timerId = setTimeout(() => {
-            cb(...args)
-        }, delay)
+            cb(...args);
+        }, delay);
+    };
+}
+
+
+declare global {
+    namespace NodeJS {
+        interface Timeout { }
     }
 }

@@ -44,7 +44,7 @@ export default function LeaveType() {
             dataIndex: 'type',
         },
         {
-            title: 'Date Period',
+            title: 'Notice Period',
             key: 'date_period',
             dataIndex: 'date_period',
         },
@@ -190,6 +190,7 @@ const { Item: FormItem, useForm } = AntDForm
 function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
     const [form] = useForm<ILeaveType>()
     const [loading, setLoading] = useState(false)
+    const [messageApi, contextHolder] = useMessage()
 
     useEffect(() => {
         if (selectedData != undefined) {
@@ -199,6 +200,7 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
         }
     }, [selectedData])
 
+    const key = 'error'
     function onFinish(values: ILeaveType) {
         setLoading(true)
         let { description, ...restValues } = values
@@ -207,13 +209,24 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
         result.then(() => {
             form.resetFields()
             handleCancel()
-        }).finally(() => {
-            fetchData()
-            setLoading(false)
         })
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 3
+                })
+                setLoading(false)
+            })
+            .finally(() => {
+                fetchData()
+                setLoading(false)
+            })
     }
 
     return <Modal title={`${title} - Leave Type`} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+        {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
                 label="Leave Type Name"
@@ -224,12 +237,12 @@ function LeaveTypeModal({ title, selectedData, isModalOpen, handleCancel, fetchD
                 <Input placeholder='Enter leave type name...' />
             </FormItem>
             <FormItem
-                label="Date Period"
+                label="Notice Period"
                 name="date_period"
                 required
                 rules={[{ required: true, message: 'Required' }]}
             >
-                <Input type="number" placeholder='Enter date period...' />
+                <Input placeholder='Enter date period...' />
             </FormItem>
             <FormItem
                 name="description"

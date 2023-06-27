@@ -21,7 +21,7 @@ import useWindowSize from '../shared/hooks/useWindowSize'
 
 const { Title } = Typography
 
-const [{ ANNOUNCEMENT, WHOSINOUT, LEAVES, EMPLOYEE201, SYSTEMSETTINGS: { HRSETTINGS: { HOLIDAYS } } }] = useEndpoints()
+const [{ ANNOUNCEMENT, WHOSINOUT, LEAVES, EMPLOYEE201, SYSTEMSETTINGS: { HRSETTINGS: { HOLIDAYS } }, ADMINSETTINGS: { USERS } }] = useEndpoints()
 
 export default function Dashboard() {
     renderTitle('Dashboard')
@@ -45,18 +45,16 @@ export default function Dashboard() {
                     const whosInPromise = axiosClient(WHOSINOUT.IN, { signal: controller.signal })
                     const whosOutPromise = axiosClient(WHOSINOUT.OUT, { signal: controller.signal })
                     const announcementPromise = axiosClient(ANNOUNCEMENT.LISTS, { signal: controller.signal })
-                    const leaveTodayPromise = axiosClient(LEAVES.LISTS, { signal: controller.signal }) // add date today
-                    // const employeePromise = axiosClient(EMPLOYEE201.LISTS, { signal: controller.signal }) // must change
+                    const leaveTodayPromise = axiosClient(LEAVES.LISTS, { signal: controller.signal })
+                    const employeePromise = axiosClient(USERS.TOTALACTIVE, { signal: controller.signal })
                     const holidayPromise = axiosClient(HOLIDAYS.GET, { signal: controller.signal })
-                    // const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
-                    const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, holidayPromise]) as any
+                    const [whosInRes, whosOutRes, announcementRes, leaveTodayRes, employeeRes, holidayRes] = await Promise.allSettled([whosInPromise, whosOutPromise, announcementPromise, leaveTodayPromise, employeePromise, holidayPromise]) as any
                     setLists({
                         whosIn: whosInRes?.value?.data?.data?.total ?? 0,
                         whosOut: whosOutRes?.value?.data?.data?.total ?? 0,
                         announcements: announcementRes?.value?.data ?? [],
                         leaves: leaveTodayRes?.value?.data.length ?? 0,
-                        employees: 0,
-                        // employees: employeeRes?.value?.data?.length ?? 0,
+                        employees: employeeRes?.value?.data?.data,
                         holidays: holidayRes?.value?.data?.data?.data ?? []
                     })
                     setLoading(false)
@@ -177,7 +175,7 @@ function ListItem({ item, selectAnnouncement }: { item: IAnnouncements; selectAn
     return <>
         <List.Item key={item?.content}>
             <List.Item.Meta
-                title={<Tag color="#9b3423">{width > 430 ? item.title.slice(0, 30) : item.title.slice(0, 10)}</Tag>}
+                title={<b style={{ fontSize: 32, color: '#1d1d1d' }}>{width > 430 ? item.title.slice(0, 30) : item.title.slice(0, 10)}</b>}
                 description={width > 430 ? <div dangerouslySetInnerHTML={{ __html: item?.content.slice(0, 20) + '...' }} /> : null}
             />
             <Space direction='vertical' align='center'>

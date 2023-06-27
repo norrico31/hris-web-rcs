@@ -148,7 +148,7 @@ h1 {
 }
 
 :where(.css-dev-only-do-not-override-1kba0ko).ant-table-wrapper .ant-table-pagination {
-    // justify-content: space-between;
+    justify-content: space-between;
     gap: 10px;
 }
 
@@ -156,7 +156,7 @@ h1 {
     flex-wrap: wrap;
 }
 .ant-picker-panel .ant-picker-body td,
-.ant-picker-calendar-header .ant-picker-calendar-mode-switch >label {
+.ant-picker-calendar-header .ant-picker-calendar-mode-switch > label {
     z-index: 0;
 }
 .ant-float-btn {
@@ -205,10 +205,10 @@ h1 {
     border-block-end: 1px solid #ccc;
 }
 
-.ant-menu-title-content a {
-    display: flex !important;
-    align-items: center !important;
-}
+// .ant-menu-title-content a {
+//     display: flex !important;
+//     align-items: center !important;
+// }
 
 @media only screen and (max-width: 600px) {
     #calendar {

@@ -1,7 +1,7 @@
 export * from './utils/TableParams'
 export * from './utils/Arguments'
 export * from './utils/Axios'
-export * from './auth/User'
+export * from './auth/user'
 
 export * from './Tasks'
 export * from './TimeKeeping'
@@ -16,9 +16,9 @@ export * from './admin-settings/AuditLogs'
 export * from './admin-settings/Permissions'
 export * from './admin-settings/IssueLogs'
 
-export * from './system-settings/tasks-settings/TaskActivities'
-export * from './system-settings/tasks-settings/TaskTypes'
-export * from './system-settings/tasks-settings/TaskSprints'
+export * from './system-settings/tasks-settings/taskActivities'
+export * from './system-settings/tasks-settings/taskTypes'
+export * from './system-settings/tasks-settings/taskSprints'
 
 export * from './system-settings/hr-settings/Team'
 export * from './system-settings/hr-settings/BankDetails'

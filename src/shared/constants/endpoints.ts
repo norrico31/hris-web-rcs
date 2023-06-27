@@ -53,7 +53,7 @@ export const useEndpoints = () => {
             HRMANAGEMENTGET: '/leaves/status/manager/preview'
         },
         HRREPORTS: {
-            HRREPORTS: `${BASE_URL}/report/time_keepings/download-report`,
+            HRREPORTS: `${BASE_URL_REPORT}/time_keepings/download-report`,
             CLIENTBILLING: `${BASE_URL}/report/billing_report`,
         },
         SYSTEMSETTINGS: {
@@ -259,7 +259,8 @@ export const useEndpoints = () => {
                 PUT: '/users/',
                 DELETE: '/users/',
                 ACTIVATE: '/users/activate/',
-                DEACTIVATE: '/users/deactivate/'
+                DEACTIVATE: '/users/deactivate/',
+                TOTALACTIVE: '/users/total_active'
             },
             PERMISSIONS: {
                 SHOW: '/roles/',

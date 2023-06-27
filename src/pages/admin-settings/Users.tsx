@@ -72,18 +72,18 @@ export default function Users() {
             dataIndex: 'department',
             render: (_, record) => record?.department?.name ?? '-'
         },
-        // {
-        //     title: 'Action',
-        //     key: 'action',
-        //     dataIndex: 'action',
-        //     align: 'center',
-        //     render: (_: any, record: IUser) => <Action
-        //         title='User'
-        //         name={record.full_name}
-        //         onConfirm={() => handleDelete(record.id)}
-        //         onClick={() => handleEdit(record)}
-        //     />
-        // },
+        {
+            title: 'Action',
+            key: 'action',
+            dataIndex: 'action',
+            align: 'center',
+            render: (_: any, record: IUser) => <Action
+                title='User'
+                name={record.full_name}
+                onConfirm={() => handleDelete(record.id)}
+                onClick={() => handleEdit(record)}
+            />
+        },
         {
             title: 'Activation',
             key: 'activation',
