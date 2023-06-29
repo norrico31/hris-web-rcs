@@ -222,7 +222,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     ))}
                 </Select>
             </FormItem>
-            <Row justify='space-around'>
+            <Row justify='space-around' wrap={false}>
                 <FormItem
                     label="Start Date"
                     name="date_start"
@@ -246,7 +246,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
                     />
                 </FormItem>
             </Row>
-            <Row justify='space-around'>
+            <Row justify='space-around' wrap={false}>
                 <FormItem
                     label="Start Time"
                     name="time_start"
