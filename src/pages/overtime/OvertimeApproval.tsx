@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
-import { Button, Col, DatePicker, Input, Modal, Row, Select, Skeleton, Space } from 'antd'
+import { useState, useEffect, ReactNode } from 'react'
+import { Button, Col, DatePicker, Input, List, Modal, Row, Select, Skeleton, Space, Card as AntDCard, Typography } from 'antd'
 import { Navigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { FcApproval } from 'react-icons/fc'
 import { RxCross2 } from 'react-icons/rx'
 import useMessage from 'antd/es/message/useMessage'
 import { AxiosResponse } from 'axios'
-import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
+import { ColumnsType } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { useSearchDebounce } from '../../shared/hooks/useDebounce'
 import { Card, Divider, Table } from '../../components'
@@ -23,6 +23,7 @@ const { GET, PUT } = useAxios()
 const [{ OVERTIME }] = useEndpoints()
 
 dayjs.extend(localizedFormat)
+const { Title } = Typography
 
 export default function OvertimeApproval() {
     renderTitle('Overtime Approval')
@@ -171,7 +172,7 @@ export default function OvertimeApproval() {
         setIsApproved(false)
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search: searchDebounce, pageSize: pagination?.pageSize! }, type: overtimeType, start_date, end_date })
+    const onChange = (page: number, pageSize: number) => fetchData({ args: { page, pageSize, search: searchDebounce }, type: overtimeType, start_date, end_date })
 
     return (
         <>
@@ -207,15 +208,52 @@ export default function OvertimeApproval() {
                 </Col>
             </Row>
             <Divider />
-            <Card title={`For Approval - ${firstLetterCapitalize(overtimeType)}`} level={5}>
-                <Table
+            <Title level={3}>For Approval</Title>
+            {/* <Table
                     loading={loading}
                     columns={columns}
                     dataList={data}
                     tableParams={tableParams}
                     onChange={onChange}
-                />
-            </Card>
+                /> */}
+            <List
+                grid={{
+                    gutter: 16,
+                    xs: 1,
+                    sm: 1,
+                    md: 2,
+                    lg: 2,
+                    xl: 2,
+                    xxl: 2,
+                }}
+                pagination={{ position: 'bottom', align: 'center', onChange }}
+                loading={loading}
+                dataSource={data}
+                renderItem={(item) => (
+                    <List.Item key={item.id}>
+                        <AntDCard style={{ padding: 0 }} title={<h3 style={{ color: '#E49944', fontSize: 18 }}>{item.user.full_name}</h3>} extra={<blockquote style={{ margin: '10px 0' }}>{item.status}</blockquote>}>
+                            <div style={{ textAlign: 'center' }}>
+                                <Space direction='vertical' align='center'>
+                                    <b style={{ fontSize: 18, color: '#949494' }}>Date: {item.date_start as ReactNode} - {item.date_end as ReactNode}</b>
+                                    <b style={{ fontSize: 32, color: '#9B3423' }}>{item.planned_ot_start as ReactNode} - {item.planned_ot_end as ReactNode}</b>
+                                </Space>
+                            </div>
+                            <Row justify='center'>
+                                <Space>
+                                    <Button id='approve' size='middle' disabled={item?.status.toLowerCase() == 'approved' || item?.status.toLowerCase() == 'rejected'} onClick={() => selectedRequest(item, true)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                                        <FcApproval />
+                                        Approve
+                                    </Button>
+                                    <Button id='reject' size='middle' disabled={item?.status.toLowerCase() == 'approved' || item?.status.toLowerCase() == 'rejected'} onClick={() => selectedRequest(item, false)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                                        <RxCross2 />
+                                        Reject
+                                    </Button>
+                                </Space>
+                            </Row>
+                        </AntDCard>
+                    </List.Item>
+                )}
+            />
             <OvertimeApprovalModal
                 overtimeApproval={overtimeApproval}
                 isModalOpen={isModalRequest}

@@ -215,7 +215,7 @@ export const routes = createBrowserRouter([
             },
 
             {
-                path: 'leave',
+                path: 'myleaves',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Leave /></Suspense>,
                 children: [
                     {
@@ -233,7 +233,7 @@ export const routes = createBrowserRouter([
                 ]
             },
             {
-                path: 'overtime',
+                path: 'myovertimes',
                 element: <Suspense fallback={<Content><Skeleton /></Content>}><Overtime /></Suspense>,
                 children: [
                     {

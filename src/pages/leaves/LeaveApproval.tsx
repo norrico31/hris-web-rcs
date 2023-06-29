@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Space, Skeleton, Row, Col, DatePicker, Input, Select, Descriptions, Modal } from 'antd'
+import { Button, Space, Skeleton, Row, Col, DatePicker, Input, Select, Descriptions, Modal, List, Card as AntDCard, Typography } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
-import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
+import { ColumnsType } from 'antd/es/table'
 import { FcApproval } from 'react-icons/fc'
 import { RxCross2 } from 'react-icons/rx'
 import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { AxiosResponse } from 'axios'
 import { useSearchDebounce } from '../../shared/hooks/useDebounce'
-import { Card, Divider, TabHeader, Table } from '../../components'
-import { renderTitle } from '../../shared/utils/utilities'
+import { Card, Divider } from '../../components'
+import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
 import { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
 import { IArguments, ILeave, LeaveRes, TableParams } from '../../shared/interfaces'
@@ -23,6 +23,7 @@ const { GET, POST } = useAxios()
 const [{ LEAVES }] = useEndpoints()
 
 dayjs.extend(localizedFormat)
+const { Title } = Typography
 
 export default function LeaveApproval() {
     renderTitle('Leave Approval')
@@ -60,7 +61,7 @@ export default function LeaveApproval() {
 
     const codes = filterCodes(user?.role?.permissions)
     if (loadingUser) return <Skeleton />
-    if (!loadingUser && !codes['c06']) return <Navigate to='/leave/myleaves' />
+    if (!loadingUser && !codes['c06']) return <Navigate to='/myleaves/myleaves' />
 
     const columns: ColumnsType<ILeave> = [
         {
@@ -160,7 +161,7 @@ export default function LeaveApproval() {
         }
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, search: searchDebounce, pageSize: pagination?.pageSize! }, type: leaveType, date_start, date_end })
+    const onChange = (page: number, pageSize: number) => fetchData({ args: { page, pageSize, search: searchDebounce }, type: leaveType, date_start, date_end })
 
     function selectedRequest(overtime: ILeave, isApproved: boolean) {
         setSelectedData(overtime)
@@ -208,34 +209,63 @@ export default function LeaveApproval() {
                 </Col>
             </Row>
             <Divider />
-            <Card title='Leave - Approval' level={5}>
-                <Table
-                    loading={loading}
-                    columns={columns}
-                    dataList={data}
-                    tableParams={tableParams}
-                    onChange={onChange}
-                />
-                <LeaveModal
-                    leaveType={leaveType}
-                    fetchData={fetchData}
-                    isModalOpen={isModalOpen}
-                    selectedData={selectedData}
-                    handleCancel={() => setIsModalOpen(false)}
-                />
-                <LeaveApprovalModal
-                    leaveType={leaveType}
-                    fetchData={fetchData}
-                    leaveApproval={leaveApproval}
-                    isModalOpen={isModalRequest}
-                    isApproved={isApproved}
-                    selectedRequest={selectedData}
-                    handleClose={closeModal}
-                />
-            </Card>
+            <Title level={3}>For Approval</Title>
+            <List
+                grid={{
+                    gutter: 16,
+                    xs: 1,
+                    sm: 2,
+                    md: 2,
+                    lg: 2,
+                    xl: 2,
+                    xxl: 2,
+                }}
+                pagination={{ position: 'bottom', align: 'center', onChange }}
+                loading={loading}
+                dataSource={data}
+                renderItem={(item) => (
+                    <List.Item key={item.id}>
+                        <AntDCard style={{ padding: 0 }} title={<h3 style={{ color: '#E49944', fontSize: 18 }}>{item.user.full_name}</h3>} extra={<b style={{ fontSize: 16 }}>{item?.date_start as ReactNode}</b>}>
+                            <Row justify='center'>
+                                <b style={{ fontSize: 32, color: '#9B3423' }}>{item.time_start as ReactNode} - {item.time_end as ReactNode}</b>
+                            </Row>
+                            <p>{item.leave_type.type}</p>
+                            <Row justify='center'>
+                                <Space>
+                                    <Button id='approve' size='middle' disabled={item?.status.toLowerCase() == 'approved' || item?.status.toLowerCase() == 'rejected'} onClick={() => selectedRequest(item, true)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                                        <FcApproval />
+                                        Approve
+                                    </Button>
+                                    <Button id='reject' size='middle' disabled={item?.status.toLowerCase() == 'approved' || item?.status.toLowerCase() == 'rejected'} onClick={() => selectedRequest(item, false)} style={{ display: 'flex', gap: '.5rem', alignItems: 'center' }}>
+                                        <RxCross2 />
+                                        Reject
+                                    </Button>
+                                </Space>
+                            </Row>
+                        </AntDCard>
+                    </List.Item>
+                )}
+            />
+            <LeaveModal
+                leaveType={leaveType}
+                fetchData={fetchData}
+                isModalOpen={isModalOpen}
+                selectedData={selectedData}
+                handleCancel={() => setIsModalOpen(false)}
+            />
+            <LeaveApprovalModal
+                leaveType={leaveType}
+                fetchData={fetchData}
+                leaveApproval={leaveApproval}
+                isModalOpen={isModalRequest}
+                isApproved={isApproved}
+                selectedRequest={selectedData}
+                handleClose={closeModal}
+            />
         </>
     )
 }
+
 const selectOptions = ['Pending', 'Approved']
 
 export function DividerWidth() {

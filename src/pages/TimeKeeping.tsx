@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Navigate } from "react-router-dom"
-import { Button, Col, Row, Modal, Space, Popconfirm, message, TablePaginationConfig, DatePicker, DatePickerProps, Skeleton, Switch, Typography } from "antd"
+import { Button, Col, Row, Modal, Space, Popconfirm, message, DatePicker, DatePickerProps, Skeleton, Switch, Typography, List, Card as AntDCard } from "antd"
 import styled from "styled-components"
 import dayjs, { Dayjs } from "dayjs"
 import { RxEnter, RxExit } from 'react-icons/rx'
@@ -8,7 +8,7 @@ import { ColumnsType } from "antd/es/table"
 import useWindowSize from "../shared/hooks/useWindowSize";
 import { Divider, Table } from "../components"
 import AvatarPng from '../shared/assets/default_avatar.png'
-import { renderTitle } from "../shared/utils/utilities"
+import { firstLetterCapitalize, renderTitle } from "../shared/utils/utilities"
 import { MessageInstance } from "antd/es/message/interface"
 import { useAxios } from './../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from "../shared/constants"
@@ -47,14 +47,13 @@ export default function TimeKeeping() {
         setLoading(true)
         date = (date === null || date === 'Invalid Date') ? '' : date
         const query = '?user_id=' + user?.id + (date ? ('&date=' + date) : '')
-        console.log(query)
         GET<TimeKeepingRes>(TIMEKEEPING.GET + query, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => setData(res?.data ?? [])).finally(() => setLoading(false))
     }
 
-    const onChange = (pagination: TablePaginationConfig) => fetchData({ args: { page: pagination?.current, pageSize: pagination?.pageSize! }, date: today })
+    const onChange = (page: number, pageSize: number) => fetchData({ args: { page, pageSize }, date: today })
 
-    const handleDatePickerChange: DatePickerProps['onChange'] = (date, dateString) => {
+    const handleDatePickerChange: DatePickerProps['onChange'] = (date) => {
         fetchData({ date: dayjs(date).format('YYYY-MM-DD') })
         setSelectedDate(dayjs(date).format('YYYY-MM-DD'))
     }
@@ -69,13 +68,36 @@ export default function TimeKeeping() {
                 </Button>
             </Row>
             <Divider />
-            <Table
+            <List
+                grid={{
+                    gutter: 16,
+                    xs: 1,
+                    sm: 2,
+                    md: 2,
+                    lg: 2,
+                    xl: 2,
+                    xxl: 2,
+                }}
+                pagination={{ position: 'bottom', align: 'center', onChange }}
                 loading={loading}
-                columns={width > 500 ? columns : mobileCol}
-                dataList={data}
-                isSizeChanger={false}
-                onChange={onChange}
-
+                dataSource={data}
+                renderItem={(item) => (
+                    <List.Item>
+                        <Card style={{ padding: 0 }} title={<h3 style={{ color: '#E49944', fontSize: 35 }}>{firstLetterCapitalize(item.type.split('_').join(' ').toLowerCase())}</h3>} extra={<b style={{ fontSize: 22 }}>{item?.time_keeping_date}</b>}>
+                            <Row justify='center'>
+                                <b style={{ fontSize: 32, color: '#9B3423' }}>{item.time_keeping_time}</b>
+                            </Row>
+                            <Row justify='space-between'>
+                                <p style={{ color: '#9B3423' }}>Morning Shift (8-5)</p>
+                                <p>
+                                    <b>Client Site: </b>
+                                    {item.is_client_site ? 'Yes' : 'No'}
+                                </p>
+                            </Row>
+                            <p>{user?.full_name}</p>
+                        </Card>
+                    </List.Item>
+                )}
             />
             <TimeKeepingModal
                 data={data}
@@ -88,6 +110,13 @@ export default function TimeKeeping() {
         </>
     )
 }
+
+const Card = styled(AntDCard)`
+    .ant-card-head {
+        padding: 10px 13px;
+    }
+        padding: 10px 13px !important;   
+    `
 
 type ModalProps = {
     isModalOpen: boolean

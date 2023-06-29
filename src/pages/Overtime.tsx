@@ -33,7 +33,7 @@ export default function Overtime() {
     },)
 
     useEffect(() => {
-        if (pathname == '/overtime/approval' && !codes['c06']) return navigate('/overtime/myovertime')
+        if (pathname == '/myovertimes/approval' && !codes['c06']) return navigate('/myovertimes/myovertime')
     }, [])
 
     if (loading) return <Skeleton />
@@ -51,7 +51,7 @@ export default function Overtime() {
             type="card"
             tabPosition="top"
             size='small'
-            onChange={(key) => navigate(`/overtime` + key)}
+            onChange={(key) => navigate(`/myovertimes` + key)}
             renderTabBar={(props, TabNavList) => (
                 <TabNavList {...props} mobile={false} />
             )}

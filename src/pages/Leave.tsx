@@ -34,7 +34,7 @@ export default function Leave() {
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
 
     useEffect(() => {
-        if (pathname == '/leave/approval' && !codes['c06']) return navigate('/leave/myleaves')
+        if (pathname == '/myleaves/approval' && !codes['c06']) return navigate('/myleaves/myleaves')
     }, [])
 
     if (loading) return <Skeleton />
@@ -52,7 +52,7 @@ export default function Leave() {
             type="card"
             tabPosition="top"
             size='small'
-            onChange={(key) => navigate(`/leave` + key)}
+            onChange={(key) => navigate(`/myleaves` + key)}
             renderTabBar={(props, TabNavList) => (
                 <TabNavList {...props} mobile={false} />
             )}

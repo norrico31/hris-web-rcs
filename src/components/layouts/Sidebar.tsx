@@ -32,8 +32,8 @@ export default function Sidebar({ onSelect, collapsed }: Props) {
             setLocationKey('/tasks')
         } else if (location?.pathname.includes('/team/')) {
             setLocationKey('/team')
-        } else if (location?.pathname.includes('/overtime/')) {
-            setLocationKey('/overtime')
+        } else if (location?.pathname.includes('/myovertimes/')) {
+            setLocationKey('/myovertimes')
         } else if (location?.pathname.includes('/announcements/')) {
             setLocationKey('/announcements')
         } else if (location?.pathname.includes('/salaryadjustments/')) {
@@ -50,8 +50,8 @@ export default function Sidebar({ onSelect, collapsed }: Props) {
             setLocationKey('/systemsettings/expensesettings/expense')
         } else if (location?.pathname.includes('/roles')) {
             setLocationKey('/roles')
-        } else if (location?.pathname.includes('/leave/')) {
-            setLocationKey('/leave/')
+        } else if (location?.pathname.includes('/myleaves/')) {
+            setLocationKey('/myleaves/')
         } else setLocationKey(location?.pathname)
     }, [location.pathname])
 
@@ -138,15 +138,15 @@ function filterMenu(user: IUser, collapsed: boolean, path: string) {
             rootPath.includes('timekeeping')
         ),
         getItemLinks(
-            <NavLink to='/overtime/myovertime' id='overtime' className={`main-link menu-item-main ${path.includes('/overtime') && 'active'}`}>{!collapsed && <AiOutlineFieldTime size={20} style={{ marginRight: 8 }} />} Overtime</NavLink>,
-            '/overtime',
+            <NavLink to='/myovertimes/myovertime' id='overtime' className={`main-link menu-item-main ${path.includes('/myovertime') && 'active'}`}>{!collapsed && <AiOutlineFieldTime size={20} style={{ marginRight: 8 }} />} Overtime</NavLink>,
+            '/myovertimes',
             collapsed ? <AiOutlineFieldTime className='menu-item-main' /> : null,
             undefined,
             rootPath.includes('overtime')
         ),
         getItemLinks(
-            <NavLink to='/leave/myleaves' className={`main-link menu-item-main ${path.includes('/leave') && 'active'}`}>{!collapsed && <AiOutlineCalendar size={20} style={{ marginRight: 10 }} />} Leaves</NavLink>,
-            '/leave/',
+            <NavLink to='/myleaves/myleaves' className={`main-link menu-item-main ${path.includes('/myleave') && 'active'}`}>{!collapsed && <AiOutlineCalendar size={20} style={{ marginRight: 10 }} />} Leaves</NavLink>,
+            '/myleaves/',
             collapsed ? <AiOutlineCalendar className='menu-item-main' /> : null,
             undefined,
             rootPath.includes('leave')
