@@ -15,7 +15,7 @@ type Props = {
 export default function Card({ level = 3, title, isDarkMode, style, children }: Props) {
     return (
         <Container style={style} isDarkMode={isDarkMode}>
-            {title && <Title level={level} style={{ color: '#212121dd', fontWeight: 'bold' }}>{title}</Title>}
+            {title && <Title level={level} style={{ color: '#888888', fontWeight: 'bold' }}>{title}</Title>}
             {children}
         </Container>
     )

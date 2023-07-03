@@ -159,8 +159,6 @@ export default function Dashboard() {
                             selectable={true}
                             selectMirror={true}
                             dayMaxEvents={true}
-                            // select={handleDateClick}
-                            // eventClick={handleEventClick}
                             events={holidayEvents as any}
                         />
                     </div>
@@ -175,12 +173,21 @@ function ListItem({ item, selectAnnouncement }: { item: IAnnouncements; selectAn
     return <>
         <List.Item key={item?.content}>
             <List.Item.Meta
-                title={<b style={{ fontSize: 32, color: '#1d1d1d' }}>{width > 430 ? item.title.slice(0, 30) : item.title.slice(0, 10)}</b>}
-                description={width > 430 ? <div dangerouslySetInnerHTML={{ __html: item?.content.slice(0, 20) + '...' }} /> : null}
+                title={<b style={{ fontSize: 24, color: '#959595', ...(width < 430 && { textDecoration: 'underline', cursor: 'pointer' }) }} onClick={() => width < 430 && selectAnnouncement(item)}>{width < 430 ? (
+                    <div>
+                        {item.title.slice(0, 20)}...
+                        <div style={{ ...(width < 430 && { textDecoration: 'underline', cursor: 'pointer', fontStyle: 'italic', fontSize: 15, color: '#646464' }) }} onClick={() => width < 430 && selectAnnouncement(item)}>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                    </div>
+                ) : item.title.slice(0, 40)}</b>}
+                description={width > 430 ? <div dangerouslySetInnerHTML={{ __html: item?.content.slice(0, 20) }} /> : null}
             />
-            <Space direction='vertical' align='center'>
-                <div>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                <Button type='primary' size='small' onClick={() => selectAnnouncement(item)}>View</Button>
+            <Space align='center'>
+                {width > 430 && (
+                    <div style={{ ...(width < 430 && { textDecoration: 'underline', cursor: 'pointer' }) }} onClick={() => width < 430 && selectAnnouncement(item)}>{new Date(item.publish_date + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                )}
+                {width > 430 && (
+                    <Button type='primary' size='small' onClick={() => selectAnnouncement(item)}>View</Button>
+                )}
             </Space>
         </List.Item>
     </>

@@ -267,8 +267,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             messageApi.open({
                 key,
                 type: 'error',
-                content: 'Pleae fill up empty fields',
-                // content: err.response.data.message ?? err.response.data.error,
+                content: err.response.data.message ?? err.response.data.error,
                 duration: 3
             })
             setLoading(false)

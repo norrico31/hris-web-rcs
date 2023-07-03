@@ -54,8 +54,9 @@ export default function TimeKeeping() {
     const onChange = (page: number, pageSize: number) => fetchData({ args: { page, pageSize }, date: today })
 
     const handleDatePickerChange: DatePickerProps['onChange'] = (date) => {
-        fetchData({ date: dayjs(date).format('YYYY-MM-DD') })
-        setSelectedDate(dayjs(date).format('YYYY-MM-DD'))
+        const dateToday = dayjs().format('YYYY-MM-DD')
+        fetchData({ date: (date == null || date == undefined) ? dateToday : dayjs(date).format('YYYY-MM-DD') })
+        setSelectedDate(date == null ? dateToday : dayjs(date).format('YYYY-MM-DD'))
     }
 
     return (
@@ -63,7 +64,9 @@ export default function TimeKeeping() {
             <Title level={2} style={{ textAlign: width < 500 ? 'center' : 'initial' }}>Timekeeping</Title>
             <Row wrap justify='space-between'>
                 <DatePicker format='YYYY-MM-DD' defaultValue={dayjs()} onChange={handleDatePickerChange} />
-                <Button type='primary' size="large" onClick={() => setIsModalOpen(true)} disabled={data.length > 1 || (selectedDate != undefined || (selectedDate !== today && !data.length))}>
+                <Button type='primary' size="large" onClick={() => setIsModalOpen(true)}
+                    disabled={data.length > 1 || (selectedDate != undefined && (selectedDate !== today && !data.length))}
+                >
                     {(data[0] == undefined) ? 'Time In' : 'Time Out'}
                 </Button>
             </Row>

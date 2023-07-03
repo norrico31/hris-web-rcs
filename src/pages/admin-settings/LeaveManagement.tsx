@@ -413,7 +413,7 @@ export function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, ha
             return
         }
         setLoading(true)
-        POST(LEAVES.CANCEL + selectedRequest?.id, { cancel_reason: remarks })
+        POST(LEAVES.CANCEL + selectedRequest?.id, { cancel_reason: remarks, ...(selectedRequest?.status === 'APPROVED' && { user_id: selectedRequest.user_id }) })
             .then((res) => {
                 setRemarks('')
                 handleClose()
@@ -447,6 +447,7 @@ export function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, ha
                         Cancel Request
                     </Button>
                 )}
+                {selectedRequest?.status === 'APPROVED' && <Button type='primary' onClick={cancelRequest}>Cancel Approved</Button>}
                 <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
                     Close
                 </Button>
@@ -470,7 +471,7 @@ export function LeaveDescription({ selectedRequest, remarks, setRemarks }: Leave
             <Descriptions.Item label="Leave End" span={2}>{new Date(selectedRequest?.date_end! + '').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Descriptions.Item>
             <Descriptions.Item label="Start Time" span={2}>{selectedRequest?.time_start?.toString()}</Descriptions.Item>
             <Descriptions.Item label="End Time" span={2}>{selectedRequest?.time_end?.toString()}</Descriptions.Item>
-            <Descriptions.Item label="Status" span={2}>{selectedRequest?.status}</Descriptions.Item>
+            <Descriptions.Item label="Status" span={2}><span style={{ color: selectedRequest?.status === 'APPROVED' ? 'green' : 'red', fontWeight: 'bold' }}>{selectedRequest?.status}</span></Descriptions.Item>
             <Descriptions.Item label="Leave Type" span={2}>{selectedRequest?.leave_type?.type}</Descriptions.Item>
         </Descriptions>
         <Divider />
@@ -481,9 +482,10 @@ export function LeaveDescription({ selectedRequest, remarks, setRemarks }: Leave
         <Descriptions bordered>
             <Descriptions.Item label={selectedRequest?.cancel_reason ? 'Cancel Remarks' : "Remarks"} >
                 {selectedRequest?.remarks ? (selectedRequest?.remarks) : selectedRequest?.cancel_reason ? selectedRequest?.cancel_reason : (
-                    <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} disabled={selectedRequest?.status !== 'PENDING'} />
+                    <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} disabled={selectedRequest?.status !== 'PENDING' && selectedRequest?.status !== 'APPROVED'} />
                 )}
             </Descriptions.Item>
+
         </Descriptions>
     </>
 }

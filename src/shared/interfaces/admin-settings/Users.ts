@@ -27,8 +27,9 @@ export interface IUser {
     id: string
     is_active: string
     last_name: string
-    leave_credit: ILeaveCredits
     marital_status: string | null
+    latest_sl: ILeaveCredits
+    latest_vl: ILeaveCredits
     memos: IMemorandum[]
     middle_name: string | null
     modules: IPermissions[]
