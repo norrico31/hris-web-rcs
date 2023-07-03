@@ -196,8 +196,8 @@ function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCanc
         if (selectedData != undefined) {
             form.setFieldsValue({
                 ...selectedData,
-                time_in: dayjs(selectedData.time_in, 'HH:mm:ss'),
-                time_out: dayjs(selectedData.time_out, 'HH:mm:ss')
+                time_in: dayjs(selectedData.time_in, 'h:mm A'),
+                time_out: dayjs(selectedData.time_out, 'h:mm A')
             })
         } else {
             form.resetFields(undefined)
