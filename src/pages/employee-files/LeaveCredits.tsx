@@ -62,7 +62,6 @@ export default function LeaveCredits() {
     )
 }
 
-
 type ModalProps = {
     latestVL: ILeaveCredits
     latestSL: ILeaveCredits
@@ -77,7 +76,6 @@ function LeaveCreditsAdjustment({ latestVL, latestSL, isModalOpen, handleCancel,
     const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const [isVl, setIsVl] = useState(false)
-    // const [salaryRates, setSalaryRates] = useState<Array<ISalaryRates>>([])
 
     function onFinish(values: Record<string, any>) {
         setLoading(true)
@@ -125,7 +123,7 @@ function LeaveCreditsAdjustment({ latestVL, latestSL, isModalOpen, handleCancel,
                 layout='vertical'
             >
                 <Descriptions.Item label={`Balance - ${isVl ? 'VL' : 'SL'}`}>
-                    {isVl ? latestSL?.balance : latestVL?.balance}
+                    {!isVl ? latestSL?.balance : latestVL?.balance}
                 </Descriptions.Item>
             </Descriptions>
             <Item style={{ textAlign: 'right', margin: '20px 0' }}>
