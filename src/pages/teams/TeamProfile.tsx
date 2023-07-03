@@ -14,7 +14,7 @@ const [{ SYSTEMSETTINGS: { HRSETTINGS: { POSITION, TEAMS } }, EMPLOYEE201: { USE
 
 export default function TeamProfile() {
     const { teamId, teamInfo, fetchData } = useTeamCtx()
-    const [form] = useForm<IUser>()
+    const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<{ position: IPosition[]; teams: ITeam[] }>({ position: [], teams: [] })
     const [messageApi, contextHolder] = useMessage()
@@ -45,7 +45,7 @@ export default function TeamProfile() {
     }, [teamInfo])
 
     const key = 'error'
-    const onFinish = (val: IUser) => {
+    const onFinish = (val: Record<string, any>) => {
         setLoading(true)
         PUT(USERPROFILE.PUT + teamId, {
             ...val,
@@ -53,9 +53,7 @@ export default function TeamProfile() {
             employee_code: teamInfo?.employee_code,
             role_id: teamInfo?.role_id,
         })
-            .then((res) => {
-                console.log(res)
-            })
+            .then((res) => res)
             .catch((err) => {
                 messageApi.open({
                     key,

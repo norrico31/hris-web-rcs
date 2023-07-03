@@ -78,9 +78,7 @@ export default function HrReports() {
                                     link.click()
                                     closeModal()
                                 })
-                                .catch(err => {
-                                    console.log('error to: ', err)
-                                })
+                                .catch(err => err)
                         },
                     }
                     setSelectedReport(report)
@@ -136,9 +134,7 @@ function ModalDownload({ selectedReport, isModalOpen, handleClose }: { isModalOp
                 link.click()
                 handleClose()
             })
-            .catch(err => {
-                console.log('error to: ', err)
-            })
+            .catch(err => err)
             .finally(() => {
                 setLoading(false)
                 setDate(dateVal)

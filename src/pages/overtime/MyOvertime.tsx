@@ -213,7 +213,7 @@ type ModalProps = {
 const { Item: FormItem, useForm } = AntDForm
 
 export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
-    const [form] = useForm<IOvertime>()
+    const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const [messageApi, contextHolder] = useMessage()
     const key = 'error'
@@ -230,7 +230,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         } else form.resetFields()
     }, [selectedData])
 
-    async function onFinish({ date_start, date_end, planned_ot_start, planned_ot_end, ...restProps }: IOvertime) {
+    async function onFinish({ date_start, date_end, planned_ot_start, planned_ot_end, ...restProps }: Record<string, any>) {
         date_start = dayjs(date_start).format('YYYY-MM-DD')
         date_end = dayjs(date_end).format('YYYY-MM-DD')
         planned_ot_start = dayjs(planned_ot_start).format('LT')

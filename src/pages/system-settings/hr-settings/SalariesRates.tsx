@@ -63,7 +63,7 @@ export default function SalaryRates() {
                 description={`Are you sure you want to restore ${record?.rate}?`}
                 onConfirm={() => {
                     GET(HRSETTINGS.SALARYRATES.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,

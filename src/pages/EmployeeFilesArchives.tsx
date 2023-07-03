@@ -93,7 +93,7 @@ export default function EmployeeFiles() {
                 description={`Are you sure you want to restore ${record?.full_name}?`}
                 onConfirm={() => {
                     GET(EMPLOYEE201.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,

@@ -105,7 +105,7 @@ export default function Users() {
                 description={`Are you sure you want to restore ${record?.full_name}?`}
                 onConfirm={() => {
                     GET(ADMINSETTINGS.USERS.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,
@@ -148,9 +148,7 @@ export default function Users() {
 
     function userActivation(url: string, id: string) {
         PUT(url + id, {})
-            .then((res) => {
-                console.log('USER ACTIVATION: ', res)
-            })
+            .then((res) => res)
             .finally(fetchData)
     }
 
@@ -232,7 +230,7 @@ interface ModalProps {
 const { Item: FormItem, useForm } = AntDForm
 
 function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
-    const [form] = useForm<IUser>()
+    const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const [roleId, setRoleId] = useState('')
     const [lists, setLists] = useState<{ roles: IRole[]; departments: IDepartment[]; manager: ILineManager[] }>({ roles: [], departments: [], manager: [] })
@@ -246,9 +244,8 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
 
     useEffect(() => {
         if (selectedData != undefined) {
-            console.log(selectedData)
             setRoleId(selectedData?.role?.id)
-            form.setFieldsValue({ ...selectedData, manager_id: selectedData?.managers[0]?.id! })
+            form.setFieldsValue({ ...selectedData })
         } else {
             form.resetFields(undefined)
         }
@@ -269,7 +266,7 @@ function UserModal({ title, selectedData, isModalOpen, handleCancel, fetchData }
         }
     }, [selectedData])
 
-    function onFinish(values: IUser) {
+    function onFinish(values: Record<string, any>) {
         setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, ...(description != undefined && { description }) }

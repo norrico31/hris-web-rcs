@@ -67,7 +67,7 @@ export default function BankDetails() {
                 description={`Are you sure you want to restore ${record?.name}?`}
                 onConfirm={() => {
                     GET(HRSETTINGS.BANKDETAILS.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,

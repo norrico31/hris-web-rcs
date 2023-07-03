@@ -221,7 +221,7 @@ function TasksCreateInputs({ title, fetchData, handleCancel }: CreateInputProps)
             }
             setTasks([...tasks])
         } catch (error) {
-            console.log(error)
+            return error
         }
     }
 
@@ -573,7 +573,7 @@ function TaskTitle({ children }: { children: ReactNode }) {
 }
 
 function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: UpdateInputProps) {
-    const [form] = useForm<ITasks>()
+    const [form] = useForm<Record<string, any>>()
     const { user } = useAuthContext()
     const [isModalActivity, setIsModalActivity] = useState(false)
     const [isModalTypes, setIsModalTypes] = useState(false)
@@ -623,7 +623,7 @@ function TasksUpdateInputs({ title, selectedData, fetchData, handleCancel }: Upd
     }
 
     const key = 'error'
-    function onFinish(values: ITasks) {
+    function onFinish(values: Record<string, any>) {
         setLoading(true)
         let { date, description, ...restValues } = values
         date = dayjs(date).format('YYYY/MM/DD') as any
@@ -836,9 +836,7 @@ function TasksModalDownload({ userId, isModalDownload, handleClose }: { userId: 
                 link.click()
                 handleClose()
             })
-            .catch(err => {
-                console.log('error to: ', err)
-            })
+            .catch(err => err)
             .finally(() => {
                 setLoading(false)
                 setDate(dateVal)
@@ -919,9 +917,7 @@ function ArchiveModal({ isModalOpen, handleClose, columns, fetchMainData }: Arch
             description={`Are you sure you want to restore ${record?.name}?`}
             onConfirm={() => {
                 GET(TASKS.RESTORE + record?.id)
-                    .then((res) => {
-                        console.log(res)
-                    })
+                    .then((res) => res)
                     .finally(() => {
                         fetchData()
                         fetchMainData()

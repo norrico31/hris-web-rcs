@@ -155,7 +155,7 @@ type ModalProps = {
 const { Item: FormItem, useForm } = AntDForm
 
 export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
-    const [form] = useForm<ILeave>()
+    const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<ILeaveType[]>([])
     const [messageApi, contextHolder] = useMessage()
@@ -180,7 +180,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         }
     }, [selectedData])
 
-    async function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: ILeave) {
+    async function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: Record<string, any>) {
         setLoading(true)
         date_start = dayjs(date_start).format('YYYY/MM/DD') as any
         date_end = dayjs(date_end).format('YYYY/MM/DD') as any
@@ -190,7 +190,6 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         try {
             let result = selectedData ? PUT(LEAVES.PUT + selectedData?.id, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
             const res = await result
-            console.log(res)
             form.resetFields()
             handleCancel()
         } catch (err: any) {

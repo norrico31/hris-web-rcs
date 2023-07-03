@@ -68,7 +68,7 @@ export default function Team() {
                 description={`Are you sure you want to restore ${record?.name}?`}
                 onConfirm={() => {
                     GET(TEAMS.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,

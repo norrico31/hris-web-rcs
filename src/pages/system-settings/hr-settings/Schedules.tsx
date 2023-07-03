@@ -74,7 +74,7 @@ export default function Schedules() {
                 description={`Are you sure you want to restore ${record?.name}?`}
                 onConfirm={() => {
                     GET(SCHEDULES.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,
@@ -208,7 +208,6 @@ function ScheduleModal({ title, selectedData, isModalOpen, fetchData, handleCanc
         setLoading(true)
         let { description, ...restValues } = values
         restValues = { ...restValues, time_in: dayjs(restValues.time_in).format('LTS'), time_out: dayjs(restValues.time_out).format('LTS'), ...(description != undefined && { description }) }
-        console.log(restValues)
         let result = selectedData ? PUT(SCHEDULES.PUT + selectedData?.id, { ...restValues, id: selectedData.id }) : POST(SCHEDULES.POST, restValues)
         result.then(() => {
             form.resetFields()

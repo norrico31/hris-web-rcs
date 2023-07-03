@@ -18,9 +18,9 @@ export default function PayScheme() {
     const [form] = AntDForm.useForm<Record<string, any>>()
     const [lists, setLists] = useState<IBankDetails[]>([])
     const [bankDetails, setBankDetails] = useState({ account_number: '', bank_name: '', pay_scheme: '' })
-
     const [loading, setLoading] = useState(false)
-    console.log(employeeInfo?.bank_detail)
+
+
     useEffect(() => {
         if (employeeInfo?.bank_detail) {
             form.setFieldsValue({

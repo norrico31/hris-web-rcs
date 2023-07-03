@@ -82,9 +82,7 @@ export default function SalaryAdjustmentArchives() {
                 description={`Are you sure you want to restore ${record?.expense_type?.name}?`}
                 onConfirm={() => {
                     GET(EXPENSE.RESTORE + record?.id)
-                        .then((res) => {
-                            console.log(res)
-                        })
+                        .then((res) => res)
                         .finally(() => {
                             fetchData()
                         })

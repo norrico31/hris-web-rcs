@@ -125,7 +125,7 @@ function TimeKeepingModal({ selectedData, isModalOpen, handleClose, fetchData }:
     const [messageApi, contextHolder] = useMessage()
     const [users, setUsers] = useState<IUser[]>([])
     const key = 'error'
-    console.log(selectedData)
+
     useEffect(() => {
         if (selectedData !== undefined) {
             form.setFieldsValue({
@@ -156,7 +156,6 @@ function TimeKeepingModal({ selectedData, isModalOpen, handleClose, fetchData }:
         try {
             let result = selectedData ? PUT(TIMEKEEPING.HRMANAGEMENTPUT + selectedData?.id, payload) : POST(TIMEKEEPING.HRMANAGEMENTPOST, payload)
             const res = await result
-            console.log(res)
             form.resetFields()
             handleClose()
         } catch (err: any) {

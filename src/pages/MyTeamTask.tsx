@@ -165,9 +165,7 @@ function ModalDownload({ users, isModalDownload, handleClose }: { users: Array<{
                 handleClose()
                 setSelectedUser([])
             })
-            .catch(err => {
-                console.log('error to: ', err)
-            })
+            .catch(err => err)
             .finally(() => {
                 setLoading(false)
                 setDate(dateVal)

@@ -159,9 +159,7 @@ function ProjectTeamsModal({ title, isModalOpen, selectedData, handleClose, fetc
                 form.resetFields()
                 handleClose()
             })
-            .catch((err) => {
-                console.log(err)
-            })
+            .catch((err) => err)
             .finally(() => {
                 fetchData()
                 setLoading(false)

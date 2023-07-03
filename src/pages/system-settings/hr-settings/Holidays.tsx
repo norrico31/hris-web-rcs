@@ -106,7 +106,7 @@ export default function Holidays() {
                 description={`Are you sure you want to restore ${record?.name}?`}
                 onConfirm={() => {
                     GET(SYSTEMSETTINGS.HRSETTINGS.HOLIDAYS.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,

@@ -193,7 +193,7 @@ type ModalProps = {
 const { Item: FormItem, useForm } = AntDForm
 
 function SalaryAdjustmentModal({ title, fetchData, selectedData, isModalOpen, handleCancel }: ModalProps) {
-    const [form] = useForm<ISalaryAdjustment>()
+    const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<{ employee: Array<IEmployee>; expenseTypes: Array<IExpenseType> }>({ employee: [], expenseTypes: [] })
     const [messageApi, contextHolder] = useMessage()

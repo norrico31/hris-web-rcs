@@ -75,7 +75,7 @@ export default function ClientAdjustment() {
                 description={`Are you sure you want to restore ${record?.branch_name}?`}
                 onConfirm={() => {
                     GET(CLIENTSETTINGS.CLIENTADJUSTMENT.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,

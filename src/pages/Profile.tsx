@@ -12,7 +12,7 @@ const { GET, DELETE, POST, PUT } = useAxios()
 const [{ AUTH: { UPDATEPROFILE } }] = useEndpoints()
 
 export default function Profile() {
-    const [form] = useForm<IUser>()
+    const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const { user } = useAuthContext()
     const [messageApi, contextHolder] = useMessage()
@@ -22,12 +22,10 @@ export default function Profile() {
     }, [])
 
     const key = 'error'
-    const onFinish = (val: IUser) => {
+    const onFinish = (val: Record<string, any>) => {
         setLoading(true)
         POST(UPDATEPROFILE, val)
-            .then((res) => {
-                console.log(res)
-            })
+            .then((res) => res)
             .catch((err) => {
                 messageApi.open({
                     key,

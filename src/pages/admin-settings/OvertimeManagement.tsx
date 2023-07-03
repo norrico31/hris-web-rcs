@@ -211,7 +211,7 @@ type ModalProps = {
 const { Item: FormItem, useForm } = AntDForm
 
 export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
-    const [form] = useForm<IOvertime>()
+    const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const [messageApi, contextHolder] = useMessage()
     const [users, setUsers] = useState<IUser[]>([])
@@ -235,7 +235,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
 
     }, [selectedData])
 
-    async function onFinish({ date_start, date_end, planned_ot_start, planned_ot_end, ...restProps }: IOvertime) {
+    async function onFinish({ date_start, date_end, planned_ot_start, planned_ot_end, ...restProps }: Record<string, any>) {
         date_start = dayjs(date_start).format('YYYY-MM-DD')
         date_end = dayjs(date_end).format('YYYY-MM-DD')
         planned_ot_start = dayjs(planned_ot_start).format('LT')
@@ -245,7 +245,6 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         try {
             let result = selectedData ? PUT(OVERTIME.HRMANAGEMENTPUT + selectedData.id, { ...restProps, date_start, date_end, id: selectedData.id, planned_ot_start, planned_ot_end, manager: 1 }) : POST(OVERTIME.HRMANAGEMENTPOST, { ...restProps, date_start, date_end, planned_ot_start, planned_ot_end, manager: 1 })
             const res = await result
-            console.log(res)
             form.resetFields()
             handleCancel()
         } catch (err: any) {
@@ -441,7 +440,6 @@ type OvertimeDescriptionProps = {
 }
 
 export function OvertimeDescription({ selectedRequest, remarks, setRemarks }: OvertimeDescriptionProps) {
-    console.log(selectedRequest)
     return <>
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>

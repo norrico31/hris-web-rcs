@@ -5,7 +5,7 @@ import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { AiOutlineEdit } from 'react-icons/ai'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { Form, TabHeader, Table } from '../../components'
 import { renderTitle } from '../../shared/utils/utilities'
@@ -159,7 +159,7 @@ type ModalProps = {
 const { Item: FormItem, useForm } = AntDForm
 
 export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel, fetchData }: ModalProps) {
-    const [form] = useForm<ILeave>()
+    const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<{ leaveTypes: ILeaveType[]; users: IUser[] }>({ leaveTypes: [], users: [] })
     const [messageApi, contextHolder] = useMessage()
@@ -191,7 +191,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         }
     }, [selectedData])
 
-    async function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: ILeave) {
+    async function onFinish({ date_end, date_start, time_start, time_end, ...restProps }: Record<string, any>) {
         setLoading(true)
         date_start = dayjs(date_start).format('YYYY/MM/DD') as any
         date_end = dayjs(date_end).format('YYYY/MM/DD') as any
@@ -201,7 +201,6 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         try {
             let result = selectedData ? PUT(LEAVES.PUT, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
             const res = await result
-            console.log(res)
             form.resetFields()
             handleCancel()
         } catch (err: any) {

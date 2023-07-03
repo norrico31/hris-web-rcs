@@ -207,7 +207,6 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
         setLoading(true)
         const formData = new FormData()
         const publishDate = (values?.publish_date ? dayjs(values?.publish_date).format('YYYY-MM-DD') : '')
-        console.log(values.file)
         formData.append('publish_date', publishDate)
         formData.append('posted_by', userId)
         formData.append('title', values.title)

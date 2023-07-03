@@ -74,7 +74,7 @@ export default function ClientBranch() {
                 description={`Are you sure you want to restore ${record?.branch_name}?`}
                 onConfirm={() => {
                     GET(CLIENTSETTINGS.CLIENTBRANCH.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,

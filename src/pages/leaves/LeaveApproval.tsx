@@ -150,7 +150,6 @@ export default function LeaveApproval() {
         try {
             try {
                 const res = await POST(LEAVES.POST + url, payload)
-                console.log(res)
                 return Promise.resolve(res)
             } catch (err: any) {
                 return Promise.reject(err?.ressponse?.data?.message)

@@ -84,7 +84,7 @@ export default function ExpenseType() {
                 description={`Are you sure you want to restore ${record?.name}?`}
                 onConfirm={() => {
                     GET(EXPENSESETTINGS.EXPENSETYPE.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,

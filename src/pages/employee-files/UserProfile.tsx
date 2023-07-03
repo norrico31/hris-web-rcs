@@ -15,7 +15,7 @@ const { PUT } = useAxios()
 
 export default function UserProfileEmployee() {
     const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
-    const [form] = useForm<IUser>()
+    const [form] = useForm<Record<string, any>>()
     const [loading, setLoading] = useState(false)
     const [lists, setLists] = useState<{ teams: ITeam[]; employeeStatus: IEmployeeStatus[]; positions: IPosition[]; roles: IRole[]; lineManagers: ILineManager[]; departments: IDepartment[] }>({
         employeeStatus: [],
@@ -68,7 +68,7 @@ export default function UserProfileEmployee() {
         })
     }, [employeeInfo])
 
-    function onFinish(val: IUser) {
+    function onFinish(val: Record<string, any>) {
         setLoading(true)
         const payload = {
             ...val,

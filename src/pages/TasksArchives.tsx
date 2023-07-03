@@ -107,9 +107,7 @@ export default function MyTaskArvhices() {
                 description={`Are you sure you want to restore ${record?.name}?`}
                 onConfirm={() => {
                     GET(TASKS.RESTORE + record?.id)
-                        .then((res) => {
-                            console.log(res)
-                        })
+                        .then((res) => res)
                         .finally(() => {
                             fetchData()
                         })

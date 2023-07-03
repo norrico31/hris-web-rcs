@@ -324,7 +324,6 @@ function OvertimeApprovalModal({ isApproved, overtimeType, selectedRequest, isMo
                 reason: selectedRequest?.reason
             } as Payload
             const res = await overtimeApproval(url + selectedRequest?.id, payload)
-            console.log('overtime approval result: ', res)
             setRemarks('')
             handleClose()
         } catch (err: any) {

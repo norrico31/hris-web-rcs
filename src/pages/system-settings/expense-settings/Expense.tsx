@@ -109,7 +109,7 @@ export default function Expense() {
             <Table
                 columns={columns}
                 dataList={data}
-                onChange={(evt) => console.log(evt)}
+                onChange={(evt) => evt}
             />
             <ExpenseModal
                 title={selectedData != undefined ? 'Edit' : 'Create'}

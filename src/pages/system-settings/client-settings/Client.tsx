@@ -83,7 +83,7 @@ export default function Client() {
                 description={`Are you sure you want to restore ${record?.name}?`}
                 onConfirm={() => {
                     GET(CLIENTSETTINGS.CLIENT.RESTORE + record?.id)
-                        .then((res) => console.log(res))
+                        .then((res) => res)
                         .finally(() => fetchData({
                             search,
                             page: tableParams?.pagination?.current ?? 1,
@@ -252,14 +252,14 @@ function ClientModal({ title, selectedData, isModalOpen, handleCancel, fetchData
                 required
                 rules={[{ required: true, message: 'Required' }]}
             >
-                <Input type='text' 
-                placeholder='0916XXXXXXX' 
-                pattern="[0-9]{11}" 
-                title="Please enter a 11-digit phone number"
-                onInput={(e) => {
-                    const input = e.target as HTMLInputElement;
-                    input.value = input.value.slice(0, 11); // Limit input to 11 characters
-                }} />
+                <Input type='text'
+                    placeholder='0916XXXXXXX'
+                    pattern="[0-9]{11}"
+                    title="Please enter a 11-digit phone number"
+                    onInput={(e) => {
+                        const input = e.target as HTMLInputElement;
+                        input.value = input.value.slice(0, 11); // Limit input to 11 characters
+                    }} />
             </FormItem>
             <FormItem
                 label="Contact Person"
