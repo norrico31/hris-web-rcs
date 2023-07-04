@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
+import { Editor } from '@tinymce/tinymce-react'
 import { useAuthContext } from "../shared/contexts/Auth"
 import { Button, Col, Form as AntDForm, Input, Modal, Upload, Skeleton, Space, DatePicker } from "antd"
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { AiOutlineCalendar } from 'react-icons/ai'
 import useMessage from "antd/es/message/useMessage"
-import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { InboxOutlined } from '@ant-design/icons'
 import dayjs from "dayjs"
@@ -233,14 +233,9 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
     }
 
     function handleDownload() {
-        // TODO: Logic to retrieve the file URL or data
-
-        // Create a temporary link element
         const link = document.createElement('a');
-        link.href = ANNOUNCEMENT.DOWNLOAD + `${selectedData?.id}`; // Replace 'your_file_url' with the actual file URL or data URL
+        link.href = ANNOUNCEMENT.DOWNLOAD + `${selectedData?.id}`
         link.target = '_blank';
-
-        // Trigger the download
         link.click();
     }
 
@@ -260,7 +255,15 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
                 required
                 rules={[{ required: true, message: 'Required' }]}
             >
-                <ReactQuill theme="snow" value={textFromEditor} onChange={setTextFromEditor} />
+                <Editor
+                    apiKey='r3c92ex1ljhdvklsw9n8uqwjfshrhiieqv01y6b2lrwvdt9q'
+                    value={textFromEditor}
+                    onEditorChange={setTextFromEditor}
+                    init={{
+                        height: 500,
+                        menubar: false,
+                    }}
+                />
             </FormItem>
             <FormItem
                 label="Publish Date"
@@ -304,6 +307,7 @@ function AnnouncementsModal({ title, userId, fetchData, selectedData, isModalOpe
                 </Space>
             </FormItem>
         </Form>
+
     </Modal >
 }
 
