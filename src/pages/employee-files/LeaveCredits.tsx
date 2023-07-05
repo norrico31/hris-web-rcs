@@ -29,31 +29,43 @@ export default function LeaveCredits() {
             <Descriptions
                 layout='vertical'
                 bordered
-                column={{ xxl: 4, xl: 4, lg: 4, md: 4, sm: 2, xs: 1 }}
+                column={{ xxl: 6, xl: 6, lg: 6, md: 6, sm: 2, xs: 1 }}
             >
                 <Descriptions.Item label="Type">
-                    {latestVl?.type}
+                    <b>{latestVl?.type}</b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Transfer Type">
+                    <b>{latestVl?.transfer_type}</b>
                 </Descriptions.Item>
                 <Descriptions.Item label="Credit">
-                    {latestVl?.credit}
+                    <b>{latestVl?.credit}</b>
                 </Descriptions.Item>
                 <Descriptions.Item label="Debit">
-                    {latestVl?.debit}
+                    <b>{latestVl?.debit}</b>
                 </Descriptions.Item>
                 <Descriptions.Item label="Balance">
-                    {latestVl?.balance}
+                    <b>{latestVl?.balance}</b>
+                </Descriptions.Item>
+                <Descriptions.Item label="Remarks">
+                    <b>{latestVl?.remarks}</b>
                 </Descriptions.Item>
                 <Descriptions.Item>
-                    {latestSL?.type}
+                    <b>{latestSL?.type}</b>
                 </Descriptions.Item>
                 <Descriptions.Item >
-                    {latestSL?.credit}
+                    <b>{latestSL?.transfer_type}</b>
                 </Descriptions.Item>
                 <Descriptions.Item >
-                    {latestSL?.debit}
+                    <b>{latestSL?.credit}</b>
                 </Descriptions.Item>
                 <Descriptions.Item >
-                    {latestSL?.balance}
+                    <b>{latestSL?.debit}</b>
+                </Descriptions.Item>
+                <Descriptions.Item >
+                    <b>{latestSL?.balance}</b>
+                </Descriptions.Item>
+                <Descriptions.Item >
+                    <b>{latestSL?.remarks}</b>
                 </Descriptions.Item>
             </Descriptions>
             <div style={{ textAlign: 'right', margin: 10 }}>

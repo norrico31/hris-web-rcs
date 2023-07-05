@@ -5,6 +5,8 @@ export interface ILeaveCredits {
     date: string
     debit: number
     deleted_at: null
+    remarks: string | null
+    transfer_type: string | null
     id: string
     type: string
     updated_at: string
