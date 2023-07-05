@@ -177,8 +177,9 @@ function TimeKeepingModal({ fetchData, today, selectedDate, data, isModalOpen, h
             photo: imageSrc,
             location: coordinates,
             is_client_site: clientSite,
-            date: selectedDate !== today ? selectedDate : today
+            ...(method === 'timeout' && { date: selectedDate })
         }
+        console.log(payload)
         if (payload.photo == null) {
             setError('Please take a selfie photo')
             return

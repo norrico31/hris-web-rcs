@@ -6,7 +6,6 @@ import { Button, Col, Form as AntDForm, Input, Modal, Upload, Skeleton, Space, D
 import { ColumnsType, TablePaginationConfig } from "antd/es/table"
 import { AiOutlineCalendar } from 'react-icons/ai'
 import useMessage from "antd/es/message/useMessage"
-import 'react-quill/dist/quill.snow.css'
 import { InboxOutlined } from '@ant-design/icons'
 import dayjs from "dayjs"
 import { Action, MainHeader, Table, Form, TabHeader } from "../components"
