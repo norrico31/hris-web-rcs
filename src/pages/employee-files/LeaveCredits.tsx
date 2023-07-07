@@ -5,7 +5,7 @@ import { useEmployeeCtx } from '../EmployeeEdit'
 import { Action, Card, Divider, Form, Table } from '../../components'
 import { useAxios } from '../../shared/lib/axios'
 import { useEndpoints } from '../../shared/constants'
-import { IArguments, ILeaveCredits, TableParams } from '../../shared/interfaces'
+import { IArguments, ILeaveCredits, ILeaveCreditsHistory, LeaveCreditsHistoryRes, TableParams } from '../../shared/interfaces'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useSearchDebounce } from '../../shared/hooks/useDebounce'
 
@@ -13,61 +13,66 @@ const [{ EMPLOYEE201: { EMPLOYEESALARY }, SYSTEMSETTINGS: { HRSETTINGS: { SALARY
 const { GET, POST, DELETE, PUT } = useAxios()
 
 export default function LeaveCredits() {
-    const { employeeInfo, fetchData } = useEmployeeCtx()
+    const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isModalHistory, setIsModalHistory] = useState(false)
     const latestVl = employeeInfo?.latest_vl
     const latestSL = employeeInfo?.latest_sl
 
+    const data = [latestVl, latestSL] ?? []
+
+    const columns: ColumnsType<ILeaveCreditsHistory> = [
+        {
+            title: 'Type',
+            key: 'type',
+            dataIndex: 'type',
+            width: 150
+        },
+        {
+            title: 'Transfer Type',
+            key: 'transfer_type',
+            dataIndex: 'transfer_type',
+            width: 200
+        },
+        {
+            title: 'Credit',
+            key: 'credit',
+            dataIndex: 'credit',
+            width: 150
+        },
+        {
+            title: 'Debit',
+            key: 'debit',
+            dataIndex: 'debit',
+            width: 150
+        },
+        {
+            title: 'Balance',
+            key: 'balance',
+            dataIndex: 'balance',
+            width: 150
+        },
+        {
+            title: 'Date',
+            key: 'date',
+            dataIndex: 'date',
+            width: 150
+        },
+        {
+            title: 'Remarks',
+            key: 'remarks',
+            dataIndex: 'remarks',
+            width: 220
+        },
+    ]
+
     return (
         <Card title="Leave Credits">
-            <Row justify='end'>
-                <Button className='btn-secondary' onClick={() => setIsModalHistory(true)}>History</Button>
-                <LeaveCreditsHistory isModalOpen={isModalHistory} onCancel={() => setIsModalHistory(false)} />
-            </Row>
-            <Divider />
-            <Descriptions
-                layout='vertical'
-                bordered
-                column={{ xxl: 6, xl: 6, lg: 6, md: 6, sm: 2, xs: 1 }}
-            >
-                <Descriptions.Item label="Type">
-                    <b>{latestVl?.type}</b>
-                </Descriptions.Item>
-                <Descriptions.Item label="Transfer Type">
-                    <b>{latestVl?.transfer_type}</b>
-                </Descriptions.Item>
-                <Descriptions.Item label="Credit">
-                    <b>{latestVl?.credit}</b>
-                </Descriptions.Item>
-                <Descriptions.Item label="Debit">
-                    <b>{latestVl?.debit}</b>
-                </Descriptions.Item>
-                <Descriptions.Item label="Balance">
-                    <b>{latestVl?.balance}</b>
-                </Descriptions.Item>
-                <Descriptions.Item label="Remarks">
-                    <b>{latestVl?.remarks}</b>
-                </Descriptions.Item>
-                <Descriptions.Item>
-                    <b>{latestSL?.type}</b>
-                </Descriptions.Item>
-                <Descriptions.Item >
-                    <b>{latestSL?.transfer_type}</b>
-                </Descriptions.Item>
-                <Descriptions.Item >
-                    <b>{latestSL?.credit}</b>
-                </Descriptions.Item>
-                <Descriptions.Item >
-                    <b>{latestSL?.debit}</b>
-                </Descriptions.Item>
-                <Descriptions.Item >
-                    <b>{latestSL?.balance}</b>
-                </Descriptions.Item>
-                <Descriptions.Item >
-                    <b>{latestSL?.remarks}</b>
-                </Descriptions.Item>
-            </Descriptions>
+            <Table
+                loading={false}
+                columns={columns}
+                dataList={data}
+            />
             <div style={{ textAlign: 'right', margin: 10 }}>
                 <Button type='primary' onClick={() => setIsModalOpen(true)}>Update</Button>
                 <LeaveCreditsAdjustment
@@ -161,11 +166,12 @@ function LeaveCreditsAdjustment({ latestVL, latestSL, isModalOpen, handleCancel,
 }
 
 type LeaveCreditsHistoryProps = {
+    userId: string
     isModalOpen: boolean
     onCancel: () => void
 }
 
-function LeaveCreditsHistory({ isModalOpen, onCancel }: LeaveCreditsHistoryProps) {
+function LeaveCreditsHistory({ userId, isModalOpen, onCancel }: LeaveCreditsHistoryProps) {
     const [data, setData] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [tableParams, setTableParams] = useState<TableParams | undefined>()
@@ -187,8 +193,9 @@ function LeaveCreditsHistory({ isModalOpen, onCancel }: LeaveCreditsHistoryProps
 
     function fetchData(args?: IArguments) {
         setLoading(true)
-        GET<any>('/leave_credits/my/history', args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
+        GET<LeaveCreditsHistoryRes>('/leave_credits/my/history/' + userId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
+                console.log('aha: ', res?.data)
                 setData(res?.data ?? [])
                 setTableParams({
                     ...tableParams,
@@ -202,31 +209,54 @@ function LeaveCreditsHistory({ isModalOpen, onCancel }: LeaveCreditsHistoryProps
             }).finally(() => setLoading(false))
     }
 
-    const columns: ColumnsType<any> = [
+    const columns: ColumnsType<ILeaveCreditsHistory> = [
         {
-            title: 'Title',
-            key: 'title',
-            dataIndex: 'title',
+            title: 'Type',
+            key: 'type',
+            dataIndex: 'type',
             width: 150
         },
         {
-            title: 'Content',
-            key: 'content',
-            dataIndex: 'content',
-            render: (_, record) => <div dangerouslySetInnerHTML={{ __html: record?.content.slice(0, 20) + '...' }} />,
+            title: 'Transfer Type',
+            key: 'transfer_type',
+            dataIndex: 'transfer_type',
+            width: 200
+        },
+        {
+            title: 'Credit',
+            key: 'credit',
+            dataIndex: 'credit',
             width: 150
         },
         {
-            title: 'Publish Date',
-            key: 'publish_date',
-            dataIndex: 'publish_date',
-            width: 120
+            title: 'Debit',
+            key: 'debit',
+            dataIndex: 'debit',
+            width: 150
+        },
+        {
+            title: 'Balance',
+            key: 'balance',
+            dataIndex: 'balance',
+            width: 150
+        },
+        {
+            title: 'Date',
+            key: 'date',
+            dataIndex: 'date',
+            width: 150
+        },
+        {
+            title: 'Remarks',
+            key: 'remarks',
+            dataIndex: 'remarks',
+            width: 220
         },
     ]
 
     const onChange = (pagination: TablePaginationConfig) => fetchData({ page: pagination?.current, search: searchDebounce, pageSize: pagination?.pageSize! })
 
-    return <Modal title='Leave Credits - History' open={isModalOpen} onCancel={onCancel} footer={null} forceRender>
+    return <Modal title='Leave Credits - History' open={isModalOpen} onCancel={onCancel} footer={null} forceRender width={800}>
         <Row justify='end'>
             <Input.Search placeholder='Search...' value={search} onChange={(e) => setSearch(e.target.value)} style={{ width: 200 }} />
             <Divider />

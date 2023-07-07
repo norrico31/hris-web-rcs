@@ -395,22 +395,22 @@ interface ModalCancelRequest {
     restoreLeave?: (id: string) => Promise<boolean>
 }
 
-export function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClose, fetchData, restoreLeave }: ModalCancelRequest) {
+function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClose, fetchData, restoreLeave }: ModalCancelRequest) {
     const [remarks, setRemarks] = useState('')
     const [messageApi, contextHolder] = useMessage()
     const [loading, setLoading] = useState(false)
     const key = 'error'
 
     function cancelRequest() {
-        if (remarks == null || remarks == '') {
-            messageApi.open({
-                key,
-                type: 'error',
-                content: `Please enter remarks to cancel the request`,
-                duration: 5
-            })
-            return
-        }
+        // if (remarks == null || remarks == '') {
+        //     messageApi.open({
+        //         key,
+        //         type: 'error',
+        //         content: `Please enter remarks to cancel the request`,
+        //         duration: 5
+        //     })
+        //     return
+        // }
         setLoading(true)
         POST(LEAVES.CANCEL + selectedRequest?.id, { cancel_reason: remarks, ...(selectedRequest?.status === 'APPROVED' && { user_id: selectedRequest.user_id }) })
             .then((res) => {
@@ -446,7 +446,7 @@ export function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, ha
                         Cancel Request
                     </Button>
                 )}
-                {selectedRequest?.status === 'APPROVED' && <Button type='primary' onClick={cancelRequest}>Cancel Approved</Button>}
+                {selectedRequest?.status === 'APPROVED' && <Button type='primary' onClick={cancelRequest} loading={loading} disabled={loading}>Cancel Approved</Button>}
                 <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
                     Close
                 </Button>
@@ -478,13 +478,20 @@ export function LeaveDescription({ selectedRequest, remarks, setRemarks }: Leave
             <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.reason}</Descriptions.Item>
         </Descriptions>
         <Divider />
-        <Descriptions bordered>
-            <Descriptions.Item label={selectedRequest?.cancel_reason ? 'Cancel Remarks' : "Remarks"} >
-                {selectedRequest?.remarks ? (selectedRequest?.remarks) : selectedRequest?.cancel_reason ? selectedRequest?.cancel_reason : (
-                    <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} disabled={selectedRequest?.status !== 'PENDING' && selectedRequest?.status !== 'APPROVED'} />
-                )}
-            </Descriptions.Item>
+        {selectedRequest?.status !== 'APPROVED' && (
+            <Descriptions bordered>
+                <Descriptions.Item label={selectedRequest?.cancel_reason ? 'Cancel Remarks' : "Remarks"} >
+                    {selectedRequest?.remarks ? (selectedRequest?.remarks) : selectedRequest?.cancel_reason ? selectedRequest?.cancel_reason : (
+                        <Input.TextArea placeholder='Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} disabled={selectedRequest?.status !== 'PENDING'} />
+                    )}
+                </Descriptions.Item>
 
-        </Descriptions>
+            </Descriptions>
+        )}
+        {selectedRequest?.status === 'APPROVED' && (
+            <Descriptions.Item label={selectedRequest?.cancel_reason ? 'Cancel Remarks' : "Remarks"} >
+                <Input.TextArea placeholder='Cancel Approved Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
+            </Descriptions.Item>
+        )}
     </>
 }
