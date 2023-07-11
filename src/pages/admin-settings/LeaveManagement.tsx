@@ -4,7 +4,7 @@ import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skel
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import { AiOutlineEdit } from 'react-icons/ai'
+import { AiOutlineCheck, AiOutlineClose, AiOutlineEdit, AiOutlineEye } from 'react-icons/ai'
 import dayjs, { Dayjs } from 'dayjs'
 import { useAuthContext } from '../../shared/contexts/Auth'
 import { Form, TabHeader, Table } from '../../components'
@@ -24,7 +24,7 @@ export default function LeaveManagement() {
     renderTitle('Leave Management')
     const { user, loading: loadingUser } = useAuthContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [leaveType, setLeaveType] = useState('all')
+    const [leaveType] = useState('all')
     const [data, setData] = useState<ILeave[]>([])
     const [selectedData, setSelectedData] = useState<ILeave | undefined>(undefined)
     const [search, setSearch] = useState('')
@@ -54,7 +54,7 @@ export default function LeaveManagement() {
     if (loadingUser) return <Skeleton />
     if (!loadingUser && !codes['p01']) return <Navigate to={'/' + paths[0]} />
 
-    const columns: ColumnsType<ILeave> = renderColumns({ handleEdit, handleDelete, handleRequestSelected })
+    const columns: ColumnsType<ILeave> = renderColumns({ handleEdit, handleRequestSelected })
 
     function fetchData({ type, args }: { args?: IArguments; type?: string }) {
         setLoading(true)
@@ -103,21 +103,6 @@ export default function LeaveManagement() {
             <Title level={2}>Leave Management</Title>
             <TabHeader handleSearch={setSearch} isRequest>
                 <Button className='btn-secondary' onClick={() => setIsModalOpen(true)}>File Employee Leave</Button>
-                {/* <Select value={leaveType} allowClear showSearch optionFilterProp='children' onChange={(str) => {
-                    setLeaveType((str == undefined || str == '') ? 'all' : str)
-                    fetchData({
-                        args: {
-                            search,
-                            page: tableParams?.pagination?.current ?? 1,
-                            pageSize: tableParams?.pagination?.pageSize
-                        },
-                        type: (str == undefined || str == '') ? 'all' : str
-                    })
-                }} style={{ width: 150 }}>
-                    {selectOptions.map((opt) => (
-                        <Select.Option value={opt.toLocaleLowerCase()} key={opt}>{opt}</Select.Option>
-                    ))}
-                </Select> */}
             </TabHeader>
             <Table
                 loading={loading}
@@ -199,7 +184,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
         time_end = dayjs(time_end).format('LT')
         restProps = { ...restProps, date_start, date_end, time_start, time_end } as any
         try {
-            let result = selectedData ? PUT(LEAVES.PUT, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
+            let result = selectedData ? PUT(LEAVES.PUT + selectedData.id, { ...restProps, id: selectedData.id }) : POST(LEAVES.POST, restProps)
             const res = await result
             form.resetFields()
             handleCancel()
@@ -304,7 +289,7 @@ export function LeaveModal({ leaveType, selectedData, isModalOpen, handleCancel,
     </Modal>
 }
 
-const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { handleEdit: (ot: ILeave) => void; handleDelete: (id: string) => void; handleRequestSelected: (ot: ILeave) => void; }): ColumnsType<ILeave> => [
+const renderColumns = ({ handleEdit, handleRequestSelected }: { handleEdit: (ot: ILeave) => void; handleRequestSelected: (ot: ILeave) => void; }): ColumnsType<ILeave> => [
     {
         title: 'User',
         key: 'user',
@@ -364,16 +349,17 @@ const renderColumns = ({ handleEdit, handleDelete, handleRequestSelected }: { ha
         render: (_, record: ILeave) => <Space direction='vertical'>
             {(record?.status.toLowerCase() === 'approved' || record?.status.toLowerCase() === 'rejected' || record?.status.toLowerCase() === 'canceled') ? (
                 <Button className='btn-secondary' onClick={() => handleRequestSelected(record)}>
-                    View
+                    <AiOutlineEye />
                 </Button>
             ) : (
                 <Space>
-                    <Button id='edit' type='default' size='middle' onClick={() => handleEdit(record)} className='btn-edit' >
+                    <Button id='edit' size='middle' onClick={() => handleEdit(record)} className='btn-edit' >
                         <AiOutlineEdit color='white' />
                     </Button>
                     {record?.status.toLowerCase() === 'pending' && (
-                        <Button type='primary' onClick={() => handleRequestSelected(record)}>
-                            {record?.status.toLowerCase() === 'canceled' ? 'View' : 'Cancel Request'}
+                        <Button id='edit' className='btn-secondary' onClick={() => handleRequestSelected(record)}>
+                            {/* {record?.status.toLowerCase() === 'canceled' ? <AiOutlineEye /> : 'Cancel Request'} */}
+                            <AiOutlineEye />
                         </Button>
                     )}
                 </Space>
@@ -431,7 +417,45 @@ function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClo
                 setLoading(false)
             })
     }
-    return <Modal title='Leave - Cancel Request' open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
+
+    function approveReject(status: 'approve/' | 'reject/') {
+        if (remarks == null || remarks == '') {
+            messageApi.open({
+                key,
+                type: 'error',
+                content: `Please enter remarks to cancel the request`,
+                duration: 5
+            })
+            return
+        }
+        const payload = {
+            remarks,
+            reason: selectedRequest?.reason,
+            date_start: selectedRequest?.date_start,
+            date_end: selectedRequest?.date_end,
+        }
+        setLoading(true)
+        POST(LEAVES.POST + status + selectedRequest?.id, payload)
+            .then((res) => {
+                setRemarks('')
+                handleClose()
+            })
+            .catch((err) => {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: err?.response?.data?.message,
+                    duration: 5
+                })
+                setLoading(false)
+            })
+            .finally(() => {
+                fetchData({ type: leaveType })
+                setLoading(false)
+            })
+    }
+
+    return <Modal title={selectedRequest?.status === 'PENDING' ? 'Leave - Update' : `Leave - Cancel Leave`} open={isModalOpen} onCancel={handleClose} footer={null} forceRender>
         {contextHolder}
         <LeaveDescription
             selectedRequest={selectedRequest!}
@@ -441,15 +465,16 @@ function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClo
         <Divider />
         <div style={{ textAlign: 'right' }}>
             <Space>
-                {selectedRequest?.status === 'PENDING' && (
-                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={cancelRequest}>
-                        Cancel Request
-                    </Button>
+                {selectedRequest?.status === 'PENDING' ? (
+                    <Space>
+                        <Button className='btn-approve' onClick={() => approveReject('approve/')} disabled={loading} loading={loading}>Approve</Button>
+                        <Button type="primary" loading={loading} disabled={loading} onClick={() => selectedRequest?.status === 'PENDING' ? approveReject('reject/') : cancelRequest()}>
+                            {selectedRequest?.status === 'PENDING' ? 'Reject' : 'Cancel Request'}
+                        </Button>
+                    </Space>
+                ) : (
+                    <Button type='primary' onClick={cancelRequest} loading={loading} disabled={loading}>Cancel Leave</Button>
                 )}
-                {selectedRequest?.status === 'APPROVED' && <Button type='primary' onClick={cancelRequest} loading={loading} disabled={loading}>Cancel Leave</Button>}
-                <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
-                    Close
-                </Button>
             </Space>
         </div>
     </Modal>
@@ -476,12 +501,10 @@ export function LeaveDescription({ selectedRequest, remarks, setRemarks }: Leave
         <Divider />
         <Descriptions bordered layout='vertical'>
             <Descriptions.Item label="Leave Reason" style={{ textAlign: 'center' }}>{selectedRequest?.reason}</Descriptions.Item>
-            {/* <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.status !== 'APPROVED' ? selectedRequest?.reason : selectedRequest?.remarks}</Descriptions.Item> */}
         </Descriptions>
         {selectedRequest?.remarks && (
             <Descriptions bordered layout='vertical'>
                 <Descriptions.Item label="Approved Remarks" style={{ textAlign: 'center' }}>{selectedRequest?.remarks}</Descriptions.Item>
-                {/* <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.status !== 'APPROVED' ? selectedRequest?.reason : selectedRequest?.remarks}</Descriptions.Item> */}
             </Descriptions>
         )}
         <Divider />

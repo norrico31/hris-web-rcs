@@ -4,7 +4,7 @@ import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skel
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import useMessage from 'antd/es/message/useMessage'
-import { AiOutlineEdit } from 'react-icons/ai'
+import { AiOutlineEdit, AiOutlineEye } from 'react-icons/ai'
 import { BsFillTrashFill } from 'react-icons/bs'
 import dayjs from 'dayjs'
 import { useAuthContext } from '../../shared/contexts/Auth'
@@ -101,18 +101,25 @@ export default function OvertimeManagement() {
                 <Button id='edit' type='default' size='middle' onClick={() => handleEdit(record)} className='btn-edit' >
                     <AiOutlineEdit color='white' />
                 </Button>
-                <Popconfirm
-                    title='Delete the selected data?'
-                    description={`Are you sure you want to delete ${record.reason}?`}
-                    onConfirm={() => handleDelete(record.id!)}
-                    okText="Delete"
-                    cancelText="Cancel"
-                >
-                    <Button id='delete' type='primary' size='middle' onClick={() => null}>
-                        <BsFillTrashFill />
+                {record.status !== 'PENDING' ? (
+                    <Popconfirm
+                        title='Delete the selected data?'
+                        description={`Are you sure you want to delete ${record.reason}?`}
+                        onConfirm={() => handleDelete(record.id!)}
+                        okText="Delete"
+                        cancelText="Cancel"
+                    >
+                        <Button id='delete' type='primary' size='middle' onClick={() => null}>
+                            <BsFillTrashFill />
+                        </Button>
+                    </Popconfirm>
+                ) : (
+                    <Button className='btn-secondary' onClick={() => handleSelectedOvertime(record)}>
+                        <AiOutlineEye />
                     </Button>
-                </Popconfirm>
-            </Space>,
+
+                )}
+            </Space >,
             width: 150
         },
     ]
@@ -141,6 +148,11 @@ export default function OvertimeManagement() {
 
     function handleEdit(data: IOvertime) {
         setIsModalOpen(true)
+        setSelectedData(data)
+    }
+
+    function handleSelectedOvertime(data: IOvertime) {
+        setIsModalCancel(true)
         setSelectedData(data)
     }
 
@@ -261,7 +273,7 @@ export function OvertimeModal({ overtimeType, selectedData, isModalOpen, handleC
         }
     }
 
-    return <Modal title='Submit Overtime' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
+    return <Modal title='Update - Overtime' open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         {contextHolder}
         <Form form={form} onFinish={onFinish} disabled={loading}>
             <FormItem
@@ -347,7 +359,7 @@ type ModalCancelRequestProps = {
     restoreOvertime?: (id: string) => Promise<boolean>
 }
 
-export function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, overtimeType, handleCancel, restoreOvertime }: ModalCancelRequestProps) {
+function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, overtimeType, handleCancel, restoreOvertime }: ModalCancelRequestProps) {
     const [loading, setLoading] = useState(false)
     const [messageApi, contextHolder] = useMessage()
     const [remarks, setRemarks] = useState('')
@@ -390,6 +402,42 @@ export function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, ov
             })
     }
 
+    async function approveReject(status: 'approve/' | 'reject/') {
+        try {
+            if (remarks == null || remarks == '') {
+                messageApi.open({
+                    key,
+                    type: 'error',
+                    content: `Please enter remarks before ${status}`,
+                    duration: 5
+                })
+                return
+            }
+            setLoading(true)
+            const url = status === 'approve/' ? 'approve-overtime/' : 'reject-overtime/'
+            const payload = {
+                remarks,
+                date: selectedRequest?.date,
+                planned_ot_start: selectedRequest?.planned_ot_start,
+                planned_ot_end: selectedRequest?.planned_ot_end,
+                reason: selectedRequest?.reason
+            }
+            const res = await PUT(OVERTIME.POST + url + selectedRequest?.id, payload)
+            setRemarks('')
+            handleCancel()
+        } catch (err: any) {
+            messageApi.open({
+                type: 'error',
+                content: err?.response?.data?.message,
+                duration: 5
+            })
+            return err
+        } finally {
+            fetchData()
+            setLoading(false)
+        }
+    }
+
     return <Modal title={selectedRequest?.status === 'APPROVED' || selectedRequest?.status === 'REJECTED' ? `Overtime - ${selectedRequest?.status} Request` : 'Overtime - Cancel Request'} open={isModalOpen} onCancel={handleCancel} footer={null} forceRender>
         {contextHolder}
         <OvertimeDescription
@@ -399,35 +447,16 @@ export function ModalCancelRequest({ isModalOpen, selectedRequest, fetchData, ov
         />
         <div style={{ textAlign: 'right' }}>
             <Space>
-                {selectedRequest?.status === 'PENDING' && (
-                    <Button type="primary" htmlType="submit" loading={loading} disabled={loading} onClick={cancelRequest}>
-                        Cancel Request
-                    </Button>
-                )}
-                {/* {selectedRequest?.status === 'CANCELED' && (
-                    <Popconfirm
-                        title={`Restore Overtime`}
-                        description={`Are you sure you want to restore?`}
-                        onConfirm={() => {
-                            setLoading(true)
-                            restoreOvertime?.(selectedRequest.id)
-                                .then(handleCancel)
-                                .finally(() => setLoading(false))
-                        }}
-                        okText="Restore"
-                        cancelText="Cancel"
-                    >
-                        <Button id='restore' type='primary' size='middle' onClick={() => null} loading={loading}>
-                            <Space>
-                                <BiRefresh />
-                                Restore
-                            </Space>
+                {selectedRequest?.status === 'PENDING' ? (
+                    <Space>
+                        <Button className='btn-approve' onClick={() => approveReject('approve/')} disabled={loading} loading={loading}>Approve</Button>
+                        <Button type="primary" loading={loading} disabled={loading} onClick={() => selectedRequest?.status === 'PENDING' ? approveReject('reject/') : cancelRequest()}>
+                            Reject
                         </Button>
-                    </Popconfirm>
-                )} */}
-                <Button type="primary" onClick={handleCancel} loading={loading} disabled={loading}>
-                    Close
-                </Button>
+                    </Space>
+                ) : (
+                    <Button type='primary' onClick={cancelRequest} loading={loading} disabled={loading}>Cancel Leave</Button>
+                )}
             </Space>
         </div>
     </Modal>
@@ -440,6 +469,7 @@ type OvertimeDescriptionProps = {
 }
 
 export function OvertimeDescription({ selectedRequest, remarks, setRemarks }: OvertimeDescriptionProps) {
+    console.log(selectedRequest)
     return <>
         <Descriptions bordered column={2}>
             <Descriptions.Item label="Requested By" span={2}>{selectedRequest?.user?.full_name}</Descriptions.Item>

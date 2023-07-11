@@ -86,6 +86,9 @@ const { Title } = Typography
 
 const dateVal = [dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD'), dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD')]
 
+//TODO: PLEASE CHANGE THIS URL FOR PROD
+const CLIENTBILLINGURL = `https://staging-hrportal.redcoresolutions.com/report/api/billing_report`
+
 function ModalDownload({ selectedReport, isModalOpen, handleClose }: { isModalOpen: boolean; handleClose: () => void; selectedReport?: Report }) {
     const [loading, setLoading] = useState(false)
     const [date, setDate] = useState<any>(dateVal)
@@ -118,7 +121,7 @@ function ModalDownload({ selectedReport, isModalOpen, handleClose }: { isModalOp
                 client_id: clientId
             }
 
-            POST(HRREPORTS.CLIENTBILLING, payload, {
+            axiosClient.post(CLIENTBILLINGURL, payload, {
                 headers: {
                     'Content-Disposition': "attachment; filename=task_report.xlsx",
                     "Content-Type": "application/json",

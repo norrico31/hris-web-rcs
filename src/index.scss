@@ -47,12 +47,21 @@ h1 {
 
 .btn-edit {
     background: #00A3E0;
+}
+.btn-approve {
+    background: #32972c;    
+    color: #fff;
     &:hover {
-        opacity: .7;
-        outline: none;
-        border: none;
+        color: #e9e9e9 !important;
     }
 }
+.btn-edit:hover,
+.btn-approve:hover {
+    opacity: .7;
+    outline: none;
+    border: none;
+}
+
 .btn-secondary {
     background-color: #E49944;
     color: #fff;
