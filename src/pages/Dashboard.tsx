@@ -233,13 +233,10 @@ function AnnouncementViewModal({ isModalOpen, handleClose, selectedAnnouncement 
                             : <i style={{ color: '#9B3423' }}>No attachment file</i>}
                     </Descriptions.Item>
                 </Descriptions>
-                <Descriptions bordered layout='vertical'>
-                    <Descriptions.Item label="Content" style={{ textAlign: 'center', color: '#626262' }}>
-                        <div style={{ textAlign: 'left' }}>
-                            <div dangerouslySetInnerHTML={{ __html: announcement?.content! }} />
-                        </div>
-                    </Descriptions.Item>
-                </Descriptions>
+                <div className='css-is-awesome'>
+                    <h2 style={{ textAlign: 'center', padding: '1rem' }}>Content</h2>
+                    <div style={{ overflowWrap: 'break-word', width: '100%' }} dangerouslySetInnerHTML={{ __html: announcement?.content! }} />
+                </div>
                 <Divider />
                 <Divider />
                 <div style={{ textAlign: 'right' }}>
