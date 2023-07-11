@@ -55,7 +55,7 @@ export const useEndpoints = () => {
         },
         HRREPORTS: {
             HRREPORTS: `${BASE_URL_REPORT}/time_keepings/download-report`,
-            CLIENTBILLING: `${BASE_URL_REPORT}/report/billing_report`,
+            CLIENTBILLING: `${BASE_URL_REPORT}/billing_report`,
         },
         SYSTEMSETTINGS: {
             TASKSSETTINGS: {

@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Divider, Popconfirm } from 'antd'
+import { Button, Form as AntDForm, Modal, Space, Input, DatePicker, Select, Skeleton, Row, TimePicker, Descriptions, Divider as AntDDivider, Col } from 'antd'
 import dayjs from 'dayjs'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import useMessage from 'antd/es/message/useMessage'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
-import { BiRefresh } from 'react-icons/bi'
-import { Form, Card, TabHeader, Table, Action } from '../../components'
-import { firstLetterCapitalize, renderTitle } from '../../shared/utils/utilities'
+import { Form, TabHeader, Table, Leaves, Divider } from '../../components'
+import { renderTitle } from '../../shared/utils/utilities'
 import axiosClient, { useAxios } from '../../shared/lib/axios'
 import { ROOTPATHS, useEndpoints } from '../../shared/constants'
 import { IArguments, ILeave, ILeaveType, LeaveRes, TableParams } from '../../shared/interfaces'
@@ -115,6 +114,12 @@ export default function MyLeave() {
                     ))}
                 </Select>
             </TabHeader>
+            <Row justify='center'>
+                <Col span={4}>
+                    <Leaves />
+                </Col>
+            </Row>
+            <Divider style={{ border: 'none' }} />
             <Table
                 loading={loading}
                 columns={columns}

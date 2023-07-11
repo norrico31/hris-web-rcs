@@ -114,7 +114,7 @@ function LeaveCreditsAdjustment({ latestVL, latestSL, isModalOpen, handleCancel,
         const payload = {
             ...values,
             id: isVl ? latestVL?.id : latestSL?.id,
-            type: isVl ? 'VL' : 'SL',
+            type: isVl ? 'VL' : 'SEL',
             balance: isVl ? latestVL?.balance : latestSL?.balance,
             credit: values.credit === undefined ? 0 : values.credit,
             debit: values.debit === undefined ? 0 : values.debit,

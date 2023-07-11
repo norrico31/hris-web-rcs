@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Col, Row, Input, Form as AntDForm, Button } from 'antd'
 import useMessage from 'antd/es/message/useMessage'
-import { Card, Form } from '../components'
+import { Card, Form, Leaves } from '../components'
 import { IUser } from '../shared/interfaces'
 import { useAuthContext } from '../shared/contexts/Auth'
 import { useEndpoints } from "../shared/constants"
@@ -92,10 +92,7 @@ export default function Profile() {
                             <Input placeholder='Enter position...' disabled />
                         </Item>
                     </Col>
-
                 </Row>
-
-
                 <Row justify="space-between">
                     <Col xs={24} sm={24} md={7} lg={7} xl={7}>
                         <Item label="Current Password" name="current_password">
@@ -113,11 +110,14 @@ export default function Profile() {
                         </Item>
                     </Col>
                 </Row>
-
-                <Row justify='end'>
+                <Row justify='space-between'>
+                    <Col xs={24} sm={24} md={11} lg={10} xl={10}>
+                        <Leaves />
+                    </Col>
                     <Button type='primary' htmlType='submit'>Update</Button>
                 </Row>
             </Form>
         </Card>
     )
 }
+
