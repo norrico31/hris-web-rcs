@@ -21,6 +21,7 @@ export const useEndpoints = () => {
             TIMEIN: '/time_keepings/time_in',
             TIMEOUT: '/time_keepings/time_out',
             GET: '/time_keepings',
+            NO_TIMEOUT_MESSAGE: '/time_keepings/no-timeout-message',
             HRMANAGEMENTLISTS: '/time_keeping_management',
             HRMANAGEMENTPOST: '/time_keeping_management',
             HRMANAGEMENTPUT: '/time_keeping_management/',

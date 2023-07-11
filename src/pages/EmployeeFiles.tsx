@@ -537,7 +537,7 @@ function StepOne({ setStepOneInputs, stepOneInputs, stepOne }: IStepOneProps) {
 
                 <FormItem
                     label="Employee Status"
-                    name="employee_status_id"
+                    name="employment_status_id"
                     required
                     rules={[{ required: true, message: 'Required' }]}
                 >

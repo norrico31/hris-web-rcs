@@ -237,7 +237,7 @@ export default function UserProfileEmployee() {
                 </Row>
                 <Row justify='space-between'>
                     <Col xs={24} sm={24} md={11} lg={7} xl={7} >
-                        <Item label="Employee Status" name="employee_status_id"
+                        <Item label="Employee Status" name="employment_status_id"
                         >
                             <Select
                                 placeholder='Select employee status...'

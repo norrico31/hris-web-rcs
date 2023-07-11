@@ -2,15 +2,13 @@ import { useState, useEffect } from 'react'
 import { Descriptions, Input, Button, Form as AntDForm, Modal, Space, Switch, Row } from 'antd'
 import dayjs from 'dayjs'
 import { useEmployeeCtx } from '../EmployeeEdit'
-import { Action, Card, Divider, Form, Table } from '../../components'
+import { Card, Divider, Form, Table } from '../../components'
 import { useAxios } from '../../shared/lib/axios'
-import { useEndpoints } from '../../shared/constants'
 import { IArguments, ILeaveCredits, ILeaveCreditsHistory, LeaveCreditsHistoryRes, TableParams } from '../../shared/interfaces'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import { useSearchDebounce } from '../../shared/hooks/useDebounce'
 
-const [{ EMPLOYEE201: { EMPLOYEESALARY }, SYSTEMSETTINGS: { HRSETTINGS: { SALARYRATES } } }] = useEndpoints()
-const { GET, POST, DELETE, PUT } = useAxios()
+const { GET, POST } = useAxios()
 
 export default function LeaveCredits() {
     const { employeeId, employeeInfo, fetchData } = useEmployeeCtx()
@@ -18,7 +16,6 @@ export default function LeaveCredits() {
     const [isModalHistory, setIsModalHistory] = useState(false)
     const latestVl = employeeInfo?.latest_vl
     const latestSL = employeeInfo?.latest_sl
-
     const data = [latestVl, latestSL] ?? []
 
     const columns: ColumnsType<ILeaveCreditsHistory> = [
@@ -68,6 +65,15 @@ export default function LeaveCredits() {
 
     return (
         <Card title="Leave Credits">
+            <Row justify='end'>
+                <Button className='btn-secondary' onClick={() => setIsModalHistory(true)}>History</Button>
+                <LeaveCreditsHistory
+                    isModalOpen={isModalHistory}
+                    onCancel={() => setIsModalHistory(false)}
+                    userId={employeeInfo?.id}
+                />
+            </Row>
+            <Divider />
             <Table
                 loading={false}
                 columns={columns}
@@ -195,7 +201,6 @@ function LeaveCreditsHistory({ userId, isModalOpen, onCancel }: LeaveCreditsHist
         setLoading(true)
         GET<LeaveCreditsHistoryRes>('/leave_credits/my/history/' + userId, args?.signal!, { page: args?.page!, search: args?.search!, limit: args?.pageSize! })
             .then((res) => {
-                console.log('aha: ', res?.data)
                 setData(res?.data ?? [])
                 setTableParams({
                     ...tableParams,
@@ -270,7 +275,7 @@ function LeaveCreditsHistory({ userId, isModalOpen, onCancel }: LeaveCreditsHist
         />
         <Divider />
         <Row justify='end'>
-            <Button type='primary'>Close</Button>
+            <Button type='primary' onClick={onCancel}>Close</Button>
         </Row>
     </Modal>
 }

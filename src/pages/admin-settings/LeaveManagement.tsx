@@ -446,7 +446,7 @@ function ModalCancelRequest({ leaveType, selectedRequest, isModalOpen, handleClo
                         Cancel Request
                     </Button>
                 )}
-                {selectedRequest?.status === 'APPROVED' && <Button type='primary' onClick={cancelRequest} loading={loading} disabled={loading}>Cancel Approved</Button>}
+                {selectedRequest?.status === 'APPROVED' && <Button type='primary' onClick={cancelRequest} loading={loading} disabled={loading}>Cancel Leave</Button>}
                 <Button type="primary" onClick={handleClose} loading={loading} disabled={loading}>
                     Close
                 </Button>
@@ -475,10 +475,17 @@ export function LeaveDescription({ selectedRequest, remarks, setRemarks }: Leave
         </Descriptions>
         <Divider />
         <Descriptions bordered layout='vertical'>
-            <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.reason}</Descriptions.Item>
+            <Descriptions.Item label="Leave Reason" style={{ textAlign: 'center' }}>{selectedRequest?.reason}</Descriptions.Item>
+            {/* <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.status !== 'APPROVED' ? selectedRequest?.reason : selectedRequest?.remarks}</Descriptions.Item> */}
         </Descriptions>
+        {selectedRequest?.remarks && (
+            <Descriptions bordered layout='vertical'>
+                <Descriptions.Item label="Approved Remarks" style={{ textAlign: 'center' }}>{selectedRequest?.remarks}</Descriptions.Item>
+                {/* <Descriptions.Item label="Reason" style={{ textAlign: 'center' }}>{selectedRequest?.status !== 'APPROVED' ? selectedRequest?.reason : selectedRequest?.remarks}</Descriptions.Item> */}
+            </Descriptions>
+        )}
         <Divider />
-        {selectedRequest?.status !== 'APPROVED' && (
+        {selectedRequest?.status !== 'APPROVED' ? (
             <Descriptions bordered>
                 <Descriptions.Item label={selectedRequest?.cancel_reason ? 'Cancel Remarks' : "Remarks"} >
                     {selectedRequest?.remarks ? (selectedRequest?.remarks) : selectedRequest?.cancel_reason ? selectedRequest?.cancel_reason : (
@@ -487,11 +494,13 @@ export function LeaveDescription({ selectedRequest, remarks, setRemarks }: Leave
                 </Descriptions.Item>
 
             </Descriptions>
-        )}
-        {selectedRequest?.status === 'APPROVED' && (
-            <Descriptions.Item label={selectedRequest?.cancel_reason ? 'Cancel Remarks' : "Remarks"} >
-                <Input.TextArea placeholder='Cancel Approved Remarks...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
-            </Descriptions.Item>
+        ) : (
+            <Descriptions bordered>
+                <Descriptions.Item label='Cancel Reason'>
+                    <Input.TextArea placeholder='Cancel Approved Reason...' value={remarks} onChange={(e) => setRemarks(e.target.value)} style={{ height: 150 }} />
+                </Descriptions.Item>
+            </Descriptions>
+
         )}
     </>
 }

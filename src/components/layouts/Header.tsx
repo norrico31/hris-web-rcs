@@ -87,15 +87,21 @@ export default function Header({ collapsed, setCollapsed }: Props) {
 }
 
 function CurrentTime({ isDarkMode }: { isDarkMode: boolean }) {
-    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString())
+    const [currentTime, setCurrentTime] = useState(getFormattedTime());
     useEffect(() => {
-        const timer = setInterval(() => {
-            let time = new Date().toLocaleTimeString()
-            setCurrentTime(time)
-        }, 1000)
-        return () => clearInterval(timer)
-    }, [])
+        const timer = setInterval(() => setCurrentTime(getFormattedTime()), 1000);
+        return () => clearInterval(timer);
+    }, []);
     return <h3 style={{ marginLeft: '1rem' }} className={isDarkMode ? 'text-light' : 'text-dark'}>{currentTime}</h3>
+}
+
+function getFormattedTime() {
+    return new Date().toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true,
+    });
 }
 
 const UserName = styled.span`

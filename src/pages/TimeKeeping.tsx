@@ -20,6 +20,7 @@ const [{ TIMEKEEPING }] = useEndpoints()
 const { GET, POST } = useAxios()
 
 const { Title } = Typography
+import useMessage from 'antd/es/message/useMessage'
 
 export default function TimeKeeping() {
     renderTitle('Timekeeping')
@@ -30,15 +31,36 @@ export default function TimeKeeping() {
     const [today] = useState(dayjs().format('YYYY-MM-DD'))
     const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined)
     const { width } = useWindowSize()
+    const [messageApi, contextHolder] = useMessage()
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+
+
+    const [flag, setFlag] = useState(false)
 
     useEffect(() => {
         if (!loadingUser && !codes['b01']) return
         const controller = new AbortController();
         if (user) fetchData({ args: { signal: controller.signal } })
     }, [user])
+
+    useEffect(() => {
+        const key = 'error'
+        GET(TIMEKEEPING.NO_TIMEOUT_MESSAGE)
+            .then((res: any) => {
+                if (res?.message) {
+                    messageApi.open({
+                        key,
+                        type: 'error',
+                        content: res?.message,
+                        duration: null as any
+                    })
+                } else {
+                    messageApi.destroy()
+                }
+            })
+    }, [flag])
 
     if (loadingUser) return <Skeleton />
     if (!loadingUser && !codes['b01']) return <Navigate to={'/' + paths[0]} />
@@ -61,6 +83,7 @@ export default function TimeKeeping() {
 
     return (
         <>
+            {contextHolder}
             <Title level={2} style={{ textAlign: width < 500 ? 'center' : 'initial' }}>Timekeeping</Title>
             <Row wrap justify='space-between'>
                 <DatePicker format='YYYY-MM-DD' defaultValue={dayjs()} onChange={handleDatePickerChange} />
@@ -86,15 +109,15 @@ export default function TimeKeeping() {
                 dataSource={data}
                 renderItem={(item) => (
                     <List.Item>
-                        <Card style={{ padding: 0 }} title={<h3 style={{ color: '#E49944', fontSize: 35 }}>{firstLetterCapitalize(item.type.split('_').join(' ').toLowerCase())}</h3>} extra={<b style={{ fontSize: 22 }}>{item?.time_keeping_date}</b>}>
+                        <Card style={{ padding: 0 }} title={<h3 style={{ color: '#E49944', fontSize: 35 }}>{firstLetterCapitalize(item?.type.split('_').join(' ').toLowerCase())}</h3>} extra={<b style={{ fontSize: 22 }}>{item?.time_keeping_date}</b>}>
                             <Row justify='center'>
-                                <b style={{ fontSize: 32, color: '#9B3423' }}>{item.time_keeping_time}</b>
+                                <b style={{ fontSize: 32, color: '#9B3423' }}>{item?.time_keeping_time}</b>
                             </Row>
                             <Row justify='space-between'>
-                                <p style={{ color: '#9B3423' }}>Morning Shift (8-5)</p>
+                                <p style={{ color: '#9B3423' }}>{item?.schedule.name}</p>
                                 <p>
                                     <b>Client Site: </b>
-                                    {item.is_client_site ? 'Yes' : 'No'}
+                                    {item?.is_client_site ? 'Yes' : 'No'}
                                 </p>
                             </Row>
                             <p>{user?.full_name}</p>
@@ -109,6 +132,7 @@ export default function TimeKeeping() {
                 selectedDate={selectedDate}
                 isModalOpen={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
+                setFlag={setFlag}
             />
         </>
     )
@@ -130,10 +154,11 @@ type ModalProps = {
         date?: string | dayjs.Dayjs | undefined;
     }) => void
     handleClose: () => void
-    data: ITimeKeeping[]
+    data: ITimeKeeping[],
+    setFlag: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function TimeKeepingModal({ fetchData, today, selectedDate, data, isModalOpen, handleClose }: ModalProps) {
+function TimeKeepingModal({ fetchData, today, selectedDate, data, isModalOpen, handleClose, setFlag }: ModalProps) {
     const [isModalVideoOpen, setIsModalVideoOpen] = useState(false)
     const [imageSrc, setImageSrc] = useState<string | null>(null)
     const [mediaError, setMediaError] = useState('')
@@ -179,7 +204,6 @@ function TimeKeepingModal({ fetchData, today, selectedDate, data, isModalOpen, h
             is_client_site: clientSite,
             ...(method === 'timeout' && { date: selectedDate })
         }
-        console.log(payload)
         if (payload.photo == null) {
             setError('Please take a selfie photo')
             return
@@ -189,9 +213,14 @@ function TimeKeepingModal({ fetchData, today, selectedDate, data, isModalOpen, h
                 fetchData({ date: selectedDate !== today ? selectedDate : today })
                 setImageSrc(null)
                 handleClose()
+                setFlag(true)
             }).finally(() => {
                 setLoading(false)
-            })
+            }).catch((err) => messageApi.open({
+                type: 'error',
+                content: err.response.data.message ?? err.response.data.error,
+                duration: 5
+            }))
     }
 
     if (error == 'Please take a selfie photo') {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Form, Input, Button, Row, Col } from 'antd'
 import { Navigate, Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
@@ -24,6 +24,12 @@ export default function Login() {
 
     if (token != undefined) return <Navigate to='/' />
 
+    useEffect(() => {
+        setToken(undefined)
+        setUser(undefined)
+        localStorage.clear()
+    }, [])
+
     const key = 'error'
     const onFinish = async (values: Record<string, string>) => {
         setLoginLoading(true)
@@ -35,7 +41,6 @@ export default function Login() {
                 setToken(res?.data?.data?.token)
                 setLoading(false)
                 localStorage.setItem('t', JSON.stringify(res?.data?.data?.token))
-                localStorage.setItem('pathname', JSON.stringify('/login/AEDkj90'))
             } else {
                 // do something when success to change the password
             }
@@ -64,11 +69,12 @@ export default function Login() {
                             <Col>
                                 <div className='center' style={style}>
                                     <img src={RcsLogo} alt='logo' />
-                                    <h1 className='color-primary'>{isForgotPassword ? 'Forgot Password' : 'Login'}</h1>
+                                    {/* <h1 className='color-primary'>{isForgotPassword ? 'Forgot Password' : 'Login'}</h1> */}
+                                    <h1 className='color-primary'>System Maintenance</h1>
                                 </div>
                             </Col>
                         </Row>
-                        <Form.Item label="Email" name="email" rules={[{ required: true, message: "Required", },]}>
+                        {/* <Form.Item label="Email" name="email" rules={[{ required: true, message: "Required", },]}>
                             <Input type='email' placeholder='Enter email' />
                         </Form.Item>
                         {!isForgotPassword && (
@@ -83,7 +89,7 @@ export default function Login() {
                             <Button type="primary" htmlType="submit" className='btn-primary' loading={loginLoading} disabled={loginLoading}>
                                 {isForgotPassword ? 'Send' : 'Login'}
                             </Button>
-                        </Form.Item>
+                        </Form.Item> */}
                     </Form>
                 </ColContainer>
             </Row>

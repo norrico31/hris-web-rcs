@@ -1,6 +1,6 @@
-import { useState, useMemo, ReactNode } from 'react'
+import { useState, useEffect, useMemo, ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
-import { Col, Button, Typography, Modal, Divider, Row, DatePicker, Space, Skeleton } from 'antd'
+import { Col, Button, Typography, Modal, Divider, Row, DatePicker, Space, Skeleton, Select } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import axios from 'axios'
@@ -12,26 +12,24 @@ import { filterCodes, filterPaths } from '../components/layouts/Sidebar'
 import { Table } from '../components'
 import { Alert } from '../shared/lib/alert'
 import { ROOTPATHS, useEndpoints } from '../shared/constants'
-import { useAxios } from '../shared/lib/axios'
+import axiosClient, { useAxios } from '../shared/lib/axios'
+import { IClient } from '../shared/interfaces'
 
 type Report = { id: string; reports: string }
 
-const initModalState = {
-    isModalWithDate: false,
-    isModalWODate: false
-}
-const [{ HRREPORTS }] = useEndpoints()
+const [{ HRREPORTS, SYSTEMSETTINGS: { CLIENTSETTINGS } }] = useEndpoints()
 const { POST } = useAxios()
-
+// TODO
 export default function HrReports() {
     renderTitle('Reports')
     const { user, loading } = useAuthContext()
 
     const [selectedReport, setSelectedReport] = useState<Report | undefined>(undefined)
-    const [isModalOpen, setIsModalOpen] = useState(initModalState)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const codes = filterCodes(user?.role?.permissions)
     const paths = useMemo(() => filterPaths(user?.role?.permissions!, ROOTPATHS), [user])
+
     if (loading) return <Skeleton />
     if (!loading && !codes['n01']) return <Navigate to={'/' + paths[0]} />
 
@@ -43,7 +41,7 @@ export default function HrReports() {
     }
 
     function closeModal() {
-        setIsModalOpen(initModalState)
+        setIsModalOpen(false)
         setSelectedReport(undefined)
     }
 
@@ -59,27 +57,8 @@ export default function HrReports() {
                 downloadReport(report: Report) {
                     const key = report.reports
                     const modal: { [k: string]: Function } = {
-                        'HR Reports': () => setIsModalOpen({ ...isModalOpen, isModalWithDate: true }),
-                        'Client Billing Reports': () => {
-                            POST(HRREPORTS.CLIENTBILLING, {}, {
-                                headers: {
-                                    'Content-Disposition': "attachment; filename=task_report.xlsx",
-                                    "Content-Type": "application/json",
-                                },
-                                responseType: 'arraybuffer'
-                            })
-                                .then((res: any) => {
-                                    Alert.success('Download Success', 'Client Billing Reports Download Successfully!')
-                                    const url = window.URL.createObjectURL(new Blob([res.data]))
-                                    const link = document.createElement('a')
-                                    link.href = url
-                                    link.setAttribute('download', `Client Billing Report ${dayjs().format('YYYY-MM-DD')} - ${dayjs().format('YYYY-MM-DD')}.xlsx`)
-                                    document.body.appendChild(link)
-                                    link.click()
-                                    closeModal()
-                                })
-                                .catch(err => err)
-                        },
+                        'HR Reports': () => setIsModalOpen(true),
+                        'Client Billing Reports': () => setIsModalOpen(true),
                     }
                     setSelectedReport(report)
                     return modal[key]()
@@ -88,7 +67,7 @@ export default function HrReports() {
             dataList={dataList}
         />
         <ModalDownload
-            isModalOpen={isModalOpen.isModalWithDate}
+            isModalOpen={isModalOpen}
             handleClose={closeModal}
             selectedReport={selectedReport}
         />
@@ -103,7 +82,6 @@ function StyledWidthRow({ children }: { children: ReactNode }) {
     }}>{children}</StyledRow>
 }
 
-
 const { Title } = Typography
 
 const dateVal = [dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD'), dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD')]
@@ -111,34 +89,84 @@ const dateVal = [dayjs(dayjs().format('YYYY-MM-DD'), 'YYYY-MM-DD'), dayjs(dayjs(
 function ModalDownload({ selectedReport, isModalOpen, handleClose }: { isModalOpen: boolean; handleClose: () => void; selectedReport?: Report }) {
     const [loading, setLoading] = useState(false)
     const [date, setDate] = useState<any>(dateVal)
+    const [clientId, setClientId] = useState(undefined)
+    const [clients, setClients] = useState<IClient[]>([])
+
+    useEffect(() => {
+        const controller = new AbortController();
+        isModalOpen && (async () => {
+            try {
+                const clientPromise = await axiosClient(CLIENTSETTINGS.CLIENT.LISTS, { signal: controller.signal })
+                setClients(clientPromise?.data ?? [])
+            } catch (error: any) {
+                throw new Error(error)
+            }
+        })()
+        return () => {
+            controller.abort()
+        }
+    }, [isModalOpen])
 
     function handleDownload() {
         setLoading(true)
         const start_date = dayjs(date[0]).format('YYYY-MM-DD')
         const end_date = dayjs(date[1]).format('YYYY-MM-DD')
-        const url = `${HRREPORTS.HRREPORTS}?start_date=${start_date}&end_date=${end_date}`
-        axios.get(url, {
-            headers: {
-                'Content-Disposition': "attachment; filename=task_report.xlsx",
-                "Content-Type": "application/json",
-            },
-            responseType: 'arraybuffer'
-        })
-            .then((res: any) => {
-                Alert.success('Download Success', 'Overtime Reports Download Successfully!')
-                const url = window.URL.createObjectURL(new Blob([res.data]))
-                const link = document.createElement('a')
-                link.href = url
-                link.setAttribute('download', `Overtime Reports ${dayjs(start_date).format('YYYY-MM-DD')} - ${dayjs(end_date).format('YYYY-MM-DD')}.xlsx`)
-                document.body.appendChild(link)
-                link.click()
-                handleClose()
+        if (selectedReport?.reports === 'Client Billing Reports') {
+            const payload = {
+                start_date,
+                end_date,
+                client_id: clientId
+            }
+
+            POST(HRREPORTS.CLIENTBILLING, payload, {
+                headers: {
+                    'Content-Disposition': "attachment; filename=task_report.xlsx",
+                    "Content-Type": "application/json",
+                },
+                responseType: 'arraybuffer'
             })
-            .catch(err => err)
-            .finally(() => {
-                setLoading(false)
-                setDate(dateVal)
+                .then((res: any) => {
+                    Alert.success('Download Success', 'Client Billing Reports Download Successfully!')
+                    const url = window.URL.createObjectURL(new Blob([res.data]))
+                    const link = document.createElement('a')
+                    link.href = url
+                    link.setAttribute('download', `Client Billing Report ${dayjs().format('YYYY-MM-DD')} - ${dayjs().format('YYYY-MM-DD')}.xlsx`)
+                    document.body.appendChild(link)
+                    setClientId(undefined)
+                    link.click()
+                    handleClose()
+                })
+                .catch(err => err)
+                .finally(() => {
+                    setLoading(false)
+                    setDate(dateVal)
+                })
+        } else {
+
+            const url = `${HRREPORTS.HRREPORTS}?start_date=${start_date}&end_date=${end_date}`
+            axios.get(url, {
+                headers: {
+                    'Content-Disposition': "attachment; filename=task_report.xlsx",
+                    "Content-Type": "application/json",
+                },
+                responseType: 'arraybuffer'
             })
+                .then((res: any) => {
+                    Alert.success('Download Success', 'Overtime Reports Download Successfully!')
+                    const url = window.URL.createObjectURL(new Blob([res.data]))
+                    const link = document.createElement('a')
+                    link.href = url
+                    link.setAttribute('download', `Overtime Reports ${dayjs(start_date).format('YYYY-MM-DD')} - ${dayjs(end_date).format('YYYY-MM-DD')}.xlsx`)
+                    document.body.appendChild(link)
+                    link.click()
+                    handleClose()
+                })
+                .catch(err => err)
+                .finally(() => {
+                    setLoading(false)
+                    setDate(dateVal)
+                })
+        }
     }
 
     return (
@@ -152,6 +180,25 @@ function ModalDownload({ selectedReport, isModalOpen, handleClose }: { isModalOp
                     value={date}
                 />
             </Row>
+            <Divider style={{ border: 'none', margin: 10 }} />
+            {selectedReport?.reports === 'Client Billing Reports' && (
+                <Row justify='space-between'>
+                    <Title level={5}>Select Client: </Title>
+                    <Select
+                        placeholder='Select client...'
+                        allowClear
+                        showSearch
+                        optionFilterProp="children"
+                        value={clientId}
+                        onChange={setClientId}
+                        style={{ width: 250 }}
+                    >
+                        {clients.map((client) => (
+                            <Select.Option value={client.id} key={client.id} style={{ color: '#777777' }}>{client.name}</Select.Option>
+                        ))}
+                    </Select>
+                </Row>
+            )}
             <Divider style={{ border: 'none', margin: 10 }} />
             <div style={{ textAlign: 'right' }}>
                 <Space>

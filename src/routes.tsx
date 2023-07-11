@@ -4,6 +4,7 @@ import { Skeleton } from "antd"
 import styled from "styled-components";
 import { Layout } from "./components"
 import Login from './pages/Login'
+import _Login from './pages/_Login'
 import TasksSettings from './pages/system-settings/task-settings/TasksSettings'
 import HRSettings from './pages/system-settings/hr-settings/HRSettings'
 import ExpenseSettings from './pages/system-settings/expense-settings/ExpenseSettings'
@@ -446,6 +447,10 @@ export const routes = createBrowserRouter([
     },
     {
         path: '/login',
+        element: <_Login />,
+    },
+    {
+        path: '/login/AEDkj90',
         element: <Login />,
     },
 ])

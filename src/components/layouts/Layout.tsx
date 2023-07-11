@@ -1,5 +1,5 @@
 import { useState, useEffect, ReactNode } from 'react'
-import { Outlet, Navigate } from 'react-router-dom'
+import { Outlet, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { Layout as AntdLayout } from 'antd'
 import styled from 'styled-components'
 import axiosClient from '../../shared/lib/axios'
@@ -20,6 +20,7 @@ export default function Layout() {
     const { user, token, setToken, setUser, setLoading } = useAuthContext()
     if (token == undefined) return <Navigate to={LOGIN} />
     const { isDarkMode } = useDarkMode()
+    const location = useLocation()
 
     const [collapsed, setCollapsed] = useState(() => {
         let isCollapsed = localStorage.getItem('collapsed')
@@ -31,24 +32,33 @@ export default function Layout() {
     const [breakpoint, setBreakpoint] = useState(window.innerWidth >= 768)
     const [collapsedWidth, setCollapsedWidth] = useState(window.innerWidth >= 768 ? 80 : 0)
 
+    const navigate = useNavigate()
     useEffect(() => {
         let cleanUp = false;
-        if (!user) {
-            setLoading(true)
-            axiosClient.get<AuthUserRes>(USER)
-                .then((res) => !cleanUp && setUser(res?.data?.data))
-                .catch((err: any) => {
-                    if (err.response && err.response.status === 401) {
-                        setToken(undefined)
-                        setUser(undefined)
-                        return <Navigate to={LOGIN} />
-                    }
-                }).finally(() => setLoading(false))
+        let pathLocalStorage = localStorage.getItem('pathname')
+        pathLocalStorage = pathLocalStorage != null ? JSON.parse(pathLocalStorage) : null
+        if (pathLocalStorage === '/login/AEDkj90') {
+            if (!user) {
+                setLoading(true)
+                axiosClient.get<AuthUserRes>(USER)
+                    .then((res) => !cleanUp && setUser(res?.data?.data))
+                    .catch((err: any) => {
+                        if (err.response && err.response.status === 401) {
+                            setToken(undefined)
+                            setUser(undefined)
+                            return <Navigate to={LOGIN} />
+                        }
+                    }).finally(() => setLoading(false))
+            }
+        } else {
+            setToken(undefined)
+            setUser(undefined)
+            navigate('/login')
         }
         return function () {
             cleanUp = true
         }
-    }, [])
+    }, [user])
 
     const onBreakpoint = () => {
         if (!breakpoint) {
